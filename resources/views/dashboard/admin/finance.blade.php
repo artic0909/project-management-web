@@ -1,0 +1,1 @@
+<div class="page hidden" id="page-finance"><div class="page-header"><h1 class="page-title">Finance</h1></div><div class="stub-banner info"><i class="bi bi-currency-rupee"></i><div><strong>Finance Module</strong><span>P&L, invoices, expenses and tax reports.</span></div></div></div>

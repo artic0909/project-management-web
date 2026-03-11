@@ -1,14 +1,18 @@
-<div class="page" id="page-dev-dash" style="display:block;">
-      <div class="page-header"><h1 class="page-title">Developer Dashboard</h1><p class="page-desc">My workspace · Arjun Kumar · Frontend Dev</p></div>
-      <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
-        <div class="kpi-card" style="--kpi-accent:#6366f1"><div class="kpi-top"><div class="kpi-icon" style="background:rgba(99,102,241,.15);color:#6366f1"><i class="bi bi-kanban-fill"></i></div></div><div class="kpi-value">6</div><div class="kpi-label">Active Projects</div></div>
-        <div class="kpi-card" style="--kpi-accent:#10b981"><div class="kpi-top"><div class="kpi-icon" style="background:rgba(16,185,129,.15);color:#10b981"><i class="bi bi-check2-all"></i></div></div><div class="kpi-value">14</div><div class="kpi-label">Open Tasks</div></div>
-        <div class="kpi-card" style="--kpi-accent:#f59e0b"><div class="kpi-top"><div class="kpi-icon" style="background:rgba(245,158,11,.15);color:#f59e0b"><i class="bi bi-git"></i></div></div><div class="kpi-value">47</div><div class="kpi-label">Commits (Month)</div></div>
-        <div class="kpi-card" style="--kpi-accent:#06b6d4"><div class="kpi-top"><div class="kpi-icon" style="background:rgba(6,182,212,.15);color:#06b6d4"><i class="bi bi-clock-fill"></i></div></div><div class="kpi-value">168h</div><div class="kpi-label">Hours Logged</div></div>
-      </div>
-      <div class="stub-banner info" style="margin-top:16px"><i class="bi bi-terminal-fill"></i><div><strong>Developer Workspace</strong><span>Task board, code review queue, time tracking and project assignments.</span></div></div>
-    </div>
-    <div class="page" id="page-my-projects"><div class="page-header"><h1 class="page-title">My Projects</h1></div><div class="stub-banner info"><i class="bi bi-kanban-fill"></i><div><strong>My Project Board</strong><span>Assigned projects with status update capability.</span></div></div></div>
-    <div class="page" id="page-tasks"><div class="page-header"><h1 class="page-title">My Tasks</h1></div><div class="stub-banner info"><i class="bi bi-check2-square"></i><div><strong>Task Manager</strong><span>Sprint tasks, priority queue and time logging.</span></div></div></div>
-    <div class="page" id="page-timeline"><div class="page-header"><h1 class="page-title">Project Timeline</h1></div><div class="stub-banner info"><i class="bi bi-calendar3"></i><div><strong>Gantt Timeline</strong><span>Visual timeline for sprint planning and deadlines.</span></div></div></div>
-    <div class="page" id="page-git-log"><div class="page-header"><h1 class="page-title">Commit Log</h1></div><div class="stub-banner info"><i class="bi bi-git"></i><div><strong>Git Activity</strong><span>Recent commits, pull requests and code review history.</span></div></div></div>
+<main class="main-content" id="mainContent">
+@include('dashboard.developer.dev-dash')
+@include('dashboard.developer.my-projects')
+@include('dashboard.developer.tasks')
+@include('dashboard.developer.timeline')
+@include('dashboard.developer.attendance')
+@include('dashboard.developer.git-log')
+</main>
+
+<!-- MODALS -->
+@include('dashboard.modals.quickAddModal')
+@include('dashboard.modals.addProjectModal')
+@include('dashboard.modals.addLeadModal')
+@include('dashboard.modals.addOrderModal')
+@include('dashboard.modals.addMemberModal')
+@include('dashboard.modals.projectDetailModal')
+@include('dashboard.modals.leadDetailModal')
+@include('dashboard.modals.orderDetailModal')

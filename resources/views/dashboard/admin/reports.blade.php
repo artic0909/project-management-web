@@ -1,0 +1,1 @@
+<div class="page hidden" id="page-reports"><div class="page-header"><h1 class="page-title">Reports</h1></div><div class="stub-banner info"><i class="bi bi-file-earmark-bar-graph-fill"></i><div><strong>Reports Module</strong><span>Custom report builder with export to PDF, Excel and CSV.</span></div></div></div>

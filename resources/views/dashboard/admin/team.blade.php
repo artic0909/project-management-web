@@ -1,0 +1,4 @@
+<div class="page hidden" id="page-team">
+      <div class="page-header"><h1 class="page-title">Team Directory</h1><div class="header-actions"><div class="filter-bar"><select class="filter-select"><option>All Roles</option><option>Developer</option><option>Sales</option><option>Designer</option><option>Manager</option></select><select class="filter-select"><option>All Departments</option><option>Tech</option><option>Sales</option><option>HR</option></select></div><button class="btn-primary-solid" onclick="openModal('addMemberModal')"><i class="bi bi-person-plus-fill"></i> Add Member</button></div></div>
+      <div class="stub-banner info"><i class="bi bi-people-fill"></i><div><strong>52 Team Members</strong><span>Profiles, roles, performance and leave balances.</span></div></div>
+    </div>

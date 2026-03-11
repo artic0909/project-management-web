@@ -1,0 +1,1 @@
+<div class="page hidden" id="page-my-projects"><div class="page-header"><h1 class="page-title">My Projects</h1></div><div class="stub-banner info"><i class="bi bi-kanban-fill"></i><div><strong>My Project Board</strong><span>Assigned projects with status update capability.</span></div></div></div>

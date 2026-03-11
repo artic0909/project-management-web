@@ -1,0 +1,1 @@
+<div class="page hidden" id="page-payroll"><div class="page-header"><h1 class="page-title">Payroll</h1></div><div class="stub-banner info"><i class="bi bi-wallet2"></i><div><strong>Payroll Module</strong><span>Salary processing, deductions and payslip generation.</span></div></div></div>

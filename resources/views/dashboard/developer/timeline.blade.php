@@ -1,0 +1,1 @@
+<div class="page hidden" id="page-timeline"><div class="page-header"><h1 class="page-title">Project Timeline</h1></div><div class="stub-banner info"><i class="bi bi-calendar3"></i><div><strong>Gantt Timeline</strong><span>Visual timeline for sprint planning and deadlines.</span></div></div></div>
