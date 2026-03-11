@@ -4,6 +4,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
 
+Route::post('/admin/login', [\App\Http\Controllers\Auth\LoginController::class, 'adminLogin'])->name('admin.login.post');
+Route::post('/sale/login', [\App\Http\Controllers\Auth\LoginController::class, 'saleLogin'])->name('sale.login.post');
+Route::post('/developer/login', [\App\Http\Controllers\Auth\LoginController::class, 'developerLogin'])->name('developer.login.post');
+Route::post('/logout', [\App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
 });

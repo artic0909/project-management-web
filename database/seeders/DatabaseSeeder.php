@@ -19,5 +19,23 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        \App\Models\Admin::create([
+            'name' => 'Super Admin',
+            'email' => 'admin@mail.com',
+            'password' => \Illuminate\Support\Facades\Hash::make('12345'),
+        ]);
+
+        \App\Models\Sale::create([
+            'name' => 'Sales Executive',
+            'email' => 'sale@mail.com',
+            'password' => \Illuminate\Support\Facades\Hash::make('12345'),
+        ]);
+
+        \App\Models\Developer::create([
+            'name' => 'Developer',
+            'email' => 'developer@mail.com',
+            'password' => \Illuminate\Support\Facades\Hash::make('12345'),
+        ]);
     }
 }

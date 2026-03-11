@@ -637,22 +637,25 @@ footer{background:var(--ink);color:#fff;padding:64px 48px 0}
     </div>
     <div class="lmbody">
       <span class="rtag" id="ltag"></span>
-      <div class="frow">
-        <label class="fl">Email Address</label>
-        <input type="email" class="fi" id="lemail" placeholder="yourname@oriontech.in">
-      </div>
-      <div class="frow" style="margin-bottom:16px">
-        <label class="fl">Password</label>
-        <input type="password" class="fi" id="lpass" placeholder="Enter your password">
-      </div>
-      <div class="lmrow">
-        <label><input type="checkbox"> Remember me</label>
-        <a class="lforgot" href="#">Forgot password?</a>
-      </div>
-      <button class="lsubmit" id="lbtn" onclick="doL()">
-        <i class="bi bi-box-arrow-in-right"></i>
-        <span id="lbtntxt">Sign In</span>
-      </button>
+      <form id="loginForm" method="POST" action="">
+        @csrf
+        <div class="frow">
+          <label class="fl">Email Address</label>
+          <input type="email" name="email" class="fi" id="lemail" placeholder="yourname@oriontech.in" required>
+        </div>
+        <div class="frow" style="margin-bottom:16px">
+          <label class="fl">Password</label>
+          <input type="password" name="password" class="fi" id="lpass" placeholder="Enter your password" required>
+        </div>
+        <div class="lmrow">
+          <label><input type="checkbox" name="remember"> Remember me</label>
+          <a class="lforgot" href="#">Forgot password?</a>
+        </div>
+        <button type="submit" class="lsubmit" id="lbtn">
+          <i class="bi bi-box-arrow-in-right"></i>
+          <span id="lbtntxt">Sign In</span>
+        </button>
+      </form>
     </div>
     <div class="lmfoot">🔒 Secured with 256-bit encryption</div>
   </div>
@@ -699,9 +702,9 @@ function resetBig(){document.getElementById('bigForm').style.display='block';doc
 
 // Login modal
 const LC={
-  admin:{t:'Admin Panel',s:'Full system access',tag:'🛡 ADMIN',tc:'#ff4d1c',ico:'bi-shield-fill',ib:'#fff4f1',ic:'#ff4d1c',bb:'#ff4d1c',bt:'Sign in as Admin'},
-  sales:{t:'Sales Panel',s:'Leads, orders & attendance',tag:'📊 SALES',tc:'#1a56ff',ico:'bi-graph-up-arrow',ib:'#f0f4ff',ic:'#1a56ff',bb:'#1a56ff',bt:'Sign in to Sales Panel'},
-  dev:{t:'Developer Panel',s:'Projects, tasks & commits',tag:'💻 DEV',tc:'#00c37f',ico:'bi-code-slash',ib:'#e8fdf4',ic:'#00c37f',bb:'#00c37f',bt:'Sign in as Developer'}
+  admin:{t:'Admin Panel',s:'Full system access',tag:'🛡 ADMIN',tc:'#ff4d1c',ico:'bi-shield-fill',ib:'#fff4f1',ic:'#ff4d1c',bb:'#ff4d1c',bt:'Sign in as Admin', action:'{{ route('admin.login.post') }}'},
+  sales:{t:'Sales Panel',s:'Leads, orders & attendance',tag:'📊 SALES',tc:'#1a56ff',ico:'bi-graph-up-arrow',ib:'#f0f4ff',ic:'#1a56ff',bb:'#1a56ff',bt:'Sign in to Sales Panel', action:'{{ route('sale.login.post') }}'},
+  dev:{t:'Developer Panel',s:'Projects, tasks & commits',tag:'💻 DEV',tc:'#00c37f',ico:'bi-code-slash',ib:'#e8fdf4',ic:'#00c37f',bb:'#00c37f',bt:'Sign in as Developer', action:'{{ route('developer.login.post') }}'}
 }
 let CP='admin'
 function openL(p){
@@ -718,27 +721,19 @@ function openL(p){
   document.getElementById('lbtntxt').textContent=c.bt
   document.getElementById('lemail').value=''
   document.getElementById('lpass').value=''
+  document.getElementById('loginForm').action = c.action;
   document.getElementById('lmodal').classList.add('open')
   document.body.style.overflow='hidden'
   setTimeout(()=>document.getElementById('lemail').focus(),150)
 }
 function closeL(){document.getElementById('lmodal').classList.remove('open');document.body.style.overflow=''}
-function doL(){
-  const e=document.getElementById('lemail').value.trim()
-  const p=document.getElementById('lpass').value.trim()
-  if(!e||!p){toast('⚠️','Enter your email and password.','#f5a623');return}
+document.getElementById('loginForm').addEventListener('submit', function() {
   const b=document.getElementById('lbtn')
   b.innerHTML='<div style="width:17px;height:17px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite"></div> Signing in…'
   b.disabled=true
-  setTimeout(()=>{
-    closeL()
-    toast('✅',`Redirecting to ${LC[CP].t}…`,LC[CP].bb)
-    b.innerHTML=`<i class="bi bi-box-arrow-in-right"></i><span>${LC[CP].bt}</span>`
-    b.disabled=false
-  },1600)
-}
-document.getElementById('lpass').addEventListener('keydown',e=>{if(e.key==='Enter')doL()})
+});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeL()})
+
 
 // Toast
 let tid
@@ -753,6 +748,12 @@ function toast(ic,msg,col){
   t.style.animation='slideT .25s ease'
   tid=setTimeout(()=>t.style.display='none',3500)
 }
+
+@if($errors->any())
+document.addEventListener('DOMContentLoaded', () => {
+    toast('⚠️', '{{ $errors->first() }}', '#f5a623');
+});
+@endif
 </script>
 </body>
 </html>
