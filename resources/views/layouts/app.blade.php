@@ -1,6 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
+<script>
+  if (localStorage.getItem('orion_theme') !== 'light') document.documentElement.setAttribute('data-theme', 'dark');
+  else document.documentElement.setAttribute('data-theme', 'light');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Orion ERP — Enterprise Management Platform</title>
@@ -1091,13 +1095,22 @@ updateDate();
 setInterval(updateDate, 30000);
 
 /* ── THEME ── */
-let isDark = true;
+let isDark = localStorage.getItem('orion_theme') !== 'light';
+// Apply immediately to avoid flash
+document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+
 function toggleTheme() {
   isDark = !isDark;
   document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  localStorage.setItem('orion_theme', isDark ? 'dark' : 'light');
   const sw = document.getElementById('themeSwitch');
   if (sw) sw.checked = isDark;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const sw = document.getElementById('themeSwitch');
+  if (sw) sw.checked = isDark;
+});
 
 /* ── SIDEBAR ── */
 let sidebarCollapsed = false;
