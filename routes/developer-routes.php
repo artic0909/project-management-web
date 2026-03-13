@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\Developer\DashboardController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DeveloperDashboardController;
 
 Route::middleware(['auth:developer'])->prefix('developer')->name('developer.')->group(function () {
-    Route::get('/dashboard', [DeveloperDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });

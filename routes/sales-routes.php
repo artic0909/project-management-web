@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\Sale\DashboardController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SaleDashboardController;
 
 Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function () {
-    Route::get('/dashboard', [SaleDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
