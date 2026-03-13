@@ -28,21 +28,30 @@
           <span class="nav-badge pulse">Live</span>
         </a>
 
-        <div class="nav-section-label">Business</div>
-        <a class="nav-item" href="#">
-          <i class="bi bi-kanban-fill"></i><span>Projects</span>
-          <span class="nav-count">24</span>
+        <div class="nav-section-label">Utilities</div>
+        <a class="nav-item" href="{{ route('admin.sources') }}">
+          <i class="bi bi-link-45deg"></i><span>Sources</span>
+          <span class="nav-count">5</span>
         </a>
-        <a class="nav-item" href="#">
+                <a class="nav-item" href="{{ route('admin.services') }}">
+          <i class="bi bi-diagram-3-fill"></i><span>Services</span>
+          <span class="nav-count">4</span>
+        </a>
+
+        <div class="nav-section-label">Business</div>
+        <a class="nav-item" href="{{ route('admin.leads') }}">
           <i class="bi bi-person-lines-fill"></i><span>Leads</span>
           <span class="nav-count">147</span>
         </a>
+
         <a class="nav-item" href="#">
-          <i class="bi bi-bag-check-fill"></i><span>Sales & Orders</span>
+          <i class="bi bi-bag-check-fill"></i><span>Orders</span>
           <span class="nav-count">38</span>
         </a>
+
         <a class="nav-item" href="#">
-          <i class="bi bi-currency-rupee"></i><span>Finance</span>
+          <i class="bi bi-kanban-fill"></i><span>Projects</span>
+          <span class="nav-count">24</span>
         </a>
 
         <div class="nav-section-label">People</div>
@@ -50,22 +59,22 @@
           <i class="bi bi-people-fill"></i><span>Sales Person</span>
           <span class="nav-count">52</span>
         </a>
+
+        <a class="nav-item" href="#">
+          <i class="bi bi-clock-history"></i><span>Sales Attendance</span>
+          <div class="nav-dot green"></div>
+        </a>
+
         <a class="nav-item" href="{{ route('admin.developer') }}">
-          <i class="bi bi-people-fill"></i><span>Developers</span>
+          <i class="bi bi-person-workspace"></i><span>Developers</span>
           <span class="nav-count">52</span>
         </a>
         <a class="nav-item" href="#">
-          <i class="bi bi-clock-history"></i><span>Attendance</span>
+          <i class="bi bi-clock-history"></i><span>Developer Attendance</span>
           <div class="nav-dot green"></div>
-        </a>
-        <a class="nav-item" href="#">
-          <i class="bi bi-wallet2"></i><span>Payroll</span>
         </a>
 
         <div class="nav-section-label">System</div>
-        <a class="nav-item" href="#">
-          <i class="bi bi-file-earmark-bar-graph-fill"></i><span>Reports</span>
-        </a>
         <a class="nav-item" href="#">
           <i class="bi bi-gear-fill"></i><span>Settings</span>
         </a>

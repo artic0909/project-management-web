@@ -117,7 +117,7 @@
                             <div class="card-sub">147 total</div>
                         </div>
                         <div class="card-actions">
-                            <button class="btn-primary-solid sm" onclick="openModal('addSalesPersonModal')"><i class="bi bi-plus-lg"></i> Add</button>
+                            <button class="btn-primary-solid sm" onclick="openModal('addSalesPersonModal')"><i class="bi bi-plus-lg"></i> Add Sales Person</button>
                         </div>
                     </div>
                     <div class="table-wrap">
