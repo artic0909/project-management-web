@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AccountSettingController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DeveloperController;
 use App\Http\Controllers\Admin\LeadController;
@@ -34,4 +35,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     
     // Marketing Orders
     Route::get('/add-marketing-orders', [MarketingOrderController::class, 'index'])->name('marketing-orders');
+
+    // Account Settings
+    Route::get('/my-account', [AccountSettingController::class, 'index'])->name('account-settings');
 });

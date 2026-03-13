@@ -80,7 +80,7 @@
         </a>
 
         <div class="nav-section-label">System</div>
-        <a class="nav-item" href="#">
+        <a class="nav-item" href="{{ route('admin.account-settings') }}">
           <i class="bi bi-gear-fill"></i><span>Settings</span>
         </a>
       </div>
