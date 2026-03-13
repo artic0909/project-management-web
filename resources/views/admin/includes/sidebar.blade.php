@@ -20,7 +20,7 @@
     </div>
 
     <!-- Panel Switcher -->
-    <div class="panel-switcher">
+    <!-- <div class="panel-switcher">
       <button class="panel-btn active" onclick="switchPanel('admin',this)" data-tooltip="Admin Panel">
         <i class="bi bi-shield-fill"></i><span>Admin</span>
       </button>
@@ -30,110 +30,56 @@
       <button class="panel-btn" onclick="switchPanel('dev',this)" data-tooltip="Dev Panel">
         <i class="bi bi-code-slash"></i><span>Dev</span>
       </button>
-    </div>
+    </div> -->
 
     <nav class="sidebar-nav" id="sidebarNav">
       <!-- ADMIN NAV -->
       <div class="nav-panel" id="nav-admin">
         <div class="nav-section-label">Overview</div>
-        <a class="nav-item active" href="#" onclick="navigate(event,'dashboard')">
+        <a class="nav-item active" href="#">
           <i class="bi bi-grid-1x2-fill"></i><span>Dashboard</span>
           <span class="nav-badge pulse">Live</span>
         </a>
-        <a class="nav-item" href="#" onclick="navigate(event,'analytics')">
+        <!-- <a class="nav-item" href="#" onclick="navigate(event,'analytics')">
           <i class="bi bi-activity"></i><span>Analytics</span>
-        </a>
+        </a> -->
 
         <div class="nav-section-label">Business</div>
-        <a class="nav-item" href="#" onclick="navigate(event,'projects')">
+        <a class="nav-item" href="#">
           <i class="bi bi-kanban-fill"></i><span>Projects</span>
           <span class="nav-count">24</span>
         </a>
-        <a class="nav-item" href="#" onclick="navigate(event,'leads')">
+        <a class="nav-item" href="#">
           <i class="bi bi-person-lines-fill"></i><span>Leads</span>
           <span class="nav-count">147</span>
         </a>
-        <a class="nav-item" href="#" onclick="navigate(event,'sales')">
+        <a class="nav-item" href="#">
           <i class="bi bi-bag-check-fill"></i><span>Sales & Orders</span>
           <span class="nav-count">38</span>
         </a>
-        <a class="nav-item" href="#" onclick="navigate(event,'finance')">
+        <a class="nav-item" href="#">
           <i class="bi bi-currency-rupee"></i><span>Finance</span>
         </a>
 
         <div class="nav-section-label">People</div>
-        <a class="nav-item" href="#" onclick="navigate(event,'team')">
+        <a class="nav-item" href="#">
           <i class="bi bi-people-fill"></i><span>Team</span>
           <span class="nav-count">52</span>
         </a>
-        <a class="nav-item" href="#" onclick="navigate(event,'attendance')">
+        <a class="nav-item" href="#">
           <i class="bi bi-clock-history"></i><span>Attendance</span>
           <div class="nav-dot green"></div>
         </a>
-        <a class="nav-item" href="#" onclick="navigate(event,'payroll')">
+        <a class="nav-item" href="#">
           <i class="bi bi-wallet2"></i><span>Payroll</span>
         </a>
 
         <div class="nav-section-label">System</div>
-        <a class="nav-item" href="#" onclick="navigate(event,'reports')">
+        <a class="nav-item" href="#">
           <i class="bi bi-file-earmark-bar-graph-fill"></i><span>Reports</span>
         </a>
-        <a class="nav-item" href="#" onclick="navigate(event,'settings')">
+        <a class="nav-item" href="#">
           <i class="bi bi-gear-fill"></i><span>Settings</span>
-        </a>
-      </div>
-
-      <!-- SALES NAV -->
-      <div class="nav-panel hidden" id="nav-sales">
-        <div class="nav-section-label">Sales Desk</div>
-        <a class="nav-item active" href="#" onclick="navigate(event,'sales-dash')">
-          <i class="bi bi-speedometer2"></i><span>My Dashboard</span>
-        </a>
-        <a class="nav-item" href="#" onclick="navigate(event,'leads')">
-          <i class="bi bi-person-lines-fill"></i><span>My Leads</span>
-          <span class="nav-count">28</span>
-        </a>
-        <a class="nav-item" href="#" onclick="navigate(event,'add-lead')">
-          <i class="bi bi-person-plus-fill"></i><span>Add Lead</span>
-        </a>
-        <a class="nav-item" href="#" onclick="navigate(event,'sales')">
-          <i class="bi bi-bag-check-fill"></i><span>Orders</span>
-        </a>
-        <a class="nav-item" href="#" onclick="navigate(event,'add-order')">
-          <i class="bi bi-plus-circle-fill"></i><span>New Order</span>
-        </a>
-        <div class="nav-section-label">Personal</div>
-        <a class="nav-item" href="#" onclick="navigate(event,'attendance')">
-          <i class="bi bi-clock-history"></i><span>My Attendance</span>
-        </a>
-        <a class="nav-item" href="#" onclick="navigate(event,'targets')">
-          <i class="bi bi-bullseye"></i><span>My Targets</span>
-        </a>
-      </div>
-
-      <!-- DEV NAV -->
-      <div class="nav-panel hidden" id="nav-dev">
-        <div class="nav-section-label">Developer Desk</div>
-        <a class="nav-item active" href="#" onclick="navigate(event,'dev-dash')">
-          <i class="bi bi-terminal-fill"></i><span>My Dashboard</span>
-        </a>
-        <a class="nav-item" href="#" onclick="navigate(event,'my-projects')">
-          <i class="bi bi-kanban-fill"></i><span>My Projects</span>
-          <span class="nav-count">6</span>
-        </a>
-        <a class="nav-item" href="#" onclick="navigate(event,'tasks')">
-          <i class="bi bi-check2-square"></i><span>Tasks</span>
-          <span class="nav-count">14</span>
-        </a>
-        <a class="nav-item" href="#" onclick="navigate(event,'timeline')">
-          <i class="bi bi-calendar3"></i><span>Timeline</span>
-        </a>
-        <div class="nav-section-label">Personal</div>
-        <a class="nav-item" href="#" onclick="navigate(event,'attendance')">
-          <i class="bi bi-clock-history"></i><span>My Attendance</span>
-        </a>
-        <a class="nav-item" href="#" onclick="navigate(event,'git-log')">
-          <i class="bi bi-git"></i><span>Commit Log</span>
         </a>
       </div>
     </nav>
@@ -149,7 +95,7 @@
       <div class="user-profile">
         <div class="user-ava" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">RK</div>
         <div class="user-info">
-          <div class="user-name">Rahul Kumar</div>
+          <div class="user-name">Admin Name</div>
           <div class="user-role">Super Admin</div>
         </div>
         <div class="user-status-dot"></div>
