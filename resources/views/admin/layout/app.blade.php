@@ -2687,7 +2687,7 @@
             gap: 16px;
         }
 
-        .detail-section {}
+
 
         .ds-label {
             font-size: 11px;
