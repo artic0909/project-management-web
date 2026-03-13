@@ -1,1 +1,0 @@
-<div class="page hidden" id="page-targets"><div class="page-header"><h1 class="page-title">My Targets</h1></div><div class="stub-banner info"><i class="bi bi-bullseye"></i><div><strong>Target Tracker</strong><span>Monthly and quarterly targets with achievement metrics.</span></div></div></div>

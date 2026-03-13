@@ -1,4 +1,0 @@
-<div class="page hidden" id="page-leads">
-      <div class="page-header"><h1 class="page-title">Lead Management</h1><div class="header-actions"><div class="filter-bar"><select class="filter-select"><option>All Stages</option><option>Hot</option><option>Warm</option><option>Cold</option></select><select class="filter-select"><option>All Sources</option><option>Website</option><option>Referral</option><option>LinkedIn</option></select><select class="filter-select"><option>All Owners</option><option>Rahul Kumar</option><option>Priya Sharma</option></select></div><button class="btn-primary-solid" onclick="openModal('addLeadModal')"><i class="bi bi-plus-lg"></i> Add Lead</button></div></div>
-      <div class="stub-banner info"><i class="bi bi-person-lines-fill"></i><div><strong>Lead CRM</strong><span>Full CRM pipeline view. See recent leads on the Dashboard.</span></div></div>
-    </div>

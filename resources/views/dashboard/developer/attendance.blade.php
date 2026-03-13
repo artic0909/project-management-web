@@ -1,4 +1,0 @@
-<div class="page hidden" id="page-attendance">
-      <div class="page-header"><h1 class="page-title">Attendance Management</h1><div class="header-actions"><div class="filter-bar"><select class="filter-select"><option>All Departments</option><option>Sales</option><option>Development</option><option>Design</option><option>HR/Ops</option></select><select class="filter-select"><option>Today</option><option>This Week</option><option>This Month</option></select><div class="search-mini"><i class="bi bi-search"></i><input type="text" placeholder="Search member…"></div></div></div></div>
-      <div class="stub-banner info"><i class="bi bi-clock-history"></i><div><strong>Attendance Tracker</strong><span>Biometric sync, geo-location check-in, leave management. Today's summary on Dashboard.</span></div></div>
-    </div>

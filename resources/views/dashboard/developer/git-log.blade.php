@@ -1,1 +1,0 @@
-<div class="page hidden" id="page-git-log"><div class="page-header"><h1 class="page-title">Commit Log</h1></div><div class="stub-banner info"><i class="bi bi-git"></i><div><strong>Git Activity</strong><span>Recent commits, pull requests and code review history.</span></div></div></div>

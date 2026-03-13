@@ -1,1 +1,0 @@
-<div class="page hidden" id="page-tasks"><div class="page-header"><h1 class="page-title">My Tasks</h1></div><div class="stub-banner info"><i class="bi bi-check2-square"></i><div><strong>Task Manager</strong><span>Sprint tasks, priority queue and time logging.</span></div></div></div>
