@@ -19,30 +19,14 @@
       </button>
     </div>
 
-    <!-- Panel Switcher -->
-    <!-- <div class="panel-switcher">
-      <button class="panel-btn active" onclick="switchPanel('admin',this)" data-tooltip="Admin Panel">
-        <i class="bi bi-shield-fill"></i><span>Admin</span>
-      </button>
-      <button class="panel-btn" onclick="switchPanel('sales',this)" data-tooltip="Sales Panel">
-        <i class="bi bi-graph-up-arrow"></i><span>Sales</span>
-      </button>
-      <button class="panel-btn" onclick="switchPanel('dev',this)" data-tooltip="Dev Panel">
-        <i class="bi bi-code-slash"></i><span>Dev</span>
-      </button>
-    </div> -->
-
     <nav class="sidebar-nav" id="sidebarNav">
       <!-- ADMIN NAV -->
       <div class="nav-panel" id="nav-admin">
         <div class="nav-section-label">Overview</div>
-        <a class="nav-item active" href="#">
+        <a class="nav-item active" href="{{ route('admin.dashboard') }}">
           <i class="bi bi-grid-1x2-fill"></i><span>Dashboard</span>
           <span class="nav-badge pulse">Live</span>
         </a>
-        <!-- <a class="nav-item" href="#" onclick="navigate(event,'analytics')">
-          <i class="bi bi-activity"></i><span>Analytics</span>
-        </a> -->
 
         <div class="nav-section-label">Business</div>
         <a class="nav-item" href="#">
@@ -62,8 +46,12 @@
         </a>
 
         <div class="nav-section-label">People</div>
-        <a class="nav-item" href="#">
-          <i class="bi bi-people-fill"></i><span>Team</span>
+        <a class="nav-item" href="{{ route('admin.sales-person') }}">
+          <i class="bi bi-people-fill"></i><span>Sales Person</span>
+          <span class="nav-count">52</span>
+        </a>
+        <a class="nav-item" href="{{ route('admin.developer') }}">
+          <i class="bi bi-people-fill"></i><span>Developers</span>
           <span class="nav-count">52</span>
         </a>
         <a class="nav-item" href="#">
