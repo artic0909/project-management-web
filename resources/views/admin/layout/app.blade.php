@@ -1,5 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
+<script>
+    (function() {
+        const theme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+    })();
+</script>
 
 <head>
     <meta charset="UTF-8">
@@ -3054,11 +3060,13 @@
         setInterval(updateDate, 30000);
 
         /* ── THEME ── */
-        let isDark = true;
+        let isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
         function toggleTheme() {
             isDark = !isDark;
-            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            const theme = isDark ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
             const sw = document.getElementById('themeSwitch');
             if (sw) sw.checked = isDark;
         }
@@ -3356,6 +3364,10 @@
         document.addEventListener('DOMContentLoaded', () => {
             showPage('dashboard');
             updateNavActive('dashboard');
+
+            // Set initial theme switch state
+            const sw = document.getElementById('themeSwitch');
+            if (sw) sw.checked = (document.documentElement.getAttribute('data-theme') === 'dark');
         });
     </script>
 </body>
