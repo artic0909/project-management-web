@@ -33,7 +33,7 @@
           <i class="bi bi-link-45deg"></i><span>Sources</span>
           <span class="nav-count">5</span>
         </a>
-                <a class="nav-item" href="{{ route('admin.services') }}">
+        <a class="nav-item" href="{{ route('admin.services') }}">
           <i class="bi bi-diagram-3-fill"></i><span>Services</span>
           <span class="nav-count">4</span>
         </a>
@@ -44,9 +44,14 @@
           <span class="nav-count">147</span>
         </a>
 
-        <a class="nav-item" href="#">
+        <a class="nav-item" href="{{ route('admin.orders') }}">
           <i class="bi bi-bag-check-fill"></i><span>Orders</span>
           <span class="nav-count">38</span>
+        </a>
+
+        <a class="nav-item" href="{{ route('admin.marketing-orders') }}">
+          <i class="bi bi-graph-up-arrow"></i><span>Marketing Orders</span>
+          <span class="nav-count">104</span>
         </a>
 
         <a class="nav-item" href="#">

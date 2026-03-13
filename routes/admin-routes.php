@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DeveloperController;
 use App\Http\Controllers\Admin\LeadController;
+use App\Http\Controllers\Admin\MarketingOrderController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\SalesPersonController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SourceController;
@@ -18,12 +20,18 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     // Developer
     Route::get('/add-developer', [DeveloperController::class, 'index'])->name('developer');
 
+    // Sources
+    Route::get('/add-sources', [SourceController::class, 'index'])->name('sources');
+
     // Services
     Route::get('/add-services', [ServiceController::class, 'index'])->name('services');
 
     // Leads
     Route::get('/add-leads', [LeadController::class, 'index'])->name('leads');
 
-    // Sources
-    Route::get('/add-sources', [SourceController::class, 'index'])->name('sources');
+    // Orders
+    Route::get('/add-orders', [OrderController::class, 'index'])->name('orders');
+    
+    // Marketing Orders
+    Route::get('/add-marketing-orders', [MarketingOrderController::class, 'index'])->name('marketing-orders');
 });

@@ -266,7 +266,9 @@
                             </select>
                         </div>
 
-                        <div class="form-row"><label class="form-lbl">Assign To</label><select class="form-inp">
+                        <div class="form-row">
+                            <label class="form-lbl">Assign To</label>
+                            <select class="form-inp">
                                 <option>Rahul Kumar</option>
                                 <option>Priya Sharma</option>
                                 <option>Neha Kapoor</option>
