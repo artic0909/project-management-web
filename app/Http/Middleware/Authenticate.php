@@ -45,15 +45,15 @@ class Authenticate
     protected function redirectTo($request)
     {
         if ($request->is('developer/*')) {
-            return route('developer.login');
+            return route('home');
         }
 
-        if ($request->is('sales/*')) {
-            return route('sales.login');
+        if ($request->is('sale/*')) {
+            return route('home');
         }
 
         if ($request->is('admin/*')) {
-            return route('admin.login');
+            return route('home');
         }
 
         return route('home');

@@ -23,8 +23,8 @@ class RedirectIfAuthenticated
                 switch ($guard) {
                     case 'developer':
                         return redirect()->route('developer.dashboard');
-                    case 'sales':
-                        return redirect()->route('sales.dashboard');
+                    case 'sale':
+                        return redirect()->route('sale.dashboard');
                     case 'admin':
                         return redirect()->route('admin.dashboard');
                     default:
