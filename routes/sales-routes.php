@@ -1,8 +1,25 @@
 <?php
 
+use App\Http\Controllers\Sale\AccountSettingController;
 use App\Http\Controllers\Sale\DashboardController;
+use App\Http\Controllers\Sale\LeadController;
+use App\Http\Controllers\Sale\MarketingOrderController;
+use App\Http\Controllers\Sale\OrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function () {
+    
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Leads
+    Route::get('/add-leads', [LeadController::class, 'index'])->name('leads');
+
+    // Orders
+    Route::get('/add-orders', [OrderController::class, 'index'])->name('orders');
+
+    // Marketing Orders
+    Route::get('/add-marketing-orders', [MarketingOrderController::class, 'index'])->name('marketing-orders');
+
+    // Account Settings
+    Route::get('/my-account', [AccountSettingController::class, 'index'])->name('account-settings');
 });

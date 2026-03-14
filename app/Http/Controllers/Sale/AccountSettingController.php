@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Sale;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class DashboardController extends Controller
+class AccountSettingController extends Controller
 {
     public function index()
     {
-        return view('sale.dashboard');
+        return view('sale.account-settings');
     }
 }
