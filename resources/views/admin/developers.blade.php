@@ -24,12 +24,17 @@
 
             <!-- Developer Table -->
             <div class="dash-card span-12">
-                <div class="card-head">
+                <div class="card-head mb-2">
                     <div>
                         <div class="card-title">Developers</div>
                         <div class="card-sub">147 total</div>
                     </div>
                     <div class="card-actions">
+                        <form class="global-search">
+                            <i class="bi bi-search"></i>
+                            <input type="text" placeholder="Search...">
+                            <button type="submit" class="btn-primary-solid sm">Search</button>
+                        </form>
                         <button class="btn-primary-solid sm" onclick="openModal('addModal')"><i class="bi bi-plus-lg"></i> Add Developer</button>
                     </div>
                 </div>

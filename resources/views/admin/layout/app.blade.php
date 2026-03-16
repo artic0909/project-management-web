@@ -3042,8 +3042,6 @@
                 </button>
                 <div class="page-breadcrumb">
                     <span class="breadcrumb-panel" id="activePanelLabel">Admin Panel</span>
-                    <i class="bi bi-chevron-right bc-sep"></i>
-                    <span class="breadcrumb-page" id="activePageLabel">Services</span>
                 </div>
             </div>
 

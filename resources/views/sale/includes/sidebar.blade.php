@@ -34,10 +34,11 @@
         <i class="bi bi-bag-check-fill"></i><span>My Orders</span>
         <span class="nav-count">38</span>
       </a>
-      <a class="nav-item {{ request()->routeIs('sale.marketing-orders*') ? 'active' : '' }}" href="{{ route('sale.marketing-orders') }}">
-        <i class="bi bi-graph-up-arrow"></i><span>My Marketing Orders</span>
-        <span class="nav-count">104</span>
+
+      <a class="nav-item {{ request()->routeIs('sale.payments*') ? 'active' : '' }}" href="{{ route('sale.payments.index') }}">
+        <i class="bi bi-wallet2"></i><span>Payments</span>
       </a>
+
       <a class="nav-item" href="#">
         <i class="bi bi-kanban-fill"></i><span>My Projects</span>
         <span class="nav-count">24</span>

@@ -44,10 +44,12 @@
         <i class="bi bi-bag-check-fill"></i><span>Orders</span>
         <span class="nav-count">38</span>
       </a>
-      <a class="nav-item {{ request()->routeIs('admin.marketing-orders*') ? 'active' : '' }}" href="{{ route('admin.marketing-orders') }}">
-        <i class="bi bi-graph-up-arrow"></i><span>Marketing Orders</span>
-        <span class="nav-count">104</span>
+
+      <a class="nav-item {{ request()->routeIs('admin.payments*') ? 'active' : '' }}" href="{{ route('admin.payments.index') }}">
+        <i class="bi bi-wallet2"></i><span>Payments</span>
       </a>
+
+
       <a class="nav-item" href="#">
         <i class="bi bi-kanban-fill"></i><span>Projects</span>
         <span class="nav-count">24</span>
