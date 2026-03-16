@@ -131,8 +131,8 @@
                                 <td>
                                     <div class="row-actions">
                                         <button class="ra-btn" onclick="openModal('orderDetailModal')"><i class="bi bi-eye-fill"></i></button>
-                                        <button class="ra-btn"><i class="bi bi-telephone-fill"></i></button>
-                                        <a href="{{route('admin.payments.create')}}" target="_blank" class="ra-btn"><i class="bi bi-wallet-fill"></i></a>
+                                        <button class="ra-btn"><i class="bi bi-envelope-fill"></i></button>
+                                        <a href="{{route('admin.payments.create')}}" target="_blank" class="ra-btn"><i class="bi bi-wallet2"></i></a>
                                         <button class="ra-btn" onclick="openModal('editOrderModal')"><i class="bi bi-pencil-fill"></i></button>
                                         <button class="ra-btn danger" onclick="openModal('deleteModal')"><i class="bi bi-trash-fill"></i></button>
                                     </div>
