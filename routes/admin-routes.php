@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\MarketingOrderController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\SalesPersonController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SourceController;
@@ -39,6 +40,11 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
 
     // Orders
     Route::get('/add-orders', [OrderController::class, 'index'])->name('orders');
+
+    // Project
+    Route::get('/all-projects', [ProjectController::class, 'index'])->name('projects.index');
+    Route::get('/project/create', [ProjectController::class, 'create'])->name('projects.create');
+    Route::get('/project/show', [ProjectController::class, 'show'])->name('projects.show');
     
     // Marketing Orders
     Route::get('/add-marketing-orders', [MarketingOrderController::class, 'index'])->name('marketing-orders');

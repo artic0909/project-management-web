@@ -54,7 +54,7 @@
       </a>
 
 
-      <a class="nav-item" href="#">
+      <a class="nav-item {{ request()->routeIs('admin.projects*') ? 'active' : '' }}" href="{{ route('admin.projects.index') }}">
         <i class="bi bi-kanban-fill"></i><span>Projects</span>
         <span class="nav-count">24</span>
       </a>
