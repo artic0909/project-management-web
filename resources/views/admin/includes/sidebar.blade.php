@@ -34,9 +34,13 @@
         <i class="bi bi-diagram-3-fill"></i><span>Services</span>
         <span class="nav-count">4</span>
       </a>
+      <a class="nav-item {{ request()->routeIs('admin.status') ? 'active' : '' }}" href="{{ route('admin.status') }}">
+        <i class="bi bi-flag-fill"></i><span>All Status</span>
+        <span class="nav-count">18</span>
+      </a>
 
       <div class="nav-section-label">Business</div>
-      <a class="nav-item {{ request()->routeIs('admin.leads*') ? 'active' : '' }}" href="{{ route('admin.leads') }}">
+      <a class="nav-item {{ request()->routeIs('admin.leads*') ? 'active' : '' }}" href="{{ route('admin.leads.index') }}">
         <i class="bi bi-person-lines-fill"></i><span>Leads</span>
         <span class="nav-count">147</span>
       </a>

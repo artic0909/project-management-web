@@ -26,7 +26,7 @@
       </a>
 
       <div class="nav-section-label">Business</div>
-      <a class="nav-item {{ request()->routeIs('sale.leads*') ? 'active' : '' }}" href="{{ route('sale.leads') }}">
+      <a class="nav-item {{ request()->routeIs('sale.leads*') ? 'active' : '' }}" href="{{ route('sale.leads.index') }}">
         <i class="bi bi-person-lines-fill"></i><span>My Leads</span>
         <span class="nav-count">147</span>
       </a>

@@ -1,4 +1,4 @@
-@extends('admin.layout.app')
+@extends('sale.layout.app')
 
 @section('title', 'Add Payment — #ORD-2848')
 
@@ -149,11 +149,58 @@
                                 <label class="form-lbl">Reference / Transaction ID</label>
                                 <input type="text" class="form-inp" id="paymentRef" placeholder="UTR / Cheque No.">
                             </div>
+
+                            {{-- ── Screenshot Upload ── --}}
+                            <div class="form-row" style="grid-column:1/-1">
+                                <label class="form-lbl">Payment Screenshot / Proof</label>
+
+                                {{-- Drop zone --}}
+                                <div id="screenshotDropzone"
+                                    onclick="document.getElementById('screenshotInput').click()"
+                                    ondragover="event.preventDefault();this.classList.add('dz-hover')"
+                                    ondragleave="this.classList.remove('dz-hover')"
+                                    ondrop="handleDrop(event)"
+                                    style="border:2px dashed var(--b2);border-radius:var(--r);padding:22px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:var(--transition);background:var(--bg3);text-align:center;">
+                                    <div id="dzPlaceholder">
+                                        <div style="width:44px;height:44px;border-radius:12px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;">
+                                            <i class="bi bi-cloud-arrow-up-fill" style="font-size:20px;color:var(--accent);"></i>
+                                        </div>
+                                        <div style="font-size:13px;font-weight:600;color:var(--t2);">Click or drag & drop to upload</div>
+                                        <div style="font-size:11.5px;color:var(--t3);margin-top:3px;">PNG, JPG, JPEG, PDF — max 5 MB</div>
+                                    </div>
+
+                                    {{-- Preview (hidden until file chosen) --}}
+                                    <div id="dzPreview" style="display:none;width:100%;position:relative;">
+                                        <img id="dzPreviewImg"
+                                            src=""
+                                            alt="Screenshot preview"
+                                            style="width:100%;max-height:200px;object-fit:contain;border-radius:var(--r-sm);display:block;">
+                                        <div id="dzPreviewName"
+                                            style="font-size:12px;font-weight:600;color:var(--t2);margin-top:8px;text-align:center;"></div>
+                                        <button type="button"
+                                            onclick="event.stopPropagation();clearScreenshot()"
+                                            style="position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;background:rgba(239,68,68,.9);border:none;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;"
+                                            title="Remove">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {{-- Hidden file input --}}
+                                <input type="file"
+                                    id="screenshotInput"
+                                    name="payment_screenshot"
+                                    accept="image/png,image/jpeg,image/jpg,application/pdf"
+                                    style="display:none"
+                                    onchange="handleFileSelect(this)">
+                            </div>
+
                             <div class="form-row" style="grid-column:1/-1">
                                 <label class="form-lbl">Note</label>
-                                <input type="text" class="form-inp" id="paymentNote" placeholder="e.g. Second installment received">
+                                <textarea name="" id="" class="form-inp" cols="30" rows="3" placeholder="e.g. Second installment received"></textarea>
                             </div>
                         </div>
+
                         <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
                             <button class="btn-ghost" type="button" onclick="clearForm()">
                                 <i class="bi bi-x-lg"></i> Clear
@@ -202,6 +249,12 @@
                                 <div style="font-size:11.5px;color:var(--t3);margin-top:4px">
                                     <i class="bi bi-chat-left-text" style="margin-right:3px"></i>First installment received
                                 </div>
+                                <!-- Proof thumbnail placeholder (static entry) -->
+                                <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--b1);display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--t3);">
+                                    <i class="bi bi-image" style="font-size:13px;color:var(--accent);"></i>
+                                    <span>proof_jan_payment.jpg</span>
+                                    <a href="#" target="_blank" style="margin-left:auto;color:var(--accent);font-size:11px;font-weight:600;text-decoration:none;">View</a>
+                                </div>
                             </div>
 
                         </div>
@@ -230,6 +283,19 @@
     </div>
 </main>
 
+<style>
+    /* Dropzone hover state */
+    #screenshotDropzone.dz-hover {
+        border-color: var(--accent);
+        background: var(--accent-bg);
+    }
+
+    #screenshotDropzone:hover {
+        border-color: var(--accent);
+        background: var(--accent-bg);
+    }
+</style>
+
 <script>
     // Set today's date on load
     document.addEventListener('DOMContentLoaded', function() {
@@ -250,12 +316,87 @@
         document.getElementById('paymentCount').textContent = document.querySelectorAll('.payment-entry').length;
     }
 
+    /* ── Screenshot upload handlers ── */
+    function handleFileSelect(input) {
+        if (input.files && input.files[0]) {
+            showPreview(input.files[0]);
+        }
+    }
+
+    function handleDrop(event) {
+        event.preventDefault();
+        document.getElementById('screenshotDropzone').classList.remove('dz-hover');
+        const file = event.dataTransfer.files[0];
+        if (file) {
+            const allowed = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
+            if (!allowed.includes(file.type)) {
+                alert('Only PNG, JPG, JPEG or PDF files are allowed.');
+                return;
+            }
+            // Attach to the hidden input via DataTransfer
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            document.getElementById('screenshotInput').files = dt.files;
+            showPreview(file);
+        }
+    }
+
+    function showPreview(file) {
+        const placeholder = document.getElementById('dzPlaceholder');
+        const preview = document.getElementById('dzPreview');
+        const img = document.getElementById('dzPreviewImg');
+        const name = document.getElementById('dzPreviewName');
+
+        name.textContent = file.name;
+
+        if (file.type === 'application/pdf') {
+            // PDF — show icon instead of image
+            img.style.display = 'none';
+            img.insertAdjacentHTML('afterend',
+                `<div id="pdfIcon" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 0;">
+                    <i class="bi bi-file-earmark-pdf-fill" style="font-size:48px;color:#ef4444;"></i>
+                    <span style="font-size:12px;color:var(--t3);">PDF document selected</span>
+                </div>`
+            );
+        } else {
+            const reader = new FileReader();
+            reader.onload = e => {
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            img.style.display = 'block';
+            const pdfIcon = document.getElementById('pdfIcon');
+            if (pdfIcon) pdfIcon.remove();
+        }
+
+        placeholder.style.display = 'none';
+        preview.style.display = 'block';
+    }
+
+    function clearScreenshot() {
+        const input = document.getElementById('screenshotInput');
+        const placeholder = document.getElementById('dzPlaceholder');
+        const preview = document.getElementById('dzPreview');
+        const img = document.getElementById('dzPreviewImg');
+        const pdfIcon = document.getElementById('pdfIcon');
+
+        input.value = '';
+        img.src = '';
+        img.style.display = 'none';
+        if (pdfIcon) pdfIcon.remove();
+
+        placeholder.style.display = 'block';
+        preview.style.display = 'none';
+    }
+
+    /* ── Add payment entry ── */
     function addPaymentEntry() {
         const date = document.getElementById('paymentDate').value;
         const amount = parseFloat(document.getElementById('paymentAmount').value);
         const mode = document.getElementById('paymentMode').value;
         const ref = document.getElementById('paymentRef').value;
         const note = document.getElementById('paymentNote').value;
+        const file = document.getElementById('screenshotInput').files[0];
 
         if (!date || !amount || amount <= 0) {
             alert('Please enter a valid date and amount.');
@@ -269,23 +410,52 @@
             month: 'short',
             year: 'numeric'
         });
+
+        // Build proof row HTML
+        let proofHtml = '';
+        if (file) {
+            if (file.type === 'application/pdf') {
+                proofHtml = `
+                    <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--b1);display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--t3);">
+                        <i class="bi bi-file-earmark-pdf-fill" style="font-size:13px;color:#ef4444;"></i>
+                        <span>${file.name}</span>
+                    </div>`;
+            } else {
+                const objectUrl = URL.createObjectURL(file);
+                proofHtml = `
+                    <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--b1);">
+                        <div style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--t3);margin-bottom:6px;">
+                            <i class="bi bi-image" style="font-size:13px;color:var(--accent);"></i>
+                            <span>${file.name}</span>
+                            <a href="${objectUrl}" target="_blank" style="margin-left:auto;color:var(--accent);font-size:11px;font-weight:600;text-decoration:none;">View</a>
+                        </div>
+                        <img src="${objectUrl}" alt="Payment proof"
+                             style="width:100%;max-height:120px;object-fit:contain;border-radius:var(--r-sm);display:block;background:var(--bg4);">
+                    </div>`;
+            }
+        }
+
         const entry = document.createElement('div');
         entry.className = 'payment-entry';
         entry.style.cssText = 'background:var(--bg3);border:1px solid var(--b1);border-radius:var(--r-sm);padding:12px;position:relative;animation:pageIn .2s ease';
         entry.innerHTML = `
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
-            <div>
-                <div style="font-size:13px;font-weight:700;color:var(--t1)">${fmtINR(amount)}</div>
-                <div style="font-size:11px;color:var(--t3);margin-top:2px">${fmtDate}</div>
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
+                <div>
+                    <div style="font-size:13px;font-weight:700;color:var(--t1)">${fmtINR(amount)}</div>
+                    <div style="font-size:11px;color:var(--t3);margin-top:2px">${fmtDate}</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px">
+                    <span class="status-pill paid" style="font-size:10px;padding:2px 7px">Paid</span>
+                    <button class="ra-btn danger" style="width:24px;height:24px;font-size:11px" title="Remove" onclick="removeEntry(this, ${amount})"><i class="bi bi-trash-fill"></i></button>
+                </div>
             </div>
-            <div style="display:flex;align-items:center;gap:6px">
-                <span class="status-pill paid" style="font-size:10px;padding:2px 7px">Paid</span>
-                <button class="ra-btn danger" style="width:24px;height:24px;font-size:11px" title="Remove" onclick="removeEntry(this, ${amount})"><i class="bi bi-trash-fill"></i></button>
-            </div>
-        </div>
-        ${mode ? `<div style="display:flex;flex-wrap:wrap;gap:6px;font-size:11.5px;color:var(--t3)"><span><i class="bi bi-credit-card" style="margin-right:3px"></i>${mode}</span>${ref ? `<span style="color:var(--t4)">·</span><span class="mono" style="font-size:11px">${ref}</span>` : ''}</div>` : ''}
-        ${note ? `<div style="font-size:11.5px;color:var(--t3);margin-top:4px"><i class="bi bi-chat-left-text" style="margin-right:3px"></i>${note}</div>` : ''}
-    `;
+            ${mode ? `<div style="display:flex;flex-wrap:wrap;gap:6px;font-size:11.5px;color:var(--t3);">
+                <span><i class="bi bi-credit-card" style="margin-right:3px"></i>${mode}</span>
+                ${ref ? `<span style="color:var(--t4)">·</span><span class="mono" style="font-size:11px">${ref}</span>` : ''}
+            </div>` : ''}
+            ${note ? `<div style="font-size:11.5px;color:var(--t3);margin-top:4px"><i class="bi bi-chat-left-text" style="margin-right:3px"></i>${note}</div>` : ''}
+            ${proofHtml}
+        `;
 
         document.getElementById('paymentList').appendChild(entry);
         updateSummary();
@@ -305,6 +475,7 @@
         document.getElementById('paymentNote').value = '';
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('paymentDate').value = today;
+        clearScreenshot();
     }
 </script>
 

@@ -13,6 +13,105 @@
             </div>
         </div>
 
+        {{-- ═══════════════════════════════════════════════════
+             6 KPI SUMMARY CARDS
+        ════════════════════════════════════════════════════ --}}
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px;">
+
+            {{-- 1. Total Clients --}}
+            <div class="dash-card" style="padding:16px 18px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+                    <div style="width:38px;height:38px;border-radius:10px;background:rgba(99,102,241,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="bi bi-people-fill" style="font-size:17px;color:#6366f1;"></i>
+                    </div>
+                    <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(99,102,241,.1);color:#818cf8;white-space:nowrap;">Clients</span>
+                </div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">84</div>
+                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Total Clients</div>
+                <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
+                    <div style="height:100%;width:72%;background:#6366f1;border-radius:3px;"></div>
+                </div>
+            </div>
+
+            {{-- 2. Total Orders --}}
+            <div class="dash-card" style="padding:16px 18px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+                    <div style="width:38px;height:38px;border-radius:10px;background:rgba(16,185,129,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="bi bi-bag-check-fill" style="font-size:17px;color:#10b981;"></i>
+                    </div>
+                    <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.1);color:#10b981;white-space:nowrap;">Orders</span>
+                </div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">247</div>
+                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Total Orders</div>
+                <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
+                    <div style="height:100%;width:85%;background:#10b981;border-radius:3px;"></div>
+                </div>
+            </div>
+
+            {{-- 3. Total Marketing Orders --}}
+            <div class="dash-card" style="padding:16px 18px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+                    <div style="width:38px;height:38px;border-radius:10px;background:rgba(139,92,246,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="bi bi-megaphone-fill" style="font-size:17px;color:#8b5cf6;"></i>
+                    </div>
+                    <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(139,92,246,.1);color:#8b5cf6;white-space:nowrap;">Marketing</span>
+                </div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">93</div>
+                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Marketing Orders</div>
+                <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
+                    <div style="height:100%;width:38%;background:#8b5cf6;border-radius:3px;"></div>
+                </div>
+            </div>
+
+            {{-- 4. Total Amount --}}
+            <div class="dash-card" style="padding:16px 18px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+                    <div style="width:38px;height:38px;border-radius:10px;background:rgba(6,182,212,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="bi bi-currency-rupee" style="font-size:17px;color:#06b6d4;"></i>
+                    </div>
+                    <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(6,182,212,.1);color:#06b6d4;white-space:nowrap;">Revenue</span>
+                </div>
+                <div style="font-size:22px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">₹1.84Cr</div>
+                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Total Amount</div>
+                <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
+                    <div style="height:100%;width:91%;background:#06b6d4;border-radius:3px;"></div>
+                </div>
+            </div>
+
+            {{-- 5. Total Pending Amount --}}
+            <div class="dash-card" style="padding:16px 18px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+                    <div style="width:38px;height:38px;border-radius:10px;background:rgba(245,158,11,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="bi bi-hourglass-split" style="font-size:17px;color:#f59e0b;"></i>
+                    </div>
+                    <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(245,158,11,.1);color:#f59e0b;white-space:nowrap;">Pending</span>
+                </div>
+                <div style="font-size:22px;font-weight:800;color:#f59e0b;letter-spacing:-.5px;line-height:1;">₹27.4L</div>
+                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Pending Amount</div>
+                <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
+                    <div style="height:100%;width:24%;background:#f59e0b;border-radius:3px;"></div>
+                </div>
+            </div>
+
+            {{-- 6. Total Projects Cancelled --}}
+            <div class="dash-card" style="padding:16px 18px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+                    <div style="width:38px;height:38px;border-radius:10px;background:rgba(239,68,68,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="bi bi-x-circle-fill" style="font-size:17px;color:#ef4444;"></i>
+                    </div>
+                    <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(239,68,68,.1);color:#ef4444;white-space:nowrap;">Cancelled</span>
+                </div>
+                <div style="font-size:26px;font-weight:800;color:#ef4444;letter-spacing:-.5px;line-height:1;">18</div>
+                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Projects Cancelled</div>
+                <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
+                    <div style="height:100%;width:14%;background:#ef4444;border-radius:3px;"></div>
+                </div>
+            </div>
+
+        </div>
+        {{-- END KPI CARDS --}}
+
+
         <div class="dash-grid">
             <div class="dash-card span-12">
                 <div class="card-head">
@@ -20,12 +119,28 @@
                         <div class="card-title">Recent Orders</div>
                         <div class="card-sub">₹48.6L this month</div>
                     </div>
-                    <div class="card-actions">
-                        <div class="order-type-tabs">
-                            <button class="ot-tab active" data-type="all">All</button>
-                            <button class="ot-tab" data-type="order">Orders</button>
-                            <button class="ot-tab" data-type="marketing">Marketing</button>
-                        </div>
+                    <div class="card-actions mb-2">
+                        <form class="global-search">
+                            <i class="bi bi-search"></i>
+                            <input type="text" placeholder="Search...">
+                            <button type="submit" class="btn-primary-solid sm">Search</button>
+                        </form>
+
+                        <select class="filter-select">
+                            <option selected>Last 7 Days</option>
+                            <option>Today</option>
+                            <option>Yesterday</option>
+                            <option>1 Week</option>
+                            <option>Month</option>
+                            <option>Year</option>
+                        </select>
+
+                        <select class="filter-select">
+                            <option selected>All Services</option>
+                            <option>Website Design</option>
+                            <option>Marketing</option>
+                        </select>
+
                         <select class="filter-select">
                             <option>All Status</option>
                             <option>Paid</option>
@@ -56,47 +171,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr data-order-type="order">
-                                <td><span class="mono">#ORD-2847</span></td>
-                                <td><span class="type-badge order-type">Order</span></td>
-                                <td>
-                                    <div class="lead-cell">
-                                        <div class="mini-ava" style="background:linear-gradient(135deg,#3b82f6,#06b6d4)">TC</div>
-                                        <div>
-                                            <div class="ln">TechCorp Pvt Ltd</div>
-                                            <div class="ls">cto@techcorp.io</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="ln">Rahul Sharma</div>
-                                    <div class="ls">9565528200</div>
-                                </td>
-                                <td><span class="src-tag website">Website</span></td>
-                                <td><span class="src-tag">₹8.5L</span></td>
-                                <td>
-                                    <div class="ls">Mumbai, MH 400001</div>
-                                    <div class="ls">Andheri East</div>
-                                </td>
-                                <td><span class="status-pill paid">Paid</span></td>
-                                <td>
-                                    <div class="ln">Neha Kapoor</div>
-                                    <div class="ls">neha@company.com</div>
-                                </td>
-                                <td>
-                                    <div class="ln">Priya Dev</div>
-                                    <div class="ls">priya@company.com</div>
-                                </td>
-                                <td>
-                                    <div class="row-actions">
-                                        <button class="ra-btn" onclick="openModal('orderDetailModal')"><i class="bi bi-eye-fill"></i></button>
-                                        <button class="ra-btn"><i class="bi bi-telephone-fill"></i></button>
-                                        <a href="{{route('admin.payments.create')}}" target="_blank" class="ra-btn"><i class="bi bi-wallet-fill"></i></a>
-                                        <button class="ra-btn" onclick="openModal('editOrderModal')"><i class="bi bi-pencil-fill"></i></button>
-                                        <button class="ra-btn danger" onclick="openModal('deleteModal')"><i class="bi bi-trash-fill"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
                             <tr data-order-type="marketing">
                                 <td><span class="mono">#MKT-1024</span></td>
                                 <td><span class="type-badge marketing-type">Marketing</span></td>
@@ -131,7 +205,9 @@
                                 <td>
                                     <div class="row-actions">
                                         <button class="ra-btn" onclick="openModal('orderDetailModal')"><i class="bi bi-eye-fill"></i></button>
+                                        <button class="ra-btn"><i class="bi bi-telephone-fill"></i></button>
                                         <button class="ra-btn"><i class="bi bi-envelope-fill"></i></button>
+                                        <a href="{{route('admin.leads.followup')}}" class="ra-btn" target="_blank"><i class="bi bi-arrow-counterclockwise"></i></a>
                                         <a href="{{route('admin.payments.create')}}" target="_blank" class="ra-btn"><i class="bi bi-wallet2"></i></a>
                                         <button class="ra-btn" onclick="openModal('editOrderModal')"><i class="bi bi-pencil-fill"></i></button>
                                         <button class="ra-btn danger" onclick="openModal('deleteModal')"><i class="bi bi-trash-fill"></i></button>
@@ -161,7 +237,7 @@
 
 
     {{-- ═══════════════════════════════════════════════════
-         ADD ORDER MODAL — single modal, all fields
+         ADD ORDER MODAL
     ════════════════════════════════════════════════════ --}}
     <div class="modal-backdrop" id="addOrderModal">
         <div class="modal-box modal-box-lg" onclick="event.stopPropagation()">
@@ -170,8 +246,6 @@
                 <button class="modal-close" onclick="closeModal('addOrderModal')"><i class="bi bi-x-lg"></i></button>
             </div>
             <div class="modal-bd">
-
-                {{-- ── Common Fields ── --}}
                 <div class="form-grid">
                     <div class="form-row">
                         <label class="form-lbl">Company Name *</label>
@@ -231,8 +305,6 @@
                         <textarea class="form-inp" rows="2" placeholder="Street address…"></textarea>
                     </div>
                 </div>
-
-                {{-- ── Marketing Order Only Fields ── --}}
                 <div class="mkt-section">
                     <div class="mkt-section-label">
                         <i class="bi bi-megaphone-fill"></i>
@@ -266,7 +338,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
             <div class="modal-ft">
                 <button class="btn-ghost" onclick="closeModal('addOrderModal')">Cancel</button>
@@ -279,7 +350,7 @@
 
 
     {{-- ═══════════════════════════════════════════════════
-         EDIT ORDER MODAL — single modal, all fields
+         EDIT ORDER MODAL
     ════════════════════════════════════════════════════ --}}
     <div class="modal-backdrop" id="editOrderModal">
         <div class="modal-box modal-box-lg" onclick="event.stopPropagation()">
@@ -288,8 +359,6 @@
                 <button class="modal-close" onclick="closeModal('editOrderModal')"><i class="bi bi-x-lg"></i></button>
             </div>
             <div class="modal-bd">
-
-                {{-- ── Common Fields ── --}}
                 <div class="form-grid">
                     <div class="form-row">
                         <label class="form-lbl">Company Name *</label>
@@ -349,8 +418,6 @@
                         <textarea class="form-inp" rows="2" placeholder="Street address…"></textarea>
                     </div>
                 </div>
-
-                {{-- ── Marketing Order Only Fields ── --}}
                 <div class="mkt-section">
                     <div class="mkt-section-label">
                         <i class="bi bi-megaphone-fill"></i>
@@ -384,7 +451,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
             <div class="modal-ft">
                 <button class="btn-ghost" onclick="closeModal('editOrderModal')">Cancel</button>
@@ -464,7 +530,6 @@
                         </select>
                     </div>
                 </div>
-
                 <div class="mkt-section">
                     <div class="mkt-section-label">
                         <i class="bi bi-megaphone-fill"></i>
@@ -503,97 +568,110 @@
 </main>
 
 <style>
-/* ── Order type tabs ── */
-.order-type-tabs {
-    display: flex;
-    gap: 2px;
-    background: #f3f4f6;
-    border-radius: 8px;
-    padding: 3px;
-}
-.ot-tab {
-    padding: 5px 14px;
-    font-size: 13px;
-    font-weight: 500;
-    border: none;
-    background: transparent;
-    border-radius: 6px;
-    cursor: pointer;
-    color: #6b7280;
-    transition: all 0.15s;
-}
-.ot-tab.active {
-    background: #fff;
-    color: #111827;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
+    /* ── Responsive KPI grid ── */
+    @media (max-width: 1200px) {
+        .kpi-summary-grid { grid-template-columns: repeat(3, 1fr) !important; }
+    }
+    @media (max-width: 768px) {
+        .kpi-summary-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    }
 
-/* ── Type badges in table ── */
-.type-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 3px 9px;
-    border-radius: 99px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-}
-.order-type     { background: #dbeafe; color: #1d4ed8; }
+    /* ── Order type tabs ── */
+    .order-type-tabs {
+        display: flex;
+        gap: 2px;
+        background: #f3f4f6;
+        border-radius: 8px;
+        padding: 3px;
+    }
+    .ot-tab {
+        padding: 5px 14px;
+        font-size: 13px;
+        font-weight: 500;
+        border: none;
+        background: transparent;
+        border-radius: 6px;
+        cursor: pointer;
+        color: #6b7280;
+        transition: all 0.15s;
+    }
+    .ot-tab.active {
+        background: #fff;
+        color: #111827;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
 
+    /* ── Type badges in table ── */
+    .type-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 9px;
+        border-radius: 99px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+    }
+    .marketing-type {
+        background: rgba(139,92,246,.12);
+        color: #8b5cf6;
+    }
+    .order-type {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
 
-/* ── Wider modal ── */
-.modal-box-lg {
-    max-width: 760px !important;
-    width: 90vw !important;
-}
+    /* ── Wider modal ── */
+    .modal-box-lg {
+        max-width: 760px !important;
+        width: 90vw !important;
+    }
 
-/* ── Marketing section block ── */
-.mkt-section {
-    margin-top: 20px;
-    border: 1px solid #e9d5ff;
-    border-radius: 10px;
-    overflow: hidden;
-}
-.mkt-section-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #f5f0ff;
-    padding: 10px 14px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #7c3aed;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-bottom: 1px solid #e9d5ff;
-}
-.mkt-section-note {
-    margin-left: auto;
-    font-size: 11px;
-    font-weight: 400;
-    color: #a78bfa;
-    text-transform: none;
-    letter-spacing: 0;
-}
-.mkt-section .form-grid {
-    padding: 14px;
-    background: #faf5ff;
-}
+    /* ── Marketing section block ── */
+    .mkt-section {
+        margin-top: 20px;
+        border: 1px solid var(--b2);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .mkt-section-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--accent-bg);
+        padding: 10px 14px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid var(--b2);
+    }
+    .mkt-section-note {
+        margin-left: auto;
+        font-size: 11px;
+        font-weight: 400;
+        color: var(--t3);
+        text-transform: none;
+        letter-spacing: 0;
+    }
+    .mkt-section .form-grid {
+        padding: 14px;
+        background: var(--bg3);
+    }
 </style>
 
 <script>
-/* ── Tab filter ── */
-document.querySelectorAll('.ot-tab').forEach(tab => {
-    tab.addEventListener('click', function () {
-        document.querySelectorAll('.ot-tab').forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
-        const type = this.dataset.type;
-        document.querySelectorAll('tbody tr[data-order-type]').forEach(row => {
-            row.style.display = (type === 'all' || row.dataset.orderType === type) ? '' : 'none';
+    document.querySelectorAll('.ot-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.ot-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            const type = this.dataset.type;
+            document.querySelectorAll('tbody tr[data-order-type]').forEach(row => {
+                row.style.display = (type === 'all' || row.dataset.orderType === type) ? '' : 'none';
+            });
         });
     });
-});
 </script>
 
 @endsection

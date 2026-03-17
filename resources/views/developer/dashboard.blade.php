@@ -1,6 +1,6 @@
 @extends('developer.layout.app')
 
-@section('title', 'Sales Dashboard')
+@section('title', 'Developer Dashboard')
 
 @section('content')
 
