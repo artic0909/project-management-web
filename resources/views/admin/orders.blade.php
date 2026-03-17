@@ -18,7 +18,6 @@
         ════════════════════════════════════════════════════ --}}
         <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px;">
 
-            {{-- 1. Total Clients --}}
             <div class="dash-card" style="padding:16px 18px;">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(99,102,241,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -33,7 +32,6 @@
                 </div>
             </div>
 
-            {{-- 2. Total Orders --}}
             <div class="dash-card" style="padding:16px 18px;">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(16,185,129,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -48,7 +46,6 @@
                 </div>
             </div>
 
-            {{-- 3. Total Marketing Orders --}}
             <div class="dash-card" style="padding:16px 18px;">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(139,92,246,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -63,7 +60,6 @@
                 </div>
             </div>
 
-            {{-- 4. Total Amount --}}
             <div class="dash-card" style="padding:16px 18px;">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(6,182,212,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -78,7 +74,6 @@
                 </div>
             </div>
 
-            {{-- 5. Total Pending Amount --}}
             <div class="dash-card" style="padding:16px 18px;">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(245,158,11,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -93,7 +88,6 @@
                 </div>
             </div>
 
-            {{-- 6. Total Projects Cancelled --}}
             <div class="dash-card" style="padding:16px 18px;">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(239,68,68,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -112,33 +106,43 @@
         {{-- END KPI CARDS --}}
 
 
+
+
+
         <div class="dash-grid">
             <div class="dash-card span-12">
                 <div class="card-head">
                     <div>
                         <div class="card-title">Recent Orders</div>
-                        <div class="card-sub">₹48.6L this month</div>
+                        <div class="card-sub" id="orderTableSub">₹48.6L this month · 247 orders</div>
                     </div>
                     <div class="card-actions mb-2">
+
                         <form class="global-search">
                             <i class="bi bi-search"></i>
                             <input type="text" placeholder="Search...">
                             <button type="submit" class="btn-primary-solid sm">Search</button>
                         </form>
 
-                        <select class="filter-select">
-                            <option selected>Last 7 Days</option>
-                            <option>Today</option>
-                            <option>Yesterday</option>
-                            <option>1 Week</option>
-                            <option>Month</option>
-                            <option>Year</option>
-                        </select>
+                        <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
+                        <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
+                            <i class="bi bi-calendar3"></i>
+                            <span id="drpLabel">Last 7 Days</span>
+                            <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
+                        </button>
+
+                        <!-- {{-- Date Range Picker (replaces simple select) --}} -->
+                        <div style="position:relative;">
+                            @include('admin.includes.date-range-picker')
+                        </div>
 
                         <select class="filter-select">
                             <option selected>All Services</option>
                             <option>Website Design</option>
                             <option>Marketing</option>
+                            <option>SEO</option>
+                            <option>Social Media</option>
+                            <option>App Development</option>
                         </select>
 
                         <select class="filter-select">
@@ -147,6 +151,7 @@
                             <option>Pending</option>
                             <option>Overdue</option>
                         </select>
+
                         <button class="btn-primary-solid sm" onclick="openModal('addOrderModal')">
                             <i class="bi bi-plus-lg"></i> Add Order
                         </button>
@@ -154,7 +159,7 @@
                 </div>
 
                 <div class="table-wrap">
-                    <table class="data-table">
+                    <table class="data-table" id="ordersTable">
                         <thead>
                             <tr>
                                 <th>Order ID</th>
@@ -171,7 +176,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr data-order-type="marketing">
+                            <tr data-order-type="marketing" data-status="pending" data-service="seo">
                                 <td><span class="mono">#MKT-1024</span></td>
                                 <td><span class="type-badge marketing-type">Marketing</span></td>
                                 <td>
@@ -219,7 +224,7 @@
                 </div>
 
                 <div class="table-footer">
-                    <span class="tf-info">Showing 2 of 24 Orders</span>
+                    <span class="tf-info" id="ordersCount">Showing 1 of 247 Orders</span>
                     <div class="tf-pagination">
                         <button class="pg-btn"><i class="bi bi-chevron-left"></i></button>
                         <button class="pg-btn active">1</button>
@@ -247,34 +252,13 @@
             </div>
             <div class="modal-bd">
                 <div class="form-grid">
-                    <div class="form-row">
-                        <label class="form-lbl">Company Name *</label>
-                        <input type="text" class="form-inp" placeholder="Company name">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Client Name *</label>
-                        <input type="text" class="form-inp" placeholder="Full name">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Email</label>
-                        <input type="email" class="form-inp" placeholder="email@company.com">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Phone</label>
-                        <input type="tel" class="form-inp" placeholder="+91 XXXXX XXXXX">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Domain Name</label>
-                        <input type="text" class="form-inp" placeholder="Domain name">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Service / Product</label>
-                        <input type="text" class="form-inp" placeholder="What are we delivering?">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Order Value *</label>
-                        <input type="text" class="form-inp" placeholder="₹ Amount">
-                    </div>
+                    <div class="form-row"><label class="form-lbl">Company Name *</label><input type="text" class="form-inp" placeholder="Company name"></div>
+                    <div class="form-row"><label class="form-lbl">Client Name *</label><input type="text" class="form-inp" placeholder="Full name"></div>
+                    <div class="form-row"><label class="form-lbl">Email</label><input type="email" class="form-inp" placeholder="email@company.com"></div>
+                    <div class="form-row"><label class="form-lbl">Phone</label><input type="tel" class="form-inp" placeholder="+91 XXXXX XXXXX"></div>
+                    <div class="form-row"><label class="form-lbl">Domain Name</label><input type="text" class="form-inp" placeholder="Domain name"></div>
+                    <div class="form-row"><label class="form-lbl">Service / Product</label><input type="text" class="form-inp" placeholder="What are we delivering?"></div>
+                    <div class="form-row"><label class="form-lbl">Order Value *</label><input type="text" class="form-inp" placeholder="₹ Amount"></div>
                     <div class="form-row">
                         <label class="form-lbl">Payment Terms</label>
                         <select class="form-inp">
@@ -284,66 +268,30 @@
                             <option>Net 30</option>
                         </select>
                     </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Delivery Date</label>
-                        <input type="date" class="form-inp">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">City</label>
-                        <input type="text" class="form-inp" placeholder="City">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Region / State</label>
-                        <input type="text" class="form-inp" placeholder="State or Province">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Zip Code</label>
-                        <input type="text" class="form-inp" placeholder="Zip / PIN">
-                    </div>
-                    <div class="form-row" style="grid-column:1/-1">
-                        <label class="form-lbl">Full Address</label>
-                        <textarea class="form-inp" rows="2" placeholder="Street address…"></textarea>
-                    </div>
+                    <div class="form-row"><label class="form-lbl">Delivery Date</label><input type="date" class="form-inp"></div>
+                    <div class="form-row"><label class="form-lbl">City</label><input type="text" class="form-inp" placeholder="City"></div>
+                    <div class="form-row"><label class="form-lbl">Region / State</label><input type="text" class="form-inp" placeholder="State or Province"></div>
+                    <div class="form-row"><label class="form-lbl">Zip Code</label><input type="text" class="form-inp" placeholder="Zip / PIN"></div>
+                    <div class="form-row" style="grid-column:1/-1"><label class="form-lbl">Full Address</label><textarea class="form-inp" rows="2" placeholder="Street address…"></textarea></div>
                 </div>
                 <div class="mkt-section">
-                    <div class="mkt-section-label">
-                        <i class="bi bi-megaphone-fill"></i>
-                        Marketing Order Details
-                        <span class="mkt-section-note">Fill only for marketing orders</span>
-                    </div>
+                    <div class="mkt-section-label"><i class="bi bi-megaphone-fill"></i> Marketing Order Details <span class="mkt-section-note">Fill only for marketing orders</span></div>
                     <div class="form-grid">
-                        <div class="form-row">
-                            <label class="form-lbl">Payment Status</label>
-                            <select class="form-inp">
+                        <div class="form-row"><label class="form-lbl">Payment Status</label><select class="form-inp">
                                 <option>Pending</option>
                                 <option>Paid</option>
                                 <option>Overdue</option>
-                            </select>
-                        </div>
-                        <div class="form-row">
-                            <label class="form-lbl">Starting Date</label>
-                            <input type="date" class="form-inp">
-                        </div>
-                        <div class="form-row">
-                            <label class="form-lbl">Plan Name</label>
-                            <input type="text" class="form-inp" placeholder="Plan name">
-                        </div>
-                        <div class="form-row">
-                            <label class="form-lbl">Username</label>
-                            <input type="text" class="form-inp" placeholder="Account username">
-                        </div>
-                        <div class="form-row">
-                            <label class="form-lbl">Password</label>
-                            <input type="text" class="form-inp" placeholder="Account password">
-                        </div>
+                            </select></div>
+                        <div class="form-row"><label class="form-lbl">Starting Date</label><input type="date" class="form-inp"></div>
+                        <div class="form-row"><label class="form-lbl">Plan Name</label><input type="text" class="form-inp" placeholder="Plan name"></div>
+                        <div class="form-row"><label class="form-lbl">Username</label><input type="text" class="form-inp" placeholder="Account username"></div>
+                        <div class="form-row"><label class="form-lbl">Password</label><input type="text" class="form-inp" placeholder="Account password"></div>
                     </div>
                 </div>
             </div>
             <div class="modal-ft">
                 <button class="btn-ghost" onclick="closeModal('addOrderModal')">Cancel</button>
-                <button class="btn-primary-solid" onclick="closeModal('addOrderModal');showToast('success','Order created!','bi-bag-check-fill')">
-                    <i class="bi bi-plus-lg"></i> Create Order
-                </button>
+                <button class="btn-primary-solid" onclick="closeModal('addOrderModal');showToast('success','Order created!','bi-bag-check-fill')"><i class="bi bi-plus-lg"></i> Create Order</button>
             </div>
         </div>
     </div>
@@ -360,111 +308,49 @@
             </div>
             <div class="modal-bd">
                 <div class="form-grid">
-                    <div class="form-row">
-                        <label class="form-lbl">Company Name *</label>
-                        <input type="text" class="form-inp" placeholder="Company name">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Client Name *</label>
-                        <input type="text" class="form-inp" placeholder="Full name">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Email</label>
-                        <input type="email" class="form-inp" placeholder="email@company.com">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Phone</label>
-                        <input type="tel" class="form-inp" placeholder="+91 XXXXX XXXXX">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Domain Name</label>
-                        <input type="text" class="form-inp" placeholder="Domain name">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Service / Product</label>
-                        <input type="text" class="form-inp" placeholder="What are we delivering?">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Order Value *</label>
-                        <input type="text" class="form-inp" placeholder="₹ Amount">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Payment Terms</label>
-                        <select class="form-inp">
+                    <div class="form-row"><label class="form-lbl">Company Name *</label><input type="text" class="form-inp" placeholder="Company name"></div>
+                    <div class="form-row"><label class="form-lbl">Client Name *</label><input type="text" class="form-inp" placeholder="Full name"></div>
+                    <div class="form-row"><label class="form-lbl">Email</label><input type="email" class="form-inp" placeholder="email@company.com"></div>
+                    <div class="form-row"><label class="form-lbl">Phone</label><input type="tel" class="form-inp" placeholder="+91 XXXXX XXXXX"></div>
+                    <div class="form-row"><label class="form-lbl">Domain Name</label><input type="text" class="form-inp" placeholder="Domain name"></div>
+                    <div class="form-row"><label class="form-lbl">Service / Product</label><input type="text" class="form-inp" placeholder="What are we delivering?"></div>
+                    <div class="form-row"><label class="form-lbl">Order Value *</label><input type="text" class="form-inp" placeholder="₹ Amount"></div>
+                    <div class="form-row"><label class="form-lbl">Payment Terms</label><select class="form-inp">
                             <option>Full Advance</option>
                             <option>50-50</option>
                             <option>Milestone</option>
                             <option>Net 30</option>
-                        </select>
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Delivery Date</label>
-                        <input type="date" class="form-inp">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">City</label>
-                        <input type="text" class="form-inp" placeholder="City">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Region / State</label>
-                        <input type="text" class="form-inp" placeholder="State or Province">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Zip Code</label>
-                        <input type="text" class="form-inp" placeholder="Zip / PIN">
-                    </div>
-                    <div class="form-row" style="grid-column:1/-1">
-                        <label class="form-lbl">Full Address</label>
-                        <textarea class="form-inp" rows="2" placeholder="Street address…"></textarea>
-                    </div>
+                        </select></div>
+                    <div class="form-row"><label class="form-lbl">Delivery Date</label><input type="date" class="form-inp"></div>
+                    <div class="form-row"><label class="form-lbl">City</label><input type="text" class="form-inp" placeholder="City"></div>
+                    <div class="form-row"><label class="form-lbl">Region / State</label><input type="text" class="form-inp" placeholder="State or Province"></div>
+                    <div class="form-row"><label class="form-lbl">Zip Code</label><input type="text" class="form-inp" placeholder="Zip / PIN"></div>
+                    <div class="form-row" style="grid-column:1/-1"><label class="form-lbl">Full Address</label><textarea class="form-inp" rows="2" placeholder="Street address…"></textarea></div>
                 </div>
                 <div class="mkt-section">
-                    <div class="mkt-section-label">
-                        <i class="bi bi-megaphone-fill"></i>
-                        Marketing Order Details
-                        <span class="mkt-section-note">Fill only for marketing orders</span>
-                    </div>
+                    <div class="mkt-section-label"><i class="bi bi-megaphone-fill"></i> Marketing Order Details <span class="mkt-section-note">Fill only for marketing orders</span></div>
                     <div class="form-grid">
-                        <div class="form-row">
-                            <label class="form-lbl">Payment Status</label>
-                            <select class="form-inp">
+                        <div class="form-row"><label class="form-lbl">Payment Status</label><select class="form-inp">
                                 <option>Pending</option>
                                 <option>Paid</option>
                                 <option>Overdue</option>
-                            </select>
-                        </div>
-                        <div class="form-row">
-                            <label class="form-lbl">Starting Date</label>
-                            <input type="date" class="form-inp">
-                        </div>
-                        <div class="form-row">
-                            <label class="form-lbl">Plan Name</label>
-                            <input type="text" class="form-inp" placeholder="Plan name">
-                        </div>
-                        <div class="form-row">
-                            <label class="form-lbl">Username</label>
-                            <input type="text" class="form-inp" placeholder="Account username">
-                        </div>
-                        <div class="form-row">
-                            <label class="form-lbl">Password</label>
-                            <input type="text" class="form-inp" placeholder="Account password">
-                        </div>
+                            </select></div>
+                        <div class="form-row"><label class="form-lbl">Starting Date</label><input type="date" class="form-inp"></div>
+                        <div class="form-row"><label class="form-lbl">Plan Name</label><input type="text" class="form-inp" placeholder="Plan name"></div>
+                        <div class="form-row"><label class="form-lbl">Username</label><input type="text" class="form-inp" placeholder="Account username"></div>
+                        <div class="form-row"><label class="form-lbl">Password</label><input type="text" class="form-inp" placeholder="Account password"></div>
                     </div>
                 </div>
             </div>
             <div class="modal-ft">
                 <button class="btn-ghost" onclick="closeModal('editOrderModal')">Cancel</button>
-                <button class="btn-primary-solid" onclick="closeModal('editOrderModal');showToast('success','Order updated!','bi-bag-check-fill')">
-                    <i class="bi bi-floppy-fill"></i> Update Order
-                </button>
+                <button class="btn-primary-solid" onclick="closeModal('editOrderModal');showToast('success','Order updated!','bi-bag-check-fill')"><i class="bi bi-floppy-fill"></i> Update Order</button>
             </div>
         </div>
     </div>
 
 
-    {{-- ═══════════════════════════════════════════════════
-         DELETE MODAL
-    ════════════════════════════════════════════════════ --}}
+    {{-- DELETE MODAL --}}
     <div class="modal-backdrop" id="deleteModal">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-hd" style="border-bottom:1px solid #fecaca;">
@@ -475,8 +361,8 @@
                 <div style="width:64px;height:64px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
                     <i class="bi bi-trash3-fill" style="font-size:28px;color:#dc2626;"></i>
                 </div>
-                <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:#111827;">Are you sure?</h3>
-                <p style="margin:0;font-size:14px;color:#6b7280;line-height:1.6;">Are you sure you want to delete this Order?<br>This action <strong style="color:#dc2626;">cannot be undone.</strong></p>
+                <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:var(--t1);">Are you sure?</h3>
+                <p style="margin:0;font-size:14px;color:var(--t3);line-height:1.6;">Are you sure you want to delete this Order?<br>This action <strong style="color:#dc2626;">cannot be undone.</strong></p>
             </div>
             <div class="modal-ft" style="border-top:1px solid #fecaca;">
                 <button class="btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
@@ -488,9 +374,7 @@
     </div>
 
 
-    {{-- ═══════════════════════════════════════════════════
-         ORDER DETAIL MODAL
-    ════════════════════════════════════════════════════ --}}
+    {{-- ORDER DETAIL MODAL --}}
     <div class="modal-backdrop" id="orderDetailModal">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-hd">
@@ -531,30 +415,21 @@
                     </div>
                 </div>
                 <div class="mkt-section">
-                    <div class="mkt-section-label">
-                        <i class="bi bi-megaphone-fill"></i>
-                        Marketing Order Details
-                    </div>
+                    <div class="mkt-section-label"><i class="bi bi-megaphone-fill"></i> Marketing Order Details</div>
                     <div class="form-grid">
                         <div class="form-row"><label class="form-lbl">Plan Name</label><input class="form-inp" value="Growth Plan" readonly></div>
                         <div class="form-row"><label class="form-lbl">Username</label><input class="form-inp" value="datafirst_user" readonly></div>
                         <div class="form-row"><label class="form-lbl">Password</label><input class="form-inp" value="••••••••" readonly></div>
-                        <div class="form-row">
-                            <label class="form-lbl">Payment Status</label>
-                            <select class="form-inp">
+                        <div class="form-row"><label class="form-lbl">Payment Status</label><select class="form-inp">
                                 <option>Pending</option>
                                 <option>Paid</option>
                                 <option>Overdue</option>
-                            </select>
-                        </div>
-                        <div class="form-row" style="grid-column:1/-1">
-                            <label class="form-lbl">Assign To (Sales)</label>
-                            <select class="form-inp">
+                            </select></div>
+                        <div class="form-row" style="grid-column:1/-1"><label class="form-lbl">Assign To (Sales)</label><select class="form-inp">
                                 <option>Rahul Kumar</option>
                                 <option>Priya Sharma</option>
                                 <option>Neha Kapoor</option>
-                            </select>
-                        </div>
+                            </select></div>
                     </div>
                 </div>
             </div>
@@ -568,40 +443,119 @@
 </main>
 
 <style>
-    /* ── Responsive KPI grid ── */
-    @media (max-width: 1200px) {
-        .kpi-summary-grid { grid-template-columns: repeat(3, 1fr) !important; }
-    }
-    @media (max-width: 768px) {
-        .kpi-summary-grid { grid-template-columns: repeat(2, 1fr) !important; }
-    }
-
-    /* ── Order type tabs ── */
-    .order-type-tabs {
+    /* ── Stat scroll row (same as leads page) ── */
+    .stat-scroll-row {
         display: flex;
-        gap: 2px;
-        background: #f3f4f6;
-        border-radius: 8px;
-        padding: 3px;
-    }
-    .ot-tab {
-        padding: 5px 14px;
-        font-size: 13px;
-        font-weight: 500;
-        border: none;
-        background: transparent;
-        border-radius: 6px;
-        cursor: pointer;
-        color: #6b7280;
-        transition: all 0.15s;
-    }
-    .ot-tab.active {
-        background: #fff;
-        color: #111827;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        margin-bottom: 20px;
+        scrollbar-width: none;
     }
 
-    /* ── Type badges in table ── */
+    .stat-scroll-row::-webkit-scrollbar {
+        display: none;
+    }
+
+    .stat-box {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--bg2);
+        border: 1px solid var(--b1);
+        border-radius: var(--r);
+        padding: 11px 16px;
+        min-width: 148px;
+        cursor: pointer;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-box::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--sb-color);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform .25s ease;
+    }
+
+    .stat-box:hover {
+        border-color: var(--sb-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
+    }
+
+    .stat-box:hover::after {
+        transform: scaleX(1);
+    }
+
+    .stat-box.active {
+        border-color: var(--sb-color);
+        background: var(--bg3);
+    }
+
+    .stat-box.active::after {
+        transform: scaleX(1);
+    }
+
+    .sb-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        flex-shrink: 0;
+        background: color-mix(in srgb, var(--sb-color) 14%, transparent);
+        color: var(--sb-color);
+    }
+
+    .sb-val {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--t1);
+        letter-spacing: -.4px;
+        line-height: 1;
+    }
+
+    .sb-lbl {
+        font-size: 11px;
+        color: var(--t3);
+        font-weight: 500;
+        margin-top: 2px;
+        white-space: nowrap;
+    }
+
+    .stat-section-lbl {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        color: var(--t4);
+        padding: 0 6px;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .stat-divider {
+        width: 1px;
+        height: 40px;
+        background: var(--b2);
+        flex-shrink: 0;
+        margin: 0 4px;
+    }
+
+    /* ── Type badges ── */
     .type-badge {
         display: inline-flex;
         align-items: center;
@@ -612,13 +566,15 @@
         letter-spacing: 0.03em;
         text-transform: uppercase;
     }
+
     .marketing-type {
-        background: rgba(139,92,246,.12);
+        background: rgba(139, 92, 246, .12);
         color: #8b5cf6;
     }
-    .order-type {
-        background: #dbeafe;
-        color: #1d4ed8;
+
+    .website-type {
+        background: rgba(6, 182, 212, .12);
+        color: #06b6d4;
     }
 
     /* ── Wider modal ── */
@@ -627,13 +583,14 @@
         width: 90vw !important;
     }
 
-    /* ── Marketing section block ── */
+    /* ── Marketing section ── */
     .mkt-section {
         margin-top: 20px;
         border: 1px solid var(--b2);
         border-radius: 10px;
         overflow: hidden;
     }
+
     .mkt-section-label {
         display: flex;
         align-items: center;
@@ -647,6 +604,7 @@
         letter-spacing: 0.05em;
         border-bottom: 1px solid var(--b2);
     }
+
     .mkt-section-note {
         margin-left: auto;
         font-size: 11px;
@@ -655,6 +613,7 @@
         text-transform: none;
         letter-spacing: 0;
     }
+
     .mkt-section .form-grid {
         padding: 14px;
         background: var(--bg3);
@@ -662,15 +621,43 @@
 </style>
 
 <script>
-    document.querySelectorAll('.ot-tab').forEach(tab => {
-        tab.addEventListener('click', function() {
-            document.querySelectorAll('.ot-tab').forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-            const type = this.dataset.type;
-            document.querySelectorAll('tbody tr[data-order-type]').forEach(row => {
-                row.style.display = (type === 'all' || row.dataset.orderType === type) ? '' : 'none';
-            });
+    /* ── Stat box filter ── */
+    function applyStatFilter(el) {
+        const filterGroup = el.dataset.filter;
+        // Deactivate same-group siblings
+        document.querySelectorAll(`.stat-box[data-filter="${filterGroup}"]`)
+            .forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+
+        const val = el.dataset.value;
+        const rows = document.querySelectorAll('#ordersTable tbody tr');
+
+        rows.forEach(row => {
+            let show = true;
+            if (filterGroup === 'type' && val !== 'all') {
+                show = row.dataset.orderType === val;
+            } else if (filterGroup === 'status') {
+                show = row.dataset.status === val;
+            } else if (filterGroup === 'service') {
+                show = row.dataset.service === val;
+            }
+            row.style.display = show ? '' : 'none';
         });
+
+        const visible = [...rows].filter(r => r.style.display !== 'none').length;
+        document.getElementById('ordersCount').textContent =
+            `Showing ${visible} of 247 Orders`;
+    }
+
+    /* ── Listen for date range applied ── */
+    document.addEventListener('dateRangeApplied', function(e) {
+        const {
+            preset,
+            start,
+            end
+        } = e.detail;
+        // Hook into your AJAX/filter logic here
+        console.log('Date filter:', preset, start, end);
     });
 </script>
 

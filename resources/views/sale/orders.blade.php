@@ -126,14 +126,17 @@
                             <button type="submit" class="btn-primary-solid sm">Search</button>
                         </form>
 
-                        <select class="filter-select">
-                            <option selected>Last 7 Days</option>
-                            <option>Today</option>
-                            <option>Yesterday</option>
-                            <option>1 Week</option>
-                            <option>Month</option>
-                            <option>Year</option>
-                        </select>
+                        <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
+                        <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
+                            <i class="bi bi-calendar3"></i>
+                            <span id="drpLabel">Last 7 Days</span>
+                            <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
+                        </button>
+
+                        <!-- {{-- Date Range Picker (replaces simple select) --}} -->
+                        <div style="position:relative;">
+                            @include('sale.includes.date-range-picker')
+                        </div>
 
                         <select class="filter-select">
                             <option selected>All Services</option>
