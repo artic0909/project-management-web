@@ -1,34 +1,114 @@
 @extends('admin.layout.app')
 
-@section('title', 'Add Leads')
+@section('title', 'Losted Leads')
 
 @section('content')
 
 <style>
-    /* ── 6-column uniform grid ── */
-    .stat-grid-wrap {
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        gap: 10px;
+    .multi-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 6px;
     }
 
-    /* ── Each box ── */
+    .multi-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .phone-wrap {
+        display: flex;
+        flex: 1;
+        min-width: 0;
+        border: 1px solid var(--b1);
+        border-radius: var(--r-sm);
+        overflow: hidden;
+    }
+
+    .country-sel {
+        border: none;
+        border-right: 1px solid var(--b1);
+        background: var(--bg3);
+        color: var(--t2);
+        padding: 6px 4px 6px 8px;
+        font-size: 13px;
+        cursor: pointer;
+        outline: none;
+        font-family: inherit;
+        width: 100px;
+        flex-shrink: 0;
+    }
+
+    .phone-num-inp {
+        border: none;
+        padding: 6px 10px;
+        font-size: 14px;
+        font-family: inherit;
+        flex: 1;
+        min-width: 0;
+        outline: none;
+        background: transparent;
+        color: var(--t1);
+    }
+
+    .multi-email-inp {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .row-remove-btn {
+        background: none;
+        border: 1px solid var(--b2);
+        border-radius: var(--r-sm);
+        width: 28px;
+        height: 28px;
+        cursor: pointer;
+        color: var(--t3);
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        padding: 0;
+        transition: var(--transition);
+    }
+
+    .row-remove-btn:hover {
+        color: #ef4444;
+        border-color: #ef4444;
+        background: rgba(239, 68, 68, .08);
+    }
+
+    /* ── Summary stat boxes ── */
+    .stat-scroll-row {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        margin-bottom: 20px;
+        scrollbar-width: none;
+    }
+
+    .stat-scroll-row::-webkit-scrollbar {
+        display: none;
+    }
+
     .stat-box {
+        flex-shrink: 0;
         display: flex;
         align-items: center;
         gap: 10px;
         background: var(--bg2);
         border: 1px solid var(--b1);
         border-radius: var(--r);
-        padding: 12px 14px;
+        padding: 11px 16px;
+        min-width: 148px;
         cursor: pointer;
         transition: var(--transition);
         position: relative;
         overflow: hidden;
-        min-width: 0;
     }
 
-    /* Accent underline on hover/active */
     .stat-box::after {
         content: '';
         position: absolute;
@@ -39,7 +119,7 @@
         background: var(--sb-color);
         transform: scaleX(0);
         transform-origin: left;
-        transition: transform .22s ease;
+        transition: transform .25s ease;
     }
 
     .stat-box:hover {
@@ -61,7 +141,6 @@
         transform: scaleX(1);
     }
 
-    /* Icon */
     .sb-icon {
         width: 34px;
         height: 34px;
@@ -69,67 +148,47 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 15px;
         flex-shrink: 0;
         background: color-mix(in srgb, var(--sb-color) 14%, transparent);
         color: var(--sb-color);
     }
 
-    /* Content stack */
-    .sb-content {
-        min-width: 0;
-        flex: 1;
-    }
-
-    /* Category badge — tiny pill inside card */
-    .sb-cat {
-        display: inline-block;
-        font-size: 9px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .07em;
-        color: var(--cat-color);
-        background: color-mix(in srgb, var(--cat-color) 12%, transparent);
-        padding: 1px 6px;
-        border-radius: 20px;
-        margin-bottom: 3px;
-        white-space: nowrap;
-    }
-
     .sb-val {
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 800;
         color: var(--t1);
-        letter-spacing: -.3px;
-        line-height: 1.1;
+        letter-spacing: -.4px;
+        line-height: 1;
     }
 
     .sb-lbl {
         font-size: 11px;
         color: var(--t3);
         font-weight: 500;
+        margin-top: 2px;
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
 
-    /* ── Responsive ── */
-    @media (max-width: 1200px) {
-        .stat-grid-wrap {
-            grid-template-columns: repeat(4, 1fr);
-        }
+    .stat-section-lbl {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        color: var(--t4);
+        padding: 0 6px;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
 
-    @media (max-width: 860px) {
-        .stat-grid-wrap {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-
-    @media (max-width: 560px) {
-        .stat-grid-wrap {
-            grid-template-columns: repeat(2, 1fr);
-        }
+    .stat-divider {
+        width: 1px;
+        height: 40px;
+        background: var(--b2);
+        flex-shrink: 0;
+        margin: 0 4px;
     }
 
     /* ══════════════════════════════
@@ -600,7 +659,7 @@
         <!-- Page Header -->
         <div class="page-header">
             <div>
-                <h1 class="page-title">Your All Leads</h1>
+                <h1 class="page-title">Losted Leads</h1>
             </div>
             <div class="d-flex gap-2">
                 <button class="btn-primary-solid sm">
@@ -609,182 +668,27 @@
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
-                <button class="btn-primary-solid sm" onclick="openModal('addLeadModal')">
-                    <i class="bi bi-plus-lg"></i> Add Lead
-                </button>
             </div>
         </div>
 
         <!-- SUMMARY STAT BOXES -->
-        <div class="stat-grid-wrap" style="margin-bottom:20px;">
-
-            {{-- Row 1: Overview (2) + Priority (4) = 6 --}}
-
+        <div class="stat-scroll-row">
             <div class="stat-box" style="--sb-color:#6366f1;">
                 <div class="sb-icon"><i class="bi bi-people-fill"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#6366f1;">Overview</div>
+                <div>
                     <div class="sb-val">147</div>
-                    <div class="sb-lbl">Total Leads</div>
+                    <div class="sb-lbl">Total Losted Leads</div>
                 </div>
             </div>
-
-            <div class="stat-box" style="--sb-color:#10b981;">
-                <div class="sb-icon"><i class="bi bi-person-check-fill"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#10b981;">Overview</div>
-                    <div class="sb-val">38</div>
-                    <div class="sb-lbl">Converted</div>
-                </div>
-            </div>
-
-            <div class="stat-box" style="--sb-color:#ef4444;">
-                <div class="sb-icon"><i class="bi bi-fire"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#ef4444;">Priority</div>
-                    <div class="sb-val" style="color:#ef4444;">38</div>
-                    <div class="sb-lbl">Hot 🔥</div>
-                </div>
-            </div>
-
-            <div class="stat-box" style="--sb-color:#f59e0b;">
-                <div class="sb-icon"><i class="bi bi-thermometer-half"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#f59e0b;">Priority</div>
-                    <div class="sb-val" style="color:#f59e0b;">54</div>
-                    <div class="sb-lbl">Warm</div>
-                </div>
-            </div>
-
-            <div class="stat-box" style="--sb-color:#06b6d4;">
-                <div class="sb-icon"><i class="bi bi-snow"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#06b6d4;">Priority</div>
-                    <div class="sb-val" style="color:#06b6d4;">41</div>
-                    <div class="sb-lbl">Cold</div>
-                </div>
-            </div>
-
-            <div class="stat-box" style="--sb-color:#6b7280;">
-                <div class="sb-icon"><i class="bi bi-x-circle"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#6b7280;">Priority</div>
-                    <div class="sb-val" style="color:#6b7280;">14</div>
-                    <div class="sb-lbl">Lost</div>
-                </div>
-            </div>
-
-            {{-- Row 2: Status (6) --}}
-
-            <div class="stat-box" style="--sb-color:#10b981;">
-                <div class="sb-icon"><i class="bi bi-chat-dots-fill"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#10b981;">Status</div>
-                    <div class="sb-val">29</div>
-                    <div class="sb-lbl">Respond</div>
-                </div>
-            </div>
-
-            <div class="stat-box" style="--sb-color:#6366f1;">
-                <div class="sb-icon"><i class="bi bi-star-fill"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#6366f1;">Status</div>
-                    <div class="sb-val">18</div>
-                    <div class="sb-lbl">Interested</div>
-                </div>
-            </div>
-
-            <div class="stat-box" style="--sb-color:#f59e0b;">
-                <div class="sb-icon"><i class="bi bi-wallet2"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#f59e0b;">Status</div>
-                    <div class="sb-val">11</div>
-                    <div class="sb-lbl">Budget Issue</div>
-                </div>
-            </div>
-
-            <div class="stat-box" style="--sb-color:#8b5cf6;">
-                <div class="sb-icon"><i class="bi bi-calendar-check-fill"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#8b5cf6;">Status</div>
-                    <div class="sb-val">9</div>
-                    <div class="sb-lbl">Booked</div>
-                </div>
-            </div>
-
-            <div class="stat-box" style="--sb-color:#ef4444;">
-                <div class="sb-icon"><i class="bi bi-hand-thumbs-down-fill"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#ef4444;">Status</div>
-                    <div class="sb-val">16</div>
-                    <div class="sb-lbl">Not Interested</div>
-                </div>
-            </div>
-
-            <div class="stat-box" style="--sb-color:#6b7280;">
-                <div class="sb-icon"><i class="bi bi-telephone-x-fill"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#6b7280;">Status</div>
-                    <div class="sb-val">22</div>
-                    <div class="sb-lbl">Not Responding</div>
-                </div>
-            </div>
-
-            {{-- Row 3: remaining Status (5) — grid fills naturally --}}
-
-            <div class="stat-box" style="--sb-color:#9ca3af;">
-                <div class="sb-icon"><i class="bi bi-slash-circle"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#9ca3af;">Status</div>
-                    <div class="sb-val">8</div>
-                    <div class="sb-lbl">Not Required</div>
-                </div>
-            </div>
-
-            <div class="stat-box" style="--sb-color:#f97316;">
-                <div class="sb-icon"><i class="bi bi-geo-alt-fill"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#f97316;">Status</div>
-                    <div class="sb-val">5</div>
-                    <div class="sb-lbl">Location Issue</div>
-                </div>
-            </div>
-
-            <div class="stat-box" style="--sb-color:#06b6d4;">
-                <div class="sb-icon"><i class="bi bi-translate"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#06b6d4;">Status</div>
-                    <div class="sb-val">4</div>
-                    <div class="sb-lbl">Language Barrier</div>
-                </div>
-            </div>
-
-            <div class="stat-box" style="--sb-color:#64748b;">
-                <div class="sb-icon"><i class="bi bi-question-circle-fill"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#64748b;">Status</div>
-                    <div class="sb-val">7</div>
-                    <div class="sb-lbl">Not Inquired</div>
-                </div>
-            </div>
-
-            <div class="stat-box" style="--sb-color:#14b8a6;">
-                <div class="sb-icon"><i class="bi bi-briefcase-fill"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#14b8a6;">Status</div>
-                    <div class="sb-val">3</div>
-                    <div class="sb-lbl">Job</div>
-                </div>
-            </div>
-
         </div>
+
 
         <!-- MAIN GRID -->
         <div class="dash-grid">
             <div class="dash-card span-12">
                 <div class="card-head">
                     <div>
-                        <div class="card-title">Lead Pipeline</div>
+                        <div class="card-title">Losted Lead Pipeline</div>
                         <div class="card-sub" id="drpActiveSub">Last 7 Days · 147 total · 38 hot leads</div>
                     </div>
                     <div class="card-actions mb-2">
@@ -971,34 +875,14 @@
                             <option>Budget Issue</option>
                         </select>
                     </div>
-
-                    <!-- ASSIGN TO — multi-select -->
-                    <div class="form-row" style="grid-column:1/-1">
+                    <div class="form-row">
                         <label class="form-lbl">Assign To</label>
-                        <div class="ms-wrap" id="addAssignWrap">
-                            <div class="ms-trigger" onclick="toggleMs('addAssignWrap')">
-                                <div class="ms-pills" id="addAssignPills">
-                                    <span class="ms-placeholder">Select team members…</span>
-                                </div>
-                                <i class="bi bi-chevron-down ms-arrow" id="addAssignArrow"></i>
-                            </div>
-                            <div class="ms-dropdown" id="addAssignDropdown">
-                                <div class="ms-search-wrap">
-                                    <i class="bi bi-search"></i>
-                                    <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'addAssignDropdown')">
-                                </div>
-                                <div class="ms-opts">
-                                    <label class="ms-opt"><input type="checkbox" value="Rahul Kumar" onchange="updateMs('addAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">RK</span>Rahul Kumar</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Priya Sharma" onchange="updateMs('addAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#ec4899,#f59e0b)">PS</span>Priya Sharma</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Neha Kapoor" onchange="updateMs('addAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#10b981,#06b6d4)">NK</span>Neha Kapoor</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Arjun Singh" onchange="updateMs('addAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">AS</span>Arjun Singh</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Ravi Mehta" onchange="updateMs('addAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">RM</span>Ravi Mehta</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Kiran Rao" onchange="updateMs('addAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#14b8a6,#6366f1)">KR</span>Kiran Rao</label>
-                                </div>
-                            </div>
-                        </div>
+                        <select class="form-inp">
+                            <option>Rahul Kumar</option>
+                            <option>Priya Sharma</option>
+                            <option>Neha Kapoor</option>
+                        </select>
                     </div>
-
                 </div>
             </div>
             <div class="modal-ft">
@@ -1009,7 +893,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- EDIT MODAL -->
     <div class="modal-backdrop" id="editLeadModal">
@@ -1077,34 +960,14 @@
                             <option>Budget Issue</option>
                         </select>
                     </div>
-
-                    <!-- ASSIGN TO — multi-select -->
-                    <div class="form-row" style="grid-column:1/-1">
+                    <div class="form-row">
                         <label class="form-lbl">Assign To</label>
-                        <div class="ms-wrap" id="editAssignWrap">
-                            <div class="ms-trigger" onclick="toggleMs('editAssignWrap')">
-                                <div class="ms-pills" id="editAssignPills">
-                                    <span class="ms-placeholder">Select team members…</span>
-                                </div>
-                                <i class="bi bi-chevron-down ms-arrow" id="editAssignArrow"></i>
-                            </div>
-                            <div class="ms-dropdown" id="editAssignDropdown">
-                                <div class="ms-search-wrap">
-                                    <i class="bi bi-search"></i>
-                                    <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'editAssignDropdown')">
-                                </div>
-                                <div class="ms-opts">
-                                    <label class="ms-opt"><input type="checkbox" value="Rahul Kumar" onchange="updateMs('editAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">RK</span>Rahul Kumar</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Priya Sharma" onchange="updateMs('editAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#ec4899,#f59e0b)">PS</span>Priya Sharma</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Neha Kapoor" onchange="updateMs('editAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#10b981,#06b6d4)">NK</span>Neha Kapoor</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Arjun Singh" onchange="updateMs('editAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">AS</span>Arjun Singh</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Ravi Mehta" onchange="updateMs('editAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">RM</span>Ravi Mehta</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Kiran Rao" onchange="updateMs('editAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#14b8a6,#6366f1)">KR</span>Kiran Rao</label>
-                                </div>
-                            </div>
-                        </div>
+                        <select class="form-inp">
+                            <option>Rahul Kumar</option>
+                            <option>Priya Sharma</option>
+                            <option>Neha Kapoor</option>
+                        </select>
                     </div>
-
                 </div>
             </div>
             <div class="modal-ft">
@@ -1115,301 +978,6 @@
             </div>
         </div>
     </div>
-
-
-    <!-- ── Multi-select styles ── -->
-    <style>
-        .ms-wrap {
-            position: relative;
-        }
-
-        /* Trigger box — looks like form-inp */
-        .ms-trigger {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            background: var(--bg3);
-            border: 1px solid var(--b1);
-            border-radius: var(--r-sm);
-            padding: 7px 10px;
-            cursor: pointer;
-            min-height: 40px;
-            transition: var(--transition);
-        }
-
-        .ms-trigger:hover,
-        .ms-wrap.open .ms-trigger {
-            border-color: var(--accent);
-            background: var(--bg2);
-        }
-
-        .ms-wrap.open .ms-trigger {
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, .1);
-        }
-
-        /* Pills area */
-        .ms-pills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .ms-placeholder {
-            font-size: 13px;
-            color: var(--t4);
-        }
-
-        /* Each selected pill */
-        .ms-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: var(--accent-bg);
-            border: 1px solid rgba(99, 102, 241, .25);
-            color: var(--accent);
-            font-size: 12px;
-            font-weight: 600;
-            padding: 2px 8px 2px 4px;
-            border-radius: 20px;
-            white-space: nowrap;
-        }
-
-        .ms-pill-ava {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 8px;
-            font-weight: 700;
-            color: #fff;
-            flex-shrink: 0;
-        }
-
-        .ms-pill-x {
-            font-size: 10px;
-            color: var(--accent);
-            cursor: pointer;
-            opacity: .7;
-            line-height: 1;
-            padding: 0 0 0 2px;
-        }
-
-        .ms-pill-x:hover {
-            opacity: 1;
-        }
-
-        /* Chevron */
-        .ms-arrow {
-            font-size: 11px;
-            color: var(--t3);
-            transition: transform .2s ease;
-            flex-shrink: 0;
-        }
-
-        .ms-wrap.open .ms-arrow {
-            transform: rotate(180deg);
-        }
-
-        /* Dropdown panel */
-        .ms-dropdown {
-            display: none;
-            position: absolute;
-            top: calc(100% + 4px);
-            left: 0;
-            right: 0;
-            background: var(--bg2);
-            border: 1px solid var(--b2);
-            border-radius: var(--r);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, .2);
-            z-index: 9999;
-            overflow: hidden;
-            animation: msDropIn .15s ease;
-        }
-
-        @keyframes msDropIn {
-            from {
-                opacity: 0;
-                transform: translateY(-6px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .ms-wrap.open .ms-dropdown {
-            display: block;
-        }
-
-        /* Search inside dropdown */
-        .ms-search-wrap {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            border-bottom: 1px solid var(--b1);
-        }
-
-        .ms-search-wrap i {
-            color: var(--t3);
-            font-size: 12px;
-            flex-shrink: 0;
-        }
-
-        .ms-search {
-            background: none;
-            border: none;
-            outline: none;
-            font-size: 13px;
-            color: var(--t1);
-            font-family: var(--font);
-            width: 100%;
-        }
-
-        .ms-search::placeholder {
-            color: var(--t4);
-        }
-
-        /* Options list */
-        .ms-opts {
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 4px;
-            scrollbar-width: thin;
-            scrollbar-color: var(--b2) transparent;
-        }
-
-        .ms-opt {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            padding: 8px 10px;
-            border-radius: var(--r-sm);
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--t2);
-            transition: var(--transition);
-            user-select: none;
-        }
-
-        .ms-opt:hover {
-            background: var(--bg4);
-            color: var(--t1);
-        }
-
-        .ms-opt input[type="checkbox"] {
-            width: 14px;
-            height: 14px;
-            accent-color: var(--accent);
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .ms-opt.hidden {
-            display: none;
-        }
-
-        /* Mini avatar in option */
-        .ms-ava {
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 8px;
-            font-weight: 700;
-            color: #fff;
-            flex-shrink: 0;
-        }
-
-        /* Checked state highlight */
-        .ms-opt:has(input:checked) {
-            background: var(--accent-bg);
-            color: var(--accent);
-        }
-    </style>
-
-
-    <!-- ── Multi-select JS ── -->
-    <script>
-        /* Toggle open/close */
-        function toggleMs(wrapId) {
-            const wrap = document.getElementById(wrapId);
-            const isOpen = wrap.classList.contains('open');
-
-            // Close all other open ms-wraps
-            document.querySelectorAll('.ms-wrap.open').forEach(w => {
-                if (w.id !== wrapId) w.classList.remove('open');
-            });
-
-            wrap.classList.toggle('open', !isOpen);
-        }
-
-        /* Update pills display when checkbox changes */
-        function updateMs(wrapId) {
-            const wrap = document.getElementById(wrapId);
-            const pillsEl = wrap.querySelector('.ms-pills');
-            const checkboxes = wrap.querySelectorAll('.ms-opt input[type="checkbox"]:checked');
-
-            pillsEl.innerHTML = '';
-
-            if (checkboxes.length === 0) {
-                pillsEl.innerHTML = '<span class="ms-placeholder">Select team members…</span>';
-                return;
-            }
-
-            checkboxes.forEach(cb => {
-                const label = cb.closest('.ms-opt');
-                const ava = label.querySelector('.ms-ava');
-                const name = cb.value;
-                const bg = ava ? ava.style.background : '#6366f1';
-
-                const pill = document.createElement('span');
-                pill.className = 'ms-pill';
-                pill.innerHTML = `
-                    <span class="ms-pill-ava" style="background:${bg}">${name.split(' ').map(w=>w[0]).join('')}</span>
-                    ${name}
-                    <span class="ms-pill-x" onclick="removeMsPill(event,'${wrapId}','${name}')">✕</span>
-                `;
-                pillsEl.appendChild(pill);
-            });
-        }
-
-        /* Remove pill by clicking ✕ */
-        function removeMsPill(event, wrapId, value) {
-            event.stopPropagation();
-            const wrap = document.getElementById(wrapId);
-            const cb = [...wrap.querySelectorAll('.ms-opt input[type="checkbox"]')]
-                .find(c => c.value === value);
-            if (cb) {
-                cb.checked = false;
-            }
-            updateMs(wrapId);
-        }
-
-        /* Search filter */
-        function filterMs(input, dropdownId) {
-            const q = input.value.toLowerCase();
-            document.querySelectorAll(`#${dropdownId} .ms-opt`).forEach(opt => {
-                opt.classList.toggle('hidden', !opt.textContent.toLowerCase().includes(q));
-            });
-        }
-
-        /* Close dropdown when clicking outside */
-        document.addEventListener('click', function(e) {
-            document.querySelectorAll('.ms-wrap.open').forEach(wrap => {
-                if (!wrap.contains(e.target)) wrap.classList.remove('open');
-            });
-        });
-    </script>
 
     <!-- DELETE MODAL -->
     <div class="modal-backdrop" id="deleteModal">
@@ -1521,6 +1089,9 @@
 
 
 <script>
+    /* ═══════════════════════════════════════════
+   DATE RANGE PICKER LOGIC
+═══════════════════════════════════════════ */
     (function() {
         const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         const MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

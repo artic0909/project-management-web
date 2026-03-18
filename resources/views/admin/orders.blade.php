@@ -11,11 +11,28 @@
             <div>
                 <h1 class="page-title">Your All Orders</h1>
             </div>
+
+            <div class="d-flex gap-2">
+
+                <button class="btn-primary-solid sm">
+                    <i class="bi bi-file-earmark-plus-fill"></i> Import
+                </button>
+
+                <button class="btn-primary-solid sm">
+                    <i class="bi bi-file-earmark-spreadsheet"></i> Export
+                </button>
+
+                <button class="btn-primary-solid sm" onclick="openModal('addOrderModal')">
+                    <i class="bi bi-plus-lg"></i> Add Order
+                </button>
+
+            </div>
+
         </div>
 
-        {{-- ═══════════════════════════════════════════════════
+        <!-- {{-- ═══════════════════════════════════════════════════
              6 KPI SUMMARY CARDS
-        ════════════════════════════════════════════════════ --}}
+        ════════════════════════════════════════════════════ --}} -->
         <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px;">
 
             <div class="dash-card" style="padding:16px 18px;">
@@ -103,7 +120,7 @@
             </div>
 
         </div>
-        {{-- END KPI CARDS --}}
+        <!-- {{-- END KPI CARDS --}} -->
 
 
 
@@ -151,10 +168,6 @@
                             <option>Pending</option>
                             <option>Overdue</option>
                         </select>
-
-                        <button class="btn-primary-solid sm" onclick="openModal('addOrderModal')">
-                            <i class="bi bi-plus-lg"></i> Add Order
-                        </button>
                     </div>
                 </div>
 

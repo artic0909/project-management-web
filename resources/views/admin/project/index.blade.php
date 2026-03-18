@@ -13,11 +13,17 @@
                 <h1 class="page-title">All Projects</h1>
                 <p class="page-desc">Manage website and development projects</p>
             </div>
-            <!-- <div class="header-actions">
+            <div class="header-actions">
+                <button class="btn-primary-solid sm">
+                    <i class="bi bi-file-earmark-plus-fill"></i> Import
+                </button>
+                <button class="btn-primary-solid sm">
+                    <i class="bi bi-file-earmark-spreadsheet"></i> Export
+                </button>
                 <a href="{{ route('admin.projects.create') }}" class="btn-primary-solid">
                     <i class="bi bi-plus-lg"></i> Add Project
                 </a>
-            </div> -->
+            </div>
         </div>
 
         {{-- ── KPI CARDS ── --}}
@@ -192,9 +198,6 @@
                             <option>Completed</option>
                             <option>On Hold</option>
                         </select>
-                        <a href="{{ route('admin.projects.create') }}" class="btn-primary-solid sm">
-                            <i class="bi bi-plus-lg"></i> Add Project
-                        </a>
                     </div>
                 </div>
 

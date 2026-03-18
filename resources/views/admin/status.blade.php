@@ -13,6 +13,10 @@
                 <h1 class="page-title">Status Manager</h1>
                 <p class="page-desc">Manage statuses for Leads, Orders, Payments & Projects</p>
             </div>
+
+            <button class="btn-primary-solid sm" onclick="openModal('addStatusModal')">
+                <i class="bi bi-plus-lg"></i> Add Status
+            </button>
         </div>
 
         <!-- KPI CARDS -->
@@ -110,9 +114,7 @@
                             <i class="bi bi-search"></i>
                             <input type="text" id="statusSearch" placeholder="Search status…" oninput="filterTable()">
                         </div>
-                        <button class="btn-primary-solid sm" onclick="openModal('addStatusModal')">
-                            <i class="bi bi-plus-lg"></i> Add Status
-                        </button>
+
                     </div>
                 </div>
 
@@ -143,7 +145,7 @@
                                 <td>2</td>
                                 <td><span style="font-weight:600;color:var(--t1);">Pending</span></td>
                                 <td><span class="type-badge order">Order</span></td>
-                                 <td>
+                                <td>
                                     <div class="row-actions"><button class="ra-btn" onclick="openEditModal('Pending','order','#f59e0b')" title="Edit"><i class="bi bi-pencil-fill"></i></button><button class="ra-btn danger" onclick="openModal('deleteStatusModal')" title="Delete"><i class="bi bi-trash-fill"></i></button></div>
                                 </td>
                             </tr>
@@ -165,7 +167,7 @@
                                 <td>4</td>
                                 <td><span style="font-weight:600;color:var(--t1);">Planning</span></td>
                                 <td><span class="type-badge project">Project</span></td>
-                               <td>
+                                <td>
                                     <div class="row-actions"><button class="ra-btn" onclick="openEditModal('Planning','project','#f59e0b')" title="Edit"><i class="bi bi-pencil-fill"></i></button><button class="ra-btn danger" onclick="openModal('deleteStatusModal')" title="Delete"><i class="bi bi-trash-fill"></i></button></div>
                                 </td>
                             </tr>

@@ -37,6 +37,9 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     // Leads
     Route::get('/add-leads', [LeadController::class, 'index'])->name('leads.index');
     Route::get('/lead-followup', [FollowupController::class, 'index'])->name('leads.followup');
+    
+    // Losted Leads
+    Route::get('/losted-leads', [LeadController::class, 'lostedLeads'])->name('losted-leads');
 
     // Orders
     Route::get('/add-orders', [OrderController::class, 'index'])->name('orders');

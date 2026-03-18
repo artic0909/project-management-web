@@ -11,4 +11,9 @@ class LeadController extends Controller
     {
         return view('admin.leads');
     }
+
+    public function lostedLeads()
+    {
+        return view('admin.losted-leads');
+    }
 }
