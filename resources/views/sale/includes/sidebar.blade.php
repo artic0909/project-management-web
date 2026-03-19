@@ -30,7 +30,7 @@
         <i class="bi bi-person-lines-fill"></i><span>My Leads</span>
         <span class="nav-count">147</span>
       </a>
-      <a class="nav-item {{ request()->routeIs('sale.orders*') ? 'active' : '' }}" href="{{ route('sale.orders') }}">
+      <a class="nav-item {{ request()->routeIs('sale.orders*') ? 'active' : '' }}" href="{{ route('sale.orders.index') }}">
         <i class="bi bi-bag-check-fill"></i><span>My Orders</span>
         <span class="nav-count">38</span>
       </a>
@@ -39,15 +39,30 @@
         <i class="bi bi-wallet2"></i><span>Payments</span>
       </a>
 
-      <a class="nav-item" href="#">
+      <a class="nav-item {{ request()->routeIs('sale.projects*') ? 'active' : '' }}" href="{{ route('sale.projects.index') }}">
         <i class="bi bi-kanban-fill"></i><span>My Projects</span>
         <span class="nav-count">24</span>
+      </a>
+
+      <a class="nav-item {{ request()->routeIs('sale.losted-leads') ? 'active' : '' }}" href="{{ route('sale.losted-leads') }}">
+        <i class="bi bi-ban"></i><span>Losted Leads</span>
+        <span class="nav-count">20</span>
       </a>
 
       <div class="nav-section-label">People</div>
 
       <a class="nav-item" href="#">
         <i class="bi bi-clock-history"></i><span>MY Attendance</span>
+        <div class="nav-dot green"></div>
+      </a>
+
+      <a class="nav-item {{ request()->routeIs('sale.developer*') ? 'active' : '' }}" href="{{ route('sale.developer') }}">
+        <i class="bi bi-person-workspace"></i><span>Developers</span>
+        <span class="nav-count">52</span>
+      </a>
+      
+      <a class="nav-item" href="#">
+        <i class="bi bi-clock-history"></i><span>Developer Attendance</span>
         <div class="nav-dot green"></div>
       </a>
 
