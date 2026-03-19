@@ -20,7 +20,7 @@
                     <span style="color:var(--t4);font-size:12px;">›</span>
                     <span style="font-size:13px;font-weight:600;color:var(--t2);">DataFirst Corp</span>
                 </div>
-                <h1 class="page-title">Lead Followup</h1>
+                <h1 class="page-title">Lead Followup/Order Followup</h1>
                 <p class="page-desc">Track communication history and schedule follow-ups</p>
             </div>
         </div>
@@ -163,7 +163,7 @@
                     </div>
 
                     <!-- Quick Actions -->
-                    <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">
+                    <!-- <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">
                         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:2px;">Quick Update</div>
 
                         <div class="form-row" style="margin-bottom:0;">
@@ -206,7 +206,7 @@
                             onclick="showToast('success','Lead updated!','bi-person-check-fill')">
                             <i class="bi bi-check2-circle"></i> Save Changes
                         </button>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 

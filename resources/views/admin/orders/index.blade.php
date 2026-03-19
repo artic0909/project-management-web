@@ -22,9 +22,9 @@
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
 
-                <button class="btn-primary-solid sm" onclick="openModal('addOrderModal')">
+                <a href="{{route('admin.orders.create')}}" class="btn-primary-solid sm">
                     <i class="bi bi-plus-lg"></i> Add Order
-                </button>
+                </a>
 
             </div>
 
@@ -225,9 +225,9 @@
                                         <button class="ra-btn" onclick="openModal('orderDetailModal')"><i class="bi bi-eye-fill"></i></button>
                                         <button class="ra-btn"><i class="bi bi-telephone-fill"></i></button>
                                         <button class="ra-btn"><i class="bi bi-envelope-fill"></i></button>
-                                        <a href="{{route('admin.leads.followup')}}" class="ra-btn" target="_blank"><i class="bi bi-arrow-counterclockwise"></i></a>
-                                        <a href="{{route('admin.payments.create')}}" target="_blank" class="ra-btn"><i class="bi bi-wallet2"></i></a>
-                                        <button class="ra-btn" onclick="openModal('editOrderModal')"><i class="bi bi-pencil-fill"></i></button>
+                                        <a href="{{route('admin.orders.followup')}}" class="ra-btn"><i class="bi bi-arrow-counterclockwise"></i></a>
+                                        <a href="{{route('admin.payments.create')}}" class="ra-btn"><i class="bi bi-wallet2"></i></a>
+                                        <a href="{{route('admin.orders.edit')}}" class="ra-btn"><i class="bi bi-pencil-fill"></i></a>
                                         <button class="ra-btn danger" onclick="openModal('deleteModal')"><i class="bi bi-trash-fill"></i></button>
                                     </div>
                                 </td>
@@ -254,116 +254,7 @@
     </div>
 
 
-    {{-- ═══════════════════════════════════════════════════
-         ADD ORDER MODAL
-    ════════════════════════════════════════════════════ --}}
-    <div class="modal-backdrop" id="addOrderModal">
-        <div class="modal-box modal-box-lg" onclick="event.stopPropagation()">
-            <div class="modal-hd">
-                <span>Create New Order</span>
-                <button class="modal-close" onclick="closeModal('addOrderModal')"><i class="bi bi-x-lg"></i></button>
-            </div>
-            <div class="modal-bd">
-                <div class="form-grid">
-                    <div class="form-row"><label class="form-lbl">Company Name *</label><input type="text" class="form-inp" placeholder="Company name"></div>
-                    <div class="form-row"><label class="form-lbl">Client Name *</label><input type="text" class="form-inp" placeholder="Full name"></div>
-                    <div class="form-row"><label class="form-lbl">Email</label><input type="email" class="form-inp" placeholder="email@company.com"></div>
-                    <div class="form-row"><label class="form-lbl">Phone</label><input type="tel" class="form-inp" placeholder="+91 XXXXX XXXXX"></div>
-                    <div class="form-row"><label class="form-lbl">Domain Name</label><input type="text" class="form-inp" placeholder="Domain name"></div>
-                    <div class="form-row"><label class="form-lbl">Service / Product</label><input type="text" class="form-inp" placeholder="What are we delivering?"></div>
-                    <div class="form-row"><label class="form-lbl">Order Value *</label><input type="text" class="form-inp" placeholder="₹ Amount"></div>
-                    <div class="form-row">
-                        <label class="form-lbl">Payment Terms</label>
-                        <select class="form-inp">
-                            <option>Full Advance</option>
-                            <option>50-50</option>
-                            <option>Milestone</option>
-                            <option>Net 30</option>
-                        </select>
-                    </div>
-                    <div class="form-row"><label class="form-lbl">Delivery Date</label><input type="date" class="form-inp"></div>
-                    <div class="form-row"><label class="form-lbl">City</label><input type="text" class="form-inp" placeholder="City"></div>
-                    <div class="form-row"><label class="form-lbl">Region / State</label><input type="text" class="form-inp" placeholder="State or Province"></div>
-                    <div class="form-row"><label class="form-lbl">Zip Code</label><input type="text" class="form-inp" placeholder="Zip / PIN"></div>
-                    <div class="form-row" style="grid-column:1/-1"><label class="form-lbl">Full Address</label><textarea class="form-inp" rows="2" placeholder="Street address…"></textarea></div>
-                </div>
-                <div class="mkt-section">
-                    <div class="mkt-section-label"><i class="bi bi-megaphone-fill"></i> Marketing Order Details <span class="mkt-section-note">Fill only for marketing orders</span></div>
-                    <div class="form-grid">
-                        <div class="form-row"><label class="form-lbl">Payment Status</label><select class="form-inp">
-                                <option>Pending</option>
-                                <option>Paid</option>
-                                <option>Overdue</option>
-                            </select></div>
-                        <div class="form-row"><label class="form-lbl">Starting Date</label><input type="date" class="form-inp"></div>
-                        <div class="form-row"><label class="form-lbl">Plan Name</label><input type="text" class="form-inp" placeholder="Plan name"></div>
-                        <div class="form-row"><label class="form-lbl">Username</label><input type="text" class="form-inp" placeholder="Account username"></div>
-                        <div class="form-row"><label class="form-lbl">Password</label><input type="text" class="form-inp" placeholder="Account password"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-ft">
-                <button class="btn-ghost" onclick="closeModal('addOrderModal')">Cancel</button>
-                <button class="btn-primary-solid" onclick="closeModal('addOrderModal');showToast('success','Order created!','bi-bag-check-fill')"><i class="bi bi-plus-lg"></i> Create Order</button>
-            </div>
-        </div>
-    </div>
-
-
-    {{-- ═══════════════════════════════════════════════════
-         EDIT ORDER MODAL
-    ════════════════════════════════════════════════════ --}}
-    <div class="modal-backdrop" id="editOrderModal">
-        <div class="modal-box modal-box-lg" onclick="event.stopPropagation()">
-            <div class="modal-hd">
-                <span>Update Order</span>
-                <button class="modal-close" onclick="closeModal('editOrderModal')"><i class="bi bi-x-lg"></i></button>
-            </div>
-            <div class="modal-bd">
-                <div class="form-grid">
-                    <div class="form-row"><label class="form-lbl">Company Name *</label><input type="text" class="form-inp" placeholder="Company name"></div>
-                    <div class="form-row"><label class="form-lbl">Client Name *</label><input type="text" class="form-inp" placeholder="Full name"></div>
-                    <div class="form-row"><label class="form-lbl">Email</label><input type="email" class="form-inp" placeholder="email@company.com"></div>
-                    <div class="form-row"><label class="form-lbl">Phone</label><input type="tel" class="form-inp" placeholder="+91 XXXXX XXXXX"></div>
-                    <div class="form-row"><label class="form-lbl">Domain Name</label><input type="text" class="form-inp" placeholder="Domain name"></div>
-                    <div class="form-row"><label class="form-lbl">Service / Product</label><input type="text" class="form-inp" placeholder="What are we delivering?"></div>
-                    <div class="form-row"><label class="form-lbl">Order Value *</label><input type="text" class="form-inp" placeholder="₹ Amount"></div>
-                    <div class="form-row"><label class="form-lbl">Payment Terms</label><select class="form-inp">
-                            <option>Full Advance</option>
-                            <option>50-50</option>
-                            <option>Milestone</option>
-                            <option>Net 30</option>
-                        </select></div>
-                    <div class="form-row"><label class="form-lbl">Delivery Date</label><input type="date" class="form-inp"></div>
-                    <div class="form-row"><label class="form-lbl">City</label><input type="text" class="form-inp" placeholder="City"></div>
-                    <div class="form-row"><label class="form-lbl">Region / State</label><input type="text" class="form-inp" placeholder="State or Province"></div>
-                    <div class="form-row"><label class="form-lbl">Zip Code</label><input type="text" class="form-inp" placeholder="Zip / PIN"></div>
-                    <div class="form-row" style="grid-column:1/-1"><label class="form-lbl">Full Address</label><textarea class="form-inp" rows="2" placeholder="Street address…"></textarea></div>
-                </div>
-                <div class="mkt-section">
-                    <div class="mkt-section-label"><i class="bi bi-megaphone-fill"></i> Marketing Order Details <span class="mkt-section-note">Fill only for marketing orders</span></div>
-                    <div class="form-grid">
-                        <div class="form-row"><label class="form-lbl">Payment Status</label><select class="form-inp">
-                                <option>Pending</option>
-                                <option>Paid</option>
-                                <option>Overdue</option>
-                            </select></div>
-                        <div class="form-row"><label class="form-lbl">Starting Date</label><input type="date" class="form-inp"></div>
-                        <div class="form-row"><label class="form-lbl">Plan Name</label><input type="text" class="form-inp" placeholder="Plan name"></div>
-                        <div class="form-row"><label class="form-lbl">Username</label><input type="text" class="form-inp" placeholder="Account username"></div>
-                        <div class="form-row"><label class="form-lbl">Password</label><input type="text" class="form-inp" placeholder="Account password"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-ft">
-                <button class="btn-ghost" onclick="closeModal('editOrderModal')">Cancel</button>
-                <button class="btn-primary-solid" onclick="closeModal('editOrderModal');showToast('success','Order updated!','bi-bag-check-fill')"><i class="bi bi-floppy-fill"></i> Update Order</button>
-            </div>
-        </div>
-    </div>
-
-
-    {{-- DELETE MODAL --}}
+    <!-- {{-- DELETE MODAL --}} -->
     <div class="modal-backdrop" id="deleteModal">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-hd" style="border-bottom:1px solid #fecaca;">
@@ -387,71 +278,207 @@
     </div>
 
 
-    {{-- ORDER DETAIL MODAL --}}
-    <div class="modal-backdrop" id="orderDetailModal">
+<!-- ORDER DETAIL MODAL — View Only -->
+    <div class="modal-backdrop" id="orderDetailModal" onclick="closeModal('orderDetailModal')">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-hd">
-                <span>Order #ORD-2847</span>
-                <button class="modal-close" onclick="closeModal('orderDetailModal')"><i class="bi bi-x-lg"></i></button>
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                    <span>Order #ORD-2847</span>
+                    <span style="font-size:11px;font-weight:500;color:var(--t3);">TechCorp Pvt Ltd</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <a href="{{ route('admin.orders.edit', 1) }}"
+                        class="btn-ghost" style="padding:5px 11px;font-size:12px;">
+                        <i class="bi bi-pencil-fill"></i> Edit
+                    </a>
+                    <button class="modal-close" onclick="closeModal('orderDetailModal')"><i class="bi bi-x-lg"></i></button>
+                </div>
             </div>
+
             <div class="modal-bd">
-                <div class="detail-kpis" style="margin-bottom:20px">
+
+                {{-- ── KPI Strip ── --}}
+                <div class="detail-kpis" style="margin-bottom:20px;">
                     <div class="dk-item">
                         <div class="dk-val">₹8.5L</div>
                         <div class="dk-lbl">Order Value</div>
                     </div>
                     <div class="dk-item">
-                        <div class="dk-val" style="color:#10b981">Paid</div>
-                        <div class="dk-lbl">Status</div>
+                        <div class="dk-val" style="color:#10b981;">Paid</div>
+                        <div class="dk-lbl">Payment</div>
                     </div>
                     <div class="dk-item">
-                        <div class="dk-val">Nov 18</div>
-                        <div class="dk-lbl">Date</div>
+                        <div class="dk-val">18 Nov</div>
+                        <div class="dk-lbl">Order Date</div>
                     </div>
                     <div class="dk-item">
-                        <div class="dk-val">Dec 15</div>
+                        <div class="dk-val" style="color:#f59e0b;">15 Dec</div>
                         <div class="dk-lbl">Delivery</div>
                     </div>
                 </div>
-                <div class="form-grid">
-                    <div class="form-row"><label class="form-lbl">Company Name</label><input class="form-inp" value="TechCorp Pvt Ltd" readonly></div>
-                    <div class="form-row"><label class="form-lbl">Client Name</label><input class="form-inp" value="Rahul Sharma" readonly></div>
-                    <div class="form-row"><label class="form-lbl">Domain</label><input class="form-inp" value="techcorp.io" readonly></div>
-                    <div class="form-row"><label class="form-lbl">Payment Terms</label><input class="form-inp" value="Full Advance" readonly></div>
-                    <div class="form-row" style="grid-column:1/-1">
-                        <label class="form-lbl">Assign To (Developer)</label>
-                        <select class="form-inp">
-                            <option>Rahul Kumar</option>
-                            <option>Priya Sharma</option>
-                            <option>Neha Kapoor</option>
-                        </select>
+
+                {{-- ── Order Info ── --}}
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+
+                    <div class="od-row">
+                        <span class="od-lbl">Company Name</span>
+                        <span class="od-val">TechCorp Pvt Ltd</span>
+                    </div>
+                    <div class="od-row">
+                        <span class="od-lbl">Client Name</span>
+                        <span class="od-val">Rahul Sharma</span>
+                    </div>
+                    <div class="od-row">
+                        <span class="od-lbl">Email</span>
+                        <span class="od-val">rahul@techcorp.io</span>
+                    </div>
+                    <div class="od-row">
+                        <span class="od-lbl">Phone</span>
+                        <span class="od-val">+91 98765 43210</span>
+                    </div>
+                    <div class="od-row">
+                        <span class="od-lbl">Domain</span>
+                        <span class="od-val">
+                            <a href="https://techcorp.io" target="_blank" style="color:var(--accent);text-decoration:none;">techcorp.io</a>
+                        </span>
+                    </div>
+                    <div class="od-row">
+                        <span class="od-lbl">Service / Product</span>
+                        <span class="od-val">Website Redesign</span>
+                    </div>
+                    <div class="od-row">
+                        <span class="od-lbl">Payment Terms</span>
+                        <span class="od-val">Full Advance</span>
+                    </div>
+                    <div class="od-row">
+                        <span class="od-lbl">Order Type</span>
+                        <span class="od-val">
+                            <span style="font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;background:rgba(6,182,212,.12);color:#06b6d4;">Website</span>
+                        </span>
+                    </div>
+                    <div class="od-row" style="grid-column:1/-1;">
+                        <span class="od-lbl">Full Address</span>
+                        <span class="od-val">204, Orbit Tower, Andheri East, Mumbai — 400069, Maharashtra</span>
+                    </div>
+                    <div class="od-row">
+                        <span class="od-lbl">Assigned To (Developer)</span>
+                        <span class="od-val" style="display:flex;align-items:center;gap:6px;">
+                            <span style="width:20px;height:20px;border-radius:5px;background:linear-gradient(135deg,#6366f1,#06b6d4);display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;">RK</span>
+                            Rahul Kumar
+                        </span>
+                    </div>
+                    <div class="od-row">
+                        <span class="od-lbl">Created By</span>
+                        <span class="od-val" style="display:flex;align-items:center;gap:6px;">
+                            <span style="width:20px;height:20px;border-radius:5px;background:linear-gradient(135deg,#ec4899,#f59e0b);display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;">PS</span>
+                            Priya Sharma
+                        </span>
+                    </div>
+
+                </div>
+
+                {{-- ── Marketing Section (read-only) ── --}}
+                <div style="border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;">
+                    <div style="display:flex;align-items:center;gap:8px;background:var(--bg3);padding:9px 14px;border-bottom:1px solid var(--b1);">
+                        <div style="width:24px;height:24px;border-radius:6px;background:rgba(139,92,246,.12);display:flex;align-items:center;justify-content:center;">
+                            <i class="bi bi-megaphone-fill" style="font-size:11px;color:#8b5cf6;"></i>
+                        </div>
+                        <span style="font-size:11.5px;font-weight:700;color:var(--t2);">Marketing Order Details</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 14px;">
+
+                        <div class="od-row">
+                            <span class="od-lbl">Plan Name</span>
+                            <span class="od-val">Growth Plan</span>
+                        </div>
+                        <div class="od-row">
+                            <span class="od-lbl">Payment Status</span>
+                            <span class="od-val">
+                                <span class="status-pill paid">Paid</span>
+                            </span>
+                        </div>
+                        <div class="od-row">
+                            <span class="od-lbl">Username</span>
+                            <span class="od-val mono">datafirst_user</span>
+                        </div>
+                        <div class="od-row">
+                            <span class="od-lbl">Password</span>
+                            <span class="od-val" style="display:flex;align-items:center;gap:8px;">
+                                <span id="mktPwVal" style="font-family:var(--mono);">••••••••</span>
+                                <button type="button" onclick="toggleMktPw()"
+                                    style="background:none;border:none;color:var(--accent);font-size:12px;cursor:pointer;padding:0;line-height:1;">
+                                    <i class="bi bi-eye-fill" id="mktPwIcon"></i>
+                                </button>
+                            </span>
+                        </div>
+                        <div class="od-row" style="grid-column:1/-1;">
+                            <span class="od-lbl">Assigned To (Sales)</span>
+                            <span class="od-val" style="display:flex;align-items:center;gap:6px;">
+                                <span style="width:20px;height:20px;border-radius:5px;background:linear-gradient(135deg,#10b981,#06b6d4);display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;">NK</span>
+                                Neha Kapoor
+                            </span>
+                        </div>
+
                     </div>
                 </div>
-                <div class="mkt-section">
-                    <div class="mkt-section-label"><i class="bi bi-megaphone-fill"></i> Marketing Order Details</div>
-                    <div class="form-grid">
-                        <div class="form-row"><label class="form-lbl">Plan Name</label><input class="form-inp" value="Growth Plan" readonly></div>
-                        <div class="form-row"><label class="form-lbl">Username</label><input class="form-inp" value="datafirst_user" readonly></div>
-                        <div class="form-row"><label class="form-lbl">Password</label><input class="form-inp" value="••••••••" readonly></div>
-                        <div class="form-row"><label class="form-lbl">Payment Status</label><select class="form-inp">
-                                <option>Pending</option>
-                                <option>Paid</option>
-                                <option>Overdue</option>
-                            </select></div>
-                        <div class="form-row" style="grid-column:1/-1"><label class="form-lbl">Assign To (Sales)</label><select class="form-inp">
-                                <option>Rahul Kumar</option>
-                                <option>Priya Sharma</option>
-                                <option>Neha Kapoor</option>
-                            </select></div>
-                    </div>
+
+            </div>
+
+            {{-- ── Footer ── --}}
+            <div class="modal-ft" style="justify-content:space-between;">
+                <button class="btn-ghost" onclick="closeModal('orderDetailModal')">
+                    <i class="bi bi-x-lg"></i> Close
+                </button>
+                <div style="display:flex;gap:8px;">
+                    <a href="{{ route('admin.payments.create') }}" target="_blank"
+                        class="btn-ghost" style="border-color:#10b981;color:#10b981;"
+                        onmouseover="this.style.background='rgba(16,185,129,.08)'"
+                        onmouseout="this.style.background='transparent'">
+                        <i class="bi bi-wallet2"></i> Add Payment
+                    </a>
+                    <a href="{{ route('admin.orders.edit', 1) }}" class="btn-primary-solid">
+                        <i class="bi bi-pencil-fill"></i> Edit Order
+                    </a>
                 </div>
             </div>
-            <div class="modal-ft">
-                <button class="btn-ghost" onclick="closeModal('orderDetailModal')">Close</button>
-                <button class="btn-primary-solid" onclick="closeModal('orderDetailModal');showToast('success','Order updated!','bi-bag-check-fill')">Update</button>
-            </div>
+
         </div>
     </div>
+
+    <style>
+        /* Read-only detail row */
+        .od-row {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            padding: 9px 12px;
+            background: var(--bg3);
+            border: 1px solid var(--b1);
+            border-radius: var(--r-sm);
+        }
+        .od-lbl {
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            color: var(--t3);
+        }
+        .od-val {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--t1);
+            line-height: 1.4;
+        }
+    </style>
+
+    <script>
+        let mktPwVisible = false;
+        function toggleMktPw() {
+            mktPwVisible = !mktPwVisible;
+            document.getElementById('mktPwVal').textContent = mktPwVisible ? 'pass@1234' : '••••••••';
+            document.getElementById('mktPwIcon').className  = mktPwVisible ? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill';
+        }
+    </script>
 
 </main>
 

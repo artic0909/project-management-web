@@ -1,6 +1,6 @@
 @extends('admin.layout.app')
 
-@section('title', 'Add Leads')
+@section('title', 'All Leads')
 
 @section('content')
 
@@ -609,9 +609,9 @@
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
-                <button class="btn-primary-solid sm" onclick="openModal('addLeadModal')">
+                <a class="btn-primary-solid sm" href="{{route('admin.leads.create')}}">
                     <i class="bi bi-plus-lg"></i> Add Lead
-                </button>
+                </a>
             </div>
         </div>
 
@@ -877,8 +877,8 @@
                                         <button class="ra-btn" title="View" onclick="openModal('leadDetailModal')"><i class="bi bi-eye-fill"></i></button>
                                         <button class="ra-btn" title="Call"><i class="bi bi-telephone-fill"></i></button>
                                         <button class="ra-btn" title="Email"><i class="bi bi-envelope-fill"></i></button>
-                                        <a href="{{route('admin.leads.followup')}}" class="ra-btn" title="Followup" target="_blank"><i class="bi bi-arrow-counterclockwise"></i></a>
-                                        <button class="ra-btn" title="Edit" onclick="openModal('editLeadModal')"><i class="bi bi-pencil-fill"></i></button>
+                                        <a href="{{route('admin.leads.followup')}}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
+                                        <a class="ra-btn" title="Edit" href="{{route('admin.leads.edit')}}"><i class="bi bi-pencil-fill"></i></a>
                                         <button class="ra-btn danger" title="Delete" onclick="openModal('deleteModal')"><i class="bi bi-trash-fill"></i></button>
                                     </div>
                                 </td>
@@ -903,513 +903,6 @@
             </div>
         </div>
     </div>
-
-
-    <!-- ADD MODAL -->
-    <div class="modal-backdrop" id="addLeadModal">
-        <div class="modal-box" onclick="event.stopPropagation()">
-            <div class="modal-hd">
-                <span>Add New Lead</span>
-                <button class="modal-close" onclick="closeModal('addLeadModal')"><i class="bi bi-x-lg"></i></button>
-            </div>
-            <div class="modal-bd">
-                <div class="form-grid">
-                    <div class="form-row"><label class="form-lbl">Company *</label><input type="text" class="form-inp" placeholder="Company name"></div>
-                    <div class="form-row"><label class="form-lbl">Contact Person *</label><input type="text" class="form-inp" placeholder="Full name"></div>
-                    <div class="form-row" style="grid-column:1/-1"><label class="form-lbl">Business Type *</label><input type="text" class="form-inp" placeholder="Business type"></div>
-                    <div class="form-row" style="grid-column:1/-1">
-                        <label class="form-lbl">Email</label>
-                        <div id="add-email-list"></div>
-                        <button type="button" class="btn-ghost" style="margin-top:6px;padding:4px 10px;font-size:12px;" onclick="addEmailRow('add-email-list')"><i class="bi bi-plus-lg"></i> Add Email</button>
-                    </div>
-                    <div class="form-row" style="grid-column:1/-1">
-                        <label class="form-lbl">Phone</label>
-                        <div id="add-phone-list"></div>
-                        <button type="button" class="btn-ghost" style="margin-top:6px;padding:4px 10px;font-size:12px;" onclick="addPhoneRow('add-phone-list')"><i class="bi bi-plus-lg"></i> Add Phone</button>
-                    </div>
-                    <div class="form-row" style="grid-column:1/-1">
-                        <label class="form-lbl">Service Need</label>
-                        <select class="form-inp">
-                            <option>Web</option>
-                            <option>Design</option>
-                            <option>Mark</option>
-                        </select>
-                    </div>
-                    <div class="form-row" style="grid-column:1/-1">
-                        <label class="form-lbl">Address</label>
-                        <textarea class="form-inp" rows="3" placeholder="Full address…"></textarea>
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Lead Source</label>
-                        <select class="form-inp">
-                            <option>Web</option>
-                            <option>Linkedin</option>
-                        </select>
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Lead Priority</label>
-                        <select class="form-inp">
-                            <option>Cold</option>
-                            <option>Warm</option>
-                            <option>Hot 🔥</option>
-                            <option>Lost</option>
-                        </select>
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Lead Status</label>
-                        <select class="form-inp">
-                            <option>Not Responding</option>
-                            <option>Not Interested</option>
-                            <option>Not Required</option>
-                            <option>Location Issue</option>
-                            <option>Job</option>
-                            <option>Not Inquired</option>
-                            <option>Respond</option>
-                            <option>Interested</option>
-                            <option>Language Barrier</option>
-                            <option>Booked</option>
-                            <option>Budget Issue</option>
-                        </select>
-                    </div>
-
-                    <!-- ASSIGN TO — multi-select -->
-                    <div class="form-row" style="grid-column:1/-1">
-                        <label class="form-lbl">Assign To</label>
-                        <div class="ms-wrap" id="addAssignWrap">
-                            <div class="ms-trigger" onclick="toggleMs('addAssignWrap')">
-                                <div class="ms-pills" id="addAssignPills">
-                                    <span class="ms-placeholder">Select team members…</span>
-                                </div>
-                                <i class="bi bi-chevron-down ms-arrow" id="addAssignArrow"></i>
-                            </div>
-                            <div class="ms-dropdown" id="addAssignDropdown">
-                                <div class="ms-search-wrap">
-                                    <i class="bi bi-search"></i>
-                                    <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'addAssignDropdown')">
-                                </div>
-                                <div class="ms-opts">
-                                    <label class="ms-opt"><input type="checkbox" value="Rahul Kumar" onchange="updateMs('addAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">RK</span>Rahul Kumar</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Priya Sharma" onchange="updateMs('addAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#ec4899,#f59e0b)">PS</span>Priya Sharma</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Neha Kapoor" onchange="updateMs('addAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#10b981,#06b6d4)">NK</span>Neha Kapoor</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Arjun Singh" onchange="updateMs('addAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">AS</span>Arjun Singh</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Ravi Mehta" onchange="updateMs('addAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">RM</span>Ravi Mehta</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Kiran Rao" onchange="updateMs('addAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#14b8a6,#6366f1)">KR</span>Kiran Rao</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <div class="modal-ft">
-                <button class="btn-ghost" onclick="closeModal('addLeadModal')">Cancel</button>
-                <button class="btn-primary-solid" onclick="closeModal('addLeadModal');showToast('success','Lead added!','bi-person-check-fill')">
-                    <i class="bi bi-plus-lg"></i> Add Lead
-                </button>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- EDIT MODAL -->
-    <div class="modal-backdrop" id="editLeadModal">
-        <div class="modal-box" onclick="event.stopPropagation()">
-            <div class="modal-hd">
-                <span>Update Lead</span>
-                <button class="modal-close" onclick="closeModal('editLeadModal')"><i class="bi bi-x-lg"></i></button>
-            </div>
-            <div class="modal-bd">
-                <div class="form-grid">
-                    <div class="form-row"><label class="form-lbl">Company *</label><input type="text" class="form-inp" placeholder="Company name"></div>
-                    <div class="form-row"><label class="form-lbl">Contact Person *</label><input type="text" class="form-inp" placeholder="Full name"></div>
-                    <div class="form-row" style="grid-column:1/-1"><label class="form-lbl">Business Type *</label><input type="text" class="form-inp" placeholder="Business type"></div>
-                    <div class="form-row" style="grid-column:1/-1">
-                        <label class="form-lbl">Email</label>
-                        <div id="edit-email-list"></div>
-                        <button type="button" class="btn-ghost" style="margin-top:6px;padding:4px 10px;font-size:12px;" onclick="addEmailRow('edit-email-list')"><i class="bi bi-plus-lg"></i> Add Email</button>
-                    </div>
-                    <div class="form-row" style="grid-column:1/-1">
-                        <label class="form-lbl">Phone</label>
-                        <div id="edit-phone-list"></div>
-                        <button type="button" class="btn-ghost" style="margin-top:6px;padding:4px 10px;font-size:12px;" onclick="addPhoneRow('edit-phone-list')"><i class="bi bi-plus-lg"></i> Add Phone</button>
-                    </div>
-                    <div class="form-row" style="grid-column:1/-1">
-                        <label class="form-lbl">Service Need</label>
-                        <select class="form-inp">
-                            <option>Web</option>
-                            <option>Design</option>
-                            <option>Mark</option>
-                        </select>
-                    </div>
-                    <div class="form-row" style="grid-column:1/-1">
-                        <label class="form-lbl">Address</label>
-                        <textarea class="form-inp" rows="3" placeholder="Full address…"></textarea>
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Lead Source</label>
-                        <select class="form-inp">
-                            <option>Web</option>
-                            <option>Linkedin</option>
-                        </select>
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Lead Priority</label>
-                        <select class="form-inp">
-                            <option>Cold</option>
-                            <option>Warm</option>
-                            <option>Hot 🔥</option>
-                            <option>Lost</option>
-                        </select>
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Lead Status</label>
-                        <select class="form-inp">
-                            <option>Not Responding</option>
-                            <option>Not Interested</option>
-                            <option>Not Required</option>
-                            <option>Location Issue</option>
-                            <option>Job</option>
-                            <option>Not Inquired</option>
-                            <option>Respond</option>
-                            <option>Interested</option>
-                            <option>Language Barrier</option>
-                            <option>Booked</option>
-                            <option>Budget Issue</option>
-                        </select>
-                    </div>
-
-                    <!-- ASSIGN TO — multi-select -->
-                    <div class="form-row" style="grid-column:1/-1">
-                        <label class="form-lbl">Assign To</label>
-                        <div class="ms-wrap" id="editAssignWrap">
-                            <div class="ms-trigger" onclick="toggleMs('editAssignWrap')">
-                                <div class="ms-pills" id="editAssignPills">
-                                    <span class="ms-placeholder">Select team members…</span>
-                                </div>
-                                <i class="bi bi-chevron-down ms-arrow" id="editAssignArrow"></i>
-                            </div>
-                            <div class="ms-dropdown" id="editAssignDropdown">
-                                <div class="ms-search-wrap">
-                                    <i class="bi bi-search"></i>
-                                    <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'editAssignDropdown')">
-                                </div>
-                                <div class="ms-opts">
-                                    <label class="ms-opt"><input type="checkbox" value="Rahul Kumar" onchange="updateMs('editAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">RK</span>Rahul Kumar</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Priya Sharma" onchange="updateMs('editAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#ec4899,#f59e0b)">PS</span>Priya Sharma</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Neha Kapoor" onchange="updateMs('editAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#10b981,#06b6d4)">NK</span>Neha Kapoor</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Arjun Singh" onchange="updateMs('editAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">AS</span>Arjun Singh</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Ravi Mehta" onchange="updateMs('editAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">RM</span>Ravi Mehta</label>
-                                    <label class="ms-opt"><input type="checkbox" value="Kiran Rao" onchange="updateMs('editAssignWrap')"><span class="ms-ava" style="background:linear-gradient(135deg,#14b8a6,#6366f1)">KR</span>Kiran Rao</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <div class="modal-ft">
-                <button class="btn-ghost" onclick="closeModal('editLeadModal')">Cancel</button>
-                <button class="btn-primary-solid" onclick="closeModal('editLeadModal');showToast('success','Lead updated!','bi-person-check-fill')">
-                    <i class="bi bi-pencil-fill"></i> Update Lead
-                </button>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- ── Multi-select styles ── -->
-    <style>
-        .ms-wrap {
-            position: relative;
-        }
-
-        /* Trigger box — looks like form-inp */
-        .ms-trigger {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            background: var(--bg3);
-            border: 1px solid var(--b1);
-            border-radius: var(--r-sm);
-            padding: 7px 10px;
-            cursor: pointer;
-            min-height: 40px;
-            transition: var(--transition);
-        }
-
-        .ms-trigger:hover,
-        .ms-wrap.open .ms-trigger {
-            border-color: var(--accent);
-            background: var(--bg2);
-        }
-
-        .ms-wrap.open .ms-trigger {
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, .1);
-        }
-
-        /* Pills area */
-        .ms-pills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .ms-placeholder {
-            font-size: 13px;
-            color: var(--t4);
-        }
-
-        /* Each selected pill */
-        .ms-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: var(--accent-bg);
-            border: 1px solid rgba(99, 102, 241, .25);
-            color: var(--accent);
-            font-size: 12px;
-            font-weight: 600;
-            padding: 2px 8px 2px 4px;
-            border-radius: 20px;
-            white-space: nowrap;
-        }
-
-        .ms-pill-ava {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 8px;
-            font-weight: 700;
-            color: #fff;
-            flex-shrink: 0;
-        }
-
-        .ms-pill-x {
-            font-size: 10px;
-            color: var(--accent);
-            cursor: pointer;
-            opacity: .7;
-            line-height: 1;
-            padding: 0 0 0 2px;
-        }
-
-        .ms-pill-x:hover {
-            opacity: 1;
-        }
-
-        /* Chevron */
-        .ms-arrow {
-            font-size: 11px;
-            color: var(--t3);
-            transition: transform .2s ease;
-            flex-shrink: 0;
-        }
-
-        .ms-wrap.open .ms-arrow {
-            transform: rotate(180deg);
-        }
-
-        /* Dropdown panel */
-        .ms-dropdown {
-            display: none;
-            position: absolute;
-            top: calc(100% + 4px);
-            left: 0;
-            right: 0;
-            background: var(--bg2);
-            border: 1px solid var(--b2);
-            border-radius: var(--r);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, .2);
-            z-index: 9999;
-            overflow: hidden;
-            animation: msDropIn .15s ease;
-        }
-
-        @keyframes msDropIn {
-            from {
-                opacity: 0;
-                transform: translateY(-6px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .ms-wrap.open .ms-dropdown {
-            display: block;
-        }
-
-        /* Search inside dropdown */
-        .ms-search-wrap {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            border-bottom: 1px solid var(--b1);
-        }
-
-        .ms-search-wrap i {
-            color: var(--t3);
-            font-size: 12px;
-            flex-shrink: 0;
-        }
-
-        .ms-search {
-            background: none;
-            border: none;
-            outline: none;
-            font-size: 13px;
-            color: var(--t1);
-            font-family: var(--font);
-            width: 100%;
-        }
-
-        .ms-search::placeholder {
-            color: var(--t4);
-        }
-
-        /* Options list */
-        .ms-opts {
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 4px;
-            scrollbar-width: thin;
-            scrollbar-color: var(--b2) transparent;
-        }
-
-        .ms-opt {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            padding: 8px 10px;
-            border-radius: var(--r-sm);
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--t2);
-            transition: var(--transition);
-            user-select: none;
-        }
-
-        .ms-opt:hover {
-            background: var(--bg4);
-            color: var(--t1);
-        }
-
-        .ms-opt input[type="checkbox"] {
-            width: 14px;
-            height: 14px;
-            accent-color: var(--accent);
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .ms-opt.hidden {
-            display: none;
-        }
-
-        /* Mini avatar in option */
-        .ms-ava {
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 8px;
-            font-weight: 700;
-            color: #fff;
-            flex-shrink: 0;
-        }
-
-        /* Checked state highlight */
-        .ms-opt:has(input:checked) {
-            background: var(--accent-bg);
-            color: var(--accent);
-        }
-    </style>
-
-
-    <!-- ── Multi-select JS ── -->
-    <script>
-        /* Toggle open/close */
-        function toggleMs(wrapId) {
-            const wrap = document.getElementById(wrapId);
-            const isOpen = wrap.classList.contains('open');
-
-            // Close all other open ms-wraps
-            document.querySelectorAll('.ms-wrap.open').forEach(w => {
-                if (w.id !== wrapId) w.classList.remove('open');
-            });
-
-            wrap.classList.toggle('open', !isOpen);
-        }
-
-        /* Update pills display when checkbox changes */
-        function updateMs(wrapId) {
-            const wrap = document.getElementById(wrapId);
-            const pillsEl = wrap.querySelector('.ms-pills');
-            const checkboxes = wrap.querySelectorAll('.ms-opt input[type="checkbox"]:checked');
-
-            pillsEl.innerHTML = '';
-
-            if (checkboxes.length === 0) {
-                pillsEl.innerHTML = '<span class="ms-placeholder">Select team members…</span>';
-                return;
-            }
-
-            checkboxes.forEach(cb => {
-                const label = cb.closest('.ms-opt');
-                const ava = label.querySelector('.ms-ava');
-                const name = cb.value;
-                const bg = ava ? ava.style.background : '#6366f1';
-
-                const pill = document.createElement('span');
-                pill.className = 'ms-pill';
-                pill.innerHTML = `
-                    <span class="ms-pill-ava" style="background:${bg}">${name.split(' ').map(w=>w[0]).join('')}</span>
-                    ${name}
-                    <span class="ms-pill-x" onclick="removeMsPill(event,'${wrapId}','${name}')">✕</span>
-                `;
-                pillsEl.appendChild(pill);
-            });
-        }
-
-        /* Remove pill by clicking ✕ */
-        function removeMsPill(event, wrapId, value) {
-            event.stopPropagation();
-            const wrap = document.getElementById(wrapId);
-            const cb = [...wrap.querySelectorAll('.ms-opt input[type="checkbox"]')]
-                .find(c => c.value === value);
-            if (cb) {
-                cb.checked = false;
-            }
-            updateMs(wrapId);
-        }
-
-        /* Search filter */
-        function filterMs(input, dropdownId) {
-            const q = input.value.toLowerCase();
-            document.querySelectorAll(`#${dropdownId} .ms-opt`).forEach(opt => {
-                opt.classList.toggle('hidden', !opt.textContent.toLowerCase().includes(q));
-            });
-        }
-
-        /* Close dropdown when clicking outside */
-        document.addEventListener('click', function(e) {
-            document.querySelectorAll('.ms-wrap.open').forEach(wrap => {
-                if (!wrap.contains(e.target)) wrap.classList.remove('open');
-            });
-        });
-    </script>
 
     <!-- DELETE MODAL -->
     <div class="modal-backdrop" id="deleteModal">
@@ -1436,20 +929,27 @@
     </div>
 
     <!-- LEAD DETAIL MODAL -->
-    <div class="modal-backdrop" id="leadDetailModal">
+    <!-- LEAD DETAIL MODAL -->
+    <div class="modal-backdrop" id="leadDetailModal" onclick="closeModal('leadDetailModal')">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-hd">
-                <span>Lead Detail — TechCorp Solutions</span>
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                    <span>TechCorp Solutions</span>
+                    <span style="font-size:11px;font-weight:500;color:var(--t3);">Lead Detail</span>
+                </div>
                 <button class="modal-close" onclick="closeModal('leadDetailModal')"><i class="bi bi-x-lg"></i></button>
             </div>
+
             <div class="modal-bd">
-                <div class="detail-kpis" style="margin-bottom:20px">
+
+                {{-- ── KPI Strip ── --}}
+                <div class="detail-kpis" style="margin-bottom:20px;">
                     <div class="dk-item">
                         <div class="dk-val">12-02-2026</div>
                         <div class="dk-lbl">Created Date</div>
                     </div>
                     <div class="dk-item">
-                        <div class="dk-val" style="color:#ef4444">Hot 🔥</div>
+                        <div class="dk-val" style="color:#ef4444;">Hot 🔥</div>
                         <div class="dk-lbl">Priority</div>
                     </div>
                     <div class="dk-item">
@@ -1457,62 +957,117 @@
                         <div class="dk-lbl">Service Need</div>
                     </div>
                     <div class="dk-item">
-                        <div class="dk-val">Linkedin</div>
+                        <div class="dk-val">LinkedIn</div>
                         <div class="dk-lbl">Lead Source</div>
                     </div>
                 </div>
-                <div class="form-grid">
-                    <div class="form-row"><label class="form-lbl">Contact</label><input class="form-inp" value="Vikram Bhatia" readonly></div>
-                    <div class="form-row"><label class="form-lbl">Email</label><input class="form-inp" value="vikram@techcorp.com" readonly></div>
-                    <div class="form-row"><label class="form-lbl">Phone</label><input class="form-inp" value="+91 98765 43210" readonly></div>
-                    <div class="form-row">
-                        <label class="form-lbl">Change Priority</label>
-                        <select class="form-inp">
-                            <option>Hot</option>
-                            <option>Warm</option>
-                            <option>Cold</option>
-                        </select>
+
+                {{-- ── Read-only info block ── --}}
+                <div style="background:var(--bg3);border:1px solid var(--b1);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+
+                    <div style="display:flex;flex-direction:column;gap:2px;">
+                        <span style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);">Company</span>
+                        <span style="font-size:13px;font-weight:600;color:var(--t1);">TechCorp Solutions</span>
                     </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Change Lead Status</label>
-                        <select class="form-inp">
-                            <option>Not Responding</option>
-                            <option>Not Interested</option>
-                            <option>Not Required</option>
-                            <option>Location Issue</option>
-                            <option>Job</option>
-                            <option>Not Inquired</option>
-                            <option>Respond</option>
-                            <option>Interested</option>
-                            <option>Language Barrier</option>
-                            <option>Booked</option>
-                            <option>Budget Issue</option>
-                        </select>
+
+                    <div style="display:flex;flex-direction:column;gap:2px;">
+                        <span style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);">Contact Person</span>
+                        <span style="font-size:13px;font-weight:600;color:var(--t1);">Vikram Bhatia</span>
                     </div>
-                    <div class="form-row">
-                        <label class="form-lbl">Assign To</label>
-                        <select class="form-inp">
-                            <option>Rahul Kumar</option>
-                            <option>Priya Sharma</option>
-                            <option>Neha Kapoor</option>
-                        </select>
+
+                    <div style="display:flex;flex-direction:column;gap:2px;">
+                        <span style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);">Business Type</span>
+                        <span style="font-size:13px;font-weight:600;color:var(--t1);">Technology</span>
                     </div>
-                    <div class="form-row" style="grid-column:1/-1">
-                        <label class="form-lbl">Convert Lead To</label>
-                        <select class="form-inp">
-                            <option>Order</option>
-                            <option>Closed</option>
-                        </select>
+
+                    <div style="display:flex;flex-direction:column;gap:2px;">
+                        <span style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);">Assigned To</span>
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:2px;">
+                            <div style="width:20px;height:20px;border-radius:5px;background:linear-gradient(135deg,#6366f1,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;">RK</div>
+                            <span style="font-size:13px;font-weight:600;color:var(--t1);">Rahul Kumar</span>
+                        </div>
                     </div>
-                    <div class="form-row" style="grid-column:1/-1">
-                        <label class="form-lbl">Add Remark/Note</label>
-                        <textarea class="form-inp" rows="2" placeholder="Add note…"></textarea>
+
+                    <div style="display:flex;flex-direction:column;gap:2px;">
+                        <span style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);">Email</span>
+                        <span style="font-size:13px;color:var(--t2);">vikram@techcorp.com</span>
+                    </div>
+
+                    <div style="display:flex;flex-direction:column;gap:2px;">
+                        <span style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);">Phone</span>
+                        <span style="font-size:13px;color:var(--t2);">+91 98765 43210</span>
+                    </div>
+
+                    <div style="display:flex;flex-direction:column;gap:2px;grid-column:1/-1;">
+                        <span style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);">Address</span>
+                        <span style="font-size:13px;color:var(--t2);">204, Orbit Tower, Andheri East, Mumbai — 400069</span>
+                    </div>
+
+                </div>
+
+                {{-- ── Editable fields (Priority + Status only) ── --}}
+                <div style="background:var(--accent-bg);border:1px solid rgba(99,102,241,.2);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;">
+                    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:6px;">
+                        <i class="bi bi-pencil-fill"></i> Quick Update
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-row" style="margin-bottom:0;">
+                            <label class="form-lbl">Change Priority</label>
+                            <select class="form-inp">
+                                <option selected>Hot 🔥</option>
+                                <option>Warm</option>
+                                <option>Cold</option>
+                                <option>Lost</option>
+                            </select>
+                        </div>
+                        <div class="form-row" style="margin-bottom:0;">
+                            <label class="form-lbl">Change Lead Status</label>
+                            <select class="form-inp">
+                                <option>Not Responding</option>
+                                <option>Not Interested</option>
+                                <option>Not Required</option>
+                                <option>Location Issue</option>
+                                <option>Job</option>
+                                <option>Not Inquired</option>
+                                <option selected>Respond</option>
+                                <option>Interested</option>
+                                <option>Language Barrier</option>
+                                <option>Booked</option>
+                                <option>Budget Issue</option>
+                            </select>
+                        </div>
+                        <div class="form-row" style="grid-column:1/-1;margin-bottom:0;">
+                            <label class="form-lbl">Add Remark / Note</label>
+                            <textarea class="form-inp" rows="2" placeholder="Add internal note…"></textarea>
+                        </div>
                     </div>
                 </div>
+
             </div>
-            <div class="modal-ft">
-                <button class="btn-ghost" onclick="closeModal('leadDetailModal')">Close</button>
-                <button class="btn-primary-solid" onclick="closeModal('leadDetailModal');showToast('success','Lead updated!','bi-person-check-fill')">Update Lead</button>
+
+            {{-- ── Footer — 3 actions ── --}}
+            <div class="modal-ft" style="justify-content:space-between;">
+
+                {{-- Left: Close --}}
+                <button class="btn-ghost" onclick="closeModal('leadDetailModal')">
+                    <i class="bi bi-x-lg"></i> Close
+                </button>
+
+                {{-- Right: Convert + Update --}}
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <a href="{{route('admin.orders.create')}}" class="btn-ghost"
+                        style="border-color:#10b981;color:#10b981;"
+                        onmouseover="this.style.background='rgba(16,185,129,.1)'"
+                        onmouseout="this.style.background='transparent'"
+                        onclick="closeModal('leadDetailModal');">
+                        <i class="bi bi-arrow-right-circle-fill"></i> Convert to Order
+                    </a>
+                    <button class="btn-primary-solid"
+                        onclick="closeModal('leadDetailModal');showToast('success','Lead updated!','bi-person-check-fill')">
+                        <i class="bi bi-check2-circle"></i> Update Lead
+                    </button>
+                </div>
+
             </div>
         </div>
     </div>

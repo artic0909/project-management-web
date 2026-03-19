@@ -9,6 +9,16 @@ class OrderController extends Controller
 {
     public function index()
     {
-        return view('admin.orders');
+        return view('admin.orders.index');
+    }
+
+    public function create()
+    {
+        return view('admin.orders.create');
+    }
+
+    public function edit()
+    {
+        return view('admin.orders.edit');
     }
 }

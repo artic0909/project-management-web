@@ -35,14 +35,20 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::get('/add-status', [StatusController::class, 'index'])->name('status');
 
     // Leads
-    Route::get('/add-leads', [LeadController::class, 'index'])->name('leads.index');
+    Route::get('/all-leads', [LeadController::class, 'index'])->name('leads.index');
+    Route::get('/add-lead', [LeadController::class, 'create'])->name('leads.create');
+    Route::get('/update-lead', [LeadController::class, 'edit'])->name('leads.edit');
     Route::get('/lead-followup', [FollowupController::class, 'index'])->name('leads.followup');
     
     // Losted Leads
     Route::get('/losted-leads', [LeadController::class, 'lostedLeads'])->name('losted-leads');
 
     // Orders
-    Route::get('/add-orders', [OrderController::class, 'index'])->name('orders');
+    Route::get('/all-orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/add-order', [OrderController::class, 'create'])->name('orders.create');
+    Route::get('/update-order', [OrderController::class, 'edit'])->name('orders.edit');
+    Route::get('/order-followup', [FollowupController::class, 'index'])->name('orders.followup');
+
 
     // Project
     Route::get('/all-projects', [ProjectController::class, 'index'])->name('projects.index');
