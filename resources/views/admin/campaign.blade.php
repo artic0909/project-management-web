@@ -1,6 +1,6 @@
 @extends('admin.layout.app')
 
-@section('title', 'Add Sources')
+@section('title', 'Add Campaign')
 
 @section('content')
 
@@ -689,10 +689,10 @@
         <!-- Page Header -->
         <div class="page-header">
             <div>
-                <h1 class="page-title">Your All Sources</h1>
+                <h1 class="page-title">Your All Campaigns</h1>
             </div>
             <button class="btn-primary-solid sm" onclick="openModal('addModal')">
-                <i class="bi bi-plus-lg"></i> Add Source
+                <i class="bi bi-plus-lg"></i> Add Campaign
             </button>
         </div>
     </div>
@@ -702,8 +702,8 @@
         <div class="stat-box" style="--sb-color:#6366f1;">
             <div class="sb-icon"><i class="bi bi-link-45deg"></i></div>
             <div>
-                <div class="sb-val">{{ $sourceCount }}</div>
-                <div class="sb-lbl">Total Sources</div>
+                <div class="sb-val">{{ $campaignCount }}</div>
+                <div class="sb-lbl">Total Campaigns</div>
             </div>
         </div>
     </div>
@@ -711,12 +711,12 @@
     <!-- MAIN GRID -->
     <div class="dash-grid">
 
-        <!-- Source Table -->
+        <!-- Campaign Table -->
         <div class="dash-card span-12">
             <div class="card-head">
                 <div>
-                    <div class="card-title">Sources</div>
-                    <div class="card-sub">{{ $sourceCount }} total</div>
+                    <div class="card-title">Campaigns</div>
+                    <div class="card-sub">{{ $campaignCount }} total</div>
                 </div>
             </div>
             <div class="table-wrap">
@@ -724,25 +724,25 @@
                     <thead>
                         <tr>
                             <th>SL</th>
-                            <th>Source Name</th>
+                            <th>Campaign Name</th>
                             <th>Created By</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($sources as $source)
+                        @forelse ($campaigns as $campaign)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td><span class="src-tag website">{{ $source->name }}</span></td>
-                            <td><strong style="color:#10b981">{{ $source->created_by }}</strong></td>
+                            <td><span class="src-tag website">{{ $campaign->name }}</span></td>
+                            <td><strong style="color:#10b981">{{ $campaign->created_by }}</strong></td>
                             <td>
                                 <div class="row-actions">
                                     {{-- Edit: pass id and name --}}
-                                    <button class="ra-btn" onclick="openEditModal({{ $source->id }}, '{{ addslashes($source->name) }}')">
+                                    <button class="ra-btn" onclick="openEditModal({{ $campaign->id }}, '{{ addslashes($campaign->name) }}')">
                                         <i class="bi bi-pencil-fill"></i>
                                     </button>
                                     {{-- Delete: pass id and name --}}
-                                    <button class="ra-btn danger" onclick="openDeleteModal({{ $source->id }}, '{{ addslashes($source->name) }}')">
+                                    <button class="ra-btn danger" onclick="openDeleteModal({{ $campaign->id }}, '{{ addslashes($campaign->name) }}')">
                                         <i class="bi bi-trash-fill"></i>
                                     </button>
                                 </div>
@@ -750,7 +750,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="4" class="text-center">No sources found.</td>
+                            <td colspan="4" class="text-center">No campaigns found.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -759,7 +759,7 @@
 
             <!-- Pagination -->
             <div class="table-footer">
-                <span class="tf-info">Showing {{ $sources->count() }} of {{ $sourceCount }} Sources</span>
+                <span class="tf-info">Showing {{ $campaigns->count() }} of {{ $campaignCount }} Campaigns</span>
                 <div class="tf-pagination">
                     <button class="pg-btn"><i class="bi bi-chevron-left"></i></button>
                     <button class="pg-btn active">1</button>
@@ -775,20 +775,20 @@
     <div class="modal-backdrop" id="addModal" onclick="closeModal('addModal')">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-hd">
-                <span>Add Source</span>
+                <span>Add Campaign</span>
                 <button class="modal-close" onclick="closeModal('addModal')"><i class="bi bi-x-lg"></i></button>
             </div>
 
-            <form action="{{ route('admin.sources.store') }}" method="POST">
+            <form action="{{ route('admin.campaign.store') }}" method="POST">
                 @csrf
                 <div class="modal-bd">
                     <div class="form-row">
-                        <label class="form-lbl">Source Name *</label>
+                        <label class="form-lbl">Campaign Name *</label>
                         <input
                             type="text"
                             name="name"
                             class="form-inp @error('name') is-invalid @enderror"
-                            placeholder="Source name"
+                            placeholder="Campaign name"
                             value="{{ old('name') }}"
                             required
                         >
@@ -808,7 +808,7 @@
                 <div class="modal-ft">
                     <button type="button" class="btn-ghost" onclick="closeModal('addModal')">Cancel</button>
                     <button type="submit" class="btn-primary-solid">
-                        <i class="bi bi-plus-lg"></i> Add Source
+                        <i class="bi bi-plus-lg"></i> Add Campaign
                     </button>
                 </div>
             </form>
@@ -821,7 +821,7 @@
     <div class="modal-backdrop" id="editModal" onclick="closeModal('editModal')">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-hd">
-                <span>Update Source</span>
+                <span>Update Campaign</span>
                 <button class="modal-close" onclick="closeModal('editModal')"><i class="bi bi-x-lg"></i></button>
             </div>
 
@@ -830,13 +830,13 @@
                 @method('PUT')
                 <div class="modal-bd">
                     <div class="form-row">
-                        <label class="form-lbl">Source Name *</label>
+                        <label class="form-lbl">Campaign Name *</label>
                         <input
                             type="text"
                             name="name"
                             id="editNameInput"
                             class="form-inp"
-                            placeholder="Source name"
+                            placeholder="Campaign name"
                             required
                         >
                         <input
@@ -852,7 +852,7 @@
                 <div class="modal-ft">
                     <button type="button" class="btn-ghost" onclick="closeModal('editModal')">Cancel</button>
                     <button type="submit" class="btn-primary-solid">
-                        <i class="bi bi-pencil-fill"></i> Update Source
+                        <i class="bi bi-pencil-fill"></i> Update Campaign
                     </button>
                 </div>
             </form>
@@ -865,7 +865,7 @@
     <div class="modal-backdrop" id="deleteModal" onclick="closeModal('deleteModal')">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-hd" style="border-bottom:1px solid #fecaca;">
-                <span style="color:#dc2626;">Delete Source</span>
+                <span style="color:#dc2626;">Delete Campaign</span>
                 <button class="modal-close" onclick="closeModal('deleteModal')"><i class="bi bi-x-lg"></i></button>
             </div>
 
@@ -878,14 +878,14 @@
                     </div>
                     <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:#111827;">Are you sure?</h3>
                     <p style="margin:0;font-size:14px;color:#6b7280;line-height:1.6;">
-                        You are about to delete <strong id="deleteSourceName" style="color:#dc2626;"></strong>.<br>
+                        You are about to delete <strong id="deleteCampaignName" style="color:#dc2626;"></strong>.<br>
                         This action <strong style="color:#dc2626;">cannot be undone.</strong>
                     </p>
                 </div>
                 <div class="modal-ft" style="border-top:1px solid #fecaca;">
                     <button type="button" class="btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
                     <button type="submit" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;">
-                        <i class="bi bi-trash3-fill"></i> Delete Source
+                        <i class="bi bi-trash3-fill"></i> Delete Campaign
                     </button>
                 </div>
             </form>
@@ -897,15 +897,15 @@
 <script>
     // ── Edit Modal ──
     function openEditModal(id, name) {
-        document.getElementById('editForm').action = `/admin/sources/${id}`;
+        document.getElementById('editForm').action = `/admin/campaigns/${id}`;
         document.getElementById('editNameInput').value = name;
         openModal('editModal');
     }
 
     // ── Delete Modal ──
     function openDeleteModal(id, name) {
-        document.getElementById('deleteForm').action = `/admin/sources/${id}`;
-        document.getElementById('deleteSourceName').textContent = name;
+        document.getElementById('deleteForm').action = `/admin/campaigns/${id}`;
+        document.getElementById('deleteCampaignName').textContent = name;
         openModal('deleteModal');
     }
 

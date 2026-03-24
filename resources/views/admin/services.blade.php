@@ -651,6 +651,37 @@
 </style>
 
 <!-- ═══ PAGE CONTENT AREA ═══ -->
+<!-- Flash Messages -->
+@if(session('success'))
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        showToast('success', '{{ session('success') }}', 'bi-check-circle-fill');
+    });
+</script>
+@endif
+
+@if(session('error'))
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        showToast('error', '{{ session('error') }}', 'bi-x-circle-fill');
+    });
+</script>
+@endif
+
+<!-- Validation errors toast -->
+@if($errors->any())
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        showToast('error', '{{ $errors->first() }}', 'bi-exclamation-triangle-fill');
+
+        @if(session('open_modal'))
+            openModal('{{ session('open_modal') }}');
+        @endif
+    });
+</script>
+@endif
+
+<!-- ═══ PAGE CONTENT AREA ═══ -->
 <main class="page-area" id="pageArea">
 
     <div class="page" id="page-dashboard">
@@ -660,150 +691,228 @@
             <div>
                 <h1 class="page-title">Your All Services</h1>
             </div>
-            <button class="btn-primary-solid sm" onclick="openModal('addModal')"><i class="bi bi-plus-lg"></i> Add Service</button>
-
+            <button class="btn-primary-solid sm" onclick="openModal('addModal')">
+                <i class="bi bi-plus-lg"></i> Add Service
+            </button>
         </div>
+    </div>
 
-        <!-- SUMMARY STAT BOXES -->
-        <div class="stat-scroll-row">
-            <div class="stat-box" style="--sb-color:#6366f1;">
-                <div class="sb-icon"><i class="bi bi-diagram-3-fill"></i></div>
+    <!-- SUMMARY STAT BOXES -->
+    <div class="stat-scroll-row">
+        <div class="stat-box" style="--sb-color:#6366f1;">
+            <div class="sb-icon"><i class="bi bi-link-45deg"></i></div>
+            <div>
+                <div class="sb-val">{{ $serviceCount }}</div>
+                <div class="sb-lbl">Total Services</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="dash-grid">
+
+        <!-- Service Table -->
+        <div class="dash-card span-12">
+            <div class="card-head">
                 <div>
-                    <div class="sb-val">7</div>
-                    <div class="sb-lbl">Total Service</div>
+                    <div class="card-title">Services</div>
+                    <div class="card-sub">{{ $serviceCount }} total</div>
                 </div>
             </div>
-        </div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>SL</th>
+                            <th>Service Name</th>
+                            <th>Created By</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($services as $source)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td><span class="src-tag website">{{ $source->name }}</span></td>
+                            <td><strong style="color:#10b981">{{ $source->created_by }}</strong></td>
+                            <td>
+                                <div class="row-actions">
+                                    {{-- Edit: pass id and name --}}
+                                    <button class="ra-btn" onclick="openEditModal({{ $source->id }}, '{{ addslashes($source->name) }}')">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </button>
+                                    {{-- Delete: pass id and name --}}
+                                    <button class="ra-btn danger" onclick="openDeleteModal({{ $source->id }}, '{{ addslashes($source->name) }}')">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="4" class="text-center">No Services found.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
-
-        <!-- MAIN GRID -->
-        <div class="dash-grid">
-
-
-            <!-- Service Table -->
-            <div class="dash-card span-12">
-                <div class="card-head">
-                    <div>
-                        <div class="card-title">Services</div>
-                        <div class="card-sub">3 total</div>
-                    </div>
-                    <div class="card-actions">
-                        <!-- <button class="btn-primary-solid sm" onclick="openModal('addModal')"><i class="bi bi-plus-lg"></i> Add Service</button> -->
-                    </div>
-                </div>
-                <div class="table-wrap">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>SL</th>
-                                <th>Service Name</th>
-                                <th>Created By</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td><span class="src-tag website">Website Design</span></td>
-                                <td><strong style="color:#10b981">Admin</strong></td>
-                                <td>
-                                    <!-- Modal Btns -->
-                                    <div class="row-actions">
-                                        <button class="ra-btn" onclick="openModal('editModal')"><i class="bi bi-pencil-fill"></i></button>
-                                        <button class="ra-btn danger" onclick="openModal('deleteModal')"><i class="bi bi-trash-fill"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pagination -->
-                <div class="table-footer">
-                    <span class="tf-info">Showing 5 of 24 Services</span>
-                    <div class="tf-pagination">
-                        <button class="pg-btn"><i class="bi bi-chevron-left"></i></button>
-                        <button class="pg-btn active">1</button>
-                        <button class="pg-btn">2</button>
-                        <button class="pg-btn">3</button>
-                        <span class="pg-ellipsis">…</span>
-                        <button class="pg-btn">5</button>
-                        <button class="pg-btn"><i class="bi bi-chevron-right"></i></button>
-                    </div>
-                    <div class="tf-per-page">
-                        <!-- <span>Rows:</span>
-                            <select>
-                                <option>5</option>
-                                <option>10</option>
-                                <option>25</option>
-                            </select> -->
-                    </div>
+            <!-- Pagination -->
+            <div class="table-footer">
+                <span class="tf-info">Showing {{ $services->count() }} of {{ $serviceCount }} Services</span>
+                <div class="tf-pagination">
+                    <button class="pg-btn"><i class="bi bi-chevron-left"></i></button>
+                    <button class="pg-btn active">1</button>
+                    <button class="pg-btn"><i class="bi bi-chevron-right"></i></button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Add Modal -->
-    <div class="modal-backdrop" id="addModal">
+    {{-- ═══════════════════════════
+         ADD MODAL
+    ═══════════════════════════ --}}
+    <div class="modal-backdrop" id="addModal" onclick="closeModal('addModal')">
         <div class="modal-box" onclick="event.stopPropagation()">
-            <div class="modal-hd"><span>Add Service</span><button class="modal-close" onclick="closeModal('addModal')"><i class="bi bi-x-lg"></i></button></div>
-            <div class="modal-bd">
-
-                <div class="form-row"><label class="form-lbl">Service Name *</label><input type="text" class="form-inp" placeholder="Service name"></div>
-
+            <div class="modal-hd">
+                <span>Add Service</span>
+                <button class="modal-close" onclick="closeModal('addModal')"><i class="bi bi-x-lg"></i></button>
             </div>
-            <div class="modal-ft">
-                <button class="btn-ghost" onclick="closeModal('addModal')">Cancel</button>
-                <button class="btn-primary-solid" onclick="closeModal('addModal');showToast('success','Service Added!','bi-person-check-fill')">
-                    <i class="bi bi-plus-lg"></i> Add Service
-                </button>
-            </div>
+
+            <form action="{{ route('admin.services.store') }}" method="POST">
+                @csrf
+                <div class="modal-bd">
+                    <div class="form-row">
+                        <label class="form-lbl">Service Name *</label>
+                        <input
+                            type="text"
+                            name="name"
+                            class="form-inp @error('name') is-invalid @enderror"
+                            placeholder="Service name"
+                            value="{{ old('name') }}"
+                            required
+                        >
+                         <input
+                            type="hidden"
+                            name="created_by"
+                            class="form-inp @error('created_by') is-invalid @enderror"
+                            placeholder="Created by"
+                            value="admin"
+                            
+                        >
+                        @error('name')
+                            <span style="color:#ef4444;font-size:12px;margin-top:4px;display:block;">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="modal-ft">
+                    <button type="button" class="btn-ghost" onclick="closeModal('addModal')">Cancel</button>
+                    <button type="submit" class="btn-primary-solid">
+                        <i class="bi bi-plus-lg"></i> Add Service
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
-
-    <!-- Edit Modal -->
-    <div class="modal-backdrop" id="editModal">
+    {{-- ═══════════════════════════
+         EDIT MODAL
+    ═══════════════════════════ --}}
+    <div class="modal-backdrop" id="editModal" onclick="closeModal('editModal')">
         <div class="modal-box" onclick="event.stopPropagation()">
-            <div class="modal-hd"><span>Update Service</span><button class="modal-close" onclick="closeModal('editModal')"><i class="bi bi-x-lg"></i></button></div>
-            <div class="modal-bd">
-
-                <div class="form-row"><label class="form-lbl">Service Name *</label><input type="text" class="form-inp" placeholder="Service name"></div>
-
+            <div class="modal-hd">
+                <span>Update Service</span>
+                <button class="modal-close" onclick="closeModal('editModal')"><i class="bi bi-x-lg"></i></button>
             </div>
-            <div class="modal-ft">
-                <button class="btn-ghost" onclick="closeModal('editModal')">Cancel</button>
-                <button class="btn-primary-solid" onclick="closeModal('editModal');showToast('success','Service Updated!','bi-person-check-fill')">
-                    <i class="bi bi-plus-lg"></i> Update Service
-                </button>
-            </div>
+
+            <form id="editForm" action="" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-bd">
+                    <div class="form-row">
+                        <label class="form-lbl">Service Name *</label>
+                        <input
+                            type="text"
+                            name="name"
+                            id="editNameInput"
+                            class="form-inp"
+                            placeholder="Service name"
+                            required
+                        >
+                        <input
+                            type="hidden"
+                            name="created_by"
+                            class="form-inp @error('created_by') is-invalid @enderror"
+                            placeholder="Created by"
+                            value="admin"
+                            
+                        >
+                    </div>
+                </div>
+                <div class="modal-ft">
+                    <button type="button" class="btn-ghost" onclick="closeModal('editModal')">Cancel</button>
+                    <button type="submit" class="btn-primary-solid">
+                        <i class="bi bi-pencil-fill"></i> Update Service
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Delete Modal -->
-    <div class="modal-backdrop" id="deleteModal">
+    {{-- ═══════════════════════════
+         DELETE MODAL
+    ═══════════════════════════ --}}
+    <div class="modal-backdrop" id="deleteModal" onclick="closeModal('deleteModal')">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-hd" style="border-bottom:1px solid #fecaca;">
                 <span style="color:#dc2626;">Delete Service</span>
                 <button class="modal-close" onclick="closeModal('deleteModal')"><i class="bi bi-x-lg"></i></button>
             </div>
-            <div class="modal-bd" style="text-align:center;padding:32px 24px;">
-                <div style="width:64px;height:64px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-                    <i class="bi bi-trash3-fill" style="font-size:28px;color:#dc2626;"></i>
+
+            <form id="deleteForm" action="" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="modal-bd" style="text-align:center;padding:32px 24px;">
+                    <div style="width:64px;height:64px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                        <i class="bi bi-trash3-fill" style="font-size:28px;color:#dc2626;"></i>
+                    </div>
+                    <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:#111827;">Are you sure?</h3>
+                    <p style="margin:0;font-size:14px;color:#6b7280;line-height:1.6;">
+                        You are about to delete <strong id="deleteServiceName" style="color:#dc2626;"></strong>.<br>
+                        This action <strong style="color:#dc2626;">cannot be undone.</strong>
+                    </p>
                 </div>
-                <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:#111827;">Are you sure?</h3>
-                <p style="margin:0;font-size:14px;color:#6b7280;line-height:1.6;">Are you sure you want to delete this Service?<br>This action <strong style="color:#dc2626;">cannot be undone.</strong></p>
-            </div>
-            <div class="modal-ft" style="border-top:1px solid #fecaca;">
-                <button class="btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
-                <button style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="closeModal('deleteModal');showToast('success','Service Deleted!','bi-trash3-fill')">
-                    <i class="bi bi-trash3-fill"></i> Delete Service
-                </button>
-            </div>
+                <div class="modal-ft" style="border-top:1px solid #fecaca;">
+                    <button type="button" class="btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
+                    <button type="submit" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;">
+                        <i class="bi bi-trash3-fill"></i> Delete Service
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
 </main>
 
+<script>
+    // ── Edit Modal ──
+    function openEditModal(id, name) {
+        document.getElementById('editForm').action = `/admin/add-services/${id}`;
+        document.getElementById('editNameInput').value = name;
+        openModal('editModal');
+    }
+
+    // ── Delete Modal ──
+    function openDeleteModal(id, name) {
+        document.getElementById('deleteForm').action = `/admin/add-services/${id}`;
+        document.getElementById('deleteServiceName').textContent = name;
+        openModal('deleteModal');
+    }
+
+    // ── Re-open modal on validation error ──
+    @if(old('_reopen_modal'))
+        document.addEventListener('DOMContentLoaded', () => openModal('{{ old('_reopen_modal') }}'));
+    @endif
+</script>
 
 @endsection

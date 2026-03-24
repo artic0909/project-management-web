@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\SalesPersonController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SourceController;
+use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\StatusController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,13 +27,28 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::get('/add-developer', [DeveloperController::class, 'index'])->name('developer');
 
     // Sources
-    Route::get('/add-sources', [SourceController::class, 'index'])->name('sources');
+    Route::get('/sources',           [SourceController::class, 'index'])->name('sources.index');
+    Route::post('/sources',          [SourceController::class, 'store'])->name('sources.store');
+    Route::put('/sources/{id}',      [SourceController::class, 'edit'])->name('sources.update');
+    Route::delete('/sources/{id}',   [SourceController::class, 'delete'])->name('sources.destroy');
 
     // Services
-    Route::get('/add-services', [ServiceController::class, 'index'])->name('services');
+    Route::get('/add-services', [ServiceController::class, 'index'])->name('services.index');
+    Route::post('/add-services', [ServiceController::class, 'store'])->name('services.store');
+    Route::put('/add-services/{id}', [ServiceController::class, 'edit'])->name('services.update');
+    Route::delete('/add-services/{id}', [ServiceController::class, 'delete'])->name('services.destroy');
+
+    // Campaign
+    Route::get('/campaigns',           [CampaignController::class, 'index'])->name('campaign.index');
+    Route::post('/campaigns',          [CampaignController::class, 'store'])->name('campaign.store');
+    Route::put('/campaigns/{id}',      [CampaignController::class, 'edit'])->name('campaign.update');
+    Route::delete('/campaigns/{id}',   [CampaignController::class, 'delete'])->name('campaign.destroy');
     
     // Status
     Route::get('/add-status', [StatusController::class, 'index'])->name('status');
+    Route::post('/add-status', [StatusController::class, 'store'])->name('status.store');
+    Route::put('/add-status/{id}', [StatusController::class, 'edit'])->name('status.update');
+    Route::delete('/add-status/{id}', [StatusController::class, 'delete'])->name('status.destroy');
 
     // Leads
     Route::get('/all-leads', [LeadController::class, 'index'])->name('leads.index');

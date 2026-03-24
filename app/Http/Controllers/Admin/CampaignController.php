@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Source;
+use App\Models\Campaign;
 use Illuminate\Http\Request;
 
-class SourceController extends Controller
+class CampaignController extends Controller
 {
     public function index()
     {
-        $sources = Source::latest()->get();
-        $sourceCount = $sources->count();
-        return view('admin.sources', compact('sources', 'sourceCount'));
+        $campaigns = Campaign::latest()->get();
+        $campaignCount = $campaigns->count();
+        return view('admin.campaign', compact('campaigns', 'campaignCount'));
     }
 
     public function store(Request $request)
@@ -23,12 +23,12 @@ class SourceController extends Controller
         ]);
 
         try {
-            Source::create([
+            Campaign::create([
                 'name' => $request->name,
                 'created_by' => $request->created_by,
             ]);
 
-            return redirect()->back()->with('success', 'Source created successfully.');
+            return redirect()->back()->with('success', 'Campaign created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to create source. Please try again.')->withInput();
         }
@@ -42,15 +42,15 @@ class SourceController extends Controller
         ]);
 
         try {
-            $source = Source::findOrFail($id);
+            $source = Campaign::findOrFail($id);
             $source->update([
                 'name' => $request->name,
                 'created_by' => $request->created_by,
             ]);
 
-            return redirect()->back()->with('success', 'Source updated successfully.');
+            return redirect()->back()->with('success', 'Campaign updated successfully.');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return redirect()->back()->with('error', 'Source not found.');
+            return redirect()->back()->with('error', 'Campaign not found.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to update source. Please try again.')->withInput();
         }
@@ -59,12 +59,12 @@ class SourceController extends Controller
     public function delete(Request $request, $id)
     {
         try {
-            $source = Source::findOrFail($id);
+            $source = Campaign::findOrFail($id);
             $source->delete();
 
-            return redirect()->back()->with('success', 'Source deleted successfully.');
+            return redirect()->back()->with('success', 'Campaign deleted successfully.');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return redirect()->back()->with('error', 'Source not found.');
+            return redirect()->back()->with('error', 'Campaign not found.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to delete source. Please try again.');
         }

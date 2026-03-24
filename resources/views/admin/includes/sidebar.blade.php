@@ -26,17 +26,21 @@
       </a>
 
       <div class="nav-section-label">Utilities</div>
-      <a class="nav-item {{ request()->routeIs('admin.sources*') ? 'active' : '' }}" href="{{ route('admin.sources') }}">
+      <a class="nav-item {{ request()->routeIs('admin.sources*') ? 'active' : '' }}" href="{{ route('admin.sources.index') }}">
         <i class="bi bi-link-45deg"></i><span>Sources</span>
-        <span class="nav-count">5</span>
+        <span class="nav-count">{{ $sourceCount }}</span>
       </a>
-      <a class="nav-item {{ request()->routeIs('admin.services*') ? 'active' : '' }}" href="{{ route('admin.services') }}">
+      <a class="nav-item {{ request()->routeIs('admin.services*') ? 'active' : '' }}" href="{{ route('admin.services.index') }}">
         <i class="bi bi-diagram-3-fill"></i><span>Services</span>
-        <span class="nav-count">4</span>
+        <span class="nav-count">{{ $serviceCount }}</span>
+      </a>
+      <a class="nav-item {{ request()->routeIs('admin.campaign*') ? 'active' : '' }}" href="{{ route('admin.campaign.index') }}">
+        <i class="bi bi-diagram-3-fill"></i><span>Campaign</span>
+        <span class="nav-count">{{ $campaignCount }}</span>
       </a>
       <a class="nav-item {{ request()->routeIs('admin.status') ? 'active' : '' }}" href="{{ route('admin.status') }}">
         <i class="bi bi-flag-fill"></i><span>All Status</span>
-        <span class="nav-count">18</span>
+        <span class="nav-count">{{ $statusCount }}</span>
       </a>
 
       <div class="nav-section-label">Business</div>
