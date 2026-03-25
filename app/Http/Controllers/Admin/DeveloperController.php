@@ -42,11 +42,16 @@ class DeveloperController extends Controller
     {
         $developer = Developer::findOrFail($id);
 
-        $validator = Validator::make($request->all(), [
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:developers,email,' . $id,
-            'password' => 'nullable|string|min:4|confirmed',
-        ]);
+        ];
+
+        if ($request->filled('password')) {
+            $rules['password'] = 'required|string|min:4|confirmed';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
@@ -57,7 +62,7 @@ class DeveloperController extends Controller
             'email' => $request->email,
         ]);
 
-        if ($request->password) {
+        if ($request->filled('password')) {
             $developer->update(['password' => Hash::make($request->password)]);
         }
 

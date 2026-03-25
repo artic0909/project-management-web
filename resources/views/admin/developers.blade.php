@@ -845,11 +845,11 @@
                         </div>
                         <div class="form-row">
                             <label class="form-lbl">Set Password (leave blank to keep current)</label>
-                            <input type="password" name="password" class="form-inp">
+                            <input type="password" name="password" class="form-inp" autocomplete="new-password">
                         </div>
                         <div class="form-row">
                             <label class="form-lbl">Confirm Password</label>
-                            <input type="password" name="password_confirmation" class="form-inp">
+                            <input type="password" name="password_confirmation" class="form-inp" autocomplete="new-password">
                         </div>
                     </div>
                 </div>
@@ -895,6 +895,9 @@
             document.getElementById('editForm').action = `{{ url('admin/add-developer') }}/${developer.id}`;
             document.getElementById('edit_name').value = developer.name;
             document.getElementById('edit_email').value = developer.email;
+            // Clear password fields on open
+            document.querySelector('#editForm [name="password"]').value = '';
+            document.querySelector('#editForm [name="password_confirmation"]').value = '';
             openModal('editModal');
         }
 

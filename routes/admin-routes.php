@@ -22,6 +22,9 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
 
     // Sales Person
     Route::get('/add-sales-person', [SalesPersonController::class, 'index'])->name('sales-person');
+    Route::post('/add-sales-person', [SalesPersonController::class, 'store'])->name('sales-person.store');
+    Route::put('/add-sales-person/{id}', [SalesPersonController::class, 'edit'])->name('sales-person.update');
+    Route::delete('/add-sales-person/{id}', [SalesPersonController::class, 'delete'])->name('sales-person.destroy');
 
     // Developer
     Route::get('/add-developer', [DeveloperController::class, 'index'])->name('developer');
