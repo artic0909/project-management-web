@@ -19,10 +19,19 @@ return new class extends Migration
             $table->json('emails')->nullable();
             $table->json('phones')->nullable();
             $table->text('address')->nullable();
-            $table->string('service_need')->nullable();
-            $table->string('lead_source')->nullable();
+            
+            // IDs for related tables
+            $table->foreignId('service_id')->nullable()->constrained('services')->onDelete('restrict');
+            $table->foreignId('source_id')->nullable()->constrained('sources')->onDelete('restrict');
+            $table->foreignId('campaign_id')->nullable()->constrained('campaigns')->onDelete('restrict');
+            $table->foreignId('status_id')->nullable()->constrained('statuses')->onDelete('restrict');
+            
             $table->string('priority')->nullable();
-            $table->string('status')->nullable();
+            
+            // Audit fields
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->string('created_by_type')->nullable();
+            
             $table->timestamps();
         });
     }

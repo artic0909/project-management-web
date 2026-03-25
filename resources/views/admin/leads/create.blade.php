@@ -25,6 +25,9 @@
         <form action="{{ route('admin.leads.store') }}" method="POST">
             @csrf
             
+            <input type="hidden" name="created_by" value="{{ $createdBy }}">
+            <input type="hidden" name="created_by_type" value="{{ $createdByType }}">
+            
             @if(session('success'))
                 <div class="alert alert-success" style="padding:12px;background:#dcfce7;color:#166534;border-radius:8px;margin-bottom:16px;">
                     <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
@@ -95,19 +98,19 @@
                             <div class="form-grid">
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Service Need</label>
-                                    <select name="service_need" class="form-inp">
+                                    <select name="service_id" class="form-inp">
                                         <option value="">— Select Service —</option>
                                         @foreach($services as $service)
-                                            <option value="{{ $service->name }}">{{ $service->name }}</option>
+                                            <option value="{{ $service->id }}">{{ $service->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Lead Source</label>
-                                    <select name="lead_source" class="form-inp">
+                                    <select name="source_id" class="form-inp">
                                         <option value="">— Select Source —</option>
                                         @foreach($sources as $source)
-                                            <option value="{{ $source->name }}">{{ $source->name }}</option>
+                                            <option value="{{ $source->id }}">{{ $source->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -121,12 +124,21 @@
                                         <option>Lost</option>
                                     </select>
                                 </div>
-                                <div class="form-row" style="grid-column:1/-1">
+                                <div class="form-row">
                                     <label class="form-lbl">Lead Status</label>
-                                    <select name="status" class="form-inp">
+                                    <select name="status_id" class="form-inp">
                                         <option value="">— Select Status —</option>
                                         @foreach($statuses as $status)
-                                            <option value="{{ $status->name }}">{{ $status->name }}</option>
+                                            <option value="{{ $status->id }}">{{ $status->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Campaign</label>
+                                    <select name="campaign_id" class="form-inp">
+                                        <option value="">— Select Campaign —</option>
+                                        @foreach($campaigns as $campaign)
+                                            <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>

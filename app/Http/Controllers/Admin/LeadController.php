@@ -9,6 +9,7 @@ use App\Models\Status;
 use App\Models\Sale;
 use App\Models\Source;
 use App\Models\Service;
+use App\Models\Campaign;
 use App\Models\LeadAssign;
 use Illuminate\Support\Facades\Validator;
 
@@ -25,7 +26,14 @@ class LeadController extends Controller
         $sales = Sale::all();
         $sources = Source::all();
         $services = Service::all();
-        return view('admin.leads.create', compact('statuses', 'sales', 'sources', 'services'));
+        $campaigns = Campaign::all();
+
+        // Detect current user
+        $user = auth()->user();
+        $createdBy = $user ? $user->id : null;
+        $createdByType = $user ? get_class($user) : null;
+
+        return view('admin.leads.create', compact('statuses', 'sales', 'sources', 'services', 'createdBy', 'createdByType', 'campaigns'));
     }
 
     public function store(Request $request)
@@ -64,10 +72,13 @@ class LeadController extends Controller
             'emails' => array_values($emails),
             'phones' => $phones,
             'address' => $request->address,
-            'service_need' => $request->service_need,
-            'lead_source' => $request->lead_source,
+            'service_id' => $request->service_id,
+            'source_id' => $request->source_id,
+            'campaign_id' => $request->campaign_id,
             'priority' => $request->priority,
-            'status' => $request->status,
+            'status_id' => $request->status_id,
+            'created_by' => $request->created_by,
+            'created_by_type' => $request->created_by_type,
         ]);
 
         // Process assignments
