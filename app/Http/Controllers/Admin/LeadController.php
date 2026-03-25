@@ -148,6 +148,24 @@ class LeadController extends Controller
         return view('admin.leads.edit');
     }
 
+    public function show($id)
+    {
+        $lead = Lead::with(['status', 'source', 'service', 'campaign', 'createdBy', 'assignments.sale'])->findOrFail($id);
+        $statuses = Status::where('type', 'lead')->get();
+        return view('admin.leads.show', compact('lead', 'statuses'));
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $lead = Lead::findOrFail($id);
+        $lead->update([
+            'status_id' => $request->status_id,
+            'priority' => $request->priority,
+            'notes' => $request->notes
+        ]);
+        return redirect()->back()->with('success', 'Lead updated successfully!');
+    }
+
     public function update()
     {
 

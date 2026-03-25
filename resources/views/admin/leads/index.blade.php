@@ -831,7 +831,8 @@
                                 </td>
                                 <td>
                                     @foreach($lead->assignments as $assign)
-                                        <div class="ln">{{ $assign->assigned_to }}</div>
+                                        <div class="ln">{{ $assign->sale->name ?? 'N/A' }} - {{ $assign->sale->email ?? 'N/A' }}</div>
+                                        
                                     @endforeach
                                     @if($lead->assignments->isEmpty())
                                         <span style="color:var(--t4)">Unassigned</span>
@@ -839,7 +840,7 @@
                                 </td>
                                 <td>
                                     <div class="row-actions">
-                                        <button class="ra-btn" title="View" onclick="openModal('leadDetailModal')"><i class="bi bi-eye-fill"></i></button>
+                                        <a href="{{ route('admin.leads.show', $lead->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
                                         <button class="ra-btn" title="Call"><i class="bi bi-telephone-fill"></i></button>
                                         <button class="ra-btn" title="Email"><i class="bi bi-envelope-fill"></i></button>
                                         <a href="{{route('admin.leads.followup')}}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>

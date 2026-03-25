@@ -60,6 +60,8 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::get('/all-leads', [LeadController::class, 'index'])->name('leads.index');
     Route::get('/add-lead', [LeadController::class, 'create'])->name('leads.create');
     Route::post('/add-lead', [LeadController::class, 'store'])->name('leads.store');
+    Route::get('/view-lead/{id}', [LeadController::class, 'show'])->name('leads.show');
+    Route::patch('/view-lead/{id}/status', [LeadController::class, 'updateStatus'])->name('leads.updateStatus');
     Route::get('/update-lead', [LeadController::class, 'edit'])->name('leads.edit');
     Route::get('/lead-followup', [FollowupController::class, 'index'])->name('leads.followup');
     
