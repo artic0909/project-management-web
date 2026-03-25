@@ -368,6 +368,7 @@
     function buildCountrySel() {
         const sel = document.createElement('select');
         sel.className = 'country-sel';
+        sel.name = 'country_code[]';
         COUNTRIES.forEach((c, i) => {
             const opt = document.createElement('option');
             opt.value = i;

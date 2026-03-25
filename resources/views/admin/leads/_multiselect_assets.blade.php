@@ -109,18 +109,19 @@
         }
 
         checkboxes.forEach(cb => {
-            const label = cb.closest('.ms-opt');
-            const ava   = label.querySelector('.ms-ava');
-            const name  = cb.value;
-            const bg    = ava ? ava.style.background : '#6366f1';
-            const initials = name.split(' ').map(w => w[0]).join('');
+            const label    = cb.closest('.ms-opt');
+            const ava      = label.querySelector('.ms-ava');
+            const name     = cb.dataset.name || cb.value;
+            const initials = cb.dataset.initials || '';
+            const value    = cb.value;
+            const bg       = ava ? ava.style.background : '#6366f1';
 
             const pill = document.createElement('span');
             pill.className = 'ms-pill';
             pill.innerHTML = `
                 <span class="ms-pill-ava" style="background:${bg}">${initials}</span>
                 ${name}
-                <span class="ms-pill-x" onclick="removeMsPill(event,'${wrapId}','${name}')">✕</span>
+                <span class="ms-pill-x" onclick="removeMsPill(event,'${wrapId}','${value}')">✕</span>
             `;
             pillsEl.appendChild(pill);
         });
@@ -131,8 +132,10 @@
         const wrap = document.getElementById(wrapId);
         const cb = [...wrap.querySelectorAll('.ms-opt input[type="checkbox"]')]
                      .find(c => c.value === value);
-        if (cb) cb.checked = false;
-        updateMs(wrapId);
+        if (cb) {
+            cb.checked = false;
+            updateMs(wrapId);
+        }
     }
 
     function filterMs(input, dropdownId) {

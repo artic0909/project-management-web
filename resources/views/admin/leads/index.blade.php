@@ -615,6 +615,20 @@
             </div>
         </div>
 
+        @if(session('success'))
+            <div class="alert alert-success" style="padding:12px;background:#dcfce7;color:#166534;border-radius:8px;margin-bottom:16px;">
+                <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="alert alert-danger" style="padding:12px;background:#fee2e2;color:#991b1b;border-radius:8px;margin-bottom:16px;">
+                @foreach($errors->all() as $error)
+                    <p style="margin:0;"><i class="bi bi-exclamation-triangle-fill"></i> {{ $error }}</p>
+                @endforeach
+            </div>
+        @endif
+
         <!-- SUMMARY STAT BOXES -->
         <div class="stat-grid-wrap" style="margin-bottom:20px;">
 
