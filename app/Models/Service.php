@@ -10,4 +10,9 @@ class Service extends Model
         'name',
         'created_by',
     ];
+
+    public function leads()
+    {
+        return $this->hasMany(Lead::class, 'service_id');
+    }
 }

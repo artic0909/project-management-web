@@ -121,7 +121,6 @@
                                         <option>Cold</option>
                                         <option>Warm</option>
                                         <option>Hot 🔥</option>
-                                        <option>Lost</option>
                                     </select>
                                 </div>
                                 <div class="form-row">

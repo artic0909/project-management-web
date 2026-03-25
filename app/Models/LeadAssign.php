@@ -12,4 +12,9 @@ class LeadAssign extends Model
     {
         return $this->belongsTo(Lead::class);
     }
+
+    public function sale()
+    {
+        return $this->belongsTo(Sale::class, 'assigned_to');
+    }
 }

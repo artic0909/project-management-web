@@ -10,4 +10,9 @@ class Source extends Model
         'name',
         'created_by',
     ];
+
+    public function leads()
+    {
+        return $this->hasMany(Lead::class, 'source_id');
+    }
 }

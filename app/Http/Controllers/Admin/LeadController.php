@@ -12,12 +12,61 @@ use App\Models\Service;
 use App\Models\Campaign;
 use App\Models\LeadAssign;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class LeadController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.leads.index');
+        $query = Lead::with(['status', 'service', 'source', 'campaign', 'assignments']);
+
+        // Search filter
+        if ($request->has('q') && !empty($request->q)) {
+            $q = $request->q;
+            $query->where(function($fq) use ($q) {
+                $fq->where('company', 'like', "%$q%")
+                   ->orWhere('contact_person', 'like', "%$q%")
+                   ->orWhere('emails', 'like', "%$q%")
+                   ->orWhere('phones', 'like', "%$q%");
+            });
+        }
+
+        // Date range filter
+        if ($request->has('start_date') && $request->has('end_date') && !empty($request->start_date)) {
+            $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+        }
+
+        // Dropdown filters
+        if ($request->has('source_id') && !empty($request->source_id)) {
+            $query->where('source_id', $request->source_id);
+        }
+        if ($request->has('service_id') && !empty($request->service_id)) {
+            $query->where('service_id', $request->service_id);
+        }
+        if ($request->has('priority') && !empty($request->priority)) {
+            $query->where('priority', $request->priority);
+        }
+
+        $leads = $query->orderBy('created_at', 'desc')->get();
+
+        // Statistics
+        $totalLeads = Lead::count();
+        $statuses = Status::where('type', 'lead')->withCount('leads')->get();
+        $convertedLeads = $statuses->where('name', 'Booked')->first()->leads_count ?? 0;
+        
+        $sources = Source::withCount('leads')->get();
+        $services = Service::withCount('leads')->get();
+        $campaigns = Campaign::withCount('leads')->get();
+        
+        $priorityCounts = Lead::groupBy('priority')
+            ->select('priority', DB::raw('count(*) as total'))
+            ->pluck('total', 'priority')
+            ->toArray();
+
+        return view('admin.leads.index', compact(
+            'leads', 'totalLeads', 'convertedLeads', 'statuses', 
+            'sources', 'services', 'campaigns', 'priorityCounts'
+        ));
     }
 
     public function create()

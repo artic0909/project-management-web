@@ -35,4 +35,9 @@ class Sale extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function assignments()
+    {
+        return $this->hasMany(LeadAssign::class, 'assigned_to');
+    }
 }

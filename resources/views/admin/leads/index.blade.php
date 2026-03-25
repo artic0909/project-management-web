@@ -638,7 +638,7 @@
                 <div class="sb-icon"><i class="bi bi-people-fill"></i></div>
                 <div class="sb-content">
                     <div class="sb-cat" style="--cat-color:#6366f1;">Overview</div>
-                    <div class="sb-val">147</div>
+                    <div class="sb-val">{{ $totalLeads }}</div>
                     <div class="sb-lbl">Total Leads</div>
                 </div>
             </div>
@@ -647,7 +647,7 @@
                 <div class="sb-icon"><i class="bi bi-person-check-fill"></i></div>
                 <div class="sb-content">
                     <div class="sb-cat" style="--cat-color:#10b981;">Overview</div>
-                    <div class="sb-val">38</div>
+                    <div class="sb-val">{{ $convertedLeads }}</div>
                     <div class="sb-lbl">Converted</div>
                 </div>
             </div>
@@ -656,7 +656,7 @@
                 <div class="sb-icon"><i class="bi bi-fire"></i></div>
                 <div class="sb-content">
                     <div class="sb-cat" style="--cat-color:#ef4444;">Priority</div>
-                    <div class="sb-val" style="color:#ef4444;">38</div>
+                    <div class="sb-val" style="color:#ef4444;">{{ $priorityCounts['Hot 🔥'] ?? 0 }}</div>
                     <div class="sb-lbl">Hot 🔥</div>
                 </div>
             </div>
@@ -665,7 +665,7 @@
                 <div class="sb-icon"><i class="bi bi-thermometer-half"></i></div>
                 <div class="sb-content">
                     <div class="sb-cat" style="--cat-color:#f59e0b;">Priority</div>
-                    <div class="sb-val" style="color:#f59e0b;">54</div>
+                    <div class="sb-val" style="color:#f59e0b;">{{ $priorityCounts['Warm'] ?? 0 }}</div>
                     <div class="sb-lbl">Warm</div>
                 </div>
             </div>
@@ -674,122 +674,57 @@
                 <div class="sb-icon"><i class="bi bi-snow"></i></div>
                 <div class="sb-content">
                     <div class="sb-cat" style="--cat-color:#06b6d4;">Priority</div>
-                    <div class="sb-val" style="color:#06b6d4;">41</div>
+                    <div class="sb-val" style="color:#06b6d4;">{{ $priorityCounts['Cold'] ?? 0 }}</div>
                     <div class="sb-lbl">Cold</div>
                 </div>
             </div>
 
-            <div class="stat-box" style="--sb-color:#6b7280;">
-                <div class="sb-icon"><i class="bi bi-x-circle"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#6b7280;">Priority</div>
-                    <div class="sb-val" style="color:#6b7280;">14</div>
-                    <div class="sb-lbl">Lost</div>
-                </div>
-            </div>
-
-            {{-- Row 2: Status (6) --}}
-
-            <div class="stat-box" style="--sb-color:#10b981;">
-                <div class="sb-icon"><i class="bi bi-chat-dots-fill"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#10b981;">Status</div>
-                    <div class="sb-val">29</div>
-                    <div class="sb-lbl">Respond</div>
-                </div>
-            </div>
-
+            {{-- Row 2+: Status (Dynamic) --}}
+            @foreach($statuses as $st)
             <div class="stat-box" style="--sb-color:#6366f1;">
-                <div class="sb-icon"><i class="bi bi-star-fill"></i></div>
+                <div class="sb-icon"><i class="bi bi-hash"></i></div>
                 <div class="sb-content">
                     <div class="sb-cat" style="--cat-color:#6366f1;">Status</div>
-                    <div class="sb-val">18</div>
-                    <div class="sb-lbl">Interested</div>
+                    <div class="sb-val">{{ $st->leads_count }}</div>
+                    <div class="sb-lbl">{{ $st->name }}</div>
                 </div>
             </div>
+            @endforeach
 
-            <div class="stat-box" style="--sb-color:#f59e0b;">
-                <div class="sb-icon"><i class="bi bi-wallet2"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#f59e0b;">Status</div>
-                    <div class="sb-val">11</div>
-                    <div class="sb-lbl">Budget Issue</div>
-                </div>
-            </div>
-
+            {{-- Additional Dynamics --}}
+            @foreach($sources as $src)
             <div class="stat-box" style="--sb-color:#8b5cf6;">
-                <div class="sb-icon"><i class="bi bi-calendar-check-fill"></i></div>
+                <div class="sb-icon"><i class="bi bi-box-arrow-in-right"></i></div>
                 <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#8b5cf6;">Status</div>
-                    <div class="sb-val">9</div>
-                    <div class="sb-lbl">Booked</div>
+                    <div class="sb-cat" style="--cat-color:#8b5cf6;">Source</div>
+                    <div class="sb-val">{{ $src->leads_count }}</div>
+                    <div class="sb-lbl">{{ $src->name }}</div>
                 </div>
             </div>
+            @endforeach
 
-            <div class="stat-box" style="--sb-color:#ef4444;">
-                <div class="sb-icon"><i class="bi bi-hand-thumbs-down-fill"></i></div>
+            @foreach($services as $srv)
+            <div class="stat-box" style="--sb-color:#ec4899;">
+                <div class="sb-icon"><i class="bi bi-briefcase"></i></div>
                 <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#ef4444;">Status</div>
-                    <div class="sb-val">16</div>
-                    <div class="sb-lbl">Not Interested</div>
+                    <div class="sb-cat" style="--cat-color:#ec4899;">Service</div>
+                    <div class="sb-val">{{ $srv->leads_count }}</div>
+                    <div class="sb-lbl">{{ $srv->name }}</div>
                 </div>
             </div>
+            @endforeach
 
-            <div class="stat-box" style="--sb-color:#6b7280;">
-                <div class="sb-icon"><i class="bi bi-telephone-x-fill"></i></div>
+            @foreach($campaigns as $cmp)
+            <div class="stat-box" style="--sb-color:#f59e0b;">
+                <div class="sb-icon"><i class="bi bi-megaphone"></i></div>
                 <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#6b7280;">Status</div>
-                    <div class="sb-val">22</div>
-                    <div class="sb-lbl">Not Responding</div>
+                    <div class="sb-cat" style="--cat-color:#f59e0b;">Campaign</div>
+                    <div class="sb-val">{{ $cmp->leads_count }}</div>
+                    <div class="sb-lbl">{{ $cmp->name }}</div>
                 </div>
             </div>
-
-            {{-- Row 3: remaining Status (5) — grid fills naturally --}}
-
-            <div class="stat-box" style="--sb-color:#9ca3af;">
-                <div class="sb-icon"><i class="bi bi-slash-circle"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#9ca3af;">Status</div>
-                    <div class="sb-val">8</div>
-                    <div class="sb-lbl">Not Required</div>
-                </div>
-            </div>
-
-            <div class="stat-box" style="--sb-color:#f97316;">
-                <div class="sb-icon"><i class="bi bi-geo-alt-fill"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#f97316;">Status</div>
-                    <div class="sb-val">5</div>
-                    <div class="sb-lbl">Location Issue</div>
-                </div>
-            </div>
-
-            <div class="stat-box" style="--sb-color:#06b6d4;">
-                <div class="sb-icon"><i class="bi bi-translate"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#06b6d4;">Status</div>
-                    <div class="sb-val">4</div>
-                    <div class="sb-lbl">Language Barrier</div>
-                </div>
-            </div>
-
-            <div class="stat-box" style="--sb-color:#64748b;">
-                <div class="sb-icon"><i class="bi bi-question-circle-fill"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#64748b;">Status</div>
-                    <div class="sb-val">7</div>
-                    <div class="sb-lbl">Not Inquired</div>
-                </div>
-            </div>
-
-            <div class="stat-box" style="--sb-color:#14b8a6;">
-                <div class="sb-icon"><i class="bi bi-briefcase-fill"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#14b8a6;">Status</div>
-                    <div class="sb-val">3</div>
-                    <div class="sb-lbl">Job</div>
-                </div>
-            </div>
+            @endforeach
+            
 
         </div>
 
@@ -801,48 +736,50 @@
                         <div class="card-title">Lead Pipeline</div>
                         <div class="card-sub" id="drpActiveSub">Last 7 Days · 147 total · 38 hot leads</div>
                     </div>
-                    <div class="card-actions mb-2">
-
-                        <form class="global-search">
+                    <form action="{{ route('admin.leads.index') }}" method="GET" class="card-actions mb-2">
+                        <div class="global-search">
                             <i class="bi bi-search"></i>
-                            <input type="text" placeholder="Search...">
+                            <input type="text" name="q" value="{{ request('q') }}" placeholder="Search...">
                             <button type="submit" class="btn-primary-solid sm">Search</button>
-                        </form>
+                        </div>
 
                         <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
                         <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
                             <i class="bi bi-calendar3"></i>
-                            <span id="drpLabel">Last 7 Days</span>
+                            <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'Last 7 Days' }}</span>
                             <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
                         </button>
+
+                        <!-- Hidden inputs for date range from the custom picker -->
+                        <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
+                        <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
 
                         <!-- {{-- Date Range Picker (replaces simple select) --}} -->
                         <div style="position:relative;">
                             @include('admin.includes.date-range-picker')
                         </div>
 
-                        <select class="filter-select">
-                            <option selected>Lead Source</option>
-                            <option>All Sources</option>
-                            <option>Website</option>
-                            <option>Referral</option>
-                            <option>LinkedIn</option>
+                        <select name="source_id" class="filter-select" onchange="this.form.submit()">
+                            <option value="">Lead Source</option>
+                            @foreach($sources as $source)
+                                <option value="{{ $source->id }}" {{ request('source_id') == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
+                            @endforeach
                         </select>
 
-                        <select class="filter-select">
-                            <option selected>All Services</option>
-                            <option>Website Design</option>
-                            <option>Marketing</option>
+                        <select name="service_id" class="filter-select" onchange="this.form.submit()">
+                            <option value="">All Services</option>
+                            @foreach($services as $service)
+                                <option value="{{ $service->id }}" {{ request('service_id') == $service->id ? 'selected' : '' }}>{{ $service->name }}</option>
+                            @endforeach
                         </select>
 
-                        <select class="filter-select">
-                            <option selected>Priority</option>
-                            <option>Hot 🔥</option>
-                            <option>Cold</option>
-                            <option>Warm</option>
-                            <option>Lost</option>
+                        <select name="priority" class="filter-select" onchange="this.form.submit()">
+                            <option value="">Priority</option>
+                            <option value="Hot 🔥" {{ request('priority') == 'Hot 🔥' ? 'selected' : '' }}>Hot 🔥</option>
+                            <option value="Warm" {{ request('priority') == 'Warm' ? 'selected' : '' }}>Warm</option>
+                            <option value="Cold" {{ request('priority') == 'Cold' ? 'selected' : '' }}>Cold</option>
                         </select>
-                    </div>
+                    </form>
                 </div>
 
                 <div class="table-wrap">
@@ -862,29 +799,43 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @forelse($leads as $index => $lead)
                             <tr>
-                                <td>1</td>
+                                <td>{{ $index + 1 }}</td>
                                 <td>
                                     <div class="lead-cell">
-                                        <div class="mini-ava" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">DF</div>
+                                        @php
+                                            $initials = strtoupper(substr($lead->company, 0, 1) . substr($lead->contact_person, 0, 1));
+                                            $emails = is_array($lead->emails) ? $lead->emails[0] : (json_decode($lead->emails)[0] ?? 'N/A');
+                                        @endphp
+                                        <div class="mini-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">{{ $initials }}</div>
                                         <div>
-                                            <div class="ln">DataFirst Corp</div>
-                                            <div class="ls">cto@datafirst.io</div>
+                                            <div class="ln">{{ $lead->company }}</div>
+                                            <div class="ls">{{ $emails }}</div>
                                         </div>
                                     </div>
                                 </td>
-                                <td><span class="src-tag website">Website</span></td>
-                                <td><strong style="color:#10b981">Abhishek</strong></td>
-                                <td><strong style="color:#10b981">Website Design</strong></td>
-                                <td><span class="lead-stage hot">Hot 🔥</span></td>
-                                <td><strong style="color:#10b981">Respond</strong></td>
+                                <td><span class="src-tag">{{ $lead->source->name ?? 'N/A' }}</span></td>
+                                <td><strong style="color:var(--t2)">{{ $lead->contact_person }}</strong></td>
+                                <td><strong style="color:var(--t2)">{{ $lead->service->name ?? 'N/A' }}</strong></td>
                                 <td>
-                                    <div class="ln">Ravi Singh</div>
-                                    <div class="ls">ravi@company.com</div>
+                                    @php
+                                        $pCls = strtolower(str_replace([' ', '🔥'], '', $lead->priority));
+                                    @endphp
+                                    <span class="lead-stage {{ $pCls }}">{{ $lead->priority }}</span>
+                                </td>
+                                <td><strong style="color:var(--accent)">{{ $lead->status->name ?? 'N/A' }}</strong></td>
+                                <td>
+                                    <div class="ln">{{ $lead->createdBy->name ?? 'System' }}</div>
+                                    <div class="ls">{{ $lead->createdBy->email ?? '' }}</div>
                                 </td>
                                 <td>
-                                    <div class="ln">Rahul Kumar</div>
-                                    <div class="ls">rahul@company.com</div>
+                                    @foreach($lead->assignments as $assign)
+                                        <div class="ln">{{ $assign->assigned_to }}</div>
+                                    @endforeach
+                                    @if($lead->assignments->isEmpty())
+                                        <span style="color:var(--t4)">Unassigned</span>
+                                    @endif
                                 </td>
                                 <td>
                                     <div class="row-actions">
@@ -897,20 +848,20 @@
                                     </div>
                                 </td>
                             </tr>
+                            @empty
+                            <tr>
+                                <td colspan="10" style="text-align:center;padding:40px;color:var(--t4);">No leads found.</td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
 
                 <div class="table-footer">
-                    <span class="tf-info">Showing 5 of 147 Leads</span>
+                    <span class="tf-info">Showing {{ $leads->count() }} Leads</span>
                     <div class="tf-pagination">
-                        <button class="pg-btn"><i class="bi bi-chevron-left"></i></button>
+                        <!-- Basic Pagination UI -->
                         <button class="pg-btn active">1</button>
-                        <button class="pg-btn">2</button>
-                        <button class="pg-btn">3</button>
-                        <span class="pg-ellipsis">…</span>
-                        <button class="pg-btn">5</button>
-                        <button class="pg-btn"><i class="bi bi-chevron-right"></i></button>
                     </div>
                     <div class="tf-per-page"></div>
                 </div>
@@ -1423,18 +1374,16 @@
                 display = fmt(rangeStart) + ' — ' + fmt(rangeEnd);
             document.getElementById('drpLabel').textContent = display;
 
-            // Update card subtitle
-            const sub = document.getElementById('drpActiveSub');
-            if (sub) sub.textContent = display + ' · 147 total · 38 hot leads';
+            if (rangeStart && rangeEnd) {
+                document.getElementById('drpStartInput').value = fmt(rangeStart);
+                document.getElementById('drpEndInput').value = fmt(rangeEnd);
+            }
 
             closeDatePicker();
-            document.dispatchEvent(new CustomEvent('dateRangeApplied', {
-                detail: {
-                    preset: activePreset,
-                    start: rangeStart,
-                    end: rangeEnd
-                }
-            }));
+            
+            // Submit the parent form
+            const form = document.getElementById('drpStartInput').closest('form');
+            if (form) form.submit();
         };
 
         document.addEventListener('click', function(e) {

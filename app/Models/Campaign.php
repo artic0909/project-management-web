@@ -10,4 +10,9 @@ class Campaign extends Model
         'name',
         'created_by',
     ];
+
+    public function leads()
+    {
+        return $this->hasMany(Lead::class, 'campaign_id');
+    }
 }

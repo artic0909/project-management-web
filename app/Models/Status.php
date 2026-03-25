@@ -10,4 +10,9 @@ class Status extends Model
         'name',
         'type',
     ];
+
+    public function leads()
+    {
+        return $this->hasMany(Lead::class, 'status_id');
+    }
 }
