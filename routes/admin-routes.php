@@ -64,7 +64,8 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::patch('/view-lead/{id}/status', [LeadController::class, 'updateStatus'])->name('leads.updateStatus');
     Route::get('/edit-lead/{id}', [LeadController::class, 'edit'])->name('leads.edit');
     Route::put('/edit-lead/{id}', [LeadController::class, 'update'])->name('leads.update');
-    Route::get('/lead-followup', [FollowupController::class, 'index'])->name('leads.followup');
+    Route::get('/lead-followup/{id}', [FollowupController::class, 'index'])->name('leads.followup');
+    Route::post('/lead-followup/{id}', [FollowupController::class, 'store'])->name('leads.followup.store');
     
     // Losted Leads
     Route::get('/losted-leads', [LeadController::class, 'lostedLeads'])->name('losted-leads');

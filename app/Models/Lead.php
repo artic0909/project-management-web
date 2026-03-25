@@ -46,4 +46,9 @@ class Lead extends Model
     {
         return $this->belongsTo(Status::class);
     }
+
+    public function followups()
+    {
+        return $this->morphMany(Followup::class, 'followable')->latest();
+    }
 }
