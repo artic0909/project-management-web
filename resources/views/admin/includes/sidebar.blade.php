@@ -71,7 +71,7 @@
       <div class="nav-section-label">People</div>
       <a class="nav-item {{ request()->routeIs('admin.sales-person*') ? 'active' : '' }}" href="{{ route('admin.sales-person') }}">
         <i class="bi bi-people-fill"></i><span>Sales Person</span>
-        <span class="nav-count">52</span>
+        <span class="nav-count">{{ $salesPersonCount }}</span>
       </a>
       <a class="nav-item" href="#">
         <i class="bi bi-clock-history"></i><span>Sales Attendance</span>
@@ -79,7 +79,7 @@
       </a>
       <a class="nav-item {{ request()->routeIs('admin.developer*') ? 'active' : '' }}" href="{{ route('admin.developer') }}">
         <i class="bi bi-person-workspace"></i><span>Developers</span>
-        <span class="nav-count">52</span>
+        <span class="nav-count">{{ $developerCount }}</span>
       </a>
       <a class="nav-item" href="#">
         <i class="bi bi-clock-history"></i><span>Developer Attendance</span>
