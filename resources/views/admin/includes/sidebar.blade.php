@@ -46,7 +46,7 @@
       <div class="nav-section-label">Business</div>
       <a class="nav-item {{ request()->routeIs('admin.leads*') ? 'active' : '' }}" href="{{ route('admin.leads.index') }}">
         <i class="bi bi-person-lines-fill"></i><span>Leads</span>
-        <span class="nav-count">147</span>
+        <span class="nav-count">{{ $leadCount }}</span>
       </a>
       <a class="nav-item {{ request()->routeIs('admin.orders*') ? 'active' : '' }}" href="{{ route('admin.orders.index') }}">
         <i class="bi bi-bag-check-fill"></i><span>Orders</span>
