@@ -25,11 +25,11 @@
                         <h1 class="page-title">{{ $lead->company }}</h1>
                         <p class="page-desc">Comprehensive profile and lead intelligence</p>
                     </div>
-                    <div style="display:flex; gap:10px; margin-bottom:5px;">
+                    <!-- <div style="display:flex; gap:10px; margin-bottom:5px;">
                         <a href="{{ route('admin.leads.edit', ['id' => $lead->id]) }}" class="btn-primary-ghost sm">
                             <i class="bi bi-pencil-square"></i> Edit Lead
                         </a>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

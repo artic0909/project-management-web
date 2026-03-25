@@ -643,14 +643,14 @@
                 </div>
             </div>
 
-            <div class="stat-box" style="--sb-color:#10b981;">
+            <!-- <div class="stat-box" style="--sb-color:#10b981;">
                 <div class="sb-icon"><i class="bi bi-person-check-fill"></i></div>
                 <div class="sb-content">
                     <div class="sb-cat" style="--cat-color:#10b981;">Overview</div>
                     <div class="sb-val">{{ $convertedLeads }}</div>
                     <div class="sb-lbl">Converted</div>
                 </div>
-            </div>
+            </div> -->
 
             <div class="stat-box" style="--sb-color:#ef4444;">
                 <div class="sb-icon"><i class="bi bi-fire"></i></div>
