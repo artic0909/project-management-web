@@ -25,6 +25,9 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
 
     // Developer
     Route::get('/add-developer', [DeveloperController::class, 'index'])->name('developer');
+    Route::post('/add-developer', [DeveloperController::class, 'store'])->name('developer.store');
+    Route::put('/add-developer/{id}', [DeveloperController::class, 'edit'])->name('developer.update');
+    Route::delete('/add-developer/{id}', [DeveloperController::class, 'delete'])->name('developer.destroy');
 
     // Sources
     Route::get('/sources',           [SourceController::class, 'index'])->name('sources.index');
