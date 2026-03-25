@@ -1,6 +1,6 @@
 @extends('admin.layout.app')
 
-@section('title', 'Edit Lead')
+@section('title', 'Edit Lead: ' . $lead->company)
 
 @section('content')
 
@@ -17,16 +17,30 @@
                         <i class="bi bi-arrow-left"></i> All Leads
                     </a>
                     <span style="color:var(--t4);font-size:11px;">›</span>
-                    <span style="font-size:13px;font-weight:600;color:var(--t2);">{{ $lead->company ?? 'DataFirst Corp' }}</span>
+                    <span style="font-size:13px;font-weight:600;color:var(--t2);">{{ $lead->company }}</span>
                 </div>
-                <h1 class="page-title">Edit Lead</h1>
-                <p class="page-desc">Update the details for this lead</p>
+                <h1 class="page-title">Edit Lead Profile</h1>
+                <p class="page-desc">Modify existing lead data and team assignments</p>
             </div>
         </div>
 
-        <form action="" method="POST">
+        <form action="{{ route('admin.leads.update', $lead->id) }}" method="POST">
             @csrf
             @method('PUT')
+            
+            @if(session('success'))
+                <div class="alert alert-success" style="padding:12px;background:#dcfce7;color:#166534;border-radius:8px;margin-bottom:16px;">
+                    <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert alert-danger" style="padding:12px;background:#fee2e2;color:#991b1b;border-radius:8px;margin-bottom:16px;">
+                    @foreach($errors->all() as $error)
+                        <p style="margin:0;"><i class="bi bi-exclamation-triangle-fill"></i> {{ $error }}</p>
+                    @endforeach
+                </div>
+            @endif
 
             <div class="dash-grid">
 
@@ -43,45 +57,32 @@
                             <div class="form-grid">
                                 <div class="form-row">
                                     <label class="form-lbl">Company <span style="color:#ef4444">*</span></label>
-                                    <input type="text" name="company" class="form-inp"
-                                        value="{{ old('company', $lead->company ?? 'DataFirst Corp') }}"
-                                        placeholder="Company name" required>
+                                    <input type="text" name="company" class="form-inp" value="{{ old('company', $lead->company) }}" placeholder="Company name" required>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Contact Person <span style="color:#ef4444">*</span></label>
-                                    <input type="text" name="contact_person" class="form-inp"
-                                        value="{{ old('contact_person', $lead->contact_person ?? 'Abhishek') }}"
-                                        placeholder="Full name" required>
+                                    <input type="text" name="contact_person" class="form-inp" value="{{ old('contact_person', $lead->contact_person) }}" placeholder="Full name" required>
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Business Type <span style="color:#ef4444">*</span></label>
-                                    <input type="text" name="business_type" class="form-inp"
-                                        value="{{ old('business_type', $lead->business_type ?? 'Technology') }}"
-                                        placeholder="e.g. E-commerce, Healthcare, Education…">
+                                    <input type="text" name="business_type" class="form-inp" value="{{ old('business_type', $lead->business_type) }}" placeholder="e.g. E-commerce, Healthcare, Education…">
                                 </div>
 
-                                {{-- Email — multiple (pre-filled) --}}
+                                {{-- Email — multiple (pre-filled by JS) --}}
                                 <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Email</label>
+                                    <label class="form-lbl">Email Addresses</label>
                                     <div id="edit-email-list"></div>
-                                    <button type="button" class="btn-ghost" style="margin-top:6px;padding:4px 10px;font-size:12px;" onclick="addEmailRow('edit-email-list')">
-                                        <i class="bi bi-plus-lg"></i> Add Email
-                                    </button>
                                 </div>
 
-                                {{-- Phone — multiple + country code (pre-filled) --}}
+                                {{-- Phone — multiple + country code (pre-filled by JS) --}}
                                 <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Phone</label>
+                                    <label class="form-lbl">Phone Numbers</label>
                                     <div id="edit-phone-list"></div>
-                                    <button type="button" class="btn-ghost" style="margin-top:6px;padding:4px 10px;font-size:12px;" onclick="addPhoneRow('edit-phone-list')">
-                                        <i class="bi bi-plus-lg"></i> Add Phone
-                                    </button>
                                 </div>
 
                                 <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Address</label>
-                                    <textarea name="address" class="form-inp" rows="3"
-                                        placeholder="Full address…">{{ old('address', $lead->address ?? '') }}</textarea>
+                                    <label class="form-lbl">Office Address</label>
+                                    <textarea name="address" class="form-inp" rows="3" placeholder="Full address…">{{ old('address', $lead->address) }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -97,19 +98,19 @@
                             <div class="form-grid">
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Service Need</label>
-                                    <select name="service_need" class="form-inp">
+                                    <select name="service_id" class="form-inp">
                                         <option value="">— Select Service —</option>
-                                        @foreach(['Web','Design','Mark'] as $svc)
-                                        <option {{ old('service_need', $lead->service_need ?? '') === $svc ? 'selected' : '' }}>{{ $svc }}</option>
+                                        @foreach($services as $service)
+                                            <option value="{{ $service->id }}" {{ old('service_id', $lead->service_id) == $service->id ? 'selected' : '' }}>{{ $service->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Lead Source</label>
-                                    <select name="lead_source" class="form-inp">
+                                    <select name="source_id" class="form-inp">
                                         <option value="">— Select Source —</option>
-                                        @foreach(['Web','Linkedin','Referral','Walk-in'] as $src)
-                                        <option {{ old('lead_source', $lead->lead_source ?? '') === $src ? 'selected' : '' }}>{{ $src }}</option>
+                                        @foreach($sources as $source)
+                                            <option value="{{ $source->id }}" {{ old('source_id', $lead->source_id) == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -117,25 +118,41 @@
                                     <label class="form-lbl">Lead Priority</label>
                                     <select name="priority" class="form-inp">
                                         <option value="">— Select Priority —</option>
-                                        @foreach(['Cold','Warm','Hot 🔥','Lost'] as $p)
-                                        <option {{ old('priority', $lead->priority ?? '') === $p ? 'selected' : '' }}>{{ $p }}</option>
+                                        @foreach(['Cold', 'Warm', 'Hot 🔥'] as $p)
+                                            <option value="{{ $p }}" {{ old('priority', $lead->priority) == $p ? 'selected' : '' }}>{{ $p }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-row" style="grid-column:1/-1">
+                                <div class="form-row">
                                     <label class="form-lbl">Lead Status</label>
-                                    <select name="status" class="form-inp">
+                                    <select name="status_id" class="form-inp">
                                         <option value="">— Select Status —</option>
-                                        @foreach([
-                                        'Not Responding','Not Interested','Not Required',
-                                        'Location Issue','Job','Not Inquired','Respond',
-                                        'Interested','Language Barrier','Booked','Budget Issue'
-                                        ] as $st)
-                                        <option {{ old('status', $lead->status ?? '') === $st ? 'selected' : '' }}>{{ $st }}</option>
+                                        @foreach($statuses as $status)
+                                            <option value="{{ $status->id }}" {{ old('status_id', $lead->status_id) == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Campaign</label>
+                                    <select name="campaign_id" class="form-inp">
+                                        <option value="">— Select Campaign —</option>
+                                        @foreach($campaigns as $campaign)
+                                            <option value="{{ $campaign->id }}" {{ old('campaign_id', $lead->campaign_id) == $campaign->id ? 'selected' : '' }}>{{ $campaign->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    {{-- Internal Notes --}}
+                    <div class="dash-card">
+                        <div class="card-head">
+                            <div class="card-title"><i class="bi bi-chat-dots" style="color:#ec4899;margin-right:6px;"></i>Internal Notes</div>
+                            <div class="card-sub">Private team briefings</div>
+                        </div>
+                        <div class="card-body">
+                            <textarea name="notes" class="form-inp" rows="6" placeholder="Add private notes about this lead here...">{{ old('notes', $lead->notes) }}</textarea>
                         </div>
                     </div>
 
@@ -147,11 +164,14 @@
                     <div class="dash-card" style="position:sticky;top:80px;overflow:visible;">
                         <div class="card-head">
                             <div class="card-title"><i class="bi bi-people-fill" style="color:#10b981;margin-right:6px;"></i>Assign To</div>
-                            <div class="card-sub">Select one or more team members</div>
+                            <div class="card-sub">Choose who can follow-up</div>
                         </div>
                         <div class="card-body">
 
                             <!-- ASSIGN TO — multi-select -->
+                            @php
+                                $assignedIds = $lead->assignments->pluck('assigned_to')->toArray();
+                            @endphp
                             <div class="ms-wrap" id="editAssignWrap">
                                 <div class="ms-trigger" onclick="toggleMs('editAssignWrap')">
                                     <div class="ms-pills" id="editAssignPills">
@@ -166,36 +186,42 @@
                                     </div>
                                     <div class="ms-opts">
                                         @php
-                                        $assigned = $lead->assign_to ?? [];
-                                        $members = [
-                                        ['initials'=>'RK','name'=>'Rahul Kumar','bg'=>'linear-gradient(135deg,#6366f1,#06b6d4)'],
-                                        ['initials'=>'PS','name'=>'Priya Sharma','bg'=>'linear-gradient(135deg,#ec4899,#f59e0b)'],
-                                        ['initials'=>'NK','name'=>'Neha Kapoor','bg'=>'linear-gradient(135deg,#10b981,#06b6d4)'],
-                                        ['initials'=>'AS','name'=>'Arjun Singh','bg'=>'linear-gradient(135deg,#8b5cf6,#ec4899)'],
-                                        ['initials'=>'RM','name'=>'Ravi Mehta','bg'=>'linear-gradient(135deg,#f59e0b,#ef4444)'],
-                                        ['initials'=>'KR','name'=>'Kiran Rao','bg'=>'linear-gradient(135deg,#14b8a6,#6366f1)'],
-                                        ];
+                                            $gradients = [
+                                                'linear-gradient(135deg,#6366f1,#06b6d4)',
+                                                'linear-gradient(135deg,#ec4899,#f59e0b)',
+                                                'linear-gradient(135deg,#10b981,#06b6d4)',
+                                                'linear-gradient(135deg,#8b5cf6,#ec4899)',
+                                                'linear-gradient(135deg,#f59e0b,#ef4444)',
+                                                'linear-gradient(135deg,#14b8a6,#6366f1)'
+                                            ];
                                         @endphp
-                                        @foreach($members as $m)
-                                        <label class="ms-opt">
-                                            <input type="checkbox" name="assign_to[]"
-                                                value="{{ $m['name'] }}"
-                                                onchange="updateMs('editAssignWrap')"
-                                                {{ in_array($m['name'], $assigned) ? 'checked' : '' }}>
-                                            <span class="ms-ava" style="background:{{ $m['bg'] }}">{{ $m['initials'] }}</span>
-                                            {{ $m['name'] }}
-                                        </label>
+                                        @foreach($sales as $index => $sale)
+                                            @php
+                                                $words = explode(' ', $sale->name);
+                                                $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+                                            @endphp
+                                            <label class="ms-opt">
+                                                <input type="checkbox" name="assign_to[]" value="{{ $sale->id }}" 
+                                                    data-name="{{ $sale->name }}" data-initials="{{ $initials }}"
+                                                    onchange="updateMs('editAssignWrap')"
+                                                    {{ in_array($sale->id, $assignedIds) ? 'checked' : '' }}>
+                                                <span class="ms-ava" style="background:{{ $gradients[$index % count($gradients)] }}">{{ $initials }}</span>
+                                                <div style="display:flex;flex-direction:column;">
+                                                    <span style="font-weight:500;color:var(--t1);">{{ $sale->name }}</span>
+                                                    <span style="font-size:11px;color:var(--t3);">{{ $sale->email }}</span>
+                                                </div>
+                                            </label>
                                         @endforeach
                                     </div>
                                 </div>
                             </div>
 
-                            <div style="margin-top:20px;display:flex;flex-direction:column;gap:8px;">
-                                <button type="submit" class="btn-primary-solid" style="width:100%;justify-content:center;padding:11px;">
-                                    <i class="bi bi-floppy-fill"></i> Update Lead
+                            <div style="margin-top:24px;display:flex;flex-direction:column;gap:8px;">
+                                <button type="submit" class="btn-primary-solid" style="width:100%;justify-content:center;padding:12px;">
+                                    <i class="bi bi-save"></i> Update Profile
                                 </button>
                                 <a href="{{ route('admin.leads.index') }}" class="btn-ghost" style="width:100%;justify-content:center;padding:10px;">
-                                    Cancel
+                                    Back to Pipeline
                                 </a>
                             </div>
 
@@ -214,16 +240,30 @@
 @include('admin.leads._multiselect_assets')
 @include('admin.leads._phone_email_assets')
 
-
-{{-- Pre-fill existing assigned members on page load --}}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Trigger updateMs so pills render for any pre-checked boxes
-        updateMs('editAssignWrap');
+        // Hydrate MS pills
+        if(typeof updateMs === 'function') updateMs('editAssignWrap');
 
-        // Pre-seed one email + phone row for edit
-        if (document.getElementById('edit-email-list').children.length === 0) addEmailRow('edit-email-list');
-        if (document.getElementById('edit-phone-list').children.length === 0) addPhoneRow('edit-phone-list');
+        // Hydrate multi-row Emails
+        const existingEmails = @json($lead->emails ?? []);
+        const emailListId = 'edit-email-list';
+        if (existingEmails.length > 0) {
+            existingEmails.forEach(val => addEmailRow(emailListId, val));
+        } else {
+            addEmailRow(emailListId);
+        }
+
+        // Hydrate multi-row Phones
+        const existingPhones = @json($lead->phones ?? []);
+        const phoneListId = 'edit-phone-list';
+        if (existingPhones.length > 0) {
+            existingPhones.forEach(obj => {
+                addPhoneRow(phoneListId, obj.number || '', obj.code_idx || null);
+            });
+        } else {
+            addPhoneRow(phoneListId);
+        }
     });
 </script>
 

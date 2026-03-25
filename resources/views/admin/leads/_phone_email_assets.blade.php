@@ -365,7 +365,7 @@
     ];
     const INDIA_IDX = COUNTRIES.findIndex(c => c.n === "India");
 
-    function buildCountrySel() {
+    function buildCountrySel(selectedIdx = null) {
         const sel = document.createElement('select');
         sel.className = 'country-sel';
         sel.name = 'country_code[]';
@@ -376,11 +376,11 @@
             opt.title = c.n;
             sel.appendChild(opt);
         });
-        sel.value = INDIA_IDX >= 0 ? INDIA_IDX : 0;
+        sel.value = selectedIdx !== null ? selectedIdx : (INDIA_IDX >= 0 ? INDIA_IDX : 0);
         return sel;
     }
 
-    function addPhoneRow(listId) {
+    function addPhoneRow(listId, val = '', codeIdx = null) {
         const list = document.getElementById(listId);
         const row = document.createElement('div');
         row.className = 'multi-row';
@@ -388,13 +388,14 @@
         const wrap = document.createElement('div');
         wrap.className = 'phone-wrap form-inp';
         wrap.style.cssText = 'padding:0;display:flex;align-items:center;';
-        wrap.appendChild(buildCountrySel());
+        wrap.appendChild(buildCountrySel(codeIdx));
 
         const inp = document.createElement('input');
         inp.type = 'tel';
         inp.name = 'phone[]';
         inp.className = 'phone-num-inp';
         inp.placeholder = 'XXXXX XXXXX';
+        inp.value = val;
         wrap.appendChild(inp);
         row.appendChild(wrap);
 
@@ -402,7 +403,7 @@
         updateButtons(listId);
     }
 
-    function addEmailRow(listId) {
+    function addEmailRow(listId, val = '') {
         const list = document.getElementById(listId);
         const row = document.createElement('div');
         row.className = 'multi-row';
@@ -412,6 +413,7 @@
         inp.name = 'email[]';
         inp.className = 'form-inp multi-email-inp';
         inp.placeholder = 'email@company.com';
+        inp.value = val;
         row.appendChild(inp);
 
         list.appendChild(row);

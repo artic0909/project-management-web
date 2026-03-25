@@ -143,10 +143,7 @@ class LeadController extends Controller
         return redirect()->back()->with('success', 'Lead created successfully!');
     }
 
-    public function edit()
-    {
-        return view('admin.leads.edit');
-    }
+
 
     public function show($id)
     {
@@ -166,9 +163,83 @@ class LeadController extends Controller
         return redirect()->back()->with('success', 'Lead updated successfully!');
     }
 
-    public function update()
+    public function edit($id)
     {
+        $lead = Lead::with('assignments')->findOrFail($id);
+        $sources = Source::all();
+        $services = Service::all();
+        $statuses = Status::where('type', 'lead')->get();
+        $campaigns = Campaign::all();
+        $sales = Sale::all();
+        
+        return view('admin.leads.edit', compact('lead', 'sources', 'services', 'statuses', 'campaigns', 'sales'));
+    }
 
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'company' => 'required|string',
+            'contact_person' => 'required|string',
+            'business_type' => 'required|string',
+            'email' => 'nullable|array',
+            'phone' => 'nullable|array',
+            'country_code' => 'nullable|array',
+            'address' => 'nullable|string',
+            'service_id' => 'required|exists:services,id',
+            'source_id' => 'required|exists:sources,id',
+            'status_id' => 'required|exists:statuses,id',
+            'campaign_id' => 'required|exists:campaigns,id',
+            'priority' => 'required|string',
+            'notes' => 'nullable|string',
+        ]);
+
+        $lead = Lead::findOrFail($id);
+
+        // Process phones
+        $phones = [];
+        if ($request->has('phone')) {
+            $codes = $request->input('country_code', []);
+            $nums = $request->input('phone', []);
+            foreach ($nums as $idx => $num) {
+                if (!empty($num)) {
+                    $phones[] = [
+                        'code_idx' => $codes[$idx] ?? null,
+                        'number' => $num
+                    ];
+                }
+            }
+        }
+
+        // Process emails
+        $emails = array_filter($request->input('email', []), fn($e) => !empty($e));
+
+        $lead->update([
+            'company' => $request->company,
+            'contact_person' => $request->contact_person,
+            'business_type' => $request->business_type,
+            'emails' => array_values($emails),
+            'phones' => $phones,
+            'address' => $request->address,
+            'service_id' => $request->service_id,
+            'source_id' => $request->source_id,
+            'status_id' => $request->status_id,
+            'campaign_id' => $request->campaign_id,
+            'priority' => $request->priority,
+            'notes' => $request->notes,
+        ]);
+
+        // Update assignments
+        LeadAssign::where('lead_id', $id)->delete();
+        if ($request->has('assign_to')) {
+            foreach ($request->assign_to as $sale_id) {
+                LeadAssign::create([
+                    'lead_id' => $lead->id,
+                    'assigned_to' => $sale_id,
+                ]);
+            }
+        }
+
+        return redirect()->route('admin.leads.index')->with('success', 'Lead updated successfully!');
     }
 
     public function lostedLeads()

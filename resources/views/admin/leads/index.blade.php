@@ -841,10 +841,10 @@
                                 <td>
                                     <div class="row-actions">
                                         <a href="{{ route('admin.leads.show', $lead->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                        <button class="ra-btn" title="Call"><i class="bi bi-telephone-fill"></i></button>
-                                        <button class="ra-btn" title="Email"><i class="bi bi-envelope-fill"></i></button>
+                                        <!-- <button class="ra-btn" title="Call"><i class="bi bi-telephone-fill"></i></button>
+                                        <button class="ra-btn" title="Email"><i class="bi bi-envelope-fill"></i></button> -->
                                         <a href="{{route('admin.leads.followup')}}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
-                                        <a class="ra-btn" title="Edit" href="{{route('admin.leads.edit')}}"><i class="bi bi-pencil-fill"></i></a>
+                                        <a class="ra-btn" title="Edit" href="{{route('admin.leads.edit', $lead->id)}}"><i class="bi bi-pencil-fill"></i></a>
                                         <button class="ra-btn danger" title="Delete" onclick="openModal('deleteModal')"><i class="bi bi-trash-fill"></i></button>
                                     </div>
                                 </td>
