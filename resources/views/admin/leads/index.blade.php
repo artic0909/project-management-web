@@ -845,7 +845,7 @@
                                         <button class="ra-btn" title="Email"><i class="bi bi-envelope-fill"></i></button> -->
                                         <a href="{{route('admin.leads.followup', $lead->id)}}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
                                         <a class="ra-btn" title="Edit" href="{{route('admin.leads.edit', $lead->id)}}"><i class="bi bi-pencil-fill"></i></a>
-                                        <button class="ra-btn danger" title="Delete" onclick="openModal('deleteModal')"><i class="bi bi-trash-fill"></i></button>
+                                        <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route('admin.leads.destroy', $lead->id) }}')"><i class="bi bi-trash-fill"></i></button>
                                     </div>
                                 </td>
                             </tr>
@@ -886,10 +886,13 @@
             </div>
             <div class="modal-ft" style="border-top:1px solid #fecaca;">
                 <button class="btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
-                <button style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;"
-                    onclick="closeModal('deleteModal');showToast('success','Lead Deleted!','bi-trash3-fill')">
-                    <i class="bi bi-trash3-fill"></i> Delete Lead
-                </button>
+                <form id="deleteForm" method="POST" style="margin:0;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;">
+                        <i class="bi bi-trash3-fill"></i> Delete Lead
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -2232,6 +2235,10 @@
         if (_origOpenModal) _origOpenModal(id);
         initModalRows(id);
     }
+    window.confirmDelete = function(url) {
+        document.getElementById('deleteForm').action = url;
+        openModal('deleteModal');
+    };
 </script>
 
 @endsection

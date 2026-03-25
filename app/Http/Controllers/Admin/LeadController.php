@@ -239,11 +239,18 @@ class LeadController extends Controller
             }
         }
 
-        return redirect()->route('admin.leads.index')->with('success', 'Lead updated successfully!');
+        return redirect()->back()->with('success', 'Lead updated successfully!');
     }
 
     public function lostedLeads()
     {
         return view('admin.losted-leads');
+    }
+    public function destroy($id)
+    {
+        $lead = Lead::findOrFail($id);
+        $lead->delete();
+
+        return redirect()->back()->with('success', 'Lead deleted successfully!');
     }
 }

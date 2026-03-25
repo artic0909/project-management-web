@@ -46,12 +46,12 @@
                                     <input type="text" name="client_name" class="form-inp" value="{{ old('client_name', $lead->contact_person ?? '') }}" placeholder="Full name" required>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Email</label>
-                                    <input type="email" name="email" class="form-inp" value="{{ old('email', $lead->emails[0] ?? '') }}" placeholder="email@company.com">
+                                    <label class="form-lbl">Contact Emails</label>
+                                    <div id="order-email-list"></div>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Phone</label>
-                                    <input type="tel" name="phone" class="form-inp" value="{{ old('phone', $lead->phones[0]['number'] ?? '') }}" placeholder="+91 XXXXX XXXXX">
+                                    <label class="form-lbl">Contact Phones</label>
+                                    <div id="order-phone-list"></div>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Domain Name</label>
@@ -245,6 +245,7 @@
 </main>
 
 @include('admin.orders.multiselect-assets')
+@include('admin.leads._phone_email_assets')
 
 <script>
     function toggleMktSection() {
@@ -269,6 +270,22 @@
     document.addEventListener('DOMContentLoaded', function() {
         if(typeof updateMs === 'function') updateMs('salesWrap');
         checkServiceType(); // Check initially
+
+        // Hydrate Emails/Phones
+        const leadEmails = @json($lead->emails ?? []);
+        const leadPhones = @json($lead->phones ?? []);
+
+        if (leadEmails.length > 0) {
+            leadEmails.forEach(email => addEmailRow('order-email-list', email));
+        } else {
+            addEmailRow('order-email-list');
+        }
+
+        if (leadPhones.length > 0) {
+            leadPhones.forEach(phone => addPhoneRow('order-phone-list', phone.number, phone.code_idx));
+        } else {
+            addPhoneRow('order-phone-list');
+        }
     });
 </script>
 
