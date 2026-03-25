@@ -31,6 +31,19 @@
                         </a>
                     </div> -->
                 </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                    <!-- <div style="display:flex; gap:10px; margin-bottom:5px;">
+                        <a href="{{ route('admin.leads.edit', ['id' => $lead->id]) }}" class="btn-primary-solid">
+                            <i class="bi bi-pencil-square"></i> Edit Lead
+                        </a>
+                    </div> -->
+                    <div style="display:flex; gap:10px; margin-bottom:5px;">
+                        <a href="{{ route('admin.orders.create', ['lead_id' => $lead->id]) }}" class="btn-primary-solid">
+                            <i class="bi bi-box-arrow-in-right"></i> Convert To Order
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
 
