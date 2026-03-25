@@ -55,7 +55,7 @@
         min-width: 0;
     }
 
-    .row-remove-btn {
+    .row-remove-btn, .row-add-btn {
         background: none;
         border: 1px solid var(--b2);
         border-radius: var(--r-sm);
@@ -76,6 +76,15 @@
         color: #ef4444;
         border-color: #ef4444;
         background: rgba(239, 68, 68, .08);
+    }
+
+    .row-add-btn {
+        color: var(--accent);
+        border-color: var(--accent);
+    }
+
+    .row-add-btn:hover {
+        background: var(--accent-bg);
     }
 </style>
 
@@ -370,11 +379,8 @@
         return sel;
     }
 
-    function addPhoneRow(listId, removable = null) {
+    function addPhoneRow(listId) {
         const list = document.getElementById(listId);
-        const isFirst = list.children.length === 0;
-        const canRemove = removable !== null ? removable : !isFirst;
-
         const row = document.createElement('div');
         row.className = 'multi-row';
 
@@ -391,22 +397,12 @@
         wrap.appendChild(inp);
         row.appendChild(wrap);
 
-        if (canRemove) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'row-remove-btn';
-            btn.innerHTML = '<i class="bi bi-x-lg"></i>';
-            btn.onclick = () => row.remove();
-            row.appendChild(btn);
-        }
         list.appendChild(row);
+        updateButtons(listId);
     }
 
-    function addEmailRow(listId, removable = null) {
+    function addEmailRow(listId) {
         const list = document.getElementById(listId);
-        const isFirst = list.children.length === 0;
-        const canRemove = removable !== null ? removable : !isFirst;
-
         const row = document.createElement('div');
         row.className = 'multi-row';
 
@@ -417,26 +413,56 @@
         inp.placeholder = 'email@company.com';
         row.appendChild(inp);
 
-        if (canRemove) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'row-remove-btn';
-            btn.innerHTML = '<i class="bi bi-x-lg"></i>';
-            btn.onclick = () => row.remove();
-            row.appendChild(btn);
-        }
         list.appendChild(row);
+        updateButtons(listId);
+    }
+
+    function updateButtons(listId) {
+        const list = document.getElementById(listId);
+        const rows = list.querySelectorAll('.multi-row');
+        
+        rows.forEach((row, i) => {
+            let btn = row.querySelector('.btn-action');
+            if(!btn) {
+                btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn-action';
+                row.appendChild(btn);
+            }
+
+            if (i === rows.length - 1) {
+                btn.className = 'row-add-btn btn-action';
+                btn.innerHTML = '<i class="bi bi-plus-lg"></i>';
+                btn.onclick = () => {
+                    if (listId.includes('email')) addEmailRow(listId);
+                    else addPhoneRow(listId);
+                };
+            } else {
+                btn.className = 'row-remove-btn btn-action';
+                btn.innerHTML = '<i class="bi bi-x-lg"></i>';
+                btn.onclick = () => {
+                    row.remove();
+                    updateButtons(listId);
+                };
+            }
+        });
     }
 
     // Seed default rows on page load for whichever lists exist
     document.addEventListener('DOMContentLoaded', function() {
         ['add-email-list', 'edit-email-list'].forEach(id => {
             const el = document.getElementById(id);
-            if (el && el.children.length === 0) addEmailRow(id);
+            if (el) {
+                if (el.children.length === 0) addEmailRow(id);
+                else updateButtons(id);
+            }
         });
         ['add-phone-list', 'edit-phone-list'].forEach(id => {
             const el = document.getElementById(id);
-            if (el && el.children.length === 0) addPhoneRow(id);
+            if (el) {
+                if (el.children.length === 0) addPhoneRow(id);
+                else updateButtons(id);
+            }
         });
     });
 </script>

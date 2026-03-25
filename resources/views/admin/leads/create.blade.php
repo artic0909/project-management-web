@@ -55,18 +55,12 @@
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Email</label>
                                     <div id="add-email-list"></div>
-                                    <button type="button" class="btn-ghost" style="margin-top:6px;padding:4px 10px;font-size:12px;" onclick="addEmailRow('add-email-list')">
-                                        <i class="bi bi-plus-lg"></i> Add Email
-                                    </button>
                                 </div>
 
                                 {{-- Phone — multiple + country code --}}
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Phone</label>
                                     <div id="add-phone-list"></div>
-                                    <button type="button" class="btn-ghost" style="margin-top:6px;padding:4px 10px;font-size:12px;" onclick="addPhoneRow('add-phone-list')">
-                                        <i class="bi bi-plus-lg"></i> Add Phone
-                                    </button>
                                 </div>
 
                                 <div class="form-row" style="grid-column:1/-1">
