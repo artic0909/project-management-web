@@ -283,8 +283,8 @@
             </div>
             <div class="modal-ft" style="border-top:1px solid #fecaca;">
                 <button class="btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
-                <button style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="closeModal('deleteModal');showToast('success','Order Deleted!','bi-trash3-fill')">
-                    <i class="bi bi-trash3-fill"></i> Delete Order
+                <button style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="document.getElementById('deleteOrderForm').submit()">
+                    <i class="bi bi-trash3-fill"></i> Confirm Deletion
                 </button>
             </div>
         </div>
@@ -680,11 +680,9 @@
 
     <script>
         function confirmDelete(url) {
-            if (confirm('Are you sure you want to delete this order? This action cannot be undone.')) {
-                const form = document.getElementById('deleteOrderForm');
-                form.action = url;
-                form.submit();
-            }
+            const form = document.getElementById('deleteOrderForm');
+            form.action = url;
+            openModal('deleteModal');
         }
         
     /* ── Stat box filter ── */

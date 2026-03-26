@@ -119,10 +119,9 @@
                                 <td>
                                     <div class="row-actions">
                                         <a href="{{ route('admin.payments.create', $pay->order_id) }}" class="ra-btn" title="View Details"><i class="bi bi-eye"></i></a>
-                                        <form action="{{ route('admin.payments.destroy', $pay->id) }}" method="POST" onsubmit="return confirm('Delete this record?')">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="ra-btn danger"><i class="bi bi-trash-fill"></i></button>
-                                        </form>
+                                        <button class="ra-btn danger" onclick="confirmDelete('{{ route('admin.payments.destroy', $pay->id) }}')">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -138,4 +137,40 @@
         </div>
     </div>
 </main>
+
+{{-- DELETE MODAL --}}
+<div class="modal-backdrop" id="deleteModal">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-hd" style="border-bottom:1px solid #fecaca;">
+            <span style="color:#dc2626;">Delete Payment Entry</span>
+            <button class="modal-close" onclick="closeModal('deleteModal')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-bd" style="text-align:center;padding:32px 24px;">
+            <div style="width:64px;height:64px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                <i class="bi bi-trash3-fill" style="font-size:28px;color:#dc2626;"></i>
+            </div>
+            <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:var(--t1);">Delete this transaction?</h3>
+            <p style="margin:0;font-size:14px;color:var(--t3);line-height:1.6;">Are you sure you want to delete this payment record?<br>This action <strong style="color:#dc2626;">cannot be undone.</strong></p>
+        </div>
+        <div class="modal-ft" style="border-top:1px solid #fecaca;">
+            <button class="btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
+            <button style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="document.getElementById('deletePaymentForm').submit()">
+                <i class="bi bi-trash3-fill"></i> Confirm Deletion
+            </button>
+        </div>
+    </div>
+</div>
+
+<form id="deletePaymentForm" action="" method="POST" style="display:none;">
+    @csrf
+    @method('DELETE')
+</form>
+
+<script>
+    function confirmDelete(url) {
+        const form = document.getElementById('deletePaymentForm');
+        form.action = url;
+        openModal('deleteModal');
+    }
+</script>
 @endsection
