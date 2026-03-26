@@ -37,6 +37,10 @@ return new class extends Migration
             $table->string('mkt_username')->nullable();
             $table->string('mkt_password')->nullable();
             
+            // Audit fields
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->string('created_by_type')->nullable();
+            
             $table->timestamps();
         });
     }

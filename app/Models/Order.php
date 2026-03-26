@@ -12,6 +12,7 @@ class Order extends Model
         'delivery_date', 'city', 'state', 'zip_code', 'full_address',
         'status_id', 'is_marketing', 'mkt_payment_status_id',
         'mkt_starting_date', 'plan_name', 'mkt_username', 'mkt_password',
+        'created_by', 'created_by_type'
     ];
 
     protected $casts = [
@@ -25,6 +26,11 @@ class Order extends Model
     public function lead()
     {
         return $this->belongsTo(Lead::class);
+    }
+
+    public function createdBy()
+    {
+        return $this->morphTo('created_by', 'created_by_type', 'created_by');
     }
 
     public function service()

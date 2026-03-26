@@ -76,10 +76,11 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::get('/add-order/{lead_id?}', [OrderController::class, 'create'])->name('orders.create');
     Route::post('/all-orders', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/view-order/{id}', [OrderController::class, 'show'])->name('orders.show');
+    Route::patch('/view-order/{id}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::get('/edit-order/{id}', [OrderController::class, 'edit'])->name('orders.edit');
     Route::put('/edit-order/{id}', [OrderController::class, 'update'])->name('orders.update');
     Route::delete('/delete-order/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
-    Route::get('/order-followup', [FollowupController::class, 'index'])->name('orders.followup');
+    Route::get('/order-followup/{id}', [FollowupController::class, 'index'])->name('orders.followup');
 
 
     // Project

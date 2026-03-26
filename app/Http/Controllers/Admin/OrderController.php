@@ -8,16 +8,44 @@ use App\Models\Service;
 use App\Models\Sale;
 use App\Models\Status;
 use App\Models\Order;
-use App\Models\OrderAssign;
 use Illuminate\Http\Request;
+use App\Models\OrderAssign;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with(['service', 'status', 'assignments.sale'])->latest()->get();
+        $query = Order::with(['status', 'service', 'assignments.sale', 'createdBy']);
+
+        // Search Filter
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function($sub) use ($q) {
+                $sub->where('company_name', 'LIKE', "%$q%")
+                    ->orWhere('client_name', 'LIKE', "%$q%")
+                    ->orWhere('emails', 'LIKE', "%$q%")
+                    ->orWhere('phones', 'LIKE', "%$q%");
+            });
+        }
+
+        // Service Filter
+        if ($request->filled('service_id')) {
+            $query->where('service_id', $request->service_id);
+        }
+
+        // Status Filter
+        if ($request->filled('status_id')) {
+            $query->where('status_id', $request->status_id);
+        }
+
+        // Date Range Filter
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+        }
+
+        $orders = $query->latest()->get();
         
-        // Dynamic Counts
+        // Dynamic Counts (Overall stats, maybe not affected by current filters for KPI box)
         $totalOrders = Order::count();
         $marketingOrders = Order::where('is_marketing', true)->count();
         $totalValue = Order::sum('order_value');
@@ -30,8 +58,11 @@ class OrderController extends Controller
             $q->whereIn('name', ['Pending', 'Processing']);
         })->sum('order_value');
 
+        $allServices = Service::all();
+        $allStatuses = Status::where('type', 'order')->get();
+
         return view('admin.orders.index', compact(
-            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue'
+            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue', 'allServices', 'allStatuses'
         ));
     }
 
@@ -82,6 +113,10 @@ class OrderController extends Controller
         $orderData['emails'] = array_values($emails);
         $orderData['phones'] = $phones;
         $orderData['is_marketing'] = $request->has('is_marketing'); 
+        
+        // Audit
+        $orderData['created_by'] = session('admin_id');
+        $orderData['created_by_type'] = Sale::class;
 
         $order = Order::create($orderData);
 
@@ -106,8 +141,22 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::with(['lead', 'service', 'status', 'paymentTerms', 'mktPaymentStatus', 'assignments.sale'])->findOrFail($id);
-        return view('admin.orders.show', compact('order'));
+        $order = Order::with(['status', 'service', 'assignments.sale', 'createdBy', 'paymentTerms', 'mktPaymentStatus'])->findOrFail($id);
+        
+        $orderStatuses = Status::where('type', 'order')->get();
+        $paymentStatuses = Status::where('type', 'payment')->get();
+
+        return view('admin.orders.show', compact('order', 'orderStatuses', 'paymentStatuses'));
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+        
+        $data = $request->only(['status_id', 'payment_terms_id', 'mkt_payment_status_id']);
+        $order->update($data);
+
+        return back()->with('success', 'Order status updated successfully.');
     }
 
     public function edit($id)

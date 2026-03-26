@@ -120,18 +120,38 @@
                     </div>
                     <div class="card-actions mb-2">
 
-                        <form class="global-search">
-                            <i class="bi bi-search"></i>
-                            <input type="text" placeholder="Search...">
-                            <button type="submit" class="btn-primary-solid sm">Search</button>
-                        </form>
+                        <form action="{{ route('admin.orders.index') }}" method="GET" class="card-actions mb-0">
+                            <div class="global-search">
+                                <i class="bi bi-search"></i>
+                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search...">
+                                <button type="submit" class="btn-primary-solid sm">Search</button>
+                            </div>
 
-                        <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
-                        <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
-                            <i class="bi bi-calendar3"></i>
-                            <span id="drpLabel">All Time</span>
-                            <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
-                        </button>
+                            <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
+                            <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
+                                <i class="bi bi-calendar3"></i>
+                                <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'All Time' }}</span>
+                                <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
+                            </button>
+
+                            <!-- Hidden inputs for date range -->
+                            <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
+                            <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
+
+                            <select name="service_id" class="filter-select" onchange="this.form.submit()">
+                                <option value="">All Services</option>
+                                @foreach($allServices as $srv)
+                                    <option value="{{ $srv->id }}" {{ request('service_id') == $srv->id ? 'selected' : '' }}>{{ $srv->name }}</option>
+                                @endforeach
+                            </select>
+
+                            <select name="status_id" class="filter-select" onchange="this.form.submit()">
+                                <option value="">All Status</option>
+                                @foreach($allStatuses as $st)
+                                    <option value="{{ $st->id }}" {{ request('status_id') == $st->id ? 'selected' : '' }}>{{ $st->name }}</option>
+                                @endforeach
+                            </select>
+                        </form>
 
                         <!-- {{-- Date Range Picker (replaces simple select) --}} -->
                         <div style="position:relative;">
@@ -150,15 +170,17 @@
                                 <th>Contact Person</th>
                                 <th>Service</th>
                                 <th>Value</th>
-                                <th>Location</th>
                                 <th>Status</th>
+                                <th>Created By</th>
                                 <th>Assigned To</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($orders as $order)
-                            <tr data-order-type="{{ $order->is_marketing ? 'marketing' : 'website' }}" data-status="{{ strtolower($order->status->name ?? '') }}">
+                            <tr data-order-type="{{ $order->is_marketing ? 'marketing' : 'website' }}" 
+                                data-status="{{ strtolower($order->status->name ?? '') }}"
+                                data-service="{{ $order->service_id }}">
                                 <td><span class="mono">#ORD-{{ 1000 + $order->id }}</span></td>
                                 <td>
                                     <span class="type-badge {{ $order->is_marketing ? 'marketing-type' : 'website-type' }}">
@@ -186,21 +208,23 @@
                                 <td><span class="src-tag">{{ $order->service->name ?? 'N/A' }}</span></td>
                                 <td><span class="src-tag">₹{{ number_format($order->order_value, 0) }}</span></td>
                                 <td>
-                                    <div class="ls">{{ $order->city ?? 'N/A' }}</div>
-                                    <div class="ls">{{ $order->state ?? '' }}</div>
-                                </td>
-                                <td>
                                     <span class="status-pill" style="background:{{ ($order->status->color ?? '#6366f1') }}20; color:{{ $order->status->color ?? '#6366f1' }};">
                                         {{ $order->status->name ?? 'Pending' }}
                                     </span>
                                 </td>
                                 <td>
-                                    <div style="display:flex; -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);">
+                                    @if($order->createdBy)
+                                        <div class="ln">{{ $order->createdBy->name }}</div>
+                                        <div class="ls">{{ $order->createdBy->email }}</div>
+                                    @else
+                                        <span class="ls">System</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div style="display:flex;flex-direction:column;gap:2px;">
                                         @foreach($order->assignments as $assign)
-                                            @php $init = strtoupper(substr($assign->sale->name, 0, 1)); @endphp
-                                            <div class="mini-ava" style="width:24px; height:24px; font-size:9px; margin-right:-8px; border:2px solid var(--bg2);" title="{{ $assign->sale->name }}">
-                                                {{ $init }}
-                                            </div>
+                                            <div class="ln" style="font-size:12.5px;">{{ $assign->sale->name }}</div>
+                                            <div class="ls" style="font-size:10px;">{{ $assign->sale->email }}</div>
                                         @endforeach
                                     </div>
                                 </td>
@@ -208,7 +232,7 @@
                                     <div class="row-actions">
                                         <a href="{{ route('admin.orders.show', $order->id) }}" class="ra-btn"><i class="bi bi-eye-fill"></i></a>
                                         <a href="{{ route('admin.orders.edit', $order->id) }}" class="ra-btn"><i class="bi bi-pencil-fill"></i></a>
-                                        <a href="{{route('admin.orders.followup')}}" class="ra-btn"><i class="bi bi-arrow-counterclockwise"></i></a>
+                                        <a href="{{ route('admin.orders.followup', $order->id) }}" class="ra-btn"><i class="bi bi-arrow-counterclockwise"></i></a>
                                         <a href="{{route('admin.payments.create')}}" class="ra-btn"><i class="bi bi-wallet2"></i></a>
                                         <button class="ra-btn danger" onclick="confirmDelete('{{ route('admin.orders.destroy', $order->id) }}')"><i class="bi bi-trash-fill"></i></button>
                                     </div>
@@ -677,13 +701,13 @@
 
     /* ── Listen for date range applied ── */
     document.addEventListener('dateRangeApplied', function(e) {
-        const {
-            preset,
-            start,
-            end
-        } = e.detail;
-        // Hook into your AJAX/filter logic here
-        console.log('Date filter:', preset, start, end);
+        const { start, end } = e.detail;
+        
+        document.getElementById('drpStartInput').value = start;
+        document.getElementById('drpEndInput').value = end;
+        
+        // Find the closest form to submit
+        document.getElementById('drpStartInput').closest('form').submit();
     });
 </script>
 

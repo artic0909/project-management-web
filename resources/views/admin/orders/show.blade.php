@@ -27,6 +27,66 @@
         </div>
 
         <div class="dash-grid">
+            
+            {{-- Left Column: Identity & Contact (Leads Style) --}}
+            <div class="dash-card span-4" style="height:fit-content;">
+                <div class="card-head">
+                    <div class="card-title">Identity & Contact</div>
+                </div>
+                <div class="card-body" style="padding:0 18px 24px;">
+                    @php 
+                        $emails = $order->emails ?? [];
+                        $phones = $order->phones ?? [];
+                        $initials = strtoupper(substr($order->company_name, 0, 1) . substr($order->client_name, 0, 1));
+                    @endphp
+
+                    <div style="display:flex;flex-direction:column;align-items:center;padding:24px 0 20px;border-bottom:1px solid var(--b1);text-align:center;">
+                        <div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#6366f1,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;margin-bottom:14px;box-shadow:0 8px 30px rgba(99,102,241,.3);">{{ $initials }}</div>
+                        <div style="font-size:19px;font-weight:800;color:var(--t1);letter-spacing:-.4px;">{{ $order->company_name }}</div>
+                        <div style="font-size:13px;color:var(--t3);margin-top:4px;">{{ $emails[0] ?? 'No primary email' }}</div>
+                        <div style="margin-top:12px;display:flex;gap:6px; flex-wrap:wrap; justify-content:center;">
+                            <span class="src-tag website-type" style="padding:3px 10px; border-radius:6px; font-size:10.5px; font-weight:700;">{{ $order->is_marketing ? 'Marketing' : 'Website' }}</span>
+                            <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(99,102,241,.1);color:var(--accent);">{{ $order->service->name ?? 'N/A' }}</span>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;flex-direction:column;gap:4px;margin-top:16px;">
+                        <div class="detail-row">
+                            <div class="detail-icon"><i class="bi bi-person-fill"></i></div>
+                            <div>
+                                <div class="detail-lbl">Contact Person</div>
+                                <div class="detail-val">{{ $order->client_name }}</div>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                            <div>
+                                <div class="detail-lbl">Full Address</div>
+                                <div class="detail-val">{{ $order->full_address ?? 'N/A' }}</div>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-icon"><i class="bi bi-globe"></i></div>
+                            <div>
+                                <div class="detail-lbl">Domain</div>
+                                <div class="detail-val">{{ $order->domain_name ?? 'N/A' }}</div>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-icon"><i class="bi bi-person-badge-fill"></i></div>
+                            <div>
+                                <div class="detail-lbl">Created By</div>
+                                <div class="detail-val">
+                                    <span>{{ $order->createdBy->name ?? 'System' }}</span>
+                                    <span style="font-size:10px; color:var(--t3)">{{ last(explode('\\', $order->created_by_type)) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Right Column: Actions & Details (span-8) --}}
             <div class="span-8" style="display:flex;flex-direction:column;gap:16px;">
                 
                 {{-- KPI Strip --}}
@@ -53,58 +113,88 @@
                     </div>
                 </div>
 
-                {{-- Order Info --}}
-                <div class="dash-card">
-                    <div class="card-head">
-                        <div class="card-title">General Information</div>
+                {{-- Row for quick Communication & Assigned Team --}}
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                    <div class="dash-card" style="padding:20px;">
+                        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--t4);margin-bottom:12px;letter-spacing:1px;">Communication</div>
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                            @if(count($emails) > 0)
+                                <a href="mailto:{{ $emails[0] }}" class="btn-primary-ghost" style="width:100%; justify-content:center;">
+                                    <i class="bi bi-envelope"></i> Send Email
+                                </a>
+                            @endif
+                            @if(count($phones) > 0)
+                                <a href="tel:{{ $phones[0]['number'] }}" class="btn-primary-ghost" style="width:100%; justify-content:center;">
+                                    <i class="bi bi-telephone"></i> Call Client
+                                </a>
+                            @endif
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                            <div class="od-row">
-                                <span class="od-lbl">Company Name</span>
-                                <span class="od-val">{{ $order->company_name }}</span>
-                            </div>
-                            <div class="od-row">
-                                <span class="od-lbl">Client Name</span>
-                                <span class="od-val">{{ $order->client_name }}</span>
-                            </div>
-                            <div class="od-row">
-                                <span class="od-lbl">Emails</span>
-                                <span class="od-val">
-                                    @foreach($order->emails ?? [] as $email)
-                                        <div>{{ $email }}</div>
-                                    @endforeach
-                                </span>
-                            </div>
-                            <div class="od-row">
-                                <span class="od-lbl">Phones</span>
-                                <span class="od-val">
-                                    @foreach($order->phones ?? [] as $phone)
-                                        <div>{{ $phone['number'] }}</div>
-                                    @endforeach
-                                </span>
-                            </div>
-                            <div class="od-row">
-                                <span class="od-lbl">Domain</span>
-                                <span class="od-val">{{ $order->domain_name ?? 'N/A' }}</span>
-                            </div>
-                            <div class="od-row">
-                                <span class="od-lbl">Service</span>
-                                <span class="od-val">{{ $order->service->name ?? 'N/A' }}</span>
-                            </div>
-                            <div class="od-row">
-                                <span class="od-lbl">Payment Terms</span>
-                                <span class="od-val">{{ $order->paymentTerms->name ?? 'N/A' }}</span>
-                            </div>
-                            <div class="od-row" style="grid-column: 1/-1;">
-                                <span class="od-lbl">Full Address</span>
-                                <span class="od-val">{{ $order->full_address ?? 'N/A' }}</span>
-                            </div>
+
+                    <div class="dash-card" style="padding:20px;">
+                        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--t4);margin-bottom:12px;letter-spacing:1px;">Assigned Team</div>
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                            @foreach($order->assignments as $assign)
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    <div style="width:32px;height:32px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--t2);">{{ strtoupper(substr($assign->sale->name, 0, 1)) }}</div>
+                                    <div style="display:flex; flex-direction:column;">
+                                        <span style="font-size:13px;font-weight:700;color:var(--t1);">{{ $assign->sale->name }}</span>
+                                        <span style="font-size:11px;color:var(--t3);">{{ $assign->sale->email }}</span>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
 
-                {{-- Marketing Details --}}
+                {{-- QUICK UPDATE CARD --}}
+                <div class="dash-card">
+                    <div class="card-head">
+                        <div>
+                            <div class="card-title">Quick Status Update</div>
+                            <div class="card-sub">Fast update status and payment terms</div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <div class="form-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
+                                <div class="form-row">
+                                    <label class="form-lbl">Order Status</label>
+                                    <select name="status_id" class="form-inp">
+                                        @foreach($orderStatuses as $st)
+                                            <option value="{{ $st->id }}" {{ $order->status_id == $st->id ? 'selected' : '' }}>{{ $st->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Payment Terms</label>
+                                    <select name="payment_terms_id" class="form-inp">
+                                        @foreach($paymentStatuses as $st)
+                                            <option value="{{ $st->id }}" {{ $order->payment_terms_id == $st->id ? 'selected' : '' }}>{{ $st->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @if($order->is_marketing)
+                                <div class="form-row">
+                                    <label class="form-lbl">Mkt Payment Status</label>
+                                    <select name="mkt_payment_status_id" class="form-inp">
+                                        @foreach($paymentStatuses as $st)
+                                            <option value="{{ $st->id }}" {{ $order->mkt_payment_status_id == $st->id ? 'selected' : '' }}>{{ $st->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @endif
+                                <div class="form-row" style="grid-column: 1/-1; display:flex; justify-content:flex-end; margin-bottom:0;">
+                                    <button type="submit" class="btn-primary-solid">Update Status</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                {{-- Marketing Details (Only if applicable) --}}
                 @if($order->is_marketing)
                 <div class="dash-card">
                     <div class="card-head">
@@ -115,10 +205,6 @@
                             <div class="od-row">
                                 <span class="od-lbl">Plan Name</span>
                                 <span class="od-val">{{ $order->plan_name ?? 'N/A' }}</span>
-                            </div>
-                            <div class="od-row">
-                                <span class="od-lbl">Payment Status</span>
-                                <span class="od-val">{{ $order->mktPaymentStatus->name ?? 'N/A' }}</span>
                             </div>
                             <div class="od-row">
                                 <span class="od-lbl">Username</span>
@@ -141,36 +227,7 @@
                     </div>
                 </div>
                 @endif
-            </div>
 
-            <div class="span-4">
-                <div class="dash-card">
-                    <div class="card-head">
-                        <div class="card-title">Assigned Personnel</div>
-                    </div>
-                    <div class="card-body">
-                        <div style="display:flex;flex-direction:column;gap:12px;">
-                            @forelse($order->assignments as $assign)
-                                <div style="display:flex;align-items:center;gap:10px;padding:8px;background:var(--bg3);border:1px solid var(--b1);border-radius:var(--r-sm);">
-                                    @php 
-                                        $initials = strtoupper(substr($assign->sale->name, 0, 2)); 
-                                        $colors = ['#6366f1','#ec4899','#10b981','#f59e0b','#ef4444','#8b5cf6'];
-                                        $bg = $colors[$assign->sale->id % count($colors)];
-                                    @endphp
-                                    <div style="width:36px;height:36px;border-radius:50%;background:{{ $bg }};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;">
-                                        {{ $initials }}
-                                    </div>
-                                    <div>
-                                        <div style="font-size:13px;font-weight:600;color:var(--t1);">{{ $assign->sale->name }}</div>
-                                        <div style="font-size:11px;color:var(--t3);">{{ $assign->sale->email }}</div>
-                                    </div>
-                                </div>
-                            @empty
-                                <div style="text-align:center;padding:20px;color:var(--t4);font-size:13px;">No personnel assigned.</div>
-                            @endforelse
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -218,6 +275,13 @@
         font-weight: 500;
         color: var(--t1);
     }
+    .detail-row { display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--b1); }
+    .detail-row:last-child { border-bottom:none; }
+    .detail-icon { width:34px; height:34px; border-radius:10px; background:var(--bg4); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--t3); font-size:15px; }
+    .detail-lbl { font-size:10px; color:var(--t4); font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom: 2px; }
+    .detail-val { font-size:13px; font-weight:700; color:var(--t1); }
+
+    .mkt-section .form-grid { padding: 14px; background: var(--bg3); }
 </style>
 
 <script>
