@@ -3468,6 +3468,25 @@
             const sw = document.getElementById('themeSwitch');
             if (sw) sw.checked = (document.documentElement.getAttribute('data-theme') === 'dark');
         });
+
+        // Toggle Toast for session messages
+        @if(session('success'))
+            document.addEventListener('DOMContentLoaded', function() {
+                showToast('success', "{{ session('success') }}", 'bi-check-circle-fill');
+            });
+        @endif
+        @if(session('error'))
+            document.addEventListener('DOMContentLoaded', function() {
+                showToast('danger', "{{ session('error') }}", 'bi-exclamation-triangle-fill');
+            });
+        @endif
+        @if($errors->any())
+            document.addEventListener('DOMContentLoaded', function() {
+                @foreach($errors->all() as $error)
+                    showToast('danger', "{{ $error }}", 'bi-exclamation-circle');
+                @endforeach
+            });
+        @endif
     </script>
 </body>
 
