@@ -74,6 +74,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     // Orders
     Route::get('/all-orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/add-order/{lead_id?}', [OrderController::class, 'create'])->name('orders.create');
+    Route::post('/all-orders', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/update-order', [OrderController::class, 'edit'])->name('orders.edit');
     Route::get('/order-followup', [FollowupController::class, 'index'])->name('orders.followup');
 

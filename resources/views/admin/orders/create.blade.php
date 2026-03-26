@@ -21,8 +21,11 @@
             </div>
         </div>
 
-        <form action="{{ route('admin.orders.index') }}" method="POST">
+        <form action="{{ route('admin.orders.store') }}" method="POST">
             @csrf
+            @if($lead)
+                <input type="hidden" name="lead_id" value="{{ $lead->id }}">
+            @endif
 
             <div class="dash-grid">
 
@@ -124,7 +127,7 @@
                                     <div class="card-sub">Fill only for marketing orders</div>
                                 </div>
                                 <label style="margin-left:auto;display:flex;align-items:center;gap:7px;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--t3);">
-                                    <input type="checkbox" id="mktToggle" onchange="toggleMktSection()" style="accent-color:var(--accent);width:14px;height:14px;">
+                                    <input type="checkbox" name="is_marketing" value="1" id="mktToggle" onchange="toggleMktSection()" style="accent-color:var(--accent);width:14px;height:14px;">
                                     Enable
                                 </label>
                             </div>
