@@ -13,12 +13,12 @@ class PaymentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Order::with(['status', 'service', 'assignments.sale', 'payments', 'paymentTerms']);
+        $query = Payment::with(['order.status', 'order.service', 'order.assignments.sale', 'status', 'createdBy']);
 
         // Search Filter
         if ($request->filled('q')) {
             $q = $request->q;
-            $query->where(function ($sub) use ($q) {
+            $query->whereHas('order', function($sub) use ($q) {
                 $sub->where('company_name', 'LIKE', "%$q%")
                     ->orWhere('client_name', 'LIKE', "%$q%")
                     ->orWhere('emails', 'LIKE', "%$q%")
@@ -26,23 +26,22 @@ class PaymentController extends Controller
             });
         }
 
-        // Status Filter (Note: Using order status or payment terms?)
-        // The view shows "Paid", "Pending", "Overdue". These are often Order Status or Payment Status.
+        // Status Filter
         if ($request->filled('status_id')) {
             $query->where('status_id', $request->status_id);
         }
 
-        $orders = $query->latest()->get();
+        $payments = $query->latest()->get();
 
-        // Summaries
+        // Summaries (Keep them global)
         $totalCollected = Payment::sum('amount');
-        $totalValue = Order::sum('order_value');
-        $totalOutstanding = $totalValue - $totalCollected;
+        $totalOrderValue = Order::sum('order_value');
+        $totalOutstanding = $totalOrderValue - $totalCollected;
 
-        $allStatuses = Status::where('type', 'order')->get(); // For the filter dropdown
+        $allStatuses = Status::where('type', 'payment')->get(); // Filter by payment status now
 
         return view('admin.payment.index', compact(
-            'orders', 'totalCollected', 'totalValue', 'totalOutstanding', 'allStatuses'
+            'payments', 'totalCollected', 'totalOrderValue', 'totalOutstanding', 'allStatuses'
         ));
     }
 

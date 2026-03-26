@@ -73,8 +73,8 @@
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(6,182,212,.1);color:#06b6d4;white-space:nowrap;">Revenue</span>
                 </div>
-                <div style="font-size:22px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">₹{{ number_format($totalValue / 100000, 2) }}L</div>
-                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Total Amount</div>
+                <div style="font-size:22px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">₹{{ number_format($totalValue, 0) }}</div>
+                <div style="font-size:11px;color:var(--t3);font-weight:600;margin-top:4px;">Total Order Value</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
                     <div style="height:100%;width:100%;background:#06b6d4;border-radius:3px;"></div>
                 </div>
@@ -87,8 +87,8 @@
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(245,158,11,.1);color:#f59e0b;white-space:nowrap;">Pending</span>
                 </div>
-                <div style="font-size:22px;font-weight:800;color:#f59e0b;letter-spacing:-.5px;line-height:1;">₹{{ number_format($pendingValue / 100000, 2) }}L</div>
-                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Pending Amount</div>
+                <div style="font-size:22px;font-weight:800;color:#f59e0b;letter-spacing:-.5px;line-height:1;">₹{{ number_format($pendingValue, 0) }}</div>
+                <div style="font-size:11px;color:var(--t3);font-weight:600;margin-top:4px;">Pending Collections</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
                     <div style="height:100%;width:{{ $totalValue > 0 ? ($pendingValue / $totalValue) * 100 : 0 }}%;background:#f59e0b;border-radius:3px;"></div>
                 </div>

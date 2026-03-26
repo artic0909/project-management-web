@@ -41,7 +41,7 @@
                         <div class="detail-kpis" style="margin-bottom:20px">
                             <div class="dk-item">
                                 <div class="dk-val">₹{{ number_format($order->order_value, 0) }}</div>
-                                <div class="dk-lbl">Order Cost</div>
+                                <div class="dk-lbl">Order Value</div>
                             </div>
                             <div class="dk-item">
                                 <div class="dk-val" style="color:#10b981">₹{{ number_format($paid_total, 0) }}</div>
