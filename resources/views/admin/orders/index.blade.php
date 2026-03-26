@@ -235,7 +235,7 @@
                                         <a href="{{ route('admin.orders.show', $order->id) }}" class="ra-btn"><i class="bi bi-eye-fill"></i></a>
                                         <a href="{{ route('admin.orders.edit', $order->id) }}" class="ra-btn"><i class="bi bi-pencil-fill"></i></a>
                                         <a href="{{ route('admin.orders.followup', $order->id) }}" class="ra-btn"><i class="bi bi-arrow-counterclockwise"></i></a>
-                                        <a href="{{route('admin.payments.create')}}" class="ra-btn"><i class="bi bi-wallet2"></i></a>
+                                        <a href="{{route('admin.payments.create', $order->id)}}" class="ra-btn"><i class="bi bi-wallet2"></i></a>
                                         <button class="ra-btn danger" onclick="confirmDelete('{{ route('admin.orders.destroy', $order->id) }}')"><i class="bi bi-trash-fill"></i></button>
                                     </div>
                                 </td>
@@ -429,7 +429,7 @@
                     <i class="bi bi-x-lg"></i> Close
                 </button>
                 <div style="display:flex;gap:8px;">
-                    <a href="{{ route('admin.payments.create') }}" target="_blank"
+                    <a href="{{ route('admin.payments.create', $order->id) }}" target="_blank"
                         class="btn-ghost" style="border-color:#10b981;color:#10b981;"
                         onmouseover="this.style.background='rgba(16,185,129,.08)'"
                         onmouseout="this.style.background='transparent'">

@@ -67,4 +67,9 @@ class Order extends Model
     {
         return $this->morphMany(Followup::class, 'followable')->latest();
     }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
 }

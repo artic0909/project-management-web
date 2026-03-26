@@ -50,8 +50,8 @@
       </a>
       <a class="nav-item {{ request()->routeIs('admin.orders*') ? 'active' : '' }}" href="{{ route('admin.orders.index') }}">
         <i class="bi bi-bag-check-fill"></i><span>Orders</span>
-        <span class="nav-count">38</span>
-      </a>
+        <span class="nav-count">{{ $orderCount }}</span>
+      </a>  
 
       <a class="nav-item {{ request()->routeIs('admin.payments*') ? 'active' : '' }}" href="{{ route('admin.payments.index') }}">
         <i class="bi bi-wallet2"></i><span>Payments</span>

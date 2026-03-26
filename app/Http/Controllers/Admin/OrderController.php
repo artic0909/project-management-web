@@ -137,7 +137,7 @@ class OrderController extends Controller
             }
         }
 
-        return redirect()->route('admin.orders.index')->with('success', 'Order created successfully.');
+        return redirect()->back()->with('success', 'Order created successfully.');
     }
 
     public function show($id)
@@ -226,6 +226,6 @@ class OrderController extends Controller
     {
         $order = Order::findOrFail($id);
         $order->delete();
-        return redirect()->route('admin.orders.index')->with('success', 'Order deleted successfully.');
+        return redirect()->back()->with('success', 'Order deleted successfully.');
     }
 }

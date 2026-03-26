@@ -43,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
                 'developerCount' => \App\Models\Developer::count(),
                 'salesPersonCount' => \App\Models\Sale::count(),
                 'leadCount' => \App\Models\Lead::count(),
+                'orderCount' => \App\Models\Order::count(),
 
                 // Add more counts here as your sidebar grows:
                 // 'leadCount'    => \App\Models\Lead::count(),
