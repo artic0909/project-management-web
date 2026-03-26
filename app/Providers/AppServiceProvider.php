@@ -42,8 +42,9 @@ class AppServiceProvider extends ServiceProvider
                 'statusCount' => \App\Models\Status::count(),
                 'developerCount' => \App\Models\Developer::count(),
                 'salesPersonCount' => \App\Models\Sale::count(),
-                'leadCount' => \App\Models\Lead::count(),
+                'leadCount' => \App\Models\Lead::whereHas('status', function($q){ $q->where('name','!=','lost'); })->count(),
                 'orderCount' => \App\Models\Order::count(),
+                'lostLeadCount' => \App\Models\Lead::whereHas('status', function($q){ $q->where('name','lost'); })->count(),
 
                 // Add more counts here as your sidebar grows:
                 // 'leadCount'    => \App\Models\Lead::count(),

@@ -259,8 +259,11 @@
                     </table>
                 </div>
 
-                <div class="table-footer">
-                    <span class="tf-info" id="ordersCount">Showing {{ $orders->count() }} of {{ $totalOrders }} Orders</span>
+                <div class="table-footer" style="padding:16px 20px; border-top:1px solid var(--b2); display:flex; justify-content:space-between; align-items:center; background:var(--bg2);">
+                    <span class="tf-info" id="ordersCount" style="font-size:13px; color:var(--t3); font-weight:500;">Showing {{ $orders->count() }} of {{ $orders->total() }} Orders</span>
+                    <div class="tf-pagination">
+                        {{ $orders->links('admin.includes.pagination') }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -717,11 +720,24 @@
     document.addEventListener('dateRangeApplied', function(e) {
         const { start, end } = e.detail;
         
-        document.getElementById('drpStartInput').value = start;
-        document.getElementById('drpEndInput').value = end;
-        
-        // Find the closest form to submit
-        document.getElementById('drpStartInput').closest('form').submit();
+        function formatDate(date) {
+            if(!date) return '';
+            let d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+            return [year, month, day].join('-');
+        }
+
+        const sInp = document.getElementById('drpStartInput');
+        const eInp = document.getElementById('drpEndInput');
+        if(sInp && eInp) {
+            sInp.value = formatDate(start);
+            eInp.value = formatDate(end);
+            sInp.closest('form').submit();
+        }
     });
 </script>
 

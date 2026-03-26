@@ -867,10 +867,9 @@
                 </div>
 
                 <div class="table-footer">
-                    <span class="tf-info">Showing {{ $leads->count() }} Leads</span>
+                    <span class="tf-info">Showing {{ $leads->count() }} of {{ $leads->total() }} Leads</span>
                     <div class="tf-pagination">
-                        <!-- Basic Pagination UI -->
-                        <button class="pg-btn active">1</button>
+                        {{ $leads->links('admin.includes.pagination') }}
                     </div>
                     <div class="tf-per-page"></div>
                 </div>
@@ -2247,6 +2246,31 @@
         document.getElementById('deleteForm').action = url;
         openModal('deleteModal');
     };
+
+    // DATE RANGE LISTENER
+    document.addEventListener('dateRangeApplied', function(e) {
+        const start = e.detail.start;
+        const end = e.detail.end;
+        if (start && end) {
+            function formatDate(date) {
+                let d = new Date(date),
+                    month = '' + (d.getMonth() + 1),
+                    day = '' + d.getDate(),
+                    year = d.getFullYear();
+                if (month.length < 2) month = '0' + month;
+                if (day.length < 2) day = '0' + day;
+                return [year, month, day].join('-');
+            }
+            
+            const startInp = document.getElementById('drpStartInput');
+            const endInp = document.getElementById('drpEndInput');
+            if(startInp && endInp) {
+                startInp.value = formatDate(start);
+                endInp.value = formatDate(end);
+                startInp.form.submit();
+            }
+        }
+    });
 </script>
 
 @endsection

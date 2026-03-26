@@ -698,6 +698,15 @@
                                  <button type="submit" class="btn-primary-solid sm">Search</button>
                              </div>
 
+                             <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
+                             <input type="hidden" name="start_date" id="startDateInp" value="{{ request('start_date') }}">
+                             <input type="hidden" name="end_date" id="endDateInp" value="{{ request('end_date') }}">
+                             <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
+                                 <i class="bi bi-calendar3"></i>
+                                 <span id="drpLabel">{{ request('start_date') ? request('start_date').' to '.request('end_date') : 'Select Date Range' }}</span>
+                                 <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
+                             </button>
+
                              <select name="source_id" class="filter-select" onchange="this.form.submit()">
                                  <option value="">Lead Source</option>
                                  @foreach($sources as $source)
@@ -710,6 +719,13 @@
                                  @foreach($services as $service)
                                      <option value="{{ $service->id }}" {{ request('service_id') == $service->id ? 'selected' : '' }}>{{ $service->name }}</option>
                                  @endforeach
+                             </select>
+
+                             <select name="priority" class="filter-select" onchange="this.form.submit()">
+                                 <option value="">Priority</option>
+                                 <option value="Hot 🔥" {{ request('priority') == 'Hot 🔥' ? 'selected' : '' }}>Hot 🔥</option>
+                                 <option value="Warm" {{ request('priority') == 'Warm' ? 'selected' : '' }}>Warm</option>
+                                 <option value="Cold" {{ request('priority') == 'Cold' ? 'selected' : '' }}>Cold</option>
                              </select>
                         </form>
                 </div>
@@ -728,7 +744,9 @@
                                 <th>Created By</th>
                                 <th>Assign To</th>
                                 <th>Action</th>
-                                     <tbody>
+                            </tr>
+                        </thead>
+                        <tbody>
                             @forelse($leads as $index => $lead)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
@@ -792,15 +810,9 @@
                 </div>
 
                 <div class="table-footer">
-                    <span class="tf-info">Showing 5 of 147 Leads</span>
+                    <span class="tf-info">Total Losted Leads: {{ $totalLostLeads }}</span>
                     <div class="tf-pagination">
-                        <button class="pg-btn"><i class="bi bi-chevron-left"></i></button>
-                        <button class="pg-btn active">1</button>
-                        <button class="pg-btn">2</button>
-                        <button class="pg-btn">3</button>
-                        <span class="pg-ellipsis">…</span>
-                        <button class="pg-btn">5</button>
-                        <button class="pg-btn"><i class="bi bi-chevron-right"></i></button>
+                        {{ $leads->links('admin.includes.pagination') }}
                     </div>
                     <div class="tf-per-page"></div>
                 </div>
@@ -1118,6 +1130,28 @@
         form.action = url;
         openModal('deleteModal');
     }
+
+    // DATE RANGE LISTENER
+    document.addEventListener('dateRangeApplied', function(e) {
+        const start = e.detail.start;
+        const end = e.detail.end;
+        if (start && end) {
+            // Function to format as YYYY-MM-DD
+            function formatDate(date) {
+                let d = new Date(date),
+                    month = '' + (d.getMonth() + 1),
+                    day = '' + d.getDate(),
+                    year = d.getFullYear();
+                if (month.length < 2) month = '0' + month;
+                if (day.length < 2) day = '0' + day;
+                return [year, month, day].join('-');
+            }
+            
+            document.getElementById('startDateInp').value = formatDate(start);
+            document.getElementById('endDateInp').value = formatDate(end);
+            document.getElementById('startDateInp').form.submit();
+        }
+    });
 </script>
 
 <script>

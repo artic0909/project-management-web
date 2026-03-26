@@ -50,12 +50,14 @@ class OrderController extends Controller
             $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
         }
 
-        $orders = $query->latest()->get();
+        $orders = $query->latest()->paginate(20)->withQueryString();
         
         // Counts
         $totalOrders = Order::count();
         $marketingOrders = Order::where('is_marketing', true)->count();
-        $totalValue = Order::sum('order_value');
+        $totalValue = Order::whereHas('status', function($q) {
+            $q->where('name', '!=', 'cancel');
+        })->sum('order_value');
         $cancelledOrders = Order::whereHas('status', function($q) {
             $q->where('name', 'cancel'); // Corrected from 'Cancelled'
         })->count();

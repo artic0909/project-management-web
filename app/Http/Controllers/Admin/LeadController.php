@@ -50,7 +50,7 @@ class LeadController extends Controller
             $query->where('priority', $request->priority);
         }
 
-        $leads = $query->orderBy('created_at', 'desc')->get();
+        $leads = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
 
         // Statistics (Active Leads Only)
         $totalLeads = Lead::whereHas('status', function($sq) {
@@ -274,6 +274,11 @@ class LeadController extends Controller
             });
         }
 
+        // Date range filter
+        if ($request->has('start_date') && $request->has('end_date') && !empty($request->start_date)) {
+            $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+        }
+
         // Dropdown filters
         if ($request->has('source_id') && !empty($request->source_id)) {
             $query->where('source_id', $request->source_id);
@@ -281,9 +286,12 @@ class LeadController extends Controller
         if ($request->has('service_id') && !empty($request->service_id)) {
             $query->where('service_id', $request->service_id);
         }
+        if ($request->has('priority') && !empty($request->priority)) {
+            $query->where('priority', $request->priority);
+        }
 
-        $leads = $query->orderBy('created_at', 'desc')->get();
-        $totalLostLeads = $leads->count();
+        $totalLostLeads = $query->count();
+        $leads = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
 
         $sources = Source::all();
         $services = Service::all();
