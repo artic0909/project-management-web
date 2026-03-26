@@ -33,21 +33,10 @@
         <!-- {{-- ═══════════════════════════════════════════════════
              6 KPI SUMMARY CARDS
         ════════════════════════════════════════════════════ --}} -->
-        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px;">
-
-            <div class="dash-card" style="padding:16px 18px;">
-                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
-                    <div style="width:38px;height:38px;border-radius:10px;background:rgba(99,102,241,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <i class="bi bi-people-fill" style="font-size:17px;color:#6366f1;"></i>
-                    </div>
-                    <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(99,102,241,.1);color:#818cf8;white-space:nowrap;">Clients</span>
-                </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">84</div>
-                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Total Clients</div>
-                <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:72%;background:#6366f1;border-radius:3px;"></div>
-                </div>
-            </div>
+        <!-- {{-- ═══════════════════════════════════════════════════
+             6 KPI SUMMARY CARDS
+        ════════════════════════════════════════════════════ --}} -->
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;">
 
             <div class="dash-card" style="padding:16px 18px;">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
@@ -56,10 +45,10 @@
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.1);color:#10b981;white-space:nowrap;">Orders</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">247</div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $totalOrders }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Total Orders</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:85%;background:#10b981;border-radius:3px;"></div>
+                    <div style="height:100%;width:100%;background:#10b981;border-radius:3px;"></div>
                 </div>
             </div>
 
@@ -70,10 +59,10 @@
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(139,92,246,.1);color:#8b5cf6;white-space:nowrap;">Marketing</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">93</div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $marketingOrders }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Marketing Orders</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:38%;background:#8b5cf6;border-radius:3px;"></div>
+                    <div style="height:100%;width:{{ $totalOrders > 0 ? ($marketingOrders / $totalOrders) * 100 : 0 }}%;background:#8b5cf6;border-radius:3px;"></div>
                 </div>
             </div>
 
@@ -84,10 +73,10 @@
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(6,182,212,.1);color:#06b6d4;white-space:nowrap;">Revenue</span>
                 </div>
-                <div style="font-size:22px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">₹1.84Cr</div>
+                <div style="font-size:22px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">₹{{ number_format($totalValue / 100000, 2) }}L</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Total Amount</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:91%;background:#06b6d4;border-radius:3px;"></div>
+                    <div style="height:100%;width:100%;background:#06b6d4;border-radius:3px;"></div>
                 </div>
             </div>
 
@@ -98,10 +87,10 @@
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(245,158,11,.1);color:#f59e0b;white-space:nowrap;">Pending</span>
                 </div>
-                <div style="font-size:22px;font-weight:800;color:#f59e0b;letter-spacing:-.5px;line-height:1;">₹27.4L</div>
+                <div style="font-size:22px;font-weight:800;color:#f59e0b;letter-spacing:-.5px;line-height:1;">₹{{ number_format($pendingValue / 100000, 2) }}L</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Pending Amount</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:24%;background:#f59e0b;border-radius:3px;"></div>
+                    <div style="height:100%;width:{{ $totalValue > 0 ? ($pendingValue / $totalValue) * 100 : 0 }}%;background:#f59e0b;border-radius:3px;"></div>
                 </div>
             </div>
 
@@ -112,26 +101,22 @@
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(239,68,68,.1);color:#ef4444;white-space:nowrap;">Cancelled</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:#ef4444;letter-spacing:-.5px;line-height:1;">18</div>
-                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Projects Cancelled</div>
+                <div style="font-size:26px;font-weight:800;color:#ef4444;letter-spacing:-.5px;line-height:1;">{{ $cancelledOrders }}</div>
+                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Orders Cancelled</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:14%;background:#ef4444;border-radius:3px;"></div>
+                    <div style="height:100%;width:{{ $totalOrders > 0 ? ($cancelledOrders / $totalOrders) * 100 : 0 }}%;background:#ef4444;border-radius:3px;"></div>
                 </div>
             </div>
 
         </div>
         <!-- {{-- END KPI CARDS --}} -->
 
-
-
-
-
         <div class="dash-grid">
             <div class="dash-card span-12">
                 <div class="card-head">
                     <div>
                         <div class="card-title">Recent Orders</div>
-                        <div class="card-sub" id="orderTableSub">₹48.6L this month · 247 orders</div>
+                        <div class="card-sub" id="orderTableSub">Showing {{ $orders->count() }} of {{ $totalOrders }} orders</div>
                     </div>
                     <div class="card-actions mb-2">
 
@@ -144,7 +129,7 @@
                         <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
                         <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
                             <i class="bi bi-calendar3"></i>
-                            <span id="drpLabel">Last 7 Days</span>
+                            <span id="drpLabel">All Time</span>
                             <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
                         </button>
 
@@ -152,22 +137,6 @@
                         <div style="position:relative;">
                             @include('admin.includes.date-range-picker')
                         </div>
-
-                        <select class="filter-select">
-                            <option selected>All Services</option>
-                            <option>Website Design</option>
-                            <option>Marketing</option>
-                            <option>SEO</option>
-                            <option>Social Media</option>
-                            <option>App Development</option>
-                        </select>
-
-                        <select class="filter-select">
-                            <option>All Status</option>
-                            <option>Paid</option>
-                            <option>Pending</option>
-                            <option>Overdue</option>
-                        </select>
                     </div>
                 </div>
 
@@ -180,74 +149,78 @@
                                 <th>Company</th>
                                 <th>Contact Person</th>
                                 <th>Service</th>
-                                <th>Budget</th>
-                                <th>Full Address</th>
+                                <th>Value</th>
+                                <th>Location</th>
                                 <th>Status</th>
-                                <th>Created By</th>
-                                <th>Assign To</th>
+                                <th>Assigned To</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr data-order-type="marketing" data-status="pending" data-service="seo">
-                                <td><span class="mono">#MKT-1024</span></td>
-                                <td><span class="type-badge marketing-type">Marketing</span></td>
+                            @foreach($orders as $order)
+                            <tr data-order-type="{{ $order->is_marketing ? 'marketing' : 'website' }}" data-status="{{ strtolower($order->status->name ?? '') }}">
+                                <td><span class="mono">#ORD-{{ 1000 + $order->id }}</span></td>
+                                <td>
+                                    <span class="type-badge {{ $order->is_marketing ? 'marketing-type' : 'website-type' }}">
+                                        {{ $order->is_marketing ? 'Marketing' : 'Website' }}
+                                    </span>
+                                </td>
                                 <td>
                                     <div class="lead-cell">
-                                        <div class="mini-ava" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">DF</div>
+                                        @php 
+                                            $initials = strtoupper(substr($order->company_name, 0, 2)); 
+                                            $bg = 'linear-gradient(135deg,#6366f1,#06b6d4)';
+                                            if($order->is_marketing) $bg = 'linear-gradient(135deg,#8b5cf6,#ec4899)';
+                                        @endphp
+                                        <div class="mini-ava" style="background:{{ $bg }}">{{ $initials }}</div>
                                         <div>
-                                            <div class="ln">DataFirst Corp</div>
-                                            <div class="ls">cto@datafirst.io</div>
+                                            <div class="ln">{{ $order->company_name }}</div>
+                                            <div class="ls">{{ $order->emails[0] ?? 'N/A' }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="ln">Amit Verma</div>
-                                    <div class="ls">9876543210</div>
+                                    <div class="ln">{{ $order->client_name }}</div>
+                                    <div class="ls">{{ $order->phones[0]['number'] ?? 'N/A' }}</div>
                                 </td>
-                                <td><span class="src-tag">SEO</span></td>
-                                <td><span class="src-tag">₹4.2L</span></td>
+                                <td><span class="src-tag">{{ $order->service->name ?? 'N/A' }}</span></td>
+                                <td><span class="src-tag">₹{{ number_format($order->order_value, 0) }}</span></td>
                                 <td>
-                                    <div class="ls">Delhi, DL 110001</div>
-                                    <div class="ls">Connaught Place</div>
-                                </td>
-                                <td><span class="status-pill pending">Pending</span></td>
-                                <td>
-                                    <div class="ln">Ravi Singh</div>
-                                    <div class="ls">ravi@company.com</div>
+                                    <div class="ls">{{ $order->city ?? 'N/A' }}</div>
+                                    <div class="ls">{{ $order->state ?? '' }}</div>
                                 </td>
                                 <td>
-                                    <div class="ln">Sales Team</div>
-                                    <div class="ls">sales@company.com</div>
+                                    <span class="status-pill" style="background:{{ ($order->status->color ?? '#6366f1') }}20; color:{{ $order->status->color ?? '#6366f1' }};">
+                                        {{ $order->status->name ?? 'Pending' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="display:flex; -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);">
+                                        @foreach($order->assignments as $assign)
+                                            @php $init = strtoupper(substr($assign->sale->name, 0, 1)); @endphp
+                                            <div class="mini-ava" style="width:24px; height:24px; font-size:9px; margin-right:-8px; border:2px solid var(--bg2);" title="{{ $assign->sale->name }}">
+                                                {{ $init }}
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </td>
                                 <td>
                                     <div class="row-actions">
-                                        <button class="ra-btn" onclick="openModal('orderDetailModal')"><i class="bi bi-eye-fill"></i></button>
-                                        <button class="ra-btn"><i class="bi bi-telephone-fill"></i></button>
-                                        <button class="ra-btn"><i class="bi bi-envelope-fill"></i></button>
+                                        <a href="{{ route('admin.orders.show', $order->id) }}" class="ra-btn"><i class="bi bi-eye-fill"></i></a>
+                                        <a href="{{ route('admin.orders.edit', $order->id) }}" class="ra-btn"><i class="bi bi-pencil-fill"></i></a>
                                         <a href="{{route('admin.orders.followup')}}" class="ra-btn"><i class="bi bi-arrow-counterclockwise"></i></a>
                                         <a href="{{route('admin.payments.create')}}" class="ra-btn"><i class="bi bi-wallet2"></i></a>
-                                        <a href="{{route('admin.orders.edit')}}" class="ra-btn"><i class="bi bi-pencil-fill"></i></a>
-                                        <button class="ra-btn danger" onclick="openModal('deleteModal')"><i class="bi bi-trash-fill"></i></button>
+                                        <button class="ra-btn danger" onclick="confirmDelete('{{ route('admin.orders.destroy', $order->id) }}')"><i class="bi bi-trash-fill"></i></button>
                                     </div>
                                 </td>
                             </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
 
                 <div class="table-footer">
-                    <span class="tf-info" id="ordersCount">Showing 1 of 247 Orders</span>
-                    <div class="tf-pagination">
-                        <button class="pg-btn"><i class="bi bi-chevron-left"></i></button>
-                        <button class="pg-btn active">1</button>
-                        <button class="pg-btn">2</button>
-                        <button class="pg-btn">3</button>
-                        <span class="pg-ellipsis">…</span>
-                        <button class="pg-btn">5</button>
-                        <button class="pg-btn"><i class="bi bi-chevron-right"></i></button>
-                    </div>
-                    <div class="tf-per-page"></div>
+                    <span class="tf-info" id="ordersCount">Showing {{ $orders->count() }} of {{ $totalOrders }} Orders</span>
                 </div>
             </div>
         </div>
@@ -660,7 +633,20 @@
     }
 </style>
 
-<script>
+    <form id="deleteOrderForm" action="" method="POST" style="display:none;">
+        @csrf
+        @method('DELETE')
+    </form>
+
+    <script>
+        function confirmDelete(url) {
+            if (confirm('Are you sure you want to delete this order? This action cannot be undone.')) {
+                const form = document.getElementById('deleteOrderForm');
+                form.action = url;
+                form.submit();
+            }
+        }
+        
     /* ── Stat box filter ── */
     function applyStatFilter(el) {
         const filterGroup = el.dataset.filter;

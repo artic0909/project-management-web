@@ -18,6 +18,8 @@ class Order extends Model
         'emails' => 'array',
         'phones' => 'array',
         'is_marketing' => 'boolean',
+        'mkt_starting_date' => 'date',
+        'delivery_date' => 'date',
     ];
 
     public function lead()
@@ -48,5 +50,10 @@ class Order extends Model
     public function assignments()
     {
         return $this->hasMany(OrderAssign::class);
+    }
+
+    public function sales()
+    {
+        return $this->belongsToMany(Sale::class, 'order_assigns', 'order_id', 'assigned_to');
     }
 }

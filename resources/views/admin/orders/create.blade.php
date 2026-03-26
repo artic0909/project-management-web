@@ -139,25 +139,25 @@
                                     <select name="mkt_payment_status_id" class="form-inp">
                                         <option value="">— Select —</option>
                                         @foreach($paymentStatuses as $ps)
-                                            <option value="{{ $ps->id }}">{{ $ps->name }}</option>
+                                            <option value="{{ $ps->id }}" {{ old('mkt_payment_status_id') == $ps->id ? 'selected' : '' }}>{{ $ps->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Starting Date</label>
-                                    <input type="date" name="mkt_starting_date" class="form-inp">
+                                    <input type="date" name="mkt_starting_date" class="form-inp" value="{{ old('mkt_starting_date') }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Plan Name</label>
-                                    <input type="text" name="plan_name" class="form-inp" placeholder="Plan name">
+                                    <input type="text" name="plan_name" class="form-inp" value="{{ old('plan_name') }}" placeholder="Plan name">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Username</label>
-                                    <input type="text" name="mkt_username" class="form-inp" placeholder="Account username">
+                                    <input type="text" name="mkt_username" class="form-inp" value="{{ old('mkt_username') }}" placeholder="Account username">
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Password</label>
-                                    <input type="text" name="mkt_password" class="form-inp" placeholder="Account password">
+                                    <input type="text" name="mkt_password" class="form-inp" value="{{ old('mkt_password') }}" placeholder="Account password">
                                 </div>
                             </div>
                         </div>
