@@ -676,7 +676,7 @@
             <div class="stat-box" style="--sb-color:#6366f1;">
                 <div class="sb-icon"><i class="bi bi-people-fill"></i></div>
                 <div>
-                    <div class="sb-val">147</div>
+                    <div class="sb-val">{{ $totalLostLeads }}</div>
                     <div class="sb-lbl">Total Losted Leads</div>
                 </div>
             </div>
@@ -689,50 +689,29 @@
                 <div class="card-head">
                     <div>
                         <div class="card-title">Losted Lead Pipeline</div>
-                        <div class="card-sub" id="drpActiveSub">Last 7 Days · 147 total · 38 hot leads</div>
+                        <div class="card-sub">{{ $leads->count() }} total leads identified as lost</div>
                     </div>
-                    <div class="card-actions mb-2">
+                        <form action="{{ route('admin.losted-leads') }}" method="GET" class="card-actions mb-2">
+                             <div class="global-search">
+                                 <i class="bi bi-search"></i>
+                                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Search...">
+                                 <button type="submit" class="btn-primary-solid sm">Search</button>
+                             </div>
 
-                        <form class="global-search">
-                            <i class="bi bi-search"></i>
-                            <input type="text" placeholder="Search...">
-                            <button type="submit" class="btn-primary-solid sm">Search</button>
+                             <select name="source_id" class="filter-select" onchange="this.form.submit()">
+                                 <option value="">Lead Source</option>
+                                 @foreach($sources as $source)
+                                     <option value="{{ $source->id }}" {{ request('source_id') == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
+                                 @endforeach
+                             </select>
+
+                             <select name="service_id" class="filter-select" onchange="this.form.submit()">
+                                 <option value="">All Services</option>
+                                 @foreach($services as $service)
+                                     <option value="{{ $service->id }}" {{ request('service_id') == $service->id ? 'selected' : '' }}>{{ $service->name }}</option>
+                                 @endforeach
+                             </select>
                         </form>
-
-                        <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
-                        <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
-                            <i class="bi bi-calendar3"></i>
-                            <span id="drpLabel">Last 7 Days</span>
-                            <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
-                        </button>
-
-                        <!-- {{-- Date Range Picker (replaces simple select) --}} -->
-                        <div style="position:relative;">
-                            @include('admin.includes.date-range-picker')
-                        </div>
-
-                        <select class="filter-select">
-                            <option selected>Lead Source</option>
-                            <option>All Sources</option>
-                            <option>Website</option>
-                            <option>Referral</option>
-                            <option>LinkedIn</option>
-                        </select>
-
-                        <select class="filter-select">
-                            <option selected>All Services</option>
-                            <option>Website Design</option>
-                            <option>Marketing</option>
-                        </select>
-
-                        <select class="filter-select">
-                            <option selected>Priority</option>
-                            <option>Hot 🔥</option>
-                            <option>Cold</option>
-                            <option>Warm</option>
-                            <option>Lost</option>
-                        </select>
-                    </div>
                 </div>
 
                 <div class="table-wrap">
@@ -749,44 +728,65 @@
                                 <th>Created By</th>
                                 <th>Assign To</th>
                                 <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                                     <tbody>
+                            @forelse($leads as $index => $lead)
                             <tr>
-                                <td>1</td>
+                                <td>{{ $index + 1 }}</td>
                                 <td>
                                     <div class="lead-cell">
-                                        <div class="mini-ava" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">DF</div>
+                                        @php
+                                            $initials = strtoupper(substr($lead->company, 0, 1) . substr($lead->contact_person, 0, 1));
+                                            $emails = is_array($lead->emails) ? $lead->emails[0] : (json_decode($lead->emails)[0] ?? 'N/A');
+                                        @endphp
+                                        <div class="mini-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">{{ $initials }}</div>
                                         <div>
-                                            <div class="ln">DataFirst Corp</div>
-                                            <div class="ls">cto@datafirst.io</div>
+                                            <div class="ln">{{ $lead->company }}</div>
+                                            <div class="ls">{{ $emails }}</div>
                                         </div>
                                     </div>
                                 </td>
-                                <td><span class="src-tag website">Website</span></td>
-                                <td><strong style="color:#10b981">Abhishek</strong></td>
-                                <td><strong style="color:#10b981">Website Design</strong></td>
-                                <td><span class="lead-stage hot">Hot 🔥</span></td>
-                                <td><strong style="color:#10b981">Respond</strong></td>
+                                <td><span class="src-tag">{{ $lead->source->name ?? 'N/A' }}</span></td>
+                                <td><strong style="color:var(--t2)">{{ $lead->contact_person }}</strong></td>
+                                <td><strong style="color:var(--t2)">{{ $lead->service->name ?? 'N/A' }}</strong></td>
                                 <td>
-                                    <div class="ln">Ravi Singh</div>
-                                    <div class="ls">ravi@company.com</div>
+                                    @php
+                                        $pCls = strtolower(str_replace([' ', '🔥'], '', $lead->priority));
+                                    @endphp
+                                    <span class="lead-stage {{ $pCls }}">{{ $lead->priority }}</span>
+                                </td>
+                                <td><strong style="color:var(--accent)">{{ $lead->status->name ?? 'N/A' }}</strong></td>
+                                <td>
+                                    @if($lead->createdBy instanceof \App\Models\Admin)
+                                        <div class="ln">System</div>
+                                    @elseif($lead->createdBy)
+                                        <div class="ln">{{ $lead->createdBy->name }}</div>
+                                        <div class="ls">{{ $lead->createdBy->email }}</div>
+                                    @else
+                                        <div class="ln">System</div>
+                                    @endif
                                 </td>
                                 <td>
-                                    <div class="ln">Rahul Kumar</div>
-                                    <div class="ls">rahul@company.com</div>
+                                    @foreach($lead->assignments as $assign)
+                                        <div class="ln">{{ $assign->sale->name ?? 'N/A' }} - {{ $assign->sale->email ?? 'N/A' }}</div>
+                                    @endforeach
+                                    @if($lead->assignments->isEmpty())
+                                        <span style="color:var(--t4)">Unassigned</span>
+                                    @endif
                                 </td>
                                 <td>
                                     <div class="row-actions">
-                                        <button class="ra-btn" title="View" onclick="openModal('leadDetailModal')"><i class="bi bi-eye-fill"></i></button>
-                                        <button class="ra-btn" title="Call"><i class="bi bi-telephone-fill"></i></button>
-                                        <button class="ra-btn" title="Email"><i class="bi bi-envelope-fill"></i></button>
-                                        <a href="{{route('admin.leads.followup')}}" class="ra-btn" title="Followup" target="_blank"><i class="bi bi-arrow-counterclockwise"></i></a>
-                                        <button class="ra-btn" title="Edit" onclick="openModal('editLeadModal')"><i class="bi bi-pencil-fill"></i></button>
-                                        <button class="ra-btn danger" title="Delete" onclick="openModal('deleteModal')"><i class="bi bi-trash-fill"></i></button>
+                                        <a href="{{ route('admin.leads.show', $lead->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
+                                        <a href="{{route('admin.leads.followup', $lead->id)}}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
+                                        <a class="ra-btn" title="Edit" href="{{route('admin.leads.edit', $lead->id)}}"><i class="bi bi-pencil-fill"></i></a>
+                                        <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route('admin.leads.destroy', $lead->id) }}')"><i class="bi bi-trash-fill"></i></button>
                                     </div>
                                 </td>
                             </tr>
+                            @empty
+                            <tr>
+                                <td colspan="10" style="text-align:center;padding:40px;color:var(--t4);">No lost leads found.</td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -1079,14 +1079,46 @@
                 </div>
             </div>
             <div class="modal-ft">
-                <button class="btn-ghost" onclick="closeModal('leadDetailModal')">Close</button>
-                <button class="btn-primary-solid" onclick="closeModal('leadDetailModal');showToast('success','Lead updated!','bi-person-check-fill')">Update Lead</button>
-            </div>
         </div>
     </div>
 
 </main>
 
+{{-- DELETE MODAL --}}
+<div class="modal-backdrop" id="deleteModal">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-hd" style="border-bottom:1px solid #fecaca;">
+            <span style="color:#dc2626;">Delete Losted Lead</span>
+            <button class="modal-close" onclick="closeModal('deleteModal')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-bd" style="text-align:center;padding:32px 24px;">
+            <div style="width:64px;height:64px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                <i class="bi bi-trash3-fill" style="font-size:28px;color:#dc2626;"></i>
+            </div>
+            <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:var(--t1);">Delete permanently?</h3>
+            <p style="margin:0;font-size:14px;color:var(--t3);line-height:1.6;">Are you sure you want to delete this lost lead record?<br>This action <strong style="color:#dc2626;">cannot be undone.</strong></p>
+        </div>
+        <div class="modal-ft" style="border-top:1px solid #fecaca;">
+            <button class="btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
+            <button style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="document.getElementById('deleteLeadForm').submit()">
+                <i class="bi bi-trash3-fill"></i> Confirm Deletion
+            </button>
+        </div>
+    </div>
+</div>
+
+<form id="deleteLeadForm" action="" method="POST" style="display:none;">
+    @csrf
+    @method('DELETE')
+</form>
+
+<script>
+    function confirmDelete(url) {
+        const form = document.getElementById('deleteLeadForm');
+        form.action = url;
+        openModal('deleteModal');
+    }
+</script>
 
 <script>
     /* ═══════════════════════════════════════════

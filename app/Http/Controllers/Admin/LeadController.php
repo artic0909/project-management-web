@@ -18,7 +18,10 @@ class LeadController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Lead::with(['status', 'service', 'source', 'campaign', 'assignments', 'createdBy']);
+        $query = Lead::with(['status', 'service', 'source', 'campaign', 'assignments', 'createdBy'])
+            ->whereHas('status', function($sq) {
+                $sq->where('name', '!=', 'lost');
+            });
 
         // Search filter
         if ($request->has('q') && !empty($request->q)) {
@@ -49,16 +52,27 @@ class LeadController extends Controller
 
         $leads = $query->orderBy('created_at', 'desc')->get();
 
-        // Statistics
-        $totalLeads = Lead::count();
-        $statuses = Status::where('type', 'lead')->withCount('leads')->get();
+        // Statistics (Active Leads Only)
+        $totalLeads = Lead::whereHas('status', function($sq) {
+            $sq->where('name', '!=', 'lost');
+        })->count();
+        $statuses = Status::where('type', 'lead')->where('name', '!=', 'lost')->withCount('leads')->get();
         $convertedLeads = $statuses->where('name', 'Booked')->first()->leads_count ?? 0;
         
-        $sources = Source::withCount('leads')->get();
-        $services = Service::withCount('leads')->get();
-        $campaigns = Campaign::withCount('leads')->get();
+        $sources = Source::withCount(['leads' => function($q) {
+            $q->whereHas('status', function($sq) { $sq->where('name', '!=', 'lost'); });
+        }])->get();
+        $services = Service::withCount(['leads' => function($q) {
+            $q->whereHas('status', function($sq) { $sq->where('name', '!=', 'lost'); });
+        }])->get();
+        $campaigns = Campaign::withCount(['leads' => function($q) {
+            $q->whereHas('status', function($sq) { $sq->where('name', '!=', 'lost'); });
+        }])->get();
         
-        $priorityCounts = Lead::groupBy('priority')
+        $priorityCounts = Lead::whereHas('status', function($sq) {
+                $sq->where('name', '!=', 'lost');
+            })
+            ->groupBy('priority')
             ->select('priority', DB::raw('count(*) as total'))
             ->pluck('total', 'priority')
             ->toArray();
@@ -242,9 +256,39 @@ class LeadController extends Controller
         return redirect()->back()->with('success', 'Lead updated successfully!');
     }
 
-    public function lostedLeads()
+    public function lostedLeads(Request $request)
     {
-        return view('admin.losted-leads');
+        $query = Lead::with(['status', 'service', 'source', 'campaign', 'assignments', 'createdBy'])
+            ->whereHas('status', function($sq) {
+                $sq->where('name', 'lost');
+            });
+
+        // Search filter
+        if ($request->has('q') && !empty($request->q)) {
+            $q = $request->q;
+            $query->where(function($fq) use ($q) {
+                $fq->where('company', 'like', "%$q%")
+                   ->orWhere('contact_person', 'like', "%$q%")
+                   ->orWhere('emails', 'like', "%$q%")
+                   ->orWhere('phones', 'like', "%$q%");
+            });
+        }
+
+        // Dropdown filters
+        if ($request->has('source_id') && !empty($request->source_id)) {
+            $query->where('source_id', $request->source_id);
+        }
+        if ($request->has('service_id') && !empty($request->service_id)) {
+            $query->where('service_id', $request->service_id);
+        }
+
+        $leads = $query->orderBy('created_at', 'desc')->get();
+        $totalLostLeads = $leads->count();
+
+        $sources = Source::all();
+        $services = Service::all();
+
+        return view('admin.losted-leads', compact('leads', 'totalLostLeads', 'sources', 'services'));
     }
     public function destroy($id)
     {
