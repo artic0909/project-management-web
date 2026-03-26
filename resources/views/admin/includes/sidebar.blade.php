@@ -65,7 +65,7 @@
 
       <a class="nav-item {{ request()->routeIs('admin.losted-leads') ? 'active' : '' }}" href="{{ route('admin.losted-leads') }}">
         <i class="bi bi-ban"></i><span>Losted Leads</span>
-        <span class="nav-count">20</span>
+        <!-- <span class="nav-count">20</span> -->
       </a>
 
       <div class="nav-section-label">People</div>
