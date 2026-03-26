@@ -127,14 +127,23 @@
                     <div class="dash-card" style="padding:20px;">
                         <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--t4);margin-bottom:12px;letter-spacing:1px;">Communication</div>
                         <div style="display:flex; flex-direction:column; gap:10px;">
-                            @if(count($emails) > 0)
-                                <a href="mailto:{{ $emails[0] }}" class="btn-primary-ghost" style="width:100%; justify-content:center;">
-                                    <i class="bi bi-envelope"></i> Send Email
+                            @if(count($emails) > 1)
+                                <button class="btn-primary-ghost" style="width:100%; justify-content:center;" onclick="openModal('emailModal')">
+                                    <i class="bi bi-envelope"></i> Choose Email ({{ count($emails) }})
+                                </button>
+                            @else
+                                <a href="mailto:{{ $emails[0] ?? '' }}" class="btn-primary-ghost" style="width:100%; justify-content:center;">
+                                    <i class="bi bi-envelope"></i> Send Primary Email
                                 </a>
                             @endif
-                            @if(count($phones) > 0)
-                                <a href="tel:{{ $phones[0]['number'] }}" class="btn-primary-ghost" style="width:100%; justify-content:center;">
-                                    <i class="bi bi-telephone"></i> Call Client
+
+                            @if(count($phones) > 1)
+                                <button class="btn-primary-ghost" style="width:100%; justify-content:center;" onclick="openModal('phoneModal')">
+                                    <i class="bi bi-telephone"></i> Choose Phone ({{ count($phones) }})
+                                </button>
+                            @else
+                                <a href="tel:{{ $phones[0]['number'] ?? '' }}" class="btn-primary-ghost" style="width:100%; justify-content:center;">
+                                    <i class="bi bi-telephone"></i> Call Primary Number
                                 </a>
                             @endif
                         </div>
@@ -237,6 +246,26 @@
                 </div>
                 @endif
 
+                {{-- ALL CONTACT POINTS --}}
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                    <div class="dash-card" style="padding:18px;">
+                        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--t4);margin-bottom:12px;">Email Directory</div>
+                        @foreach($emails as $email)
+                            <div style="font-size:13px; color:var(--t2); padding:8px 10px; background:var(--bg3); border-radius:8px; border:1px solid var(--b1); margin-bottom:6px; display:flex; align-items:center; gap:8px;">
+                                <i class="bi bi-envelope-at" style="color:var(--t3)"></i> {{ $email }}
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="dash-card" style="padding:18px;">
+                        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--t4);margin-bottom:12px;">Phone Directory</div>
+                        @foreach($phones as $phone)
+                            <div style="font-size:13px; color:var(--t2); padding:8px 10px; background:var(--bg3); border-radius:8px; border:1px solid var(--b1); margin-bottom:6px; display:flex; align-items:center; gap:8px;">
+                                <i class="bi bi-telephone-outbound" style="color:var(--t3)"></i> {{ $phone['number'] }}
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -301,5 +330,46 @@
         document.getElementById('mktPwIcon').className  = mktPwVisible ? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill';
     }
 </script>
+
+
+{{-- Email Choice Modal --}}
+<div class="modal-backdrop" id="emailModal">
+    <div class="modal-box">
+        <div class="modal-hd">
+            <span>Choose Email</span>
+            <button class="modal-close" onclick="closeModal('emailModal')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-bd">
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                @foreach($order->emails as $email)
+                    <a href="mailto:{{ $email }}" class="btn-primary-ghost" style="justify-content:space-between; padding:12px 16px;">
+                        <span>{{ $email }}</span>
+                        <i class="bi bi-envelope-at-fill"></i>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Phone Choice Modal --}}
+<div class="modal-backdrop" id="phoneModal">
+    <div class="modal-box">
+        <div class="modal-hd">
+            <span>Choose Phone Number</span>
+            <button class="modal-close" onclick="closeModal('phoneModal')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-bd">
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                @foreach($order->phones as $phone)
+                    <a href="tel:{{ $phone['number'] }}" class="btn-primary-ghost" style="justify-content:space-between; padding:12px 16px;">
+                        <span>{{ $phone['number'] }}</span>
+                        <i class="bi bi-telephone-fill"></i>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection
