@@ -38,12 +38,13 @@
         ════════════════════════════════════════════════════ --}} -->
         <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;">
 
-            <div class="dash-card" style="padding:16px 18px;">
+            <div class="dash-card {{ request()->has('q') || request()->has('status_id') || request()->has('service_id') || request()->has('is_marketing') ? '' : 'active' }}" 
+                style="padding:16px 18px; cursor:pointer;" onclick="window.location.href='{{ route('admin.orders.index') }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(16,185,129,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                         <i class="bi bi-bag-check-fill" style="font-size:17px;color:#10b981;"></i>
                     </div>
-                    <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.1);color:#10b981;white-space:nowrap;">Orders</span>
+                    <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.1);color:#10b981;white-space:nowrap;">All</span>
                 </div>
                 <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $totalOrders }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Total Orders</div>
@@ -52,7 +53,8 @@
                 </div>
             </div>
 
-            <div class="dash-card" style="padding:16px 18px;">
+            <div class="dash-card {{ request('is_marketing') == '1' ? 'active' : '' }}" 
+                style="padding:16px 18px; cursor:pointer;" onclick="window.location.href='{{ route('admin.orders.index', ['is_marketing' => 1]) }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(139,92,246,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                         <i class="bi bi-megaphone-fill" style="font-size:17px;color:#8b5cf6;"></i>
@@ -94,7 +96,11 @@
                 </div>
             </div>
 
-            <div class="dash-card" style="padding:16px 18px;">
+            @php 
+                $cancelStatus = $allStatuses->where('name', 'cancel')->first();
+            @endphp
+            <div class="dash-card {{ request('status_id') == ($cancelStatus->id ?? 'xxx') ? 'active' : '' }}" 
+                style="padding:16px 18px; cursor:pointer;" onclick="window.location.href='{{ route('admin.orders.index', ['status_id' => ($cancelStatus->id ?? '')]) }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(239,68,68,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                         <i class="bi bi-x-circle-fill" style="font-size:17px;color:#ef4444;"></i>
@@ -137,6 +143,12 @@
                             <!-- Hidden inputs for date range -->
                             <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
                             <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
+
+                             <select name="is_marketing" class="filter-select" onchange="this.form.submit()">
+                                 <option value="">All Types</option>
+                                 <option value="1" {{ request('is_marketing') == '1' ? 'selected' : '' }}>Marketing</option>
+                                 <option value="0" {{ request('is_marketing') == '0' ? 'selected' : '' }}>Website</option>
+                             </select>
 
                             <select name="service_id" class="filter-select" onchange="this.form.submit()">
                                 <option value="">All Services</option>

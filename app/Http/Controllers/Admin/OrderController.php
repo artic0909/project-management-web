@@ -21,11 +21,12 @@ class OrderController extends Controller
         // Search Filter
         if ($request->filled('q')) {
             $q = $request->q;
-            $query->where(function($sub) use ($q) {
+            $query->where(function ($sub) use ($q) {
                 $sub->where('company_name', 'LIKE', "%$q%")
                     ->orWhere('client_name', 'LIKE', "%$q%")
                     ->orWhere('emails', 'LIKE', "%$q%")
-                    ->orWhere('phones', 'LIKE', "%$q%");
+                    ->orWhere('phones', 'LIKE', "%$q%")
+                    ->orWhere('domain_name', 'LIKE', "%$q%");
             });
         }
 
@@ -39,6 +40,11 @@ class OrderController extends Controller
             $query->where('status_id', $request->status_id);
         }
 
+        // Type Filter (Marketing vs Website)
+        if ($request->filled('is_marketing')) {
+            $query->where('is_marketing', $request->is_marketing == '1');
+        }
+
         // Date Range Filter
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
@@ -46,14 +52,14 @@ class OrderController extends Controller
 
         $orders = $query->latest()->get();
         
-        // Dynamic Counts (Overall stats, maybe not affected by current filters for KPI box)
+        // Counts
         $totalOrders = Order::count();
         $marketingOrders = Order::where('is_marketing', true)->count();
         $totalValue = Order::sum('order_value');
-        $totalCollected = \App\Models\Payment::sum('amount');
         $cancelledOrders = Order::whereHas('status', function($q) {
-            $q->where('name', 'Cancelled');
+            $q->where('name', 'cancel'); // Corrected from 'Cancelled'
         })->count();
+        $totalCollected = \App\Models\Payment::sum('amount');
         $pendingValue = $totalValue - $totalCollected;
 
         $allStatuses = Status::where('type', 'order')->get();
