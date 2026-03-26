@@ -81,6 +81,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::put('/edit-order/{id}', [OrderController::class, 'update'])->name('orders.update');
     Route::delete('/delete-order/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::get('/order-followup/{id}', [FollowupController::class, 'index'])->name('orders.followup');
+    Route::post('/order-followup/{id}', [FollowupController::class, 'store'])->name('orders.followup.store');
 
 
     // Project

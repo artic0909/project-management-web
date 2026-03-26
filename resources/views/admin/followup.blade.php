@@ -1,6 +1,6 @@
 @extends('admin.layout.app')
 
-@section('title', $lead->company . ' — Followup History')
+@section('title', ($model->company_name ?? $model->company) . ' — ' . $typeLabel . ' Followup History')
 
 @section('content')
 
@@ -11,16 +11,16 @@
         <div class="page-header">
             <div>
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-                    <a href="{{ route('admin.leads.index') }}"
+                    <a href="{{ $backRoute }}"
                         style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--t3);transition:var(--transition);text-decoration:none;"
                         onmouseover="this.style.color='var(--accent)'"
                         onmouseout="this.style.color='var(--t3)'">
-                        <i class="bi bi-arrow-left"></i> All Leads
+                        <i class="bi bi-arrow-left"></i> All {{ $typeLabel }}s
                     </a>
                     <span style="color:var(--t4);font-size:12px;">›</span>
-                    <span style="font-size:13px;font-weight:600;color:var(--t2);">{{ $lead->company }}</span>
+                    <span style="font-size:13px;font-weight:600;color:var(--t2);">{{ $model->company_name ?? $model->company }}</span>
                 </div>
-                <h1 class="page-title">Followup Command Center</h1>
+                <h1 class="page-title">{{ $typeLabel }} Followup Command Center</h1>
                 <p class="page-desc">Communication intelligence and lifecycle tracking</p>
             </div>
         </div>
@@ -28,7 +28,8 @@
         <!-- TOP STATS ROW -->
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">
             @php 
-                $pColor = $lead->priority == 'Hot 🔥' ? '#ef4444' : ($lead->priority == 'Warm' ? '#f59e0b' : '#06b6d4');
+                $priority = $isOrder ? 'Warm' : $model->priority; // Orders might not have priority yet
+                $pColor = $priority == 'Hot 🔥' ? '#ef4444' : ($priority == 'Warm' ? '#f59e0b' : '#06b6d4');
             @endphp
             <div class="dash-card" style="padding:16px;display:flex;align-items:center;gap:14px;">
                 <div style="width:42px;height:42px;border-radius:10px;background:rgba(239,68,68,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -36,7 +37,7 @@
                 </div>
                 <div>
                     <div style="font-size:11px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Priority</div>
-                    <div style="font-size:16px;font-weight:800;color:{{ $pColor }};margin-top:2px;">{{ $lead->priority }}</div>
+                    <div style="font-size:16px;font-weight:800;color:{{ $pColor }};margin-top:2px;">{{ $priority }}</div>
                 </div>
             </div>
             <div class="dash-card" style="padding:16px;display:flex;align-items:center;gap:14px;">
@@ -45,7 +46,7 @@
                 </div>
                 <div>
                     <div style="font-size:11px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Current Status</div>
-                    <div style="font-size:16px;font-weight:800;color:#10b981;margin-top:2px;">{{ $lead->status->name ?? 'N/A' }}</div>
+                    <div style="font-size:16px;font-weight:800;color:#10b981;margin-top:2px;">{{ $model->status->name ?? 'N/A' }}</div>
                 </div>
             </div>
             <div class="dash-card" style="padding:16px;display:flex;align-items:center;gap:14px;">
@@ -71,7 +72,7 @@
         <!-- MAIN GRID -->
         <div class="dash-grid">
 
-            <!-- LEFT: Lead Info Card -->
+            <!-- LEFT: Profile & Identity (Lead/Order Info Card) -->
             <div class="dash-card span-4" style="height:fit-content;">
                 <div class="card-head" style="padding:16px 18px;">
                     <div class="card-title">Identity & Profile</div>
@@ -79,17 +80,21 @@
                 <div class="card-body" style="padding:0 18px 24px;">
 
                     @php 
-                        $initials = strtoupper(substr($lead->company, 0, 1) . substr($lead->contact_person, 0, 1));
+                        $initials = strtoupper(substr($model->company_name ?? $model->company, 0, 1) . substr($model->client_name ?? $model->contact_person, 0, 1));
                     @endphp
 
                     <!-- Avatar + Name -->
                     <div style="display:flex;flex-direction:column;align-items:center;padding:24px 0 20px;border-bottom:1px solid var(--b1);text-align:center;">
                         <div style="width:68px;height:68px;border-radius:20px;background:linear-gradient(135deg,#8b5cf6,#ec4899);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;margin-bottom:12px;box-shadow:0 8px 24px rgba(139,92,246,.3);">{{ $initials }}</div>
-                        <div style="font-size:18px;font-weight:800;color:var(--t1);letter-spacing:-.4px;">{{ $lead->company }}</div>
-                        <div style="font-size:13px;color:var(--t3);margin-top:4px;">{{ $lead->emails[0] ?? 'No primary email' }}</div>
+                        <div style="font-size:18px;font-weight:800;color:var(--t1);letter-spacing:-.4px;">{{ $model->company_name ?? $model->company }}</div>
+                        <div style="font-size:13px;color:var(--t3);margin-top:4px;">{{ $model->emails[0] ?? 'No primary email' }}</div>
                         <div style="margin-top:12px;display:flex;gap:6px; flex-wrap:wrap; justify-content:center;">
-                            <span class="src-tag {{ strtolower($lead->source->name ?? 'none') }}">{{ $lead->source->name ?? 'Direct' }}</span>
-                            <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(16,185,129,.1);color:#10b981;">{{ $lead->service->name ?? 'N/A' }}</span>
+                            @if(!$isOrder)
+                                <span class="src-tag {{ strtolower($model->source->name ?? 'none') }}">{{ $model->source->name ?? 'Direct' }}</span>
+                            @else
+                                <span class="src-tag website" style="background:rgba(99,102,241,.1);color:#6366f1;">Order</span>
+                            @endif
+                            <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(16,185,129,.1);color:#10b981;">{{ $model->service->name ?? 'N/A' }}</span>
                         </div>
                     </div>
 
@@ -100,7 +105,7 @@
                             <div class="detail-icon"><i class="bi bi-person-fill"></i></div>
                             <div>
                                 <div class="detail-lbl">Contact Person</div>
-                                <div class="detail-val">{{ $lead->contact_person }}</div>
+                                <div class="detail-val">{{ $model->client_name ?? $model->contact_person }}</div>
                             </div>
                         </div>
 
@@ -108,7 +113,7 @@
                             <div class="detail-icon"><i class="bi bi-telephone-fill"></i></div>
                             <div>
                                 <div class="detail-lbl">Primary Phone</div>
-                                <div class="detail-val">{{ $lead->phones[0]['number'] ?? 'N/A' }}</div>
+                                <div class="detail-val">{{ ($model->phones[0]['number'] ?? 'N/A') }}</div>
                             </div>
                         </div>
 
@@ -116,7 +121,7 @@
                             <div class="detail-icon"><i class="bi bi-building"></i></div>
                             <div>
                                 <div class="detail-lbl">Business Type</div>
-                                <div class="detail-val">{{ $lead->business_type ?? 'N/A' }}</div>
+                                <div class="detail-val">{{ $model->business_type ?? ($isOrder ? 'Converted Lead' : 'N/A') }}</div>
                             </div>
                         </div>
 
@@ -125,7 +130,7 @@
                             <div>
                                 <div class="detail-lbl">Assigned To</div>
                                 <div class="detail-val">
-                                    @php $names = $lead->assignments->pluck('sale.name')->toArray(); @endphp
+                                    @php $names = $model->assignments->pluck('sale.name')->toArray(); @endphp
                                     {{ !empty($names) ? implode(', ', $names) : 'Unassigned' }}
                                 </div>
                             </div>
@@ -135,7 +140,7 @@
                             <div class="detail-icon"><i class="bi bi-calendar-check"></i></div>
                             <div>
                                 <div class="detail-lbl">Created At</div>
-                                <div class="detail-val">{{ $lead->created_at->format('d M Y') }}</div>
+                                <div class="detail-val">{{ $model->created_at->format('d M Y') }}</div>
                             </div>
                         </div>
 
@@ -162,7 +167,7 @@
                         </div>
                     </div>
                     <div class="card-body" style="padding:14px 18px 20px;">
-                        <form action="{{ route('admin.leads.followup.store', $lead->id) }}" method="POST">
+                        <form action="{{ $isOrder ? route('admin.orders.followup.store', $model->id) : route('admin.leads.followup.store', $model->id) }}" method="POST">
                             @csrf
                             <div class="form-grid">
                                 <div class="form-row">
@@ -200,7 +205,7 @@
                     <div class="card-head" style="padding:16px 18px 12px;">
                         <div>
                             <div class="card-title">Engagement Timeline</div>
-                            <div class="card-sub">Complete log of all touches for this lead</div>
+                            <div class="card-sub">Complete log of all touches for this {{ strtolower($typeLabel) }}</div>
                         </div>
                     </div>
                     <div class="card-body" style="padding:10px 18px 24px;display:flex;flex-direction:column;gap:12px;">
@@ -209,7 +214,7 @@
                         <div style="position:relative;padding-left:26px;">
                             <div style="position:absolute;left:10px;top:4px;bottom:0;width:2px;background:var(--b2);border-radius:2px;"></div>
 
-                            @forelse($lead->followups as $followup)
+                            @forelse($model->followups as $followup)
                                 @php 
                                     $typeColor = $followup->followup_type == 'Calling' ? '#10b981' : ($followup->followup_type == 'Message' ? '#f59e0b' : '#6366f1');
                                     $typeBg = $followup->followup_type == 'Calling' ? 'rgba(16,185,129,.1)' : ($followup->followup_type == 'Message' ? 'rgba(245,158,11,.1)' : 'rgba(99,102,241,.1)');
@@ -254,13 +259,13 @@
                                 <div style="padding:20px;text-align:center;color:var(--t4);font-style:italic;">No interactions recorded yet. Use the form above to log the first followup.</div>
                             @endforelse
 
-                            <!-- Lead Created Milestone -->
+                            <!-- Lead/Order Created Milestone -->
                             <div style="position:relative;margin-top:10px;">
                                 <div style="position:absolute;left:-23px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;">
                                     <i class="bi bi-star-fill" style="font-size:7px;color:#fff;"></i>
                                 </div>
                                 <div style="padding-left:2px;">
-                                    <span style="font-size:12px;color:var(--t3);font-weight:600;">Lead journey started on <strong style="color:var(--t1);">{{ $lead->created_at->format('d M Y') }}</strong></span>
+                                    <span style="font-size:12px;color:var(--t3);font-weight:600;">{{ $typeLabel }} journey started on <strong style="color:var(--t1);">{{ $model->created_at->format('d M Y') }}</strong></span>
                                 </div>
                             </div>
                         </div>

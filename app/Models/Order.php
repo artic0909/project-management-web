@@ -62,4 +62,9 @@ class Order extends Model
     {
         return $this->belongsToMany(Sale::class, 'order_assigns', 'order_id', 'assigned_to');
     }
+
+    public function followups()
+    {
+        return $this->morphMany(Followup::class, 'followable')->latest();
+    }
 }

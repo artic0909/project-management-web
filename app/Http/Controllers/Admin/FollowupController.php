@@ -5,19 +5,31 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Followup;
 use App\Models\Lead;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 class FollowupController extends Controller
 {
     public function index($id)
     {
-        $lead = Lead::with(['status', 'source', 'service', 'assignments.sale', 'followups.creator'])->findOrFail($id);
+        $isOrder = Route::is('admin.orders.*');
         
-        $totalFollowups = $lead->followups->count();
-        $lastFollowup = $lead->followups->first();
+        if ($isOrder) {
+            $model = Order::with(['status', 'service', 'assignments.sale', 'followups.creator'])->findOrFail($id);
+            $typeLabel = 'Order';
+            $backRoute = route('admin.orders.index');
+        } else {
+            $model = Lead::with(['status', 'source', 'service', 'assignments.sale', 'followups.creator'])->findOrFail($id);
+            $typeLabel = 'Lead';
+            $backRoute = route('admin.leads.index');
+        }
         
-        return view('admin.followup', compact('lead', 'totalFollowups', 'lastFollowup'));
+        $totalFollowups = $model->followups->count();
+        $lastFollowup = $model->followups->first();
+        
+        return view('admin.followup', compact('model', 'totalFollowups', 'lastFollowup', 'isOrder', 'typeLabel', 'backRoute'));
     }
 
     public function store(Request $request, $id)
@@ -29,9 +41,10 @@ class FollowupController extends Controller
             'message_note' => 'nullable|string',
         ]);
 
-        $lead = Lead::findOrFail($id);
+        $isOrder = Route::is('admin.orders.*');
+        $model = $isOrder ? Order::findOrFail($id) : Lead::findOrFail($id);
 
-        $lead->followups()->create([
+        $model->followups()->create([
             'followup_date' => $request->followup_date,
             'followup_type' => $request->followup_type,
             'calling_note' => $request->calling_note,
