@@ -441,7 +441,7 @@
                     <i class="bi bi-x-lg"></i> Close
                 </button>
                 <div style="display:flex;gap:8px;">
-                    <a href="{{ route('admin.payments.create', $order->id) }}" target="_blank"
+                    <a href="#" target="_blank" id="modalPaymentLink"
                         class="btn-ghost" style="border-color:#10b981;color:#10b981;"
                         onmouseover="this.style.background='rgba(16,185,129,.08)'"
                         onmouseout="this.style.background='transparent'">
