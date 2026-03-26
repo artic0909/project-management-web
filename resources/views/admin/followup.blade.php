@@ -236,7 +236,16 @@
                                                     @endif
                                                 </span>
                                             </div>
-                                            <div style="font-size:10px;color:var(--t4);">Logged by: {{ $followup->creator->name ?? 'System' }}</div>
+                                            <div style="font-size:10px;color:var(--t4);">
+                                                Logged by: 
+                                                @if($followup->creator instanceof \App\Models\Admin)
+                                                    System
+                                                @elseif($followup->creator)
+                                                    {{ $followup->creator->name }}
+                                                @else
+                                                    System
+                                                @endif
+                                            </div>
                                         </div>
                                         
                                         <div style="padding:12px 14px;display:flex;flex-direction:column;gap:10px;">

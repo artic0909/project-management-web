@@ -18,7 +18,7 @@ class LeadController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Lead::with(['status', 'service', 'source', 'campaign', 'assignments']);
+        $query = Lead::with(['status', 'service', 'source', 'campaign', 'assignments', 'createdBy']);
 
         // Search filter
         if ($request->has('q') && !empty($request->q)) {

@@ -826,8 +826,14 @@
                                 </td>
                                 <td><strong style="color:var(--accent)">{{ $lead->status->name ?? 'N/A' }}</strong></td>
                                 <td>
-                                    <div class="ln">{{ $lead->createdBy->name ?? 'System' }}</div>
-                                    <div class="ls">{{ $lead->createdBy->email ?? '' }}</div>
+                                    @if($lead->createdBy instanceof \App\Models\Admin)
+                                        <div class="ln">System</div>
+                                    @elseif($lead->createdBy)
+                                        <div class="ln">{{ $lead->createdBy->name }}</div>
+                                        <div class="ls">{{ $lead->createdBy->email }}</div>
+                                    @else
+                                        <div class="ln">System</div>
+                                    @endif
                                 </td>
                                 <td>
                                     @foreach($lead->assignments as $assign)

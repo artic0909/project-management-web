@@ -77,8 +77,14 @@
                             <div>
                                 <div class="detail-lbl">Created By</div>
                                 <div class="detail-val">
-                                    <span>{{ $order->createdBy->name ?? 'System' }}</span>
-                                    <span style="font-size:10px; color:var(--t3)">{{ last(explode('\\', $order->created_by_type)) }}</span>
+                                    @if($order->createdBy instanceof \App\Models\Admin)
+                                        <span>System</span>
+                                    @elseif($order->createdBy)
+                                        <span>{{ $order->createdBy->name }}</span>
+                                        <div style="font-size:10px; color:var(--t3)">{{ $order->createdBy->email }}</div>
+                                    @else
+                                        <span>System</span>
+                                    @endif
                                 </div>
                             </div>
                         </div>

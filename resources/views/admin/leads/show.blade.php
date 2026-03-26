@@ -161,8 +161,14 @@
                             <div>
                                 <div class="detail-lbl">Created By</div>
                                 <div class="detail-val" style="display:flex; flex-direction:column;">
-                                    <span>{{ $lead->createdBy->name ?? 'System' }}</span>
-                                    <span style="font-size:10px; color:var(--t3)">{{ last(explode('\\', $lead->created_by_type)) }}</span>
+                                    @if($lead->createdBy instanceof \App\Models\Admin)
+                                        <span>System</span>
+                                    @elseif($lead->createdBy)
+                                        <span>{{ $lead->createdBy->name }}</span>
+                                        <span style="font-size:10px; color:var(--t3)">{{ $lead->createdBy->email }}</span>
+                                    @else
+                                        <span>System</span>
+                                    @endif
                                 </div>
                             </div>
                         </div>

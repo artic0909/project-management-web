@@ -213,11 +213,13 @@
                                     </span>
                                 </td>
                                 <td>
-                                    @if($order->createdBy)
+                                    @if($order->createdBy instanceof \App\Models\Admin)
+                                        <div class="ln">System</div>
+                                    @elseif($order->createdBy)
                                         <div class="ln">{{ $order->createdBy->name }}</div>
                                         <div class="ls">{{ $order->createdBy->email }}</div>
                                     @else
-                                        <span class="ls">System</span>
+                                        <div class="ln">System</div>
                                     @endif
                                 </td>
                                 <td>
