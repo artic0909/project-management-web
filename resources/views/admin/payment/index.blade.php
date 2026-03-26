@@ -118,7 +118,7 @@
                                 </td>
                                 <td>
                                     <div class="row-actions">
-                                        <a href="{{ route('admin.payments.create', $pay->order_id) }}" class="ra-btn" title="Add More"><i class="bi bi-plus-lg"></i></a>
+                                        <a href="{{ route('admin.payments.create', $pay->order_id) }}" class="ra-btn" title="View Details"><i class="bi bi-eye"></i></a>
                                         <form action="{{ route('admin.payments.destroy', $pay->id) }}" method="POST" onsubmit="return confirm('Delete this record?')">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="ra-btn danger"><i class="bi bi-trash-fill"></i></button>

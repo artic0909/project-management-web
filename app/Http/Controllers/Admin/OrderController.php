@@ -50,20 +50,17 @@ class OrderController extends Controller
         $totalOrders = Order::count();
         $marketingOrders = Order::where('is_marketing', true)->count();
         $totalValue = Order::sum('order_value');
+        $totalCollected = \App\Models\Payment::sum('amount');
         $cancelledOrders = Order::whereHas('status', function($q) {
             $q->where('name', 'Cancelled');
         })->count();
-        
-        // Pending logic (e.g. status is Processing or Pending)
-        $pendingValue = Order::whereHas('status', function($q) {
-            $q->whereIn('name', ['Pending', 'Processing']);
-        })->sum('order_value');
+        $pendingValue = $totalValue - $totalCollected;
 
-        $allServices = Service::all();
         $allStatuses = Status::where('type', 'order')->get();
+        $allServices = Service::all();
 
         return view('admin.orders.index', compact(
-            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue', 'allServices', 'allStatuses'
+            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue', 'allStatuses', 'allServices'
         ));
     }
 
