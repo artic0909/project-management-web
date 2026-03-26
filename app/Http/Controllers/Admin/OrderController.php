@@ -10,6 +10,7 @@ use App\Models\Status;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Models\OrderAssign;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -115,8 +116,8 @@ class OrderController extends Controller
         $orderData['is_marketing'] = $request->has('is_marketing'); 
         
         // Audit
-        $orderData['created_by'] = session('admin_id');
-        $orderData['created_by_type'] = Sale::class;
+        $orderData['created_by'] = Auth::id();
+        $orderData['created_by_type'] = get_class(Auth::user());
 
         $order = Order::create($orderData);
 

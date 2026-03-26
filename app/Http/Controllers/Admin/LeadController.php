@@ -126,8 +126,8 @@ class LeadController extends Controller
             'campaign_id' => $request->campaign_id,
             'priority' => $request->priority,
             'status_id' => $request->status_id,
-            'created_by' => $request->created_by,
-            'created_by_type' => $request->created_by_type,
+            'created_by' => auth()->id(),
+            'created_by_type' => get_class(auth()->user()),
         ]);
 
         // Process assignments
