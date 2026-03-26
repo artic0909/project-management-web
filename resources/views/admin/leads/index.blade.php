@@ -787,6 +787,7 @@
                         <thead>
                             <tr>
                                 <th>SL</th>
+                                <th>Date</th>
                                 <th>Lead</th>
                                 <th>Source</th>
                                 <th>Contact Person</th>
@@ -802,6 +803,7 @@
                             @forelse($leads as $index => $lead)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
+                                <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $lead->created_at->format('d M Y') }}</div></td>
                                 <td>
                                     <div class="lead-cell">
                                         @php

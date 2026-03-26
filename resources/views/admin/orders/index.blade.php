@@ -177,6 +177,7 @@
                         <thead>
                             <tr>
                                 <th>Order ID</th>
+                                <th>Date</th>
                                 <th>Type</th>
                                 <th>Company</th>
                                 <th>Contact Person</th>
@@ -194,6 +195,7 @@
                                 data-status="{{ strtolower($order->status->name ?? '') }}"
                                 data-service="{{ $order->service_id }}">
                                 <td><span class="mono">#ORD-{{ 1000 + $order->id }}</span></td>
+                                <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $order->created_at->format('d M Y') }}</div></td>
                                 <td>
                                     <span class="type-badge {{ $order->is_marketing ? 'marketing-type' : 'website-type' }}">
                                         {{ $order->is_marketing ? 'Marketing' : 'Website' }}
