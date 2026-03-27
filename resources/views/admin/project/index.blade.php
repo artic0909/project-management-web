@@ -229,7 +229,7 @@
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         @forelse($project->developers as $dev)
                                             <div style="font-size:12px; white-space:nowrap;">
-                                                <span style="font-weight:600;color:var(--t1);">{{ $dev->name }}</span>
+                                                <span style="font-weight:600;color:var(--t1);">{{ $dev->name }} - {{ $dev->email }}</span>
                                                 @if($dev->designation)
                                                     <span style="font-size:10px;color:var(--t3);"> - {{ $dev->designation }}</span>
                                                 @endif
@@ -243,7 +243,7 @@
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         @forelse($project->salesPersons as $sale)
                                             <div style="font-size:12px; white-space:nowrap;">
-                                                <span style="font-weight:600;color:var(--t1);">{{ $sale->name }}</span>
+                                                <span style="font-weight:600;color:var(--t1);">{{ $sale->name }}-{{ $sale->email }}</span>
                                             </div>
                                         @empty
                                             <span style="color:var(--t4);font-size:11px;">Unassigned</span>
