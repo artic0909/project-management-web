@@ -65,9 +65,12 @@
     .proj-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .proj-id { font-size: 11px; font-weight: 700; color: var(--t4); font-family: var(--mono); }
     .proj-status { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
-    .proj-status.new { background: #ccfbf1; color: #115e59; }
-    .proj-status.in-progress { background: #dbeafe; color: #1e40af; }
-    .proj-status.completed { background: #fef9c3; color: #854d0e; }
+    .proj-status.new { background: rgba(245, 158, 11, .12); color: #f59e0b; }
+    .proj-status.design-phase { background: rgba(6, 182, 212, .12); color: #06b6d4; }
+    .proj-status.development { background: rgba(99, 102, 241, .12); color: #6366f1; }
+    .proj-status.testing { background: rgba(139, 92, 246, .12); color: #8b5cf6; }
+    .proj-status.completed { background: rgba(16, 185, 129, .12); color: #10b981; }
+    .proj-status.on-hold { background: rgba(100, 116, 139, .12); color: #64748b; }
     .proj-title { font-size: 16px; font-weight: 700; color: var(--t1); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .proj-company { font-size: 13px; color: var(--t3); margin-bottom: 16px; min-height: 20px; }
     .proj-info { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; padding: 12px; background: var(--bg3); border-radius: 8px; }

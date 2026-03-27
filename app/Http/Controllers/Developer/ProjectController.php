@@ -28,7 +28,9 @@ class ProjectController extends Controller
 
     public function show($projectId)
     {
-        $project = auth()->guard('developer')->user()->projects()->findOrFail($projectId);
+        $project = auth()->guard('developer')->user()->projects()
+            ->with(['projectStatus', 'paymentStatus', 'feedbacks', 'developers'])
+            ->findOrFail($projectId);
         return view('developer.project.show', compact('project'));
     }
 }
