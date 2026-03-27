@@ -201,6 +201,9 @@
                                             @if(count($project->phones) > 1) <small class="text-muted">(+{{ count($project->phones)-1 }})</small> @endif
                                         @elseif($project->phones)
                                             {{ $project->phones }}
+                                        @else
+                                            {{ is_array($project->emails) && count($project->emails) > 0 ? $project->emails[0] : ($project->emails ?? 'N/A') }}
+                                        @endif
                                     </div>
                                 </td>
                                 <td>

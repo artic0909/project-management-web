@@ -24,7 +24,7 @@ class Lead extends Model
 
     public function createdBy()
     {
-        return $this->morphTo('created_by', 'created_by_type', 'created_by');
+        return $this->morphTo(null, 'created_by_type', 'created_by');
     }
 
     public function service()

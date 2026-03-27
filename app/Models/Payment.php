@@ -29,6 +29,6 @@ class Payment extends Model
 
     public function createdBy()
     {
-        return $this->morphTo('createdBy', 'created_by_type', 'created_by');
+        return $this->morphTo(null, 'created_by_type', 'created_by');
     }
 }
