@@ -34,6 +34,17 @@ class DashboardController extends Controller
 
         $marketingOrders = \App\Models\Order::whereIn('id', $orderIds)->where('is_marketing', true)->count();
 
-        return view('sale.dashboard', compact('totalLeads', 'totalOrders', 'revenue', 'marketingOrders'));
+        $totalProjects = \App\Models\Project::where(function($q) use ($saleId, $saleType) {
+            $q->where('created_by', $saleId)->where('created_by_type', $saleType);
+        })->orWhereHas('salesPersons', function($q) use ($saleId) {
+            $q->where('sale_id', $saleId);
+        })->orWhereHas('order', function($q) use ($saleId, $saleType) {
+            $q->where('created_by', $saleId)->where('created_by_type', $saleType)
+              ->orWhereHas('assignments', function($sq) use ($saleId) {
+                  $sq->where('assigned_to', $saleId);
+              });
+        })->count();
+
+        return view('sale.dashboard', compact('totalLeads', 'totalOrders', 'revenue', 'marketingOrders', 'totalProjects'));
     }
 }
