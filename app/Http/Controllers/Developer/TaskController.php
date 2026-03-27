@@ -44,18 +44,42 @@ class TaskController extends Controller
         return redirect()->back()->with('success', 'Task updated successfully.');
     }
 
-    public function myTasks()
+    public function myTasks(Request $request)
     {
         $developer = auth()->guard('developer')->user();
-        $tasks = ProjectTask::where('status', 'Completed')
+        
+        // Counts for KPI cards
+        $total_completed = ProjectTask::where('status', 'Completed')
+            ->whereHas('assignments', function($q) use ($developer) {
+                $q->where('developer_id', $developer->id);
+            })->count();
+            
+        $total_pending = ProjectTask::where('status', '!=', 'Completed')
+            ->whereHas('assignments', function($q) use ($developer) {
+                $q->where('developer_id', $developer->id);
+            })->count();
+            
+        $total_in_progress = ProjectTask::where('status', 'In Progress')
+            ->whereHas('assignments', function($q) use ($developer) {
+                $q->where('developer_id', $developer->id);
+            })->count();
+
+        $query = ProjectTask::where('status', 'Completed')
             ->whereHas('assignments', function($q) use ($developer) {
                 $q->where('developer_id', $developer->id);
             })
-            ->with('project')
-            ->latest()
-            ->get();
+            ->with(['project', 'assignments' => function($q) use ($developer) {
+                $q->where('developer_id', $developer->id);
+            }])
+            ->latest();
 
-        return view('developer.task.my-tasks', compact('tasks'));
+        if ($request->filled('date')) {
+            $query->whereDate('updated_at', $request->date);
+        }
+
+        $tasks = $query->paginate(15)->withQueryString();
+
+        return view('developer.task.my-tasks', compact('tasks', 'total_completed', 'total_pending', 'total_in_progress'));
     }
 
     public function show($taskId)
