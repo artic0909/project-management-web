@@ -80,11 +80,11 @@
                             <div>
                                 <div class="detail-lbl">Created By</div>
                                 <div class="detail-val">
-                                    @if($order->createdBy instanceof \App\Models\Admin)
-                                        <span>System</span>
-                                    @elseif($order->createdBy)
-                                        <span>{{ $order->createdBy->name }}</span>
-                                        <div style="font-size:10px; color:var(--t3)">{{ $order->createdBy->email }}</div>
+                                    @if($order->createdBy)
+                                        <span>{{ $order->created_by_type == \App\Models\Admin::class ? 'System' : $order->createdBy->name }}</span>
+                                        @if($order->created_by_type == \App\Models\Sale::class)
+                                            <div style="font-size:10px; color:var(--t3)">{{ $order->createdBy->email }}</div>
+                                        @endif
                                     @else
                                         <span>System</span>
                                     @endif

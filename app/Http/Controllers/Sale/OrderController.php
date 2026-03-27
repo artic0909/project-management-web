@@ -244,8 +244,8 @@ class OrderController extends Controller
             'mkt_password' => $request->mkt_password,
         ]);
 
-        OrderAssign::where('order_id', $id)->delete();
         if ($request->has('assign_to')) {
+            OrderAssign::where('order_id', $id)->delete();
             foreach ($request->assign_to as $sale_id) {
                 OrderAssign::create([
                     'order_id' => $order->id,
@@ -255,6 +255,17 @@ class OrderController extends Controller
         }
 
         return redirect()->route('sale.orders.index')->with('success', 'Order updated successfully!');
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $order = $this->getFilteredOrders()->findOrFail($id);
+        
+        $order->update([
+            'status_id' => $request->status_id,
+        ]);
+
+        return redirect()->back()->with('success', 'Order status updated!');
     }
 
     public function destroy($id)

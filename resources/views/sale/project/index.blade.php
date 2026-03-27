@@ -162,6 +162,7 @@
                                 <th>Project ID</th>
                                 <th>Project / Domain</th>
                                 <th>Client</th>
+                                <th>Sales Person</th>
                                 <th>CMS</th>
                                 <th>Start Date</th>
                                 <th>Delivery</th>
@@ -171,6 +172,7 @@
                                 <th>Advance</th>
                                 <th>Remaining</th>
                                 <th>Payment</th>
+                                <th>Created By</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -199,10 +201,20 @@
                                             @if(count($project->phones) > 1) <small class="text-muted">(+{{ count($project->phones)-1 }})</small> @endif
                                         @elseif($project->phones)
                                             {{ $project->phones }}
-                                        @else
-                                            {{ is_array($project->emails) && count($project->emails) > 0 ? $project->emails[0] : ($project->emails ?? 'N/A') }}
-                                        @endif
                                     </div>
+                                </td>
+                                <td>
+                                    @if($project->order)
+                                        @foreach($project->order->assignments as $assign)
+                                            <div class="ln">{{ $assign->sale->name ?? 'N/A' }}</div>
+                                            <div class="ls">{{ $assign->sale->email ?? 'N/A' }}</div>
+                                        @endforeach
+                                        @if($project->order->assignments->isEmpty())
+                                            <span style="color:var(--t4)">Unassigned</span>
+                                        @endif
+                                    @else
+                                        <span style="color:var(--t4)">Direct Project</span>
+                                    @endif
                                 </td>
                                 <td>
                                     @if($project->cms_platform)
@@ -254,6 +266,16 @@
                                         $payClass = $payLower == 'paid' ? 'paid' : ($payLower == 'partial' ? 'pending' : 'overdue');
                                     @endphp
                                     <span class="status-pill {{ $payClass }}">{{ $displayPayStatus }}</span>
+                                </td>
+                                <td>
+                                    @if($project->createdBy)
+                                        <div class="ln">{{ $project->created_by_type == \App\Models\Admin::class ? 'System' : $project->createdBy->name }}</div>
+                                        @if($project->created_by_type == \App\Models\Sale::class)
+                                            <div class="ls">{{ $project->createdBy->email }}</div>
+                                        @endif
+                                    @else
+                                        <div class="ln">System</div>
+                                    @endif
                                 </td>
                                 <td>
                                     <div class="row-actions">

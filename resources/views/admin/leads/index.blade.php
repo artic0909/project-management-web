@@ -836,7 +836,7 @@
                                 <td>
                                     @if($lead->createdBy instanceof \App\Models\Admin)
                                         <div class="ln">System</div>
-                                    @elseif($lead->createdBy)
+                                    @elseif($lead->createdBy instanceof \App\Models\Sale)
                                         <div class="ln">{{ $lead->createdBy->name }}</div>
                                         <div class="ls">{{ $lead->createdBy->email }}</div>
                                     @else

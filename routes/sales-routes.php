@@ -23,6 +23,7 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     Route::get('/view-lead/{id}', [LeadController::class, 'show'])->name('leads.show');
     Route::get('/edit-lead/{id}', [LeadController::class, 'edit'])->name('leads.edit');
     Route::put('/edit-lead/{id}', [LeadController::class, 'update'])->name('leads.update');
+    Route::patch('/update-lead-status/{id}', [LeadController::class, 'updateStatus'])->name('leads.updateStatus');
     Route::delete('/delete-lead/{id}', [LeadController::class, 'destroy'])->name('leads.destroy');
     Route::get('/lead-followup/{id}', [FollowupController::class, 'index'])->name('leads.followup');
     Route::post('/lead-followup/{id}', [FollowupController::class, 'store'])->name('leads.followup.store');
@@ -37,6 +38,7 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     Route::get('/view-order/{id}', [OrderController::class, 'show'])->name('orders.show');
     Route::get('/edit-order/{id}', [OrderController::class, 'edit'])->name('orders.edit');
     Route::put('/edit-order/{id}', [OrderController::class, 'update'])->name('orders.update');
+    Route::patch('/update-order-status/{id}', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::delete('/delete-order/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::get('/order-followup/{id}', [FollowupController::class, 'index'])->name('orders.followup');
     Route::post('/order-followup/{id}', [FollowupController::class, 'store'])->name('orders.followup.store');

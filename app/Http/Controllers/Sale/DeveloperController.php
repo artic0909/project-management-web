@@ -12,10 +12,7 @@ class DeveloperController extends Controller
 {
     public function index()
     {
-        $developers = Developer::where('created_by', auth()->guard('sale')->id())
-            ->where('created_by_type', \App\Models\Sale::class)
-            ->latest()
-            ->get();
+        $developers = Developer::latest()->get();
         return view('sale.developers', compact('developers'));
     }
 
@@ -46,9 +43,7 @@ class DeveloperController extends Controller
 
     public function edit(Request $request, $id)
     {
-        $developer = Developer::where('created_by', auth()->guard('sale')->id())
-            ->where('created_by_type', \App\Models\Sale::class)
-            ->findOrFail($id);
+        $developer = Developer::findOrFail($id);
 
         $rules = [
             'name' => 'required|string|max:255',
@@ -81,9 +76,7 @@ class DeveloperController extends Controller
 
     public function delete($id)
     {
-        $developer = Developer::where('created_by', auth()->guard('sale')->id())
-            ->where('created_by_type', \App\Models\Sale::class)
-            ->findOrFail($id);
+        $developer = Developer::findOrFail($id);
         $developer->delete();
 
         return redirect()->back()->with('success', 'Developer deleted successfully!');

@@ -161,11 +161,11 @@
                             <div>
                                 <div class="detail-lbl">Created By</div>
                                 <div class="detail-val" style="display:flex; flex-direction:column;">
-                                    @if($lead->createdBy instanceof \App\Models\Admin)
-                                        <span>System</span>
-                                    @elseif($lead->createdBy)
-                                        <span>{{ $lead->createdBy->name }}</span>
-                                        <span style="font-size:10px; color:var(--t3)">{{ $lead->createdBy->email }}</span>
+                                    @if($lead->createdBy)
+                                        <span>{{ $lead->created_by_type == \App\Models\Admin::class ? 'System' : $lead->createdBy->name }}</span>
+                                        @if($lead->created_by_type == \App\Models\Sale::class)
+                                            <span style="font-size:10px; color:var(--t3)">{{ $lead->createdBy->email }}</span>
+                                        @endif
                                     @else
                                         <span>System</span>
                                     @endif

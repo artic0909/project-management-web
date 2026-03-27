@@ -271,8 +271,8 @@ class LeadController extends Controller
         ]);
 
         // Update assignments
-        LeadAssign::where('lead_id', $id)->delete();
         if ($request->has('assign_to')) {
+            LeadAssign::where('lead_id', $id)->delete();
             foreach ($request->assign_to as $sale_id) {
                 LeadAssign::create([
                     'lead_id' => $lead->id,
@@ -326,6 +326,18 @@ class LeadController extends Controller
         $sales = Sale::all();
 
         return view('sale.leads.losted-leads', compact('leads', 'totalLostLeads', 'sources', 'services', 'sales'));
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $lead = $this->getFilteredLeads()->findOrFail($id);
+        
+        $lead->update([
+            'status_id' => $request->status_id,
+            'priority' => $request->priority,
+        ]);
+
+        return redirect()->back()->with('success', 'Lead status updated!');
     }
 
     public function destroy($id)

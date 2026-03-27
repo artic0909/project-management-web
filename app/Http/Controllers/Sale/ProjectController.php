@@ -32,7 +32,7 @@ class ProjectController extends Controller
 
     public function index(Request $request)
     {
-        $query = $this->getFilteredProjects()->with(['projectStatus', 'paymentStatus', 'developers']);
+        $query = $this->getFilteredProjects()->with(['projectStatus', 'paymentStatus', 'developers', 'order.assignments.sale', 'order.createdBy']);
 
         // Search Filter
         if ($request->filled('q')) {

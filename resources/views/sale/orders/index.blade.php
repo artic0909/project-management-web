@@ -234,11 +234,11 @@
                                     </span>
                                 </td>
                                 <td>
-                                    @if($order->createdBy instanceof \App\Models\Admin)
-                                        <div class="ln">System</div>
-                                    @elseif($order->createdBy)
-                                        <div class="ln">{{ $order->createdBy->name }}</div>
-                                        <div class="ls">{{ $order->createdBy->email }}</div>
+                                    @if($order->createdBy)
+                                        <div class="ln">{{ $order->created_by_type == \App\Models\Admin::class ? 'System' : $order->createdBy->name }}</div>
+                                        @if($order->created_by_type == \App\Models\Sale::class)
+                                            <div class="ls">{{ $order->createdBy->email }}</div>
+                                        @endif
                                     @else
                                         <div class="ln">System</div>
                                     @endif
