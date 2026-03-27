@@ -12,14 +12,14 @@ class StatusController extends Controller
     {
         $statuses     = Status::latest()->get();
         $statusCount  = $statuses->count();
-        $leadCount    = $statuses->where('type', 'lead')->count();
-        $orderCount   = $statuses->where('type', 'order')->count();
-        $paymentCount = $statuses->where('type', 'payment')->count();
-        $projectCount = $statuses->where('type', 'project')->count();
+        $leadStatusCount    = $statuses->where('type', 'lead')->count();
+        $orderStatusCount   = $statuses->where('type', 'order')->count();
+        $paymentStatusCount = $statuses->where('type', 'payment')->count();
+        $projectStatusCount = $statuses->where('type', 'project')->count();
 
         return view('admin.status', compact(
             'statuses', 'statusCount',
-            'leadCount', 'orderCount', 'paymentCount', 'projectCount'
+            'leadStatusCount', 'orderStatusCount', 'paymentStatusCount', 'projectStatusCount'
         ));
     }
 

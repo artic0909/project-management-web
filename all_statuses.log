@@ -1,0 +1,24 @@
+ID:1|TYPE:lead|NAME:not responding
+ID:2|TYPE:lead|NAME:not interested
+ID:3|TYPE:lead|NAME:not required
+ID:4|TYPE:lead|NAME:location issue
+ID:5|TYPE:lead|NAME:job
+ID:6|TYPE:lead|NAME:not inquired
+ID:7|TYPE:lead|NAME:respond
+ID:8|TYPE:lead|NAME:interested
+ID:9|TYPE:lead|NAME:language barrier
+ID:10|TYPE:lead|NAME:booked
+ID:11|TYPE:lead|NAME:budget issue
+ID:12|TYPE:project|NAME:new
+ID:13|TYPE:project|NAME:design phase
+ID:14|TYPE:project|NAME:development
+ID:15|TYPE:project|NAME:testing
+ID:16|TYPE:project|NAME:complete
+ID:17|TYPE:project|NAME:on hold
+ID:18|TYPE:payment|NAME:pending
+ID:19|TYPE:payment|NAME:partial
+ID:20|TYPE:payment|NAME:over due
+ID:21|TYPE:payment|NAME:paid
+ID:22|TYPE:order|NAME:closed
+ID:23|TYPE:lead|NAME:lost
+ID:24|TYPE:order|NAME:Interested

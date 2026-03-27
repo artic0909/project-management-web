@@ -39,10 +39,10 @@ document.addEventListener('DOMContentLoaded',()=>{
 
             @php
                 $kpis = [
-                    ['label'=>'Lead',    'count'=>$leadCount,    'icon'=>'bi-person-lines-fill', 'color'=>'#6366f1', 'rgb'=>'99,102,241',  'pct'=> $statusCount ? round($leadCount/$statusCount*100) : 0],
-                    ['label'=>'Order',   'count'=>$orderCount,   'icon'=>'bi-bag-check-fill',    'color'=>'#10b981', 'rgb'=>'16,185,129',  'pct'=> $statusCount ? round($orderCount/$statusCount*100) : 0],
-                    ['label'=>'Payment', 'count'=>$paymentCount, 'icon'=>'bi-credit-card-2-front-fill','color'=>'#f59e0b','rgb'=>'245,158,11','pct'=> $statusCount ? round($paymentCount/$statusCount*100) : 0],
-                    ['label'=>'Project', 'count'=>$projectCount, 'icon'=>'bi-kanban-fill',        'color'=>'#8b5cf6', 'rgb'=>'139,92,246', 'pct'=> $statusCount ? round($projectCount/$statusCount*100) : 0],
+                    ['label'=>'Lead',    'count'=>$leadStatusCount,    'icon'=>'bi-person-lines-fill', 'color'=>'#6366f1', 'rgb'=>'99,102,241',  'pct'=> $statusCount ? round($leadStatusCount/$statusCount*100) : 0],
+                    ['label'=>'Order',   'count'=>$orderStatusCount,   'icon'=>'bi-bag-check-fill',    'color'=>'#10b981', 'rgb'=>'16,185,129',  'pct'=> $statusCount ? round($orderStatusCount/$statusCount*100) : 0],
+                    ['label'=>'Payment', 'count'=>$paymentStatusCount, 'icon'=>'bi-credit-card-2-front-fill','color'=>'#f59e0b','rgb'=>'245,158,11','pct'=> $statusCount ? round($paymentStatusCount/$statusCount*100) : 0],
+                    ['label'=>'Project', 'count'=>$projectStatusCount, 'icon'=>'bi-kanban-fill',        'color'=>'#8b5cf6', 'rgb'=>'139,92,246', 'pct'=> $statusCount ? round($projectStatusCount/$statusCount*100) : 0],
                 ];
             @endphp
 
