@@ -105,4 +105,5 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
 
     // Account Settings
     Route::get('/my-account', [AccountSettingController::class, 'index'])->name('account-settings');
+    Route::post('/my-account', [\App\Http\Controllers\Auth\LoginController::class, 'adminProfileAndPasswordUpdate'])->name('account-settings.update');
 });

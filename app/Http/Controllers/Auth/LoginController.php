@@ -78,6 +78,29 @@ class LoginController extends Controller
 
     public function adminProfileAndPasswordUpdate(Request $request)
     {
+        $admin = \Illuminate\Support\Facades\Auth::guard('admin')->user();
         
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:admins,email,' . $admin->id,
+            'current_password' => 'nullable|required_with:new_password',
+            'new_password' => 'nullable|min:6|required_with:current_password|confirmed',
+        ]);
+
+        // Profile Update
+        $admin->name = $request->name;
+        $admin->email = $request->email;
+
+        // Password Update
+        if ($request->filled('new_password')) {
+            if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $admin->password)) {
+                return back()->withErrors(['current_password' => 'The provided current password does not match.']);
+            }
+            $admin->password = \Illuminate\Support\Facades\Hash::make($request->new_password);
+        }
+
+        $admin->save();
+
+        return back()->with('success', 'Profile and password updated successfully!');
     }
 }
