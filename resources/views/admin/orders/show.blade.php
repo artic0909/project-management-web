@@ -20,7 +20,7 @@
                 <p class="page-desc">Viewing details for <strong>{{ $order->company_name }}</strong></p>
             </div>
             <div style="display:flex;gap:10px;">
-                <a href="{{ route('admin.payments.create', $order->id) }}" class="btn-primary-ghost sm">
+                <a href="{{ route('admin.payments.create', $order->id) }}" class="btn-primary-solid sm">
                     <i class="bi bi-wallet2"></i> Add Payment
                 </a>
                 <a href="{{ route('admin.orders.edit', $order->id) }}" class="btn-primary-solid sm">
