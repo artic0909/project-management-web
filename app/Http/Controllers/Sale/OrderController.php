@@ -3,22 +3,264 @@
 namespace App\Http\Controllers\Sale;
 
 use App\Http\Controllers\Controller;
+use App\Models\Lead;
+use App\Models\Service;
+use App\Models\Sale;
+use App\Models\Status;
+use App\Models\Order;
 use Illuminate\Http\Request;
+use App\Models\OrderAssign;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
-    public function index()
+    private function getFilteredOrders()
     {
-        return view('sale.orders.index');
+        $saleId = auth()->guard('sale')->id();
+        $saleType = \App\Models\Sale::class;
+
+        return Order::where(function($q) use ($saleId, $saleType) {
+            $q->where('created_by', $saleId)
+              ->where('created_by_type', $saleType);
+        })->orWhereHas('assignments', function($q) use ($saleId) {
+            $q->where('assigned_to', $saleId);
+        });
     }
 
-    public function create()
+    public function index(Request $request)
     {
-        return view('sale.orders.create');
+        $query = $this->getFilteredOrders()->with(['status', 'service', 'assignments.sale', 'createdBy']);
+
+        // Search Filter
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function ($sub) use ($q) {
+                $sub->where('company_name', 'LIKE', "%$q%")
+                    ->orWhere('client_name', 'LIKE', "%$q%")
+                    ->orWhere('emails', 'LIKE', "%$q%")
+                    ->orWhere('phones', 'LIKE', "%$q%")
+                    ->orWhere('domain_name', 'LIKE', "%$q%");
+            });
+        }
+
+        // Service Filter
+        if ($request->filled('service_id')) {
+            $query->where('service_id', $request->service_id);
+        }
+
+        // Status Filter
+        if ($request->filled('status_id')) {
+            $query->where('status_id', $request->status_id);
+        }
+
+        // Type Filter (Marketing vs Website)
+        if ($request->filled('is_marketing')) {
+            $query->where('is_marketing', $request->is_marketing == '1');
+        }
+
+        // Date Range Filter
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+        }
+
+        $orders = $query->latest()->paginate(20)->withQueryString();
+        
+        // Counts (Only for their orders)
+        $totalOrders = $this->getFilteredOrders()->count();
+        $marketingOrders = $this->getFilteredOrders()->where('is_marketing', true)->count();
+        $totalValue = $this->getFilteredOrders()->whereHas('status', function($q) {
+            $q->where('name', '!=', 'cancel');
+        })->sum('order_value');
+        $cancelledOrders = $this->getFilteredOrders()->whereHas('status', function($q) {
+            $q->where('name', 'cancel');
+        })->count();
+        
+        $orderIds = $this->getFilteredOrders()->pluck('id');
+        $totalCollected = \App\Models\Payment::whereIn('order_id', $orderIds)->sum('amount');
+        $pendingValue = $totalValue - $totalCollected;
+
+        $allStatuses = Status::where('type', 'order')->get();
+        $allServices = Service::all();
+        $allSales = Sale::all();
+
+        return view('sale.orders.index', compact(
+            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue', 'allStatuses', 'allServices', 'allSales'
+        ));
     }
 
-    public function edit()
+    public function create($lead_id = null)
     {
-        return view('sale.orders.edit');
+        $saleId = auth()->guard('sale')->id();
+        $saleType = \App\Models\Sale::class;
+
+        $lead = $lead_id ? Lead::where(function($q) use ($saleId, $saleType) {
+            $q->where('created_by', $saleId)->where('created_by_type', $saleType);
+        })->orWhereHas('assignments', function($q) use ($saleId) {
+            $q->where('assigned_to', $saleId);
+        })->with(['status', 'source', 'service', 'assignments'])->find($lead_id) : null;
+
+        $services = Service::all();
+        $sales = Sale::all();
+        $orderStatuses = Status::where('type', 'order')->get();
+        $paymentStatuses = Status::where('type', 'payment')->get();
+        
+        return view('sale.orders.create', compact('lead', 'services', 'sales', 'orderStatuses', 'paymentStatuses'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'company_name' => 'required|string|max:255',
+            'client_name' => 'required|string|max:255',
+            'order_value' => 'required|numeric',
+            'status_id' => 'required|exists:statuses,id',
+            'service_id' => 'required|exists:services,id',
+        ]);
+
+        $phones = [];
+        if ($request->has('phone')) {
+            $codes = $request->input('country_code', []);
+            $nums = $request->input('phone', []);
+            foreach ($nums as $idx => $num) {
+                if (!empty($num)) {
+                    $phones[] = [
+                        'code_idx' => $codes[$idx] ?? null,
+                        'number' => $num
+                    ];
+                }
+            }
+        }
+
+        $emails = array_filter($request->input('email', []), fn($e) => !empty($e));
+
+        $order = Order::create([
+            'lead_id' => $request->lead_id,
+            'company_name' => $request->company_name,
+            'client_name' => $request->client_name,
+            'order_value' => $request->order_value,
+            'status_id' => $request->status_id,
+            'service_id' => $request->service_id,
+            'emails' => array_values($emails),
+            'phones' => $phones,
+            'domain_name' => $request->domain_name,
+            'payment_terms_id' => $request->payment_terms_id,
+            'delivery_date' => $request->delivery_date,
+            'city' => $request->city,
+            'state' => $request->state,
+            'zip_code' => $request->zip_code,
+            'full_address' => $request->full_address,
+            'is_marketing' => $request->has('is_marketing'),
+            'mkt_starting_date' => $request->mkt_starting_date,
+            'plan_name' => $request->plan_name,
+            'mkt_username' => $request->mkt_username,
+            'mkt_password' => $request->mkt_password,
+            'created_by' => auth()->guard('sale')->id(),
+            'created_by_type' => \App\Models\Sale::class,
+        ]);
+
+        if ($request->has('assign_to')) {
+            foreach ($request->assign_to as $sale_id) {
+                OrderAssign::create([
+                    'order_id' => $order->id,
+                    'assigned_to' => $sale_id,
+                ]);
+            }
+        } else {
+            OrderAssign::create([
+                'order_id' => $order->id,
+                'assigned_to' => auth()->guard('sale')->id(),
+            ]);
+        }
+
+        return redirect()->route('sale.orders.index')->with('success', 'Order created successfully!');
+    }
+
+    public function show($id)
+    {
+        $order = $this->getFilteredOrders()->with(['status', 'service', 'assignments.sale', 'createdBy', 'lead'])->findOrFail($id);
+        $allStatuses = Status::where('type', 'order')->get();
+        return view('sale.orders.show', compact('order', 'allStatuses'));
+    }
+
+    public function edit($id)
+    {
+        $order = $this->getFilteredOrders()->with('assignments')->findOrFail($id);
+        $services = Service::all();
+        $sales = Sale::all();
+        $orderStatuses = Status::where('type', 'order')->get();
+        $paymentStatuses = Status::where('type', 'payment')->get();
+        
+        return view('sale.orders.edit', compact('order', 'services', 'sales', 'orderStatuses', 'paymentStatuses'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'company_name' => 'required|string|max:255',
+            'client_name' => 'required|string|max:255',
+            'order_value' => 'required|numeric',
+            'status_id' => 'required|exists:statuses,id',
+            'service_id' => 'required|exists:services,id',
+        ]);
+
+        $order = $this->getFilteredOrders()->findOrFail($id);
+
+        $phones = [];
+        if ($request->has('phone')) {
+            $codes = $request->input('country_code', []);
+            $nums = $request->input('phone', []);
+            foreach ($nums as $idx => $num) {
+                if (!empty($num)) {
+                    $phones[] = [
+                        'code_idx' => $codes[$idx] ?? null,
+                        'number' => $num
+                    ];
+                }
+            }
+        }
+
+        $emails = array_filter($request->input('email', []), fn($e) => !empty($e));
+
+        $order->update([
+            'company_name' => $request->company_name,
+            'client_name' => $request->client_name,
+            'order_value' => $request->order_value,
+            'status_id' => $request->status_id,
+            'service_id' => $request->service_id,
+            'emails' => array_values($emails),
+            'phones' => $phones,
+            'domain_name' => $request->domain_name,
+            'payment_terms_id' => $request->payment_terms_id,
+            'delivery_date' => $request->delivery_date,
+            'city' => $request->city,
+            'state' => $request->state,
+            'zip_code' => $request->zip_code,
+            'full_address' => $request->full_address,
+            'is_marketing' => $request->has('is_marketing'),
+            'mkt_starting_date' => $request->mkt_starting_date,
+            'plan_name' => $request->plan_name,
+            'mkt_username' => $request->mkt_username,
+            'mkt_password' => $request->mkt_password,
+        ]);
+
+        OrderAssign::where('order_id', $id)->delete();
+        if ($request->has('assign_to')) {
+            foreach ($request->assign_to as $sale_id) {
+                OrderAssign::create([
+                    'order_id' => $order->id,
+                    'assigned_to' => $sale_id,
+                ]);
+            }
+        }
+
+        return redirect()->route('sale.orders.index')->with('success', 'Order updated successfully!');
+    }
+
+    public function destroy($id)
+    {
+        $order = $this->getFilteredOrders()->findOrFail($id);
+        $order->delete();
+        return redirect()->back()->with('success', 'Order deleted successfully!');
     }
 }

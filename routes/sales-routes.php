@@ -15,21 +15,31 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
+ 
     // Leads
     Route::get('/all-leads', [LeadController::class, 'index'])->name('leads.index');
     Route::get('/add-lead', [LeadController::class, 'create'])->name('leads.create');
-    Route::get('/update-lead', [LeadController::class, 'edit'])->name('leads.edit');
-    Route::get('/lead-followup', [FollowupController::class, 'index'])->name('leads.followup');
-
+    Route::post('/add-lead', [LeadController::class, 'store'])->name('leads.store');
+    Route::get('/view-lead/{id}', [LeadController::class, 'show'])->name('leads.show');
+    Route::get('/edit-lead/{id}', [LeadController::class, 'edit'])->name('leads.edit');
+    Route::put('/edit-lead/{id}', [LeadController::class, 'update'])->name('leads.update');
+    Route::delete('/delete-lead/{id}', [LeadController::class, 'destroy'])->name('leads.destroy');
+    Route::get('/lead-followup/{id}', [FollowupController::class, 'index'])->name('leads.followup');
+    Route::post('/lead-followup/{id}', [FollowupController::class, 'store'])->name('leads.followup.store');
+    
     // Losted Leads
     Route::get('/losted-leads', [LeadController::class, 'lostedLeads'])->name('losted-leads');
 
     // Orders
     Route::get('/all-orders', [OrderController::class, 'index'])->name('orders.index');
-    Route::get('/add-order', [OrderController::class, 'create'])->name('orders.create');
-    Route::get('/update-order', [OrderController::class, 'edit'])->name('orders.edit');
-    Route::get('/order-followup', [FollowupController::class, 'index'])->name('orders.followup');
+    Route::get('/add-order/{lead_id?}', [OrderController::class, 'create'])->name('orders.create');
+    Route::post('/all-orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::get('/view-order/{id}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('/edit-order/{id}', [OrderController::class, 'edit'])->name('orders.edit');
+    Route::put('/edit-order/{id}', [OrderController::class, 'update'])->name('orders.update');
+    Route::delete('/delete-order/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
+    Route::get('/order-followup/{id}', [FollowupController::class, 'index'])->name('orders.followup');
+    Route::post('/order-followup/{id}', [FollowupController::class, 'store'])->name('orders.followup.store');
 
     // Marketing Orders
     Route::get('/add-marketing-orders', [MarketingOrderController::class, 'index'])->name('marketing-orders');
@@ -38,15 +48,29 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     // Project
     Route::get('/all-projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('/project/create', [ProjectController::class, 'create'])->name('projects.create');
-    Route::get('/project/show', [ProjectController::class, 'show'])->name('projects.show');
-
+    Route::post('/project/store', [ProjectController::class, 'store'])->name('projects.store');
+    Route::get('/project/show/{id}', [ProjectController::class, 'show'])->name('projects.show');
+    Route::get('/project/edit/{id}', [ProjectController::class, 'edit'])->name('projects.edit');
+    Route::put('/project/update/{id}', [ProjectController::class, 'update'])->name('projects.update');
+    Route::post('/project/quick-update/{id}', [ProjectController::class, 'quickUpdate'])->name('projects.quickUpdate');
+    Route::delete('/project/delete/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
+    
     // Payments
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
-    Route::get('/payments/create', [PaymentController::class, 'create'])->name('payments.create');
+    Route::get('/payments/create/{order_id}', [PaymentController::class, 'create'])->name('payments.create');
+    Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
+    Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
 
     // Developer
     Route::get('/add-developer', [DeveloperController::class, 'index'])->name('developer');
+    Route::get('/developer/create', [DeveloperController::class, 'create'])->name('developer.create');
+    Route::post('/developer/store', [DeveloperController::class, 'store'])->name('developer.store');
+    Route::get('/developer/show/{id}', [DeveloperController::class, 'show'])->name('developer.show');
+    Route::get('/developer/edit/{id}', [DeveloperController::class, 'edit'])->name('developer.edit');
+    Route::put('/developer/update/{id}', [DeveloperController::class, 'update'])->name('developer.update');
+    Route::delete('/developer/delete/{id}', [DeveloperController::class, 'destroy'])->name('developer.destroy');
 
     // Account Settings
     Route::get('/my-account', [AccountSettingController::class, 'index'])->name('account-settings');
+    Route::post('/my-account', [\App\Http\Controllers\Auth\LoginController::class, 'saleProfileAndPasswordUpdate'])->name('account-settings.update');
 });

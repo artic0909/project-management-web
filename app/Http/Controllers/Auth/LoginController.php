@@ -103,4 +103,32 @@ class LoginController extends Controller
 
         return back()->with('success', 'Profile and password updated successfully!');
     }
+
+    public function saleProfileAndPasswordUpdate(Request $request)
+    {
+        $sale = \Illuminate\Support\Facades\Auth::guard('sale')->user();
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:sales,email,' . $sale->id,
+            'current_password' => 'nullable|required_with:new_password',
+            'new_password' => 'nullable|min:6|required_with:current_password|confirmed',
+        ]);
+
+        // Profile Update
+        $sale->name = $request->name;
+        $sale->email = $request->email;
+
+        // Password Update
+        if ($request->filled('new_password')) {
+            if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $sale->password)) {
+                return back()->withErrors(['current_password' => 'The provided current password does not match.']);
+            }
+            $sale->password = \Illuminate\Support\Facades\Hash::make($request->new_password);
+        }
+
+        $sale->save();
+
+        return back()->with('success', 'Profile and password updated successfully!');
+    }
 }

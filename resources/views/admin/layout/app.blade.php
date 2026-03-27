@@ -3029,6 +3029,11 @@
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
 
+    @php
+        $guard = auth()->guard('admin')->check() ? 'admin' : (auth()->guard('sale')->check() ? 'sale' : 'web');
+        $panelLabel = $guard === 'admin' ? 'Admin Panel' : ($guard === 'sale' ? 'Sale Panel' : 'User Panel');
+    @endphp
+
     @include('admin.includes.sidebar')
 
 
@@ -3041,7 +3046,7 @@
                     <i class="bi bi-list"></i>
                 </button>
                 <div class="page-breadcrumb">
-                    <span class="breadcrumb-panel" id="activePanelLabel">Admin Panel</span>
+                    <span class="breadcrumb-panel" id="activePanelLabel">{{ $panelLabel }}</span>
                 </div>
             </div>
 
@@ -3102,12 +3107,14 @@
 
                 <div class="tb-divider"></div>
                 <div class="tb-user" onclick="toggleUserMenu()">
-                    <div class="user-ava sm" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">{{ strtoupper(substr(auth()->guard('admin')->user()->name ?? 'A', 0, 2)) }}</div>
-                    <span class="tb-user-name">{{ auth()->guard('admin')->user()->name }}</span>
+                    <div class="user-ava sm" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">
+                        {{ strtoupper(substr(auth()->guard($guard)->user()->name ?? 'U', 0, 2)) }}
+                    </div>
+                    <span class="tb-user-name">{{ auth()->guard($guard)->user()->name }}</span>
                     <i class="bi bi-chevron-down" style="font-size:10px;color:var(--t3)"></i>
                 </div>
                 <div class="user-menu" id="userMenu">
-                    <a class="um-item" href="{{ route('admin.account-settings') }}"><i class="bi bi-person-fill"></i> My Profile</a>
+                    <a class="um-item" href="{{ route($guard . '.account-settings') }}"><i class="bi bi-person-fill"></i> My Profile</a>
                     <hr class="um-divider">
                     
                     <!-- Logout -->
@@ -3120,6 +3127,7 @@
                     </a>
                 </div>
             </div>
+
         </header>
 
         @yield('content')
@@ -3372,19 +3380,20 @@
         function showToast(type, msg, icon) {
             const cfg = toastConfig[type] || toastConfig.info;
             const container = document.getElementById('toastStack');
+            if(!container) return;
             const toast = document.createElement('div');
             toast.className = 'toast-item';
             toast.style.borderLeft = `3px solid ${cfg.border}`;
             toast.innerHTML = `
-    <div class="toast-ico" style="background:${cfg.bg}">
-      <i class="bi ${icon}" style="color:${cfg.color}"></i>
-    </div>
-    <div class="toast-body">
-      <div class="toast-msg">${msg}</div>
-      <div class="toast-sub">Just now</div>
-    </div>
-    <i class="bi bi-x toast-x"></i>
-  `;
+                <div class="toast-ico" style="background:${cfg.bg}">
+                <i class="bi ${icon}" style="color:${cfg.color}"></i>
+                </div>
+                <div class="toast-body">
+                <div class="toast-msg">${msg}</div>
+                <div class="toast-sub">Just now</div>
+                </div>
+                <i class="bi bi-x toast-x"></i>
+            `;
             toast.onclick = () => removeToast(toast);
             container.appendChild(toast);
             // Limit to 5 toasts
@@ -3398,76 +3407,6 @@
             el.classList.add('leaving');
             setTimeout(() => el.remove(), 220);
         }
-
-        /* ── BAR CHART INTERACTION ── */
-        document.querySelectorAll('.bar').forEach(bar => {
-            bar.addEventListener('mouseenter', function() {
-                const val = this.dataset.val;
-                if (val) this.title = val;
-            });
-        });
-
-        /* ── TABLE CHECKBOX SELECT ALL ── */
-        document.querySelectorAll('thead .cb-custom').forEach(masterCb => {
-            masterCb.addEventListener('change', function() {
-                const table = this.closest('table');
-                table.querySelectorAll('tbody .cb-custom').forEach(cb => {
-                    cb.checked = this.checked;
-                });
-            });
-        });
-
-        /* ── FILTER SELECT INTERACTION ── */
-        document.querySelectorAll('.filter-select').forEach(sel => {
-            sel.addEventListener('change', function() {
-                if (this.value !== this.options[0].value) {
-                    showToast('info', `Filter: ${this.value}`, 'bi-funnel-fill');
-                }
-            });
-        });
-
-        /* ── MINI SEARCH ── */
-        document.querySelectorAll('.search-mini input').forEach(inp => {
-            let timer;
-            inp.addEventListener('input', function() {
-                clearTimeout(timer);
-                if (this.value.length > 2) {
-                    timer = setTimeout(() => {
-                        // Visual feedback only
-                    }, 400);
-                }
-            });
-        });
-
-        /* ── KEYBOARD SHORTCUTS HINT ── */
-        document.querySelector('.global-search input')?.addEventListener('focus', function() {
-            this.placeholder = 'Type to search…';
-        });
-        document.querySelector('.global-search input')?.addEventListener('blur', function() {
-            this.placeholder = 'Search projects, leads, orders, team…';
-        });
-
-        /* ── ANIMATE PROGRESS BARS ON LOAD ── */
-        function animateBars() {
-            document.querySelectorAll('.prog-fill, .dept-bar, .vel-bar').forEach(bar => {
-                const target = bar.style.width;
-                bar.style.width = '0%';
-                setTimeout(() => {
-                    bar.style.width = target;
-                }, 200);
-            });
-        }
-        setTimeout(animateBars, 300);
-
-        /* ── INITIAL STATE ── */
-        document.addEventListener('DOMContentLoaded', () => {
-            showPage('dashboard');
-            updateNavActive('dashboard');
-
-            // Set initial theme switch state
-            const sw = document.getElementById('themeSwitch');
-            if (sw) sw.checked = (document.documentElement.getAttribute('data-theme') === 'dark');
-        });
 
         // Toggle Toast for session messages
         @if(session('success'))

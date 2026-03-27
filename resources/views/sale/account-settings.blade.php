@@ -1,4 +1,4 @@
-@extends('sale.layout.app')
+@extends('admin.layout.app')
 
 @section('title', 'Add Account Settings')
 
@@ -25,30 +25,33 @@
                 <div class="settings-grid">
                     <div class="dash-card">
                         <div class="card-head">
-                            <div class="card-title">Company Profile</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-row"><label class="form-lbl">Company Name</label><input type="text" class="form-inp" value="Orion Technologies Pvt Ltd"></div>
-                            <div class="form-row"><label class="form-lbl">Email Domain</label><input type="text" class="form-inp" value="oriontech.in"></div>
-                            <div class="form-row"><label class="form-lbl">GST Number</label><input type="text" class="form-inp" value="27AABCO1234F1Z5"></div>
-                            <div class="form-row"><label class="form-lbl">Timezone</label><select class="form-inp">
-                                    <option>IST (UTC+5:30)</option>
-                                    <option>UTC</option>
-                                </select></div>
-                            <button class="btn-primary-solid" onclick="showToast('success','Settings saved!','bi-check-circle-fill')">Save Changes</button>
-                        </div>
-                    </div>
-                    <div class="dash-card">
-                        <div class="card-head">
                             <div class="card-title">Security</div>
                         </div>
                         <div class="card-body">
-                            <div class="form-row"><label class="form-lbl">Full Name</label><input type="text" class="form-inp" value="Admin"></div>
-                            <div class="form-row"><label class="form-lbl">Email</label><input type="email" class="form-inp" value="info@oriontech.in"></div>
-                            <div class="form-row"><label class="form-lbl">Current Password</label><input type="password" class="form-inp"></div>
-                            <div class="form-row"><label class="form-lbl">New Password</label><input type="password" class="form-inp"></div>
-                            <div class="form-row"><label class="form-lbl">Confirm Password</label><input type="password" class="form-inp"></div>
-                            <button class="btn-primary-solid" onclick="showToast('success','Settings saved!','bi-check-circle-fill')">Save Changes</button>
+                            <form action="{{ route('sale.account-settings.update') }}" method="POST">
+                                @csrf
+                                <div class="form-row">
+                                    <label class="form-lbl">Full Name</label>
+                                    <input type="text" name="name" class="form-inp" value="{{ old('name', auth()->guard('sale')->user()->name) }}">
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Email</label>
+                                    <input type="email" name="email" class="form-inp" value="{{ old('email', auth()->guard('sale')->user()->email) }}">
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Current Password</label>
+                                    <input type="password" name="current_password" class="form-inp" placeholder="Enter Current Password" value="{{ old('current_password') }}" autocomplete="new-password">
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">New Password</label>
+                                    <input type="password" name="new_password" class="form-inp" placeholder="Enter New Password" value="{{ old('new_password') }}" autocomplete="new-password">
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Confirm Password</label>
+                                    <input type="password" name="new_password_confirmation" class="form-inp" placeholder="Confirm Password">
+                                </div>
+                                <button type="submit" class="btn-primary-solid">Save Changes</button>
+                            </form>
                         </div>
                     </div>
                 </div>

@@ -35,21 +35,65 @@ class AppServiceProvider extends ServiceProvider
     {
         // Shares to ALL views (sidebar, layouts, every page)
         View::composer('*', function ($view) {
-            $view->with([
-                'sourceCount'  => \App\Models\Source::count(),
-                'serviceCount' => \App\Models\Service::count(),
-                'campaignCount' => \App\Models\Campaign::count(),
-                'statusCount' => \App\Models\Status::count(),
-                'developerCount' => \App\Models\Developer::count(),
-                'salesPersonCount' => \App\Models\Sale::count(),
-                'leadCount' => \App\Models\Lead::whereHas('status', function($q){ $q->where('name','!=','lost'); })->count(),
-                'orderCount' => \App\Models\Order::count(),
-                'lostLeadCount' => \App\Models\Lead::whereHas('status', function($q){ $q->where('name','lost'); })->count(),
-                'projectCount' => \App\Models\Project::count(),
+            $leadCount = 0;
+            $orderCount = 0;
+            $projectCount = 0;
+            $lostLeadCount = 0;
+            $sourceCount = \App\Models\Source::count();
+            $serviceCount = \App\Models\Service::count();
+            $campaignCount = \App\Models\Campaign::count();
+            $statusCount = \App\Models\Status::count();
+            $developerCount = \App\Models\Developer::count();
+            $salesPersonCount = \App\Models\Sale::count();
 
-                // Add more counts here as your sidebar grows:
-                // 'leadCount'    => \App\Models\Lead::count(),
-                // 'orderCount'   => \App\Models\Order::count(),
+            if (auth()->guard('admin')->check()) {
+                $leadCount = \App\Models\Lead::whereHas('status', function($q){ $q->where('name','!=','lost'); })->count();
+                $orderCount = \App\Models\Order::count();
+                $lostLeadCount = \App\Models\Lead::whereHas('status', function($q){ $q->where('name','lost'); })->count();
+                $projectCount = \App\Models\Project::count();
+            } elseif (auth()->guard('sale')->check()) {
+                $saleId = auth()->guard('sale')->id();
+                $saleType = \App\Models\Sale::class;
+                
+                $leadCount = \App\Models\Lead::where(function($q) use ($saleId, $saleType) {
+                    $q->where('created_by', $saleId)->where('created_by_type', $saleType);
+                })->orWhereHas('assignments', function($q) use ($saleId) {
+                    $q->where('assigned_to', $saleId);
+                })->whereHas('status', function($q){ $q->where('name','!=','lost'); })->count();
+                
+                $orderCount = \App\Models\Order::where(function($q) use ($saleId, $saleType) {
+                    $q->where('created_by', $saleId)->where('created_by_type', $saleType);
+                })->orWhereHas('assignments', function($q) use ($saleId) {
+                    $q->where('assigned_to', $saleId);
+                })->count();
+                
+                $lostLeadCount = \App\Models\Lead::where(function($q) use ($saleId, $saleType) {
+                    $q->where('created_by', $saleId)->where('created_by_type', $saleType);
+                })->orWhereHas('assignments', function($q) use ($saleId) {
+                    $q->where('assigned_to', $saleId);
+                })->whereHas('status', function($q){ $q->where('name','lost'); })->count();
+                
+                $projectCount = \App\Models\Project::where(function($q) use ($saleId, $saleType) {
+                    $q->where('created_by', $saleId)->where('created_by_type', $saleType);
+                })->orWhereHas('order', function($q) use ($saleId, $saleType) {
+                    $q->where('created_by', $saleId)->where('created_by_type', $saleType)
+                      ->orWhereHas('assignments', function($sq) use ($saleId) {
+                          $sq->where('assigned_to', $saleId);
+                      });
+                })->count();
+            }
+
+            $view->with([
+                'sourceCount'  => $sourceCount,
+                'serviceCount' => $serviceCount,
+                'campaignCount' => $campaignCount,
+                'statusCount' => $statusCount,
+                'developerCount' => $developerCount,
+                'salesPersonCount' => $salesPersonCount,
+                'leadCount' => $leadCount,
+                'orderCount' => $orderCount,
+                'lostLeadCount' => $lostLeadCount,
+                'projectCount' => $projectCount,
             ]);
         });
     }

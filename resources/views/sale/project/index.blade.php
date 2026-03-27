@@ -1,4 +1,4 @@
-@extends('sale.layout.app')
+@extends('admin.layout.app')
 
 @section('title', 'All Projects')
 
@@ -29,145 +29,76 @@
         {{-- ── KPI CARDS ── --}}
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;">
 
-            <div class="dash-card" style="padding:16px 18px;">
+            <div class="dash-card {{ !request()->has('q') && !request()->has('project_status_id') && !request()->has('start_date') ? 'active' : '' }}" 
+                style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route('sale.projects.index') }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(99,102,241,.13);display:flex;align-items:center;justify-content:center;">
                         <i class="bi bi-kanban-fill" style="font-size:17px;color:#6366f1;"></i>
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(99,102,241,.1);color:#818cf8;">Total</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">64</div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $totalProjects }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Total Projects</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:80%;background:#6366f1;border-radius:3px;"></div>
+                    <div style="height:100%;width:100%;background:#6366f1;border-radius:3px;"></div>
                 </div>
             </div>
 
-            <div class="dash-card" style="padding:16px 18px;">
+            @php 
+                $activeStatus = $statuses['project_statuses']->where('name', 'development')->first(); 
+            @endphp
+            <div class="dash-card {{ request('project_status_id') == ($activeStatus->id ?? 'xxx') ? 'active' : '' }}" 
+                style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route('sale.projects.index', ['project_status_id' => ($activeStatus->id ?? '')]) }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(6,182,212,.13);display:flex;align-items:center;justify-content:center;">
                         <i class="bi bi-play-circle-fill" style="font-size:17px;color:#06b6d4;"></i>
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(6,182,212,.1);color:#06b6d4;">Active</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">28</div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $activeProjects }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">In Progress</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:44%;background:#06b6d4;border-radius:3px;"></div>
+                    <div style="height:100%;width:{{ $totalProjects > 0 ? ($activeProjects / $totalProjects) * 100 : 0 }}%;background:#06b6d4;border-radius:3px;"></div>
                 </div>
             </div>
 
-            <div class="dash-card" style="padding:16px 18px;">
+            @php 
+                $doneStatus = $statuses['project_statuses']->where('name', 'complete')->first(); 
+            @endphp
+            <div class="dash-card {{ request('project_status_id') == ($doneStatus->id ?? 'xxx') ? 'active' : '' }}" 
+                style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route('sale.projects.index', ['project_status_id' => ($doneStatus->id ?? '')]) }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(16,185,129,.13);display:flex;align-items:center;justify-content:center;">
                         <i class="bi bi-check-circle-fill" style="font-size:17px;color:#10b981;"></i>
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.1);color:#10b981;">Done</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">21</div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $completedProjects }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Completed</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:33%;background:#10b981;border-radius:3px;"></div>
+                    <div style="height:100%;width:{{ $totalProjects > 0 ? ($completedProjects / $totalProjects) * 100 : 0 }}%;background:#10b981;border-radius:3px;"></div>
                 </div>
             </div>
 
-            <div class="dash-card" style="padding:16px 18px;">
+            @php 
+                $holdStatus = $statuses['project_statuses']->where('name', 'on hold')->first(); 
+            @endphp
+            <div class="dash-card {{ request('project_status_id') == ($holdStatus->id ?? 'xxx') ? 'active' : '' }}" 
+                style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route('sale.projects.index', ['project_status_id' => ($holdStatus->id ?? '')]) }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(245,158,11,.13);display:flex;align-items:center;justify-content:center;">
                         <i class="bi bi-pause-circle-fill" style="font-size:17px;color:#f59e0b;"></i>
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(245,158,11,.1);color:#f59e0b;">Hold</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">8</div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $onHoldProjects }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">On Hold</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:12%;background:#f59e0b;border-radius:3px;"></div>
+                    <div style="height:100%;width:{{ $totalProjects > 0 ? ($onHoldProjects / $totalProjects) * 100 : 0 }}%;background:#f59e0b;border-radius:3px;"></div>
                 </div>
             </div>
 
         </div>
-
-        <!-- {{-- ── STATUS FILTER SCROLL ── --}}
-        <div class="stat-scroll-row" style="margin-bottom:20px;">
-
-            <span class="stat-section-lbl">Status</span>
-
-            <div class="stat-box active" style="--sb-color:#6366f1;" data-filter="status" data-value="all" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-grid-fill"></i></div>
-                <div>
-                    <div class="sb-val">64</div>
-                    <div class="sb-lbl">All</div>
-                </div>
-            </div>
-            <div class="stat-box" style="--sb-color:#f59e0b;" data-filter="status" data-value="new" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-star-fill"></i></div>
-                <div>
-                    <div class="sb-val">7</div>
-                    <div class="sb-lbl">New</div>
-                </div>
-            </div> 
-            <div class="stat-box" style="--sb-color:#06b6d4;" data-filter="status" data-value="design" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-palette-fill"></i></div>
-                <div>
-                    <div class="sb-val">11</div>
-                    <div class="sb-lbl">Design Phase</div>
-                </div>
-            </div> 
-            <div class="stat-box" style="--sb-color:#6366f1;" data-filter="status" data-value="development" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-code-slash"></i></div>
-                <div>
-                    <div class="sb-val">17</div>
-                    <div class="sb-lbl">Development</div>
-                </div>
-            </div>
-            <div class="stat-box" style="--sb-color:#8b5cf6;" data-filter="status" data-value="testing" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-bug-fill"></i></div>
-                <div>
-                    <div class="sb-val">6</div>
-                    <div class="sb-lbl">Testing</div>
-                </div>
-            </div>
-            <div class="stat-box" style="--sb-color:#10b981;" data-filter="status" data-value="completed" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-check-circle-fill"></i></div>
-                <div>
-                    <div class="sb-val">21</div>
-                    <div class="sb-lbl">Completed</div>
-                </div>
-            </div>
-            <div class="stat-box" style="--sb-color:#64748b;" data-filter="status" data-value="on-hold" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-pause-circle-fill"></i></div>
-                <div>
-                    <div class="sb-val">8</div>
-                    <div class="sb-lbl">On Hold</div>
-                </div>
-            </div>
-
-            <div class="stat-divider"></div>
-            <span class="stat-section-lbl">Payment</span>
-
-            <div class="stat-box" style="--sb-color:#10b981;" data-filter="payment" data-value="paid" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-check2-circle"></i></div>
-                <div>
-                    <div class="sb-val" style="color:#10b981;">34</div>
-                    <div class="sb-lbl">Paid</div>
-                </div>
-            </div>
-            <div class="stat-box" style="--sb-color:#f59e0b;" data-filter="payment" data-value="partial" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-pie-chart-fill"></i></div>
-                <div>
-                    <div class="sb-val" style="color:#f59e0b;">19</div>
-                    <div class="sb-lbl">Partial</div>
-                </div>
-            </div>
-            <div class="stat-box" style="--sb-color:#ef4444;" data-filter="payment" data-value="pending" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-clock-fill"></i></div>
-                <div>
-                    <div class="sb-val" style="color:#ef4444;">11</div>
-                    <div class="sb-lbl">Pending</div>
-                </div>
-            </div>
-
-        </div> -->
 
         {{-- ── TABLE ── --}}
         <div class="dash-grid">
@@ -175,29 +106,52 @@
                 <div class="card-head">
                     <div>
                         <div class="card-title">Project Pipeline</div>
-                        <div class="card-sub" id="projectTableSub">64 total projects</div>
+                        <div class="card-sub" id="projectTableSub">{{ $projects->total() }} total projects</div>
                     </div>
                     <div class="card-actions mb-2">
-                        <form class="global-search">
-                            <i class="bi bi-search"></i>
-                            <input type="text" placeholder="Search projects...">
-                            <button type="submit" class="btn-primary-solid sm">Search</button>
+                        <form action="{{ route('sale.projects.index') }}" method="GET" class="card-actions mb-0">
+                            <div class="global-search">
+                                <i class="bi bi-search"></i>
+                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search projects...">
+                                <button type="submit" class="btn-primary-solid sm">Search</button>
+                            </div>
+
+                            <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
+                            <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
+                                <i class="bi bi-calendar3"></i>
+                                <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'All Time' }}</span>
+                                <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
+                            </button>
+
+                            <!-- Hidden inputs for date range -->
+                            <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
+                            <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
+
+                            <select name="project_status_id" class="filter-select" onchange="this.form.submit()">
+                                <option value="">All Statuses</option>
+                                @foreach($statuses['project_statuses'] as $s)
+                                    <option value="{{ $s->id }}" {{ request('project_status_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
+                                @endforeach
+                            </select>
+
+                            <select name="payment_status_id" class="filter-select" onchange="this.form.submit()">
+                                <option value="">All Payments</option>
+                                @foreach($statuses['payment_statuses'] as $s)
+                                    <option value="{{ $s->id }}" {{ request('payment_status_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
+                                @endforeach
+                            </select>
+
+                            <select name="assigned_to" class="filter-select" onchange="this.form.submit()">
+                                <option value="">Assign To</option>
+                                @foreach($allDevelopers as $dev)
+                                    <option value="{{ $dev->id }}" {{ request('assigned_to') == $dev->id ? 'selected' : '' }}>{{ $dev->name }}</option>
+                                @endforeach
+                            </select>
                         </form>
-                        <select class="filter-select">
-                            <option>All CMS</option>
-                            <option>WordPress</option>
-                            <option>Shopify</option>
-                            <option>Custom</option>
-                        </select>
-                        <select class="filter-select">
-                            <option>All Status</option>
-                            <option>New</option>
-                            <option>Design Phase</option>
-                            <option>Development</option>
-                            <option>Testing</option>
-                            <option>Completed</option>
-                            <option>On Hold</option>
-                        </select>
+
+                        <div style="position:relative;">
+                            @include('admin.includes.date-range-picker')
+                        </div>
                     </div>
                 </div>
 
@@ -211,6 +165,7 @@
                                 <th>CMS</th>
                                 <th>Start Date</th>
                                 <th>Delivery</th>
+                                <th>Assigned To</th>
                                 <th>Project Status</th>
                                 <th>Project Price</th>
                                 <th>Advance</th>
@@ -220,125 +175,112 @@
                             </tr>
                         </thead>
                         <tbody>
-
-                            <tr data-status="development" data-payment="partial">
-                                <td><span class="mono">#PRJ-0041</span></td>
+                        @forelse($projects as $project)
+                            <tr>
+                                <td><span class="mono">#PRJ-{{ str_pad($project->id, 4, '0', STR_PAD_LEFT) }}</span></td>
                                 <td>
                                     <div class="lead-cell">
-                                        <div class="mini-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">NT</div>
+                                        @php
+                                            $nameParts = explode('.', $project->project_name);
+                                            $initials = strtoupper(substr($nameParts[0], 0, 2));
+                                        @endphp
+                                        <div class="mini-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">{{ $initials }}</div>
                                         <div>
-                                            <div class="ln">novatech.io</div>
-                                            <div class="ls">NovaTech Solutions</div>
+                                            <div class="ln">{{ $project->project_name }}</div>
+                                            <div class="ls">{{ $project->company_name ?? 'N/A' }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="ln">Anita Verma</div>
-                                    <div class="ls">9812345678</div>
+                                    <div class="ln">{{ $project->client_name }}</div>
+                                    <div class="ls">
+                                        @if(is_array($project->phones) && count($project->phones) > 0)
+                                            {{ is_array($project->phones[0]) ? $project->phones[0]['num'] : $project->phones[0] }}
+                                            @if(count($project->phones) > 1) <small class="text-muted">(+{{ count($project->phones)-1 }})</small> @endif
+                                        @elseif($project->phones)
+                                            {{ $project->phones }}
+                                        @else
+                                            {{ is_array($project->emails) && count($project->emails) > 0 ? $project->emails[0] : ($project->emails ?? 'N/A') }}
+                                        @endif
+                                    </div>
                                 </td>
-                                <td><span class="cms-tag wordpress">WordPress</span></td>
                                 <td>
-                                    <div class="ls">15 Jan 2026</div>
+                                    @if($project->cms_platform)
+                                        <span class="cms-tag {{ strtolower($project->cms_platform) }}">{{ $project->cms_platform == 'other' ? $project->cms_custom : $project->cms_platform }}</span>
+                                    @else
+                                        <span style="color:var(--t4);font-size:11px;">N/A</span>
+                                    @endif
                                 </td>
-                                <td><span class="date-cell warn">15 Apr 2026</span></td>
-                                <td><span class="proj-status development">Development</span></td>
-                                <td><span class="money-cell">₹2,40,000</span></td>
-                                <td><span class="money-cell" style="color:#10b981;">₹1,20,000</span></td>
-                                <td><span class="money-cell" style="color:#ef4444;">₹1,20,000</span></td>
-                                <td><span class="status-pill pending">Partial</span></td>
+                                <td>
+                                    <div class="ls">{{ $project->project_start_date ? $project->project_start_date->format('d M Y') : 'N/A' }}</div>
+                                </td>
+                                <td>
+                                    @if($project->expected_delivery_date)
+                                        <span class="date-cell {{ $project->expected_delivery_date->isPast() ? 'danger' : 'warn' }}">
+                                            {{ $project->expected_delivery_date->format('d M Y') }}
+                                        </span>
+                                    @else
+                                        <span style="color:var(--t4);font-size:11px;">N/A</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div style="display:flex; flex-direction:column; gap:4px;">
+                                        @forelse($project->developers as $dev)
+                                            <div style="font-size:12px; white-space:nowrap;">
+                                                <span style="font-weight:600;color:var(--t1);">{{ $dev->name }}</span>
+                                                @if($dev->designation)
+                                                    <span style="font-size:10px;color:var(--t3);"> - {{ $dev->designation }}</span>
+                                                @endif
+                                            </div>
+                                        @empty
+                                            <span style="color:var(--t4);font-size:11px;">Unassigned</span>
+                                        @endforelse
+                                    </div>
+                                </td>
+                                <td>
+                                    @php
+                                        $displayProjStatus = $project->projectStatus ? $project->projectStatus->name : ($project->project_status ?? 'New');
+                                        $statusClass = strtolower(str_replace(' ', '-', $displayProjStatus));
+                                    @endphp
+                                    <span class="proj-status {{ $statusClass }}">{{ $displayProjStatus }}</span>
+                                </td>
+                                <td><span class="money-cell">₹{{ number_format($project->project_price, 0) }}</span></td>
+                                <td><span class="money-cell" style="color:#10b981;">₹{{ number_format($project->advance_payment, 0) }}</span></td>
+                                <td><span class="money-cell" style="color:#ef4444;">₹{{ number_format($project->remaining_amount, 0) }}</span></td>
+                                <td>
+                                    @php
+                                        $displayPayStatus = $project->paymentStatus ? $project->paymentStatus->name : ($project->financial_payment_status ?? 'Pending');
+                                        $payLower = strtolower($displayPayStatus);
+                                        $payClass = $payLower == 'paid' ? 'paid' : ($payLower == 'partial' ? 'pending' : 'overdue');
+                                    @endphp
+                                    <span class="status-pill {{ $payClass }}">{{ $displayPayStatus }}</span>
+                                </td>
                                 <td>
                                     <div class="row-actions">
-                                        <a href="{{ route('sale.projects.show', 1) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                        <button class="ra-btn" title="Edit" onclick="openModal('editProjectModal')"><i class="bi bi-pencil-fill"></i></button>
-                                        <button class="ra-btn danger" title="Delete" onclick="openModal('deleteProjectModal')"><i class="bi bi-trash-fill"></i></button>
+                                        <a href="{{ route('sale.projects.show', $project->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
+                                        <a href="{{ route('sale.projects.edit', $project->id) }}" class="ra-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
+                                        <form action="{{ route('sale.projects.destroy', $project->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this project?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="ra-btn danger" title="Delete"><i class="bi bi-trash-fill"></i></button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
-
-                            <tr data-status="completed" data-payment="paid">
-                                <td><span class="mono">#PRJ-0038</span></td>
-                                <td>
-                                    <div class="lead-cell">
-                                        <div class="mini-ava" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">DF</div>
-                                        <div>
-                                            <div class="ln">datafirst.io</div>
-                                            <div class="ls">DataFirst Corp</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="ln">Raj Sharma</div>
-                                    <div class="ls">9565528200</div>
-                                </td>
-                                <td><span class="cms-tag shopify">Shopify</span></td>
-                                <td>
-                                    <div class="ls">10 Nov 2025</div>
-                                </td>
-                                <td><span class="date-cell ok">10 Feb 2026</span></td>
-                                <td><span class="proj-status completed">Completed</span></td>
-                                <td><span class="money-cell">₹1,80,000</span></td>
-                                <td><span class="money-cell" style="color:#10b981;">₹1,80,000</span></td>
-                                <td><span class="money-cell" style="color:#10b981;">₹0</span></td>
-                                <td><span class="status-pill paid">Paid</span></td>
-                                <td>
-                                    <div class="row-actions">
-                                        <a href="{{ route('sale.projects.show', 1) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                        <button class="ra-btn" title="Edit" onclick="openModal('editProjectModal')"><i class="bi bi-pencil-fill"></i></button>
-                                        <button class="ra-btn danger" title="Delete" onclick="openModal('deleteProjectModal')"><i class="bi bi-trash-fill"></i></button>
-                                    </div>
-                                </td>
+                        @empty
+                            <tr>
+                                <td colspan="13" style="text-align:center;padding:40px;color:var(--t4);">No projects found matching your criteria.</td>
                             </tr>
-
-                            <tr data-status="design" data-payment="pending">
-                                <td><span class="mono">#PRJ-0044</span></td>
-                                <td>
-                                    <div class="lead-cell">
-                                        <div class="mini-ava" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">AV</div>
-                                        <div>
-                                            <div class="ln">avantika.store</div>
-                                            <div class="ls">Avantika Retail</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="ln">Priya Nair</div>
-                                    <div class="ls">9871234560</div>
-                                </td>
-                                <td><span class="cms-tag custom">Custom</span></td>
-                                <td>
-                                    <div class="ls">01 Mar 2026</div>
-                                </td>
-                                <td><span class="date-cell danger">30 Apr 2026</span></td>
-                                <td><span class="proj-status design">Design Phase</span></td>
-                                <td><span class="money-cell">₹3,20,000</span></td>
-                                <td><span class="money-cell" style="color:#f59e0b;">₹0</span></td>
-                                <td><span class="money-cell" style="color:#ef4444;">₹3,20,000</span></td>
-                                <td><span class="status-pill overdue">Pending</span></td>
-                                <td>
-                                    <div class="row-actions">
-                                        <a href="{{ route('sale.projects.show', 1) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                        <button class="ra-btn" title="Edit" onclick="openModal('editProjectModal')"><i class="bi bi-pencil-fill"></i></button>
-                                        <button class="ra-btn danger" title="Delete" onclick="openModal('deleteProjectModal')"><i class="bi bi-trash-fill"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-
+                        @endforelse
                         </tbody>
                     </table>
                 </div>
 
                 <div class="table-footer">
-                    <span class="tf-info" id="projCount">Showing 3 of 64 Projects</span>
+                    <span class="tf-info" id="projCount">Showing {{ $projects->firstItem() ?? 0 }} to {{ $projects->lastItem() ?? 0 }} of {{ $projects->total() }} Projects</span>
                     <div class="tf-pagination">
-                        <button class="pg-btn"><i class="bi bi-chevron-left"></i></button>
-                        <button class="pg-btn active">1</button>
-                        <button class="pg-btn">2</button>
-                        <button class="pg-btn">3</button>
-                        <span class="pg-ellipsis">…</span>
-                        <button class="pg-btn">7</button>
-                        <button class="pg-btn"><i class="bi bi-chevron-right"></i></button>
+                        {{ $projects->links('pagination::bootstrap-4') }}
                     </div>
-                    <div class="tf-per-page"></div>
                 </div>
             </div>
         </div>
@@ -716,21 +658,37 @@
 </style>
 
 <script>
-    function filterProjects(el) {
-        const group = el.dataset.filter;
-        document.querySelectorAll(`.stat-box[data-filter="${group}"]`).forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-        const val = el.dataset.value;
-        const rows = document.querySelectorAll('#projectsTable tbody tr');
-        rows.forEach(row => {
-            let show = true;
-            if (group === 'status' && val !== 'all') show = row.dataset.status === val;
-            else if (group === 'payment') show = row.dataset.payment === val;
-            row.style.display = show ? '' : 'none';
-        });
-        const visible = [...rows].filter(r => r.style.display !== 'none').length;
-        document.getElementById('projCount').textContent = `Showing ${visible} of 64 Projects`;
-    }
+    /* ── Listen for date range applied from our custom picker ── */
+    document.addEventListener('dateRangeApplied', function(e) {
+        const { start, end } = e.detail;
+        
+        function formatDate(date) {
+            if(!date) return '';
+            let d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+            return [year, month, day].join('-');
+        }
+
+        const sInp = document.getElementById('drpStartInput');
+        const eInp = document.getElementById('drpEndInput');
+        if(sInp && eInp) {
+            sInp.value = formatDate(start);
+            eInp.value = formatDate(end);
+            sInp.closest('form').submit();
+        }
+    });
+
+    /* ── Global search shortcuts if needed ── */
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            document.querySelector('.global-search input').focus();
+        }
+    });
 </script>
 
 @endsection

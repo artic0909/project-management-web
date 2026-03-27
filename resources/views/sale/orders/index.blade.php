@@ -1,4 +1,4 @@
-@extends('sale.layout.app')
+@extends('admin.layout.app')
 
 @section('title', 'All Orders')
 
@@ -33,47 +33,38 @@
         <!-- {{-- ═══════════════════════════════════════════════════
              6 KPI SUMMARY CARDS
         ════════════════════════════════════════════════════ --}} -->
-        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px;">
+        <!-- {{-- ═══════════════════════════════════════════════════
+             6 KPI SUMMARY CARDS
+        ════════════════════════════════════════════════════ --}} -->
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;">
 
-            <div class="dash-card" style="padding:16px 18px;">
-                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
-                    <div style="width:38px;height:38px;border-radius:10px;background:rgba(99,102,241,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <i class="bi bi-people-fill" style="font-size:17px;color:#6366f1;"></i>
-                    </div>
-                    <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(99,102,241,.1);color:#818cf8;white-space:nowrap;">Clients</span>
-                </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">84</div>
-                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Total Clients</div>
-                <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:72%;background:#6366f1;border-radius:3px;"></div>
-                </div>
-            </div>
-
-            <div class="dash-card" style="padding:16px 18px;">
+            <div class="dash-card {{ request()->has('q') || request()->has('status_id') || request()->has('service_id') || request()->has('is_marketing') ? '' : 'active' }}" 
+                style="padding:16px 18px; cursor:pointer;" onclick="window.location.href='{{ route('sale.orders.index') }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(16,185,129,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                         <i class="bi bi-bag-check-fill" style="font-size:17px;color:#10b981;"></i>
                     </div>
-                    <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.1);color:#10b981;white-space:nowrap;">Orders</span>
+                    <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.1);color:#10b981;white-space:nowrap;">All</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">247</div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $totalOrders }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Total Orders</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:85%;background:#10b981;border-radius:3px;"></div>
+                    <div style="height:100%;width:100%;background:#10b981;border-radius:3px;"></div>
                 </div>
             </div>
 
-            <div class="dash-card" style="padding:16px 18px;">
+            <div class="dash-card {{ request('is_marketing') == '1' ? 'active' : '' }}" 
+                style="padding:16px 18px; cursor:pointer;" onclick="window.location.href='{{ route('sale.orders.index', ['is_marketing' => 1]) }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(139,92,246,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                         <i class="bi bi-megaphone-fill" style="font-size:17px;color:#8b5cf6;"></i>
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(139,92,246,.1);color:#8b5cf6;white-space:nowrap;">Marketing</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">93</div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $marketingOrders }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Marketing Orders</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:38%;background:#8b5cf6;border-radius:3px;"></div>
+                    <div style="height:100%;width:{{ $totalOrders > 0 ? ($marketingOrders / $totalOrders) * 100 : 0 }}%;background:#8b5cf6;border-radius:3px;"></div>
                 </div>
             </div>
 
@@ -84,10 +75,10 @@
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(6,182,212,.1);color:#06b6d4;white-space:nowrap;">Revenue</span>
                 </div>
-                <div style="font-size:22px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">₹1.84Cr</div>
-                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Total Amount</div>
+                <div style="font-size:22px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">₹{{ number_format($totalValue, 0) }}</div>
+                <div style="font-size:11px;color:var(--t3);font-weight:600;margin-top:4px;">Total Order Value</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:91%;background:#06b6d4;border-radius:3px;"></div>
+                    <div style="height:100%;width:100%;background:#06b6d4;border-radius:3px;"></div>
                 </div>
             </div>
 
@@ -98,76 +89,93 @@
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(245,158,11,.1);color:#f59e0b;white-space:nowrap;">Pending</span>
                 </div>
-                <div style="font-size:22px;font-weight:800;color:#f59e0b;letter-spacing:-.5px;line-height:1;">₹27.4L</div>
-                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Pending Amount</div>
+                <div style="font-size:22px;font-weight:800;color:#f59e0b;letter-spacing:-.5px;line-height:1;">₹{{ number_format($pendingValue, 0) }}</div>
+                <div style="font-size:11px;color:var(--t3);font-weight:600;margin-top:4px;">Pending Collections</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:24%;background:#f59e0b;border-radius:3px;"></div>
+                    <div style="height:100%;width:{{ $totalValue > 0 ? ($pendingValue / $totalValue) * 100 : 0 }}%;background:#f59e0b;border-radius:3px;"></div>
                 </div>
             </div>
 
-            <div class="dash-card" style="padding:16px 18px;">
+            @php 
+                $cancelStatus = $allStatuses->where('name', 'cancel')->first();
+            @endphp
+            <div class="dash-card {{ request('status_id') == ($cancelStatus->id ?? 'xxx') ? 'active' : '' }}" 
+                style="padding:16px 18px; cursor:pointer;" onclick="window.location.href='{{ route('sale.orders.index', ['status_id' => ($cancelStatus->id ?? '')]) }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(239,68,68,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                         <i class="bi bi-x-circle-fill" style="font-size:17px;color:#ef4444;"></i>
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(239,68,68,.1);color:#ef4444;white-space:nowrap;">Cancelled</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:#ef4444;letter-spacing:-.5px;line-height:1;">18</div>
-                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Projects Cancelled</div>
+                <div style="font-size:26px;font-weight:800;color:#ef4444;letter-spacing:-.5px;line-height:1;">{{ $cancelledOrders }}</div>
+                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Orders Cancelled</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:14%;background:#ef4444;border-radius:3px;"></div>
+                    <div style="height:100%;width:{{ $totalOrders > 0 ? ($cancelledOrders / $totalOrders) * 100 : 0 }}%;background:#ef4444;border-radius:3px;"></div>
                 </div>
             </div>
 
         </div>
         <!-- {{-- END KPI CARDS --}} -->
 
-
-
-
-
         <div class="dash-grid">
             <div class="dash-card span-12">
                 <div class="card-head">
                     <div>
                         <div class="card-title">Recent Orders</div>
-                        <div class="card-sub" id="orderTableSub">₹48.6L this month · 247 orders</div>
+                        <div class="card-sub" id="orderTableSub">Showing {{ $orders->count() }} of {{ $totalOrders }} orders</div>
                     </div>
                     <div class="card-actions mb-2">
 
-                        <form class="global-search">
-                            <i class="bi bi-search"></i>
-                            <input type="text" placeholder="Search...">
-                            <button type="submit" class="btn-primary-solid sm">Search</button>
-                        </form>
+                        <form action="{{ route('sale.orders.index') }}" method="GET" class="card-actions mb-0">
+                            <div class="global-search">
+                                <i class="bi bi-search"></i>
+                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search...">
+                                <button type="submit" class="btn-primary-solid sm">Search</button>
+                            </div>
 
-                        <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
-                        <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
-                            <i class="bi bi-calendar3"></i>
-                            <span id="drpLabel">Last 7 Days</span>
-                            <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
-                        </button>
+                            <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
+                            <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
+                                <i class="bi bi-calendar3"></i>
+                                <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'All Time' }}</span>
+                                <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
+                            </button>
+
+                            <!-- Hidden inputs for date range -->
+                            <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
+                            <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
+
+                             <select name="is_marketing" class="filter-select" onchange="this.form.submit()">
+                                 <option value="">All Types</option>
+                                 <option value="1" {{ request('is_marketing') == '1' ? 'selected' : '' }}>Marketing</option>
+                                 <option value="0" {{ request('is_marketing') == '0' ? 'selected' : '' }}>Website</option>
+                             </select>
+
+                            <select name="service_id" class="filter-select" onchange="this.form.submit()">
+                                <option value="">All Services</option>
+                                @foreach($allServices as $srv)
+                                    <option value="{{ $srv->id }}" {{ request('service_id') == $srv->id ? 'selected' : '' }}>{{ $srv->name }}</option>
+                                @endforeach
+                            </select>
+
+                            <select name="status_id" class="filter-select" onchange="this.form.submit()">
+                                <option value="">All Status</option>
+                                @foreach($allStatuses as $st)
+                                    <option value="{{ $st->id }}" {{ request('status_id') == $st->id ? 'selected' : '' }}>{{ $st->name }}</option>
+                                @endforeach
+                            </select>
+
+                            <select name="assigned_to" class="filter-select" onchange="this.form.submit()">
+                                <option value="">Assign To</option>
+                                @foreach($allSales as $sale)
+                                    <option value="{{ $sale->id }}" {{ request('assigned_to') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
+                                @endforeach
+                            </select>
+                        </form>
 
                         <!-- {{-- Date Range Picker (replaces simple select) --}} -->
                         <div style="position:relative;">
-                            @include('sale.includes.date-range-picker')
+                            @include('admin.includes.date-range-picker')
                         </div>
-
-                        <select class="filter-select">
-                            <option selected>All Services</option>
-                            <option>Website Design</option>
-                            <option>Marketing</option>
-                            <option>SEO</option>
-                            <option>Social Media</option>
-                            <option>App Development</option>
-                        </select>
-
-                        <select class="filter-select">
-                            <option>All Status</option>
-                            <option>Paid</option>
-                            <option>Pending</option>
-                            <option>Overdue</option>
-                        </select>
                     </div>
                 </div>
 
@@ -176,78 +184,93 @@
                         <thead>
                             <tr>
                                 <th>Order ID</th>
+                                <th>Date</th>
                                 <th>Type</th>
                                 <th>Company</th>
                                 <th>Contact Person</th>
                                 <th>Service</th>
-                                <th>Budget</th>
-                                <th>Full Address</th>
+                                <th>Value</th>
                                 <th>Status</th>
                                 <th>Created By</th>
-                                <th>Assign To</th>
+                                <th>Assigned To</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr data-order-type="marketing" data-status="pending" data-service="seo">
-                                <td><span class="mono">#MKT-1024</span></td>
-                                <td><span class="type-badge marketing-type">Marketing</span></td>
+                            @foreach($orders as $order)
+                            <tr data-order-type="{{ $order->is_marketing ? 'marketing' : 'website' }}" 
+                                data-status="{{ strtolower($order->status->name ?? '') }}"
+                                data-service="{{ $order->service_id }}">
+                                <td><span class="mono">#ORD-{{ 1000 + $order->id }}</span></td>
+                                <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $order->created_at->format('d M Y') }}</div></td>
+                                <td>
+                                    <span class="type-badge {{ $order->is_marketing ? 'marketing-type' : 'website-type' }}">
+                                        {{ $order->is_marketing ? 'Marketing' : 'Website' }}
+                                    </span>
+                                </td>
                                 <td>
                                     <div class="lead-cell">
-                                        <div class="mini-ava" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">DF</div>
+                                        @php 
+                                            $initials = strtoupper(substr($order->company_name, 0, 2)); 
+                                            $bg = 'linear-gradient(135deg,#6366f1,#06b6d4)';
+                                            if($order->is_marketing) $bg = 'linear-gradient(135deg,#8b5cf6,#ec4899)';
+                                        @endphp
+                                        <div class="mini-ava" style="background:{{ $bg }}">{{ $initials }}</div>
                                         <div>
-                                            <div class="ln">DataFirst Corp</div>
-                                            <div class="ls">cto@datafirst.io</div>
+                                            <div class="ln">{{ $order->company_name }}</div>
+                                            <div class="ls">{{ $order->emails[0] ?? 'N/A' }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="ln">Amit Verma</div>
-                                    <div class="ls">9876543210</div>
+                                    <div class="ln">{{ $order->client_name }}</div>
+                                    <div class="ls">{{ $order->phones[0]['number'] ?? 'N/A' }}</div>
                                 </td>
-                                <td><span class="src-tag">SEO</span></td>
-                                <td><span class="src-tag">₹4.2L</span></td>
+                                <td><span class="src-tag">{{ $order->service->name ?? 'N/A' }}</span></td>
+                                <td><span class="src-tag">₹{{ number_format($order->order_value, 0) }}</span></td>
                                 <td>
-                                    <div class="ls">Delhi, DL 110001</div>
-                                    <div class="ls">Connaught Place</div>
-                                </td>
-                                <td><span class="status-pill pending">Pending</span></td>
-                                <td>
-                                    <div class="ln">Ravi Singh</div>
-                                    <div class="ls">ravi@company.com</div>
+                                    <span class="status-pill" style="background:{{ ($order->status->color ?? '#6366f1') }}20; color:{{ $order->status->color ?? '#6366f1' }};">
+                                        {{ $order->status->name ?? 'Pending' }}
+                                    </span>
                                 </td>
                                 <td>
-                                    <div class="ln">Sales Team</div>
-                                    <div class="ls">sales@company.com</div>
+                                    @if($order->createdBy instanceof \App\Models\Admin)
+                                        <div class="ln">System</div>
+                                    @elseif($order->createdBy)
+                                        <div class="ln">{{ $order->createdBy->name }}</div>
+                                        <div class="ls">{{ $order->createdBy->email }}</div>
+                                    @else
+                                        <div class="ln">System</div>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div style="display:flex;flex-direction:column;gap:2px;">
+                                        @foreach($order->assignments as $assign)
+                                            <div class="ln" style="font-size:12.5px;">{{ $assign->sale->name }}</div>
+                                            <div class="ls" style="font-size:10px;">{{ $assign->sale->email }}</div>
+                                        @endforeach
+                                    </div>
                                 </td>
                                 <td>
                                     <div class="row-actions">
-                                        <button class="ra-btn" onclick="openModal('orderDetailModal')"><i class="bi bi-eye-fill"></i></button>
-                                        <button class="ra-btn"><i class="bi bi-telephone-fill"></i></button>
-                                        <button class="ra-btn"><i class="bi bi-envelope-fill"></i></button>
-                                        <a href="{{route('sale.orders.followup')}}" class="ra-btn"><i class="bi bi-arrow-counterclockwise"></i></a>
-                                        <a href="{{route('sale.payments.create')}}" class="ra-btn"><i class="bi bi-wallet2"></i></a>
-                                        <a href="{{route('sale.orders.edit')}}" class="ra-btn"><i class="bi bi-pencil-fill"></i></a>
-                                        <button class="ra-btn danger" onclick="openModal('deleteModal')"><i class="bi bi-trash-fill"></i></button>
+                                        <a href="{{ route('sale.orders.show', $order->id) }}" class="ra-btn"><i class="bi bi-eye-fill"></i></a>
+                                        <a href="{{ route('sale.orders.edit', $order->id) }}" class="ra-btn"><i class="bi bi-pencil-fill"></i></a>
+                                        <a href="{{ route('sale.orders.followup', $order->id) }}" class="ra-btn"><i class="bi bi-arrow-counterclockwise"></i></a>
+                                        <a href="{{route('sale.payments.create', $order->id)}}" class="ra-btn"><i class="bi bi-wallet2"></i></a>
+                                        <button class="ra-btn danger" onclick="confirmDelete('{{ route('sale.orders.destroy', $order->id) }}')"><i class="bi bi-trash-fill"></i></button>
                                     </div>
                                 </td>
                             </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
 
-                <div class="table-footer">
-                    <span class="tf-info" id="ordersCount">Showing 1 of 247 Orders</span>
+                <div class="table-footer" style="padding:16px 20px; border-top:1px solid var(--b2); display:flex; justify-content:space-between; align-items:center; background:var(--bg2);">
+                    <span class="tf-info" id="ordersCount" style="font-size:13px; color:var(--t3); font-weight:500;">Showing {{ $orders->count() }} of {{ $orders->total() }} Orders</span>
                     <div class="tf-pagination">
-                        <button class="pg-btn"><i class="bi bi-chevron-left"></i></button>
-                        <button class="pg-btn active">1</button>
-                        <button class="pg-btn">2</button>
-                        <button class="pg-btn">3</button>
-                        <span class="pg-ellipsis">…</span>
-                        <button class="pg-btn">5</button>
-                        <button class="pg-btn"><i class="bi bi-chevron-right"></i></button>
+                        {{ $orders->links('admin.includes.pagination') }}
                     </div>
-                    <div class="tf-per-page"></div>
                 </div>
             </div>
         </div>
@@ -270,8 +293,8 @@
             </div>
             <div class="modal-ft" style="border-top:1px solid #fecaca;">
                 <button class="btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
-                <button style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="closeModal('deleteModal');showToast('success','Order Deleted!','bi-trash3-fill')">
-                    <i class="bi bi-trash3-fill"></i> Delete Order
+                <button style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="document.getElementById('deleteOrderForm').submit()">
+                    <i class="bi bi-trash3-fill"></i> Confirm Deletion
                 </button>
             </div>
         </div>
@@ -430,7 +453,7 @@
                     <i class="bi bi-x-lg"></i> Close
                 </button>
                 <div style="display:flex;gap:8px;">
-                    <a href="{{ route('sale.payments.create') }}" target="_blank"
+                    <a href="#" target="_blank" id="modalPaymentLink"
                         class="btn-ghost" style="border-color:#10b981;color:#10b981;"
                         onmouseover="this.style.background='rgba(16,185,129,.08)'"
                         onmouseout="this.style.background='transparent'">
@@ -660,7 +683,18 @@
     }
 </style>
 
-<script>
+    <form id="deleteOrderForm" action="" method="POST" style="display:none;">
+        @csrf
+        @method('DELETE')
+    </form>
+
+    <script>
+        function confirmDelete(url) {
+            const form = document.getElementById('deleteOrderForm');
+            form.action = url;
+            openModal('deleteModal');
+        }
+        
     /* ── Stat box filter ── */
     function applyStatFilter(el) {
         const filterGroup = el.dataset.filter;
@@ -691,13 +725,26 @@
 
     /* ── Listen for date range applied ── */
     document.addEventListener('dateRangeApplied', function(e) {
-        const {
-            preset,
-            start,
-            end
-        } = e.detail;
-        // Hook into your AJAX/filter logic here
-        console.log('Date filter:', preset, start, end);
+        const { start, end } = e.detail;
+        
+        function formatDate(date) {
+            if(!date) return '';
+            let d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+            return [year, month, day].join('-');
+        }
+
+        const sInp = document.getElementById('drpStartInput');
+        const eInp = document.getElementById('drpEndInput');
+        if(sInp && eInp) {
+            sInp.value = formatDate(start);
+            eInp.value = formatDate(end);
+            sInp.closest('form').submit();
+        }
     });
 </script>
 

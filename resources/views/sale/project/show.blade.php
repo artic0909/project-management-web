@@ -1,539 +1,780 @@
-@extends('sale.layout.app')
+@extends('admin.layout.app')
 
-@section('title', 'Project Detail')
+@section('title', 'Project Details - ' . $project->project_name)
 
 @section('content')
 
-<main class="page-area" id="pageArea">
-    <div class="page" id="page-project-view">
+    <main class="page-area" id="pageArea">
+        <div class="page" id="page-project-show">
 
-        <!-- Page Header -->
-        <div class="page-header">
-            <div>
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                    <a href="{{ route('sale.projects.index') }}"
-                        style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--t3);text-decoration:none;transition:var(--transition);"
-                        onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--t3)'">
-                        <i class="bi bi-arrow-left"></i> All Projects
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                        @php
+                            $statusClass = strtolower(str_replace(' ', '-', $project->project_status ?? 'new'));
+                        @endphp
+                        <span class="proj-status {{ $statusClass }}">{{ $project->project_status ?? 'New' }}</span>
+                        @if($project->paymentStatus)
+                            <span class="status-pill {{ strtolower($project->paymentStatus->name) == 'paid' ? 'paid' : 'pending' }}" style="font-size:10px;padding:2px 8px;">{{ $project->paymentStatus->name }}</span>
+                        @endif
+                           <span style="font-size:12px;color:var(--t4);font-weight:500;">#PRJ-{{ str_pad($project->id, 5, '0', STR_PAD_LEFT) }}</span>
+                        @if($project->order_id)
+                            <span
+                                style="font-size:11px;background:var(--accent-bg);color:var(--accent);padding:2px 8px;border-radius:4px;font-weight:700;display:flex;align-items:center;gap:4px;">
+                                <i class="bi bi-link-45deg"></i> Linked to Order #{{ $project->order_id }}
+                            </span>
+                        @endif
+                    </div>
+                    <h1 class="page-title">{{ $project->project_name }}</h1>
+                    <p class="page-desc">{{ $project->company_name ?? 'Client: ' . $project->client_name }}</p>
+                </div>
+                <div class="header-actions">
+                    <a href="{{ route('sale.projects.edit', $project->id) }}" class="btn-primary-solid sm">
+                        <i class="bi bi-pencil-square"></i> Edit Project
                     </a>
-                    <span style="color:var(--t4);font-size:11px;">›</span>
-                    <span style="font-size:13px;font-weight:600;color:var(--t2);">novatech.io</span>
-                </div>
-                <h1 class="page-title">novatech.io</h1>
-                <p class="page-desc">Project <span class="mono">#PRJ-0041</span> — NovaTech Solutions</p>
-            </div>
-            <div class="header-actions">
-                <button class="btn-ghost" onclick="openModal('editProjectModal')">
-                    <i class="bi bi-pencil-fill"></i> Edit Project
-                </button>
-                <button class="btn-ghost danger-ghost" onclick="openModal('deleteProjectModal')">
-                    <i class="bi bi-trash-fill"></i> Delete
-                </button>
-            </div>
-        </div>
-
-        {{-- ── TOP KPI STRIP ── --}}
-        <div class="detail-kpis" style="margin-bottom:22px;grid-template-columns:repeat(6,1fr);">
-            <div class="dk-item">
-                <div class="dk-val">#PRJ-0041</div>
-                <div class="dk-lbl">Project ID</div>
-            </div>
-            <div class="dk-item">
-                <div class="dk-val" style="color:#6366f1;">Development</div>
-                <div class="dk-lbl">Status</div>
-            </div>
-            <div class="dk-item">
-                <div class="dk-val">WordPress</div>
-                <div class="dk-lbl">CMS</div>
-            </div>
-            <div class="dk-item">
-                <div class="dk-val">₹2,40,000</div>
-                <div class="dk-lbl">Project Price</div>
-            </div>
-            <div class="dk-item">
-                <div class="dk-val" style="color:#10b981;">₹1,20,000</div>
-                <div class="dk-lbl">Advance Paid</div>
-            </div>
-            <div class="dk-item">
-                <div class="dk-val" style="color:#ef4444;">₹1,20,000</div>
-                <div class="dk-lbl">Remaining Due</div>
-            </div>
-        </div>
-
-        {{-- ── PAYMENT PROGRESS BAR ── --}}
-        <div class="dash-card" style="padding:16px 20px;margin-bottom:20px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                <span style="font-size:13px;font-weight:600;color:var(--t2);">Payment Progress</span>
-                <div style="display:flex;align-items:center;gap:16px;font-size:12px;">
-                    <span style="color:#10b981;font-weight:700;">₹1,20,000 paid</span>
-                    <span style="color:var(--t3);">of ₹2,40,000</span>
-                    <span class="status-pill pending">Partial</span>
+                    <form action="{{ route('sale.projects.destroy', $project->id) }}" method="POST"
+                        onsubmit="return confirm('Are you sure?')" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-ghost sm" style="color:#ef4444;">
+                            <i class="bi bi-trash3"></i> Delete
+                        </button>
+                    </form>
+                    <a href="{{ route('sale.projects.index') }}" class="btn-ghost sm">
+                        <i class="bi bi-arrow-left"></i> Back to List
+                    </a>
                 </div>
             </div>
-            <div class="prog-bar-wrap" style="height:10px;">
-                <div class="prog-fill" style="width:50%;background:linear-gradient(90deg,#6366f1,#06b6d4);border-radius:5px;"></div>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t3);margin-top:5px;">
-                <span>0%</span><span style="color:var(--accent);font-weight:700;">50% collected</span><span>100%</span>
-            </div>
-        </div>
 
-        <div class="dash-grid">
+            <div class="dash-grid">
 
-            {{-- ══ LEFT COL ══ --}}
-            <div class="span-8" style="display:flex;flex-direction:column;gap:16px;">
+                {{-- Left Column: Project Info & Technical --}}
+                <div class="span-8" style="display:flex;flex-direction:column;gap:20px;">
 
-                {{-- Basic Info --}}
-                <div class="dash-card">
-                    <div class="card-head">
-                        <div class="card-title"><i class="bi bi-person-vcard-fill" style="color:var(--accent);margin-right:6px;"></i>Basic Information</div>
-                    </div>
-                    <div class="card-body">
-                        <div class="form-grid">
-                            <div class="pv-row"><span class="pv-lbl">Project Name / Domain</span><span class="pv-val">novatech.io</span></div>
-                            <div class="pv-row"><span class="pv-lbl">Client Name</span><span class="pv-val">Anita Verma</span></div>
-                            <div class="pv-row"><span class="pv-lbl">Email ID</span><span class="pv-val">anita@novatech.in</span></div>
-                            <div class="pv-row"><span class="pv-lbl">Phone</span><span class="pv-val">+91 98123 45678</span></div>
-                            <div class="pv-row"><span class="pv-lbl">Company Name</span><span class="pv-val">NovaTech Solutions</span></div>
-                            <div class="pv-row"><span class="pv-lbl">Starting Date</span><span class="pv-val">15 Jan 2026</span></div>
-                            <div class="pv-row"><span class="pv-lbl">Plan Name</span><span class="pv-val">dynamick</span></div>
-                            <div class="pv-row"><span class="pv-lbl">Username</span><span class="pv-val mono">novatech_admin</span></div>
-                            <div class="pv-row"><span class="pv-lbl">Password</span>
-                                <span class="pv-val" style="display:flex;align-items:center;gap:8px;">
-                                    <span id="pwVal" style="font-family:var(--mono);">••••••••</span>
-                                    <button type="button" onclick="togglePw()" style="background:none;border:none;color:var(--accent);font-size:12px;cursor:pointer;padding:0;">
-                                        <i class="bi bi-eye-fill" id="pwIcon"></i>
-                                    </button>
-                                </span>
-                            </div>
-                            <div class="pv-row"><span class="pv-lbl">No. of Mail IDs</span><span class="pv-val">5</span></div>
-                            <div class="pv-row"><span class="pv-lbl">Mail Password</span><span class="pv-val mono">mail@pass123</span></div>
-                            <div class="pv-row" style="grid-column:1/-1;"><span class="pv-lbl">Domain, Server Book</span><span class="pv-val">GoDaddy (domain) · Hostinger cPanel · SSL via Let's Encrypt</span></div>
-                            <div class="pv-row" style="grid-column:1/-1;"><span class="pv-lbl">Full Address</span><span class="pv-val">302, Skyline Tower, Bandra West, Mumbai — 400050, Maharashtra</span></div>
+                    {{-- Client & Basic Info --}}
+                    <div class="dash-card">
+                        <div class="card-head">
+                            <div class="card-title"><i class="bi bi-person-badge-fill"
+                                    style="color:var(--accent);margin-right:8px;"></i>Client & Contact Details</div>
                         </div>
-                    </div>
-                </div>
-
-                {{-- Website Details --}}
-                <div class="dash-card">
-                    <div class="card-head">
-                        <div class="card-title"><i class="bi bi-globe2" style="color:#06b6d4;margin-right:6px;"></i>Website Project Details</div>
-                    </div>
-                    <div class="card-body">
-                        <div class="form-grid">
-                            <div class="pv-row"><span class="pv-lbl">Domain Name</span><span class="pv-val"><a href="https://novatech.io" target="_blank" style="color:var(--accent);">novatech.io</a></span></div>
-                            <div class="pv-row"><span class="pv-lbl">Hosting Provider</span><span class="pv-val">Hostinger</span></div>
-                            <div class="pv-row"><span class="pv-lbl">CMS / Platform</span><span class="pv-val"><span class="cms-tag wordpress">WordPress</span></span></div>
-                            <div class="pv-row"><span class="pv-lbl">Number of Pages</span><span class="pv-val">12</span></div>
-                            <div class="pv-row"><span class="pv-lbl">Website Payment Status</span><span class="pv-val"><span class="status-pill pending">Partial</span></span></div>
-                            <div class="pv-row" style="grid-column:1/-1;">
-                                <span class="pv-lbl">Required Features</span>
-                                <span class="pv-val">Custom login portal, product catalogue, WhatsApp integration, multilingual (EN/HI), SEO setup</span>
-                            </div>
-                            <div class="pv-row" style="grid-column:1/-1;">
-                                <span class="pv-lbl">Reference Websites</span>
-                                <span class="pv-val">
-                                    <a href="#" style="color:var(--accent);">https://ref1.com</a>,
-                                    <a href="#" style="color:var(--accent);">https://ref2.com</a>
-                                </span>
+                        <div class="card-body">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;">
+                                <div>
+                                    <div class="kv-item">
+                                        <label>Client Name</label>
+                                        <div class="val-lg">{{ $project->client_name }}</div>
+                                    </div>
+                                    <div class="kv-item">
+                                        <label>Email Address(es)</label>
+                                        <div class="val-list">
+                                            @php $emails = is_array($project->emails) ? $project->emails : ($project->email ? [$project->email] : []); @endphp
+                                            @forelse($emails as $email)
+                                                <div class="val-pill"><i class="bi bi-envelope"></i> {{ $email }}</div>
+                                            @empty
+                                                <span class="val-na">No emails provided</span>
+                                            @endforelse
+                                        </div>
+                                    </div>
+                                    <div class="kv-item">
+                                        <label>Phone Number(s)</label>
+                                        <div class="val-list">
+                                            @php $phones = is_array($project->phones) ? $project->phones : ($project->phone ? [$project->phone] : []); @endphp
+                                            @forelse($phones as $p)
+                                                <div class="val-pill">
+                                                    <i class="bi bi-telephone"></i>
+                                                    {{ is_array($p) ? ($p['num'] ?? '') : $p }}
+                                                </div>
+                                            @empty
+                                                <span class="val-na">No phones provided</span>
+                                            @endforelse
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="kv-item">
+                                        <label>Company Name</label>
+                                        <div class="val-text">{{ $project->company_name ?? 'N/A' }}</div>
+                                    </div>
+                                    <div class="kv-item">
+                                        <label>Full Address</label>
+                                        <div class="val-text" style="line-height:1.6;font-size:13px;">
+                                            {{ $project->full_address ?? 'N/A' }}</div>
+                                    </div>
+                                    <div class="kv-item">
+                                        <label>Plan Details</label>
+                                        <div class="val-text"><span
+                                                class="badge-outline">{{ $project->plan_name ?? 'Standard' }}</span></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {{-- Communication --}}
-                <div class="dash-card">
-                    <div class="card-head">
-                        <div class="card-title"><i class="bi bi-chat-dots-fill" style="color:#10b981;margin-right:6px;"></i>Communication & Tracking</div>
-                    </div>
-                    <div class="card-body">
-                        <div class="form-grid">
-                            <div class="pv-row"><span class="pv-lbl">Last Update Date</span><span class="pv-val">15 Mar 2026</span></div>
-                            <div class="pv-row"><span class="pv-lbl">Client Feedback</span><span class="pv-val">Happy with design. Requested minor changes to contact form.</span></div>
-                            <div class="pv-row" style="grid-column:1/-1;">
-                                <span class="pv-lbl">Internal Notes</span>
-                                <div style="background:var(--bg3);border:1px solid var(--b1);border-radius:var(--r-sm);padding:10px 12px;font-size:13px;color:var(--t2);line-height:1.6;margin-top:4px;">
-                                    Dev is 60% complete. Homepage, About, Services done. Contact and Portfolio pending. SEO plugin installed. Client has approved wireframes. Awaiting product images from client side.
+                    {{-- Technical & Server Details --}}
+                    <div class="dash-card">
+                        <div class="card-head">
+                            <div class="card-title"><i class="bi bi-server"
+                                    style="color:#06b6d4;margin-right:8px;"></i>Website & Technical Specs</div>
+                        </div>
+                        <div class="card-body">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;">
+                                <div>
+                                    <div class="kv-item">
+                                        <label>Domain Name</label>
+                                        <div class="val-link"><i class="bi bi-globe"></i>
+                                            {{ $project->domain_name ?? 'N/A' }}</div>
+                                    </div>
+                                    <div class="kv-item">
+                                        <label>Hosting Provider</label>
+                                        <div class="val-text">{{ $project->hosting_provider ?? 'N/A' }}</div>
+                                    </div>
+                                    <div class="kv-item">
+                                        <label>CMS / Platform</label>
+                                        <div>
+                                            @if($project->cms_platform)
+                                                <span
+                                                    class="cms-tag {{ strtolower($project->cms_platform) }}">{{ $project->cms_platform == 'other' ? $project->cms_custom : $project->cms_platform }}</span>
+                                            @else
+                                                <span class="val-na">N/A</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="kv-item">
+                                        <label>Domain/Server Book Info</label>
+                                        <div class="val-text"
+                                            style="font-size:12px;background:var(--bg4);padding:6px 10px;border-radius:4px;border:1px dashed var(--b1);color:var(--t3);">
+                                            {{ $project->domain_server_book ?? 'No server booking info' }}</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="kv-item">
+                                        <label>Structure & Features</label>
+                                        <div class="val-text"><i class="bi bi-file-earmark-code"
+                                                style="margin-right:4px;"></i>{{ $project->no_of_pages ?? 0 }} Pages</div>
+                                        <div style="font-size:12px;color:var(--t3);margin-top:6px;line-height:1.5;">
+                                            {{ $project->required_features ?? 'No specific features listed.' }}</div>
+                                    </div>
+                                    <div class="kv-item">
+                                        <label>Reference Websites</label>
+                                        <div class="val-text" style="font-size:12px;color:var(--accent);">
+                                            {{ $project->reference_websites ?? 'N/A' }}</div>
+                                    </div>
+                                    <div class="kv-item">
+                                        <label>Mail Account Info</label>
+                                        <div class="val-text">
+                                            <span
+                                                style="font-weight:700;color:var(--t1);">{{ $project->no_of_mail_ids ?? 0 }}</span>
+                                            IDs
+                                            @if($project->mail_password)
+                                                <span class="val-secret" style="margin-left:8px;"><i class="bi bi-key"></i>
+                                                    {{ $project->mail_password }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        {{-- Quick update area --}}
-                        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--b1);">
-                            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:10px;">Quick Update</div>
-                            <div class="form-grid">
-                                <div class="form-row">
-                                    <label class="form-lbl">Change Status</label>
-                                    <select class="form-inp">
-                                        <option>New</option>
-                                        <option>Design Phase</option>
-                                        <option selected>Development</option>
-                                        <option>Testing</option>
-                                        <option>Completed</option>
-                                        <option>On Hold</option>
-                                    </select>
+                    {{-- Credentials & Access --}}
+                    <div class="dash-card" style="border-left:4px solid #f59e0b;">
+                        <div class="card-head">
+                            <div class="card-title" style="color:#b45309;"><i class="bi bi-shield-lock-fill"
+                                    style="margin-right:8px;"></i>Login Credentials</div>
+                        </div>
+                        <div class="card-body" style="background:rgba(245,158,11,0.02)">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                                <div
+                                    style="background:var(--bg1);padding:15px;border-radius:10px;border:1px solid var(--b1);">
+                                    <label
+                                        style="display:block;font-size:10px;color:var(--t4);text-transform:uppercase;font-weight:800;margin-bottom:8px;">Dashboard
+                                        Username</label>
+                                    <div style="font-family:var(--mono);font-size:15px;color:var(--t1);font-weight:700;">
+                                        {{ $project->username ?: 'N/A' }}</div>
                                 </div>
-                                <div class="form-row">
-                                    <label class="form-lbl">Change Payment Status</label>
-                                    <select class="form-inp">
-                                        <option>Pending</option>
-                                        <option selected>Partial</option>
-                                        <option>Paid</option>
-                                    </select>
-                                </div>
-                                <div class="form-row" style="grid-column:1/-1;">
-                                    <label class="form-lbl">Add Note</label>
-                                    <textarea class="form-inp" rows="2" placeholder="Add internal note…"></textarea>
+                                <div
+                                    style="background:var(--bg1);padding:15px;border-radius:10px;border:1px solid var(--b1);">
+                                    <label
+                                        style="display:block;font-size:10px;color:var(--t4);text-transform:uppercase;font-weight:800;margin-bottom:8px;">Dashboard
+                                        Password</label>
+                                    <div
+                                        style="font-family:var(--mono);font-size:15px;color:var(--accent);font-weight:700;">
+                                        {{ $project->password ?: 'N/A' }}</div>
                                 </div>
                             </div>
-                            <div style="display:flex;justify-content:flex-end;margin-top:10px;">
-                                <button class="btn-primary-solid" onclick="showToast('success','Project updated!','bi-kanban-fill')">
-                                    <i class="bi bi-check2-circle"></i> Save Changes
+                        </div>
+                    </div>
+
+
+                    {{-- Communication History & Tracking --}}
+                    <div class="dash-card">
+                        <div class="card-head">
+                            <div class="card-title"><i class="bi bi-chat-quote-fill"
+                                    style="color:#ec4899;margin-right:8px;"></i>Communication History</div>
+                            <div class="card-sub">{{ $project->feedbacks->count() }} updates recorded</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="feedback-timeline">
+                                @forelse($project->feedbacks()->latest()->get() as $fb)
+                                    <div class="timeline-item">
+                                        <div class="timeline-meta">
+                                            <div class="tm-date">
+                                                {{ $fb->last_update_date ? $fb->last_update_date->format('d M, Y') : $fb->created_at->format('d M, Y') }}
+                                            </div>
+                                            <div class="tm-time">{{ $fb->created_at->format('h:i A') }}</div>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <div class="timeline-summary">
+                                                @if($fb->status)
+                                                    <div style="margin-bottom:8px;">
+                                                        @php $sClass = strtolower(str_replace(' ', '-', $fb->status)); @endphp
+                                                        <span class="proj-status {{ $sClass }}"
+                                                            style="transform:scale(0.85);transform-origin:left;">{{ $fb->status }}</span>
+                                                    </div>
+                                                @endif
+                                                @if($fb->feedback_summary)
+                                                    <div class="ts-head">
+                                                        <i class="bi bi-chat-dots"></i>
+                                                        {{ $fb->feedback_summary }}
+                                                    </div>
+                                                @endif
+                                                @if($fb->internal_notes)
+                                                    <div class="ts-notes">{{ $fb->internal_notes }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="timeline-empty">
+                                        <i class="bi bi-chat-square-dots"></i>
+                                        No communication updates recorded for this project.
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                {{-- Right Column: Quick Update, Financials, Team, Dates --}}
+                <div class="span-4" style="display:flex;flex-direction:column;gap:20px;">
+
+                    {{-- Quick Update Form --}}
+                    <div class="dash-card" style="border: 2px solid var(--accent);box-shadow: 0 10px 30px rgba(99,102,241,0.1);">
+                        <div class="card-head" style="background:rgba(99,102,241,0.05);border-bottom:1px solid var(--b1);">
+                            <div class="card-title"><i class="bi bi-lightning-charge-fill" style="color:var(--accent);margin-right:6px;"></i>Quick Update</div>
+                        </div>
+                        <div class="card-body" style="padding:15px;">
+                            <form action="{{ route('sale.projects.quickUpdate', $project->id) }}" method="POST">
+                                @csrf
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                                    <div class="form-row" style="margin-bottom:0;">
+                                        <label class="form-lbl" style="font-size:9px;">Project Status</label>
+                                        <select name="project_status_id" class="form-inp" style="padding:6px 8px;font-size:12px;">
+                                            @foreach($statuses['project_statuses'] as $s)
+                                                <option value="{{ $s->id }}" {{ $project->project_status_id == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-row" style="margin-bottom:0;">
+                                        <label class="form-lbl" style="font-size:9px;">Payment Status</label>
+                                        <select name="payment_status_id" class="form-inp" style="padding:6px 8px;font-size:12px;">
+                                            @foreach($statuses['payment_statuses'] as $s)
+                                                <option value="{{ $s->id }}" {{ $project->payment_status_id == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row" style="margin-bottom:12px;">
+                                    <label class="form-lbl" style="font-size:9px;">Latest Feedback / Notes</label>
+                                    <textarea name="internal_notes" class="form-inp" rows="2" style="font-size:12px;padding:8px;" placeholder="Add a quick note..."></textarea>
+                                </div>
+                                <button type="submit" class="btn-primary-solid" style="width:100%;justify-content:center;padding:8px;font-size:13px;">
+                                    Update Now
                                 </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    {{-- Financials --}}
+                    <div class="dash-card fb-top-accent">
+                        <div class="card-head">
+                            <div class="card-title text-accent"><i class="bi bi-currency-rupee"></i> Financial Summary</div>
+                        </div>
+                        <div class="card-body">
+                            <div style="display:flex;flex-direction:column;gap:15px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <span style="font-size:13px;color:var(--t3);">Total Project Price</span>
+                                    <span
+                                        style="font-weight:800;color:var(--t1);font-size:20px;">₹{{ number_format($project->project_price, 0) }}</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <span style="font-size:13px;color:var(--t3);">Advance Payment</span>
+                                    <span
+                                        style="font-weight:700;color:#10b981;">₹{{ number_format($project->advance_payment, 0) }}</span>
+                                </div>
+                                <div style="height:1px;background:var(--accent);opacity:0.2;margin:5px 0;"></div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <span style="font-size:14px;font-weight:700;color:var(--t2);">Balance Due</span>
+                                    <span
+                                        style="font-weight:900;color:#ef4444;font-size:24px;">₹{{ number_format($project->remaining_amount, 0) }}</span>
+                                </div>
+
+                                <div style="margin-top:10px;">
+                                    <div style="display:flex;gap:5px;flex-direction:column;">
+                                        @php
+                                            $fStatus = strtolower($project->financial_payment_status ?? 'pending');
+                                            $fClass = $fStatus == 'paid' ? 'paid' : ($fStatus == 'partial' ? 'pending' : 'overdue');
+
+                                            $wStatus = strtolower($project->website_payment_status ?? 'pending');
+                                            $wClass = $wStatus == 'paid' ? 'paid' : ($wStatus == 'partial' ? 'pending' : 'overdue');
+                                        @endphp
+                                        <div
+                                            style="display:flex;justify-content:space-between;font-size:11px;color:var(--t4);margin-bottom:4px;">
+                                            <span>Financial Status:</span>
+                                            <span class="status-pill {{ $fClass }}"
+                                                style="transform: scale(0.9);">{{ $project->financial_payment_status ?? 'Pending' }}</span>
+                                        </div>
+                                        <div
+                                            style="display:flex;justify-content:space-between;font-size:11px;color:var(--t4);">
+                                            <span>Website Payment:</span>
+                                            <span class="status-pill {{ $wClass }}"
+                                                style="transform: scale(0.9);">{{ $project->website_payment_status ?? 'Pending' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-            </div>
-
-            {{-- ══ RIGHT COL ══ --}}
-            <div class="span-4" style="display:flex;flex-direction:column;gap:16px;">
-
-                {{-- Timeline --}}
-                <div class="dash-card" style="position:sticky;top:80px;">
-                    <div class="card-head">
-                        <div class="card-title"><i class="bi bi-calendar3" style="color:#f59e0b;margin-right:6px;"></i>Project Timeline</div>
-                    </div>
-                    <div class="card-body" style="padding-top:10px;">
-
-                        <div style="display:flex;flex-direction:column;gap:0;padding-left:16px;border-left:2px solid var(--b2);position:relative;">
-
-                            <div style="position:absolute;top:0;left:-5px;width:8px;height:8px;border-radius:50%;background:#10b981;"></div>
-
-                            <div class="tl-item">
-                                <div class="tl-lbl">Project Start</div>
-                                <div class="tl-val">15 Jan 2026</div>
-                            </div>
-                            <div class="tl-item">
-                                <div class="tl-lbl">Expected Delivery</div>
-                                <div class="tl-val" style="color:#f59e0b;">15 Apr 2026</div>
-                            </div>
-                            <div class="tl-item">
-                                <div class="tl-lbl">Actual Delivery</div>
-                                <div class="tl-val" style="color:var(--t4);">Not delivered yet</div>
-                            </div>
-
+                    {{-- Team Members --}}
+                    <div class="dash-card">
+                        <div class="card-head">
+                            <div class="card-title">Assigned Team</div>
                         </div>
-
-                        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--b1);">
-                            <div style="font-size:11px;color:var(--t3);margin-bottom:6px;font-weight:600;">Days Remaining</div>
-                            <div style="font-size:28px;font-weight:800;color:#f59e0b;letter-spacing:-.5px;">29 days</div>
-                            <div style="font-size:11.5px;color:var(--t3);margin-top:3px;">Until expected delivery</div>
-                        </div>
-
-                    </div>
-                </div>
-
-                {{-- Financial --}}
-                <div class="dash-card">
-                    <div class="card-head">
-                        <div class="card-title"><i class="bi bi-currency-rupee" style="color:#8b5cf6;margin-right:6px;"></i>Financial Summary</div>
-                    </div>
-                    <div class="card-body">
-
-                        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
-                            <div style="display:flex;justify-content:space-between;font-size:13px;padding:9px 12px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--b1);">
-                                <span style="color:var(--t3);">Project Price</span>
-                                <span class="money-cell">₹2,40,000</span>
-                            </div>
-                            <div style="display:flex;justify-content:space-between;font-size:13px;padding:9px 12px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--b1);">
-                                <span style="color:var(--t3);">Advance Paid</span>
-                                <span class="money-cell" style="color:#10b981;">₹1,20,000</span>
-                            </div>
-                            <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;padding:10px 12px;background:rgba(239,68,68,.06);border-radius:var(--r-sm);border:1px solid rgba(239,68,68,.15);">
-                                <span style="color:var(--t2);">Remaining Due</span>
-                                <span class="money-cell" style="color:#ef4444;">₹1,20,000</span>
+                        <div class="card-body">
+                            <div style="display:flex;flex-direction:column;gap:12px;">
+                                @forelse($project->developers as $idx => $dev)
+                                    <div
+                                        style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--bg2);border-radius:12px;border:1px solid var(--b1);">
+                                        @php
+                                            $gradients = ['#6366f1, #06b6d4', '#ec4899, #f59e0b', '#10b981, #06b6d4', '#8b5cf6, #ec4899'];
+                                            $words = explode(' ', $dev->name);
+                                            $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+                                        @endphp
+                                        <div
+                                            style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,{{ $gradients[$idx % count($gradients)] }});color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;">
+                                            {{ $initials }}</div>
+                                        <div style="display:flex;flex-direction:column;overflow:hidden;">
+                                            <span
+                                                style="font-size:14px;font-weight:700;color:var(--t1);">{{ $dev->name }} - {{ $dev->designation }}</span>
+                                            <span style="font-size:11px;color:var(--t4);">{{ $dev->email }}</span>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="text-na-box">No developers assigned</div>
+                                @endforelse
                             </div>
                         </div>
+                    </div>
 
-                        <div style="display:flex;flex-direction:column;gap:6px;">
-                            <div class="pv-row"><span class="pv-lbl">Invoice Number</span><span class="pv-val mono">INV-2041</span></div>
-                            <div class="pv-row"><span class="pv-lbl">Payment Status</span><span class="pv-val"><span class="status-pill pending">Partial</span></span></div>
+                    {{-- Timeline --}}
+                    <div class="dash-card">
+                        <div class="card-head">
+                            <div class="card-title">Project Timeline</div>
                         </div>
+                        <div class="card-body">
+                            <div style="display:flex;flex-direction:column;gap:18px;">
+                                <div class="tl-item">
+                                    <div class="tl-dot bullet-accent"></div>
+                                    <div class="tl-line"></div>
+                                    <div>
+                                        <label>Start Date</label>
+                                        <div class="tl-val">
+                                            {{ $project->project_start_date ? $project->project_start_date->format('d M, Y') : 'N/A' }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tl-item">
+                                    <div class="tl-dot bullet-warn"></div>
+                                    <div class="tl-line"></div>
+                                    <div>
+                                        <label>Exp. Delivery</label>
+                                        <div class="tl-val">
+                                            {{ $project->expected_delivery_date ? $project->expected_delivery_date->format('d M, Y') : 'N/A' }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tl-item">
+                                    <div class="tl-dot bullet-danger"></div>
+                                    <div>
+                                        <label>Actual Delivery</label>
+                                        <div class="tl-val">
+                                            {{ $project->actual_delivery_date ? $project->actual_delivery_date->format('d M, Y') : 'Pending' }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                    </div>
-                </div>
-
-                {{-- Quick Actions --}}
-                <div class="dash-card">
-                    <div class="card-head">
-                        <div class="card-title">Quick Actions</div>
-                    </div>
-                    <div class="card-body" style="display:flex;flex-direction:column;gap:8px;">
-                        <button class="btn-ghost" style="width:100%;justify-content:flex-start;gap:10px;" onclick="openModal('editProjectModal')">
-                            <i class="bi bi-pencil-fill" style="color:var(--accent);"></i> Edit Project
-                        </button>
-                        <a href="{{ route('sale.payments.create') }}" class="btn-ghost" style="width:100%;justify-content:flex-start;gap:10px;display:flex;align-items:center;text-decoration:none;">
-                            <i class="bi bi-wallet2" style="color:#10b981;"></i> Add Payment
-                        </a>
-                        <button class="btn-ghost" style="width:100%;justify-content:flex-start;gap:10px;">
-                            <i class="bi bi-telephone-fill" style="color:#06b6d4;"></i> Call Client
-                        </button>
-                        <button class="btn-ghost" style="width:100%;justify-content:flex-start;gap:10px;">
-                            <i class="bi bi-envelope-fill" style="color:#8b5cf6;"></i> Send Email
-                        </button>
-                        <button class="btn-ghost danger-ghost" style="width:100%;justify-content:flex-start;gap:10px;" onclick="openModal('deleteProjectModal')">
-                            <i class="bi bi-trash-fill"></i> Delete Project
-                        </button>
-                    </div>
                 </div>
 
             </div>
 
         </div>
-    </div>
+    </main>
 
-
-    {{-- ── EDIT MODAL (same as index) ── --}}
-    <div class="modal-backdrop" id="editProjectModal">
-        <div class="modal-box modal-box-lg" onclick="event.stopPropagation()">
-            <div class="modal-hd">
-                <span>Edit Project — novatech.io</span>
-                <button class="modal-close" onclick="closeModal('editProjectModal')"><i class="bi bi-x-lg"></i></button>
-            </div>
-            <div class="modal-bd">
-
-                <div class="proj-section-lbl"><i class="bi bi-info-circle-fill"></i> Basic Information</div>
-                <div class="form-grid" style="margin-bottom:0;">
-                    <div class="form-row"><label class="form-lbl">Project Name / Domain *</label><input type="text" class="form-inp" value="novatech.io"></div>
-                    <div class="form-row"><label class="form-lbl">Client Name *</label><input type="text" class="form-inp" value="Anita Verma"></div>
-                    <div class="form-row"><label class="form-lbl">Email</label><input type="email" class="form-inp" value="anita@novatech.in"></div>
-                    <div class="form-row"><label class="form-lbl">Phone</label><input type="tel" class="form-inp" value="+91 98123 45678"></div>
-                    <div class="form-row"><label class="form-lbl">Company Name</label><input type="text" class="form-inp" value="NovaTech Solutions"></div>
-                    <div class="form-row"><label class="form-lbl">Starting Date</label><input type="date" class="form-inp" value="2026-01-15"></div>
-                    <div class="form-row"><label class="form-lbl">Plan Name</label><input type="text" class="form-inp" value="dynamick"></div>
-                    <div class="form-row"><label class="form-lbl">Payment Status</label><select class="form-inp">
-                            <option>Pending</option>
-                            <option selected>Partial</option>
-                            <option>Paid</option>
-                        </select></div>
-                    <div class="form-row"><label class="form-lbl">Username</label><input type="text" class="form-inp" value="novatech_admin"></div>
-                    <div class="form-row"><label class="form-lbl">Password</label><input type="text" class="form-inp" value="pass@1234"></div>
-                    <div class="form-row"><label class="form-lbl">No. of Mail IDs</label><input type="number" class="form-inp" value="5"></div>
-                    <div class="form-row"><label class="form-lbl">Mail Password</label><input type="text" class="form-inp" value="mail@pass123"></div>
-                    <div class="form-row" style="grid-column:1/-1"><label class="form-lbl">Domain, Server Book</label><input type="text" class="form-inp" value="GoDaddy (domain) · Hostinger cPanel"></div>
-                    <div class="form-row" style="grid-column:1/-1"><label class="form-lbl">Full Address</label><textarea class="form-inp" rows="2">302, Skyline Tower, Bandra West, Mumbai — 400050</textarea></div>
-                </div>
-
-                <div class="proj-section-lbl" style="margin-top:18px;"><i class="bi bi-globe2"></i> Website Project Details</div>
-                <div class="form-grid" style="margin-bottom:0;">
-                    <div class="form-row"><label class="form-lbl">Domain Name</label><input type="text" class="form-inp" value="novatech.io"></div>
-                    <div class="form-row"><label class="form-lbl">Hosting Provider</label><input type="text" class="form-inp" value="Hostinger"></div>
-                    <div class="form-row"><label class="form-lbl">CMS / Platform</label><select class="form-inp">
-                            <option selected>WordPress</option>
-                            <option>Shopify</option>
-                            <option>Custom</option>
-                        </select></div>
-                    <div class="form-row"><label class="form-lbl">Number of Pages</label><input type="number" class="form-inp" value="12"></div>
-                    <div class="form-row"><label class="form-lbl">Website Payment Status</label><select class="form-inp">
-                            <option>Pending</option>
-                            <option selected>Partial</option>
-                            <option>Paid</option>
-                        </select></div>
-                    <div class="form-row" style="grid-column:1/-1"><label class="form-lbl">Required Features</label><textarea class="form-inp" rows="2">Custom login portal, product catalogue, WhatsApp integration</textarea></div>
-                    <div class="form-row" style="grid-column:1/-1"><label class="form-lbl">Reference Websites</label><input type="text" class="form-inp" value="https://ref1.com, https://ref2.com"></div>
-                </div>
-
-                <div class="proj-section-lbl" style="margin-top:18px;"><i class="bi bi-calendar3"></i> Project Timeline</div>
-                <div class="form-grid" style="margin-bottom:0;">
-                    <div class="form-row"><label class="form-lbl">Project Start Date</label><input type="date" class="form-inp" value="2026-01-15"></div>
-                    <div class="form-row"><label class="form-lbl">Expected Delivery</label><input type="date" class="form-inp" value="2026-04-15"></div>
-                    <div class="form-row"><label class="form-lbl">Actual Delivery Date</label><input type="date" class="form-inp"></div>
-                    <div class="form-row"><label class="form-lbl">Project Status</label><select class="form-inp">
-                            <option>New</option>
-                            <option>Design Phase</option>
-                            <option selected>Development</option>
-                            <option>Testing</option>
-                            <option>Completed</option>
-                            <option>On Hold</option>
-                        </select></div>
-                </div>
-
-                <div class="proj-section-lbl" style="margin-top:18px;"><i class="bi bi-currency-rupee"></i> Financial Fields</div>
-                <div class="form-grid" style="margin-bottom:0;">
-                    <div class="form-row"><label class="form-lbl">Project Price *</label><input type="text" class="form-inp" value="240000"></div>
-                    <div class="form-row"><label class="form-lbl">Advance Payment</label><input type="text" class="form-inp" value="120000"></div>
-                    <div class="form-row"><label class="form-lbl">Remaining Amount</label><input type="text" class="form-inp" value="120000" readonly></div>
-                    <div class="form-row"><label class="form-lbl">Payment Status</label><select class="form-inp">
-                            <option>Pending</option>
-                            <option selected>Partial</option>
-                            <option>Paid</option>
-                        </select></div>
-                    <div class="form-row"><label class="form-lbl">Invoice Number</label><input type="text" class="form-inp" value="INV-2041"></div>
-                </div>
-
-                <div class="proj-section-lbl" style="margin-top:18px;"><i class="bi bi-chat-dots-fill"></i> Communication & Tracking</div>
-                <div class="form-grid" style="margin-bottom:0;">
-                    <div class="form-row"><label class="form-lbl">Last Update Date</label><input type="date" class="form-inp" value="2026-03-15"></div>
-                    <div class="form-row"><label class="form-lbl">Client Feedback</label><input type="text" class="form-inp" value="Happy with design. Minor contact form changes."></div>
-                    <div class="form-row" style="grid-column:1/-1"><label class="form-lbl">Internal Notes</label><textarea class="form-inp" rows="3">Dev is 60% complete. Homepage, About, Services done. Contact and Portfolio pending.</textarea></div>
-                </div>
-
-            </div>
-            <div class="modal-ft">
-                <button class="btn-ghost" onclick="closeModal('editProjectModal')">Cancel</button>
-                <button class="btn-primary-solid" onclick="closeModal('editProjectModal');showToast('success','Project updated!','bi-kanban-fill')">
-                    <i class="bi bi-floppy-fill"></i> Update Project
-                </button>
-            </div>
-        </div>
-    </div>
-
-
-    {{-- ── DELETE MODAL ── --}}
-    <div class="modal-backdrop" id="deleteProjectModal">
-        <div class="modal-box sm-box" onclick="event.stopPropagation()">
-            <div class="modal-hd" style="border-bottom:1px solid #fecaca;">
-                <span style="color:#dc2626;">Delete Project</span>
-                <button class="modal-close" onclick="closeModal('deleteProjectModal')"><i class="bi bi-x-lg"></i></button>
-            </div>
-            <div class="modal-bd" style="text-align:center;padding:32px 24px;">
-                <div style="width:64px;height:64px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-                    <i class="bi bi-trash3-fill" style="font-size:28px;color:#dc2626;"></i>
-                </div>
-                <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:var(--t1);">Are you sure?</h3>
-                <p style="margin:0;font-size:14px;color:var(--t3);line-height:1.6;">This will permanently delete <strong style="color:var(--t1);">novatech.io</strong>.<br>This action <strong style="color:#dc2626;">cannot be undone.</strong></p>
-            </div>
-            <div class="modal-ft" style="border-top:1px solid #fecaca;">
-                <button class="btn-ghost" onclick="closeModal('deleteProjectModal')">Cancel</button>
-                <button style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;"
-                    onclick="closeModal('deleteProjectModal');showToast('success','Project deleted!','bi-trash3-fill')">
-                    <i class="bi bi-trash3-fill"></i> Delete
-                </button>
-            </div>
-        </div>
-    </div>
-
-</main>
-
-<style>
-    /* Detail view rows */
-    .pv-row {
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
-        padding: 10px 12px;
-        background: var(--bg3);
-        border: 1px solid var(--b1);
-        border-radius: var(--r-sm);
-    }
-
-    .pv-lbl {
-        font-size: 10.5px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .07em;
-        color: var(--t3);
-    }
-
-    .pv-val {
-        font-size: 13px;
-        font-weight: 500;
-        color: var(--t1);
-        line-height: 1.5;
-    }
-
-    /* Timeline items */
-    .tl-item {
-        padding: 8px 0 8px 14px;
-        border-bottom: 1px dashed var(--b1);
-    }
-
-    .tl-item:last-child {
-        border-bottom: none;
-    }
-
-    .tl-lbl {
-        font-size: 10.5px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .07em;
-        color: var(--t3);
-    }
-
-    .tl-val {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--t1);
-        margin-top: 2px;
-    }
-
-    /* CMS tags */
-    .cms-tag {
-        font-size: 10.5px;
-        font-weight: 700;
-        padding: 2px 8px;
-        border-radius: 5px;
-    }
-
-    .cms-tag.wordpress {
-        background: rgba(33, 117, 155, .12);
-        color: #21759b;
-    }
-
-    .cms-tag.shopify {
-        background: rgba(150, 191, 71, .12);
-        color: #96bf47;
-    }
-
-    .cms-tag.custom {
-        background: rgba(245, 158, 11, .12);
-        color: #f59e0b;
-    }
-
-    /* Section labels */
-    .proj-section-lbl {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .08em;
-        color: var(--accent);
-        background: var(--accent-bg);
-        padding: 8px 12px;
-        border-radius: var(--r-sm);
-        margin-bottom: 12px;
-    }
-
-    /* Wide modal */
-    .modal-box-lg {
-        max-width: 780px !important;
-        width: 92vw !important;
-    }
-
-    /* KPI grid override for 6 cols */
-    .detail-kpis {
-        grid-template-columns: repeat(6, 1fr) !important;
-    }
-
-    @media (max-width:768px) {
-        .detail-kpis {
-            grid-template-columns: repeat(3, 1fr) !important;
+    <style>
+        /* UI Tokens */
+        .kv-item {
+            margin-bottom: 20px;
         }
-    }
-</style>
 
-<script>
-    let pwVisible = false;
+        .kv-item label {
+            display: block;
+            font-size: 10px;
+            color: var(--t4);
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
 
-    function togglePw() {
-        pwVisible = !pwVisible;
-        document.getElementById('pwVal').textContent = pwVisible ? 'pass@1234' : '••••••••';
-        document.getElementById('pwIcon').className = pwVisible ? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill';
-    }
-</script>
+        .val-lg {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--t1);
+        }
+
+        .val-text {
+            font-size: 14px;
+            color: var(--t2);
+            font-weight: 500;
+        }
+
+        .val-link {
+            font-size: 14px;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .val-na {
+            color: var(--t4);
+            font-style: italic;
+            font-size: 13px;
+        }
+
+        .val-secret {
+            font-family: var(--mono);
+            color: var(--accent);
+            background: var(--accent-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .val-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: var(--bg3);
+            border: 1px solid var(--b1);
+            font-size: 12px;
+            color: var(--t2);
+            font-weight: 600;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .val-list {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 5px;
+        }
+
+        .badge-outline {
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--b2);
+            background: var(--bg2);
+            color: var(--t3);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .proj-status {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 12px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .proj-status::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .proj-status.new {
+            background: rgba(245, 158, 11, .12);
+            color: #f59e0b;
+        }
+
+        .proj-status.new::before {
+            background: #f59e0b;
+        }
+
+        .proj-status.design-phase {
+            background: rgba(6, 182, 212, .12);
+            color: #06b6d4;
+        }
+
+        .proj-status.design-phase::before {
+            background: #06b6d4;
+        }
+
+        .proj-status.development {
+            background: rgba(99, 102, 241, .12);
+            color: #6366f1;
+        }
+
+        .proj-status.development::before {
+            background: #6366f1;
+        }
+
+        .proj-status.testing {
+            background: rgba(139, 92, 246, .12);
+            color: #8b5cf6;
+        }
+
+        .proj-status.testing::before {
+            background: #8b5cf6;
+        }
+
+        .proj-status.completed {
+            background: rgba(16, 185, 129, .12);
+            color: #10b981;
+        }
+
+        .proj-status.completed::before {
+            background: #10b981;
+        }
+
+        .proj-status.on-hold {
+            background: rgba(100, 116, 139, .12);
+            color: #64748b;
+        }
+
+        .proj-status.on-hold::before {
+            background: #64748b;
+        }
+
+        .cms-tag {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 6px;
+        }
+
+        .cms-tag.wordpress {
+            background: rgba(33, 117, 155, .1);
+            color: #21759b;
+            border: 1px solid rgba(33, 117, 155, .2);
+        }
+
+        .cms-tag.shopify {
+            background: rgba(150, 191, 71, .1);
+            color: #96bf47;
+            border: 1px solid rgba(150, 191, 71, .2);
+        }
+
+        .cms-tag.custom {
+            background: rgba(245, 158, 11, .1);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, .2);
+        }
+
+        /* Timeline Styling */
+        .feedback-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            position: relative;
+            margin-left: 10px;
+            padding-top: 10px;
+        }
+
+        .feedback-timeline::after {
+            content: '';
+            position: absolute;
+            left: 100px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--b1);
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 40px;
+        }
+
+        .timeline-meta {
+            width: 80px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .tm-date {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--t1);
+        }
+
+        .tm-time {
+            font-size: 10px;
+            color: var(--t4);
+            margin-top: 2px;
+        }
+
+        .timeline-content {
+            flex: 1;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .timeline-content::after {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 6px;
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        .ts-head {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--t1);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ts-head i {
+            color: var(--accent);
+            font-size: 12px;
+        }
+
+        .ts-notes {
+            font-size: 13px;
+            color: var(--t2);
+            padding: 12px;
+            background: var(--bg3);
+            border-radius: 8px;
+            border: 1px solid var(--b1);
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        .timeline-empty {
+            text-align: center;
+            padding: 40px;
+            color: var(--t4);
+        }
+
+        .timeline-empty i {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 10px;
+            opacity: 0.3;
+        }
+
+        /* Utility Helpers */
+        .fb-top-accent {
+            border-top: 4px solid var(--accent);
+        }
+
+        .text-accent {
+            color: var(--accent);
+        }
+
+        .text-na-box {
+            text-align: center;
+            padding: 25px;
+            background: var(--bg4);
+            border-radius: 10px;
+            border: 1px dashed var(--b1);
+            color: var(--t4);
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        .tl-item {
+            display: flex;
+            gap: 15px;
+            position: relative;
+        }
+
+        .tl-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-top: 4px;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+
+        .tl-line {
+            position: absolute;
+            left: 4px;
+            top: 14px;
+            bottom: -14px;
+            width: 2px;
+            background: var(--b2);
+        }
+
+        .tl-val {
+            font-size: 14px;
+            color: var(--t2);
+            font-weight: 600;
+        }
+
+        .tl-item label {
+            display: block;
+            font-size: 10px;
+            color: var(--t4);
+            text-transform: uppercase;
+            font-weight: 800;
+            margin-bottom: 2px;
+        }
+
+        .bullet-accent {
+            background: var(--accent);
+        }
+
+        .bullet-warn {
+            background: #f59e0b;
+        }
+
+        .bullet-danger {
+            background: #ef4444;
+        }
+    </style>
 
 @endsection

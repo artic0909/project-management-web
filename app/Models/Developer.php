@@ -20,7 +20,14 @@ class Developer extends Authenticatable
         'designation',
         'email',
         'password',
+        'created_by',
+        'created_by_type',
     ];
+
+    public function createdBy()
+    {
+        return $this->morphTo('created_by', 'created_by_type', 'created_by');
+    }
 
     protected $hidden = [
         'password',

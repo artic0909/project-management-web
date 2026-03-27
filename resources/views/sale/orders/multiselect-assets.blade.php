@@ -245,16 +245,17 @@
         checkboxes.forEach(cb => {
             const label = cb.closest('.ms-opt');
             const ava = label.querySelector('.ms-ava');
-            const name = cb.value;
+            const value = cb.value;
+            const name = cb.dataset.name || cb.value;
+            const initials = cb.dataset.initials || name.split(' ').map(w => w[0]).join('');
             const bg = ava ? ava.style.background : '#6366f1';
-            const initials = name.split(' ').map(w => w[0]).join('');
 
             const pill = document.createElement('span');
             pill.className = 'ms-pill';
             pill.innerHTML = `
                 <span class="ms-pill-ava" style="background:${bg}">${initials}</span>
                 ${name}
-                <span class="ms-pill-x" onclick="removeMsPill(event,'${wrapId}','${name}')">✕</span>
+                <span class="ms-pill-x" onclick="removeMsPill(event,'${wrapId}','${value}')">✕</span>
             `;
             pillsEl.appendChild(pill);
         });
