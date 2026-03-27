@@ -86,7 +86,15 @@
         <div class="nav-dot green"></div>
       </a>
 
-      <div class="nav-section-label">System</div>
+      <div class="nav-section-label">Others</div>
+      <a class="nav-item " href="#">
+        <i class="bi bi-headset"></i><span>Support</span>
+      </a>
+
+      <a class="nav-item " href="#">
+        <i class="bi bi-browser-chrome"></i><span>Inquiries</span>
+      </a>
+
       <a class="nav-item {{ request()->routeIs('admin.account-settings*') ? 'active' : '' }}" href="{{ route('admin.account-settings') }}">
         <i class="bi bi-gear-fill"></i><span>Settings</span>
       </a>
