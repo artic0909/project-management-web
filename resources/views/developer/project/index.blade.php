@@ -31,8 +31,22 @@
                     <div class="dash-card premium-project-card">
                         <div class="card-body" style="padding: 24px;">
                             <div class="proj-top-strip">
-                                <div class="proj-badge">
+                                <div class="proj-badge" style="display:flex;align-items:center;gap:6px;">
                                     <i class="bi bi-hash"></i> {{ str_pad($project->id, 5, '0', STR_PAD_LEFT) }}
+                                    @php
+                                        $myTasks = $project->tasks()->whereHas('assignments', function($q) {
+                                            $q->where('developer_id', auth()->guard('developer')->id());
+                                        })->get();
+                                        $done = $myTasks->where('status', 'Completed')->count();
+                                        $total = $myTasks->count();
+                                        $perc = $total > 0 ? round(($done / $total) * 100) : 0;
+                                        $needsAttention = ($total > $done);
+                                    @endphp
+                                    @if($total > 0 && $total == $done)
+                                        <div class="completion-dot" title="All Tasks Completed"></div>
+                                    @elseif($total > $done)
+                                        <div class="attention-dot" title="Attention Required: Uncompleted Tasks"></div>
+                                    @endif
                                 </div>
                                 @php
                                     $statusName = $project->projectStatus->name ?? 'New';
@@ -67,14 +81,6 @@
                             </div>
 
                             <div class="proj-progress-section">
-                                @php
-                                    $myTasks = $project->tasks()->whereHas('assignments', function($q) {
-                                        $q->where('developer_id', auth()->guard('developer')->id());
-                                    })->get();
-                                    $done = $myTasks->where('status', 'Completed')->count();
-                                    $total = $myTasks->count();
-                                    $perc = $total > 0 ? round(($done / $total) * 100) : 0;
-                                @endphp
                                 <div class="prog-header">
                                     <span>Task Progress</span>
                                     <span class="prog-perc">{{ $perc }}%</span>
@@ -176,6 +182,32 @@
         padding: 4px 10px;
         border-radius: 6px;
         border: 1px solid var(--b2);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .attention-dot {
+        width: 8px;
+        height: 8px;
+        background: #ef4444;
+        border-radius: 50%;
+        box-shadow: 0 0 0 rgba(239, 68, 68, 0.4);
+        animation: pulseRed 2s infinite;
+    }
+
+    .completion-dot {
+        width: 8px;
+        height: 8px;
+        background: #10b981;
+        border-radius: 50%;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    }
+
+    @keyframes pulseRed {
+        0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
     }
 
     .proj-status-pill {

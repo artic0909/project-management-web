@@ -7,6 +7,15 @@
     <main class="page-area" id="pageArea">
         <div class="page" id="page-project-show">
 
+            @php
+                $myTasks = $project->tasks()->whereHas('assignments', function($q) {
+                    $q->where('developer_id', auth()->guard('developer')->id());
+                })->get();
+                $done = $myTasks->where('status', 'Completed')->count();
+                $total = $myTasks->count();
+                $perc = $total > 0 ? round(($done / $total) * 100) : 0;
+            @endphp
+
             <!-- Page Header -->
             <div class="page-header">
                 <div>
@@ -30,9 +39,11 @@
                     <p class="page-desc">{{ $project->company_name ?? 'Client: ' . $project->client_name }}</p>
                 </div>
                 <div class="header-actions">
-                    <a href="{{ route('developer.projects.tasks', $project->id) }}" class="btn-primary-solid sm">
-                        <i class="bi bi-list-check"></i> Pending Tasks
-                    </a>
+                    @if($total > $done)
+                        <a href="{{ route('developer.projects.tasks', $project->id) }}" class="btn-primary-solid sm">
+                            <i class="bi bi-list-check"></i> Pending Tasks
+                        </a>
+                    @endif
                     <a href="{{ route('developer.projects.index') }}" class="btn-ghost sm">
                         <i class="bi bi-arrow-left"></i> Back to List
                     </a>
@@ -259,14 +270,6 @@
                             <div class="card-title"><i class="bi bi- Lightning-charge-fill" style="color:var(--accent);margin-right:6px;"></i>My Progress</div>
                         </div>
                         <div class="card-body" style="padding:20px;">
-                            @php
-                                $myTasks = $project->tasks()->whereHas('assignments', function($q) {
-                                    $q->where('developer_id', auth()->guard('developer')->id());
-                                })->get();
-                                $done = $myTasks->where('status', 'Completed')->count();
-                                $total = $myTasks->count();
-                                $perc = $total > 0 ? round(($done / $total) * 100) : 0;
-                            @endphp
                             <div style="text-align:center;">
                                 <div style="font-size:32px;font-weight:900;color:var(--t1);margin-bottom:4px;">{{ $perc }}%</div>
                                 <div style="font-size:11px;color:var(--t4);text-transform:uppercase;font-weight:800;letter-spacing:1px;margin-bottom:15px;">Task Completion</div>
