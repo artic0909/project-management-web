@@ -726,8 +726,6 @@
                                 <th>SL</th>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th>Created By</th>
-                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -747,8 +745,6 @@
                                     </div>
                                 </td>
                                 <td><span class="src-tag website">{{ $person->email }}</span></td>
-                                <td><strong style="color:#10b981">Admin</strong></td>
-                                <td><span class="lead-stage hot">Active</span></td>
                                 <td>
                                     <!-- Modal Btns -->
                                     <div class="row-actions">

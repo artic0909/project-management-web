@@ -725,9 +725,8 @@
                             <tr>
                                 <th>SL</th>
                                 <th>Name</th>
+                                <th>Designation</th>
                                 <th>Email</th>
-                                <th>Created By</th>
-                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -746,9 +745,8 @@
                                         </div>
                                     </div>
                                 </td>
+                                <td><span class="src-tag website">{{ $developer->designation }}</span></td>
                                 <td><span class="src-tag website">{{ $developer->email }}</span></td>
-                                <td><strong style="color:#10b981">Admin</strong></td>
-                                <td><span class="lead-stage hot">Active</span></td>
                                 <td>
                                     <!-- Modal Btns -->
                                     <div class="row-actions">
