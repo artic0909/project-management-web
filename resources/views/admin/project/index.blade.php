@@ -36,10 +36,10 @@
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(99,102,241,.1);color:#818cf8;">Total</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">64</div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $projects->total() }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Total Projects</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:80%;background:#6366f1;border-radius:3px;"></div>
+                    <div style="height:100%;width:100%;background:#6366f1;border-radius:3px;"></div>
                 </div>
             </div>
 
@@ -50,10 +50,10 @@
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(6,182,212,.1);color:#06b6d4;">Active</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">28</div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $projects->where('project_status', 'Development')->count() }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">In Progress</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:44%;background:#06b6d4;border-radius:3px;"></div>
+                    <div style="height:100%;width:50%;background:#06b6d4;border-radius:3px;"></div>
                 </div>
             </div>
 
@@ -64,10 +64,10 @@
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.1);color:#10b981;">Done</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">21</div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $projects->where('project_status', 'Completed')->count() }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Completed</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:33%;background:#10b981;border-radius:3px;"></div>
+                    <div style="height:100%;width:50%;background:#10b981;border-radius:3px;"></div>
                 </div>
             </div>
 
@@ -78,96 +78,14 @@
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(245,158,11,.1);color:#f59e0b;">Hold</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">8</div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $projects->where('project_status', 'On Hold')->count() }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">On Hold</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:12%;background:#f59e0b;border-radius:3px;"></div>
+                    <div style="height:100%;width:50%;background:#f59e0b;border-radius:3px;"></div>
                 </div>
             </div>
 
         </div>
-
-        <!-- {{-- ── STATUS FILTER SCROLL ── --}}
-        <div class="stat-scroll-row" style="margin-bottom:20px;">
-
-            <span class="stat-section-lbl">Status</span>
-
-            <div class="stat-box active" style="--sb-color:#6366f1;" data-filter="status" data-value="all" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-grid-fill"></i></div>
-                <div>
-                    <div class="sb-val">64</div>
-                    <div class="sb-lbl">All</div>
-                </div>
-            </div>
-            <div class="stat-box" style="--sb-color:#f59e0b;" data-filter="status" data-value="new" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-star-fill"></i></div>
-                <div>
-                    <div class="sb-val">7</div>
-                    <div class="sb-lbl">New</div>
-                </div>
-            </div> 
-            <div class="stat-box" style="--sb-color:#06b6d4;" data-filter="status" data-value="design" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-palette-fill"></i></div>
-                <div>
-                    <div class="sb-val">11</div>
-                    <div class="sb-lbl">Design Phase</div>
-                </div>
-            </div> 
-            <div class="stat-box" style="--sb-color:#6366f1;" data-filter="status" data-value="development" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-code-slash"></i></div>
-                <div>
-                    <div class="sb-val">17</div>
-                    <div class="sb-lbl">Development</div>
-                </div>
-            </div>
-            <div class="stat-box" style="--sb-color:#8b5cf6;" data-filter="status" data-value="testing" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-bug-fill"></i></div>
-                <div>
-                    <div class="sb-val">6</div>
-                    <div class="sb-lbl">Testing</div>
-                </div>
-            </div>
-            <div class="stat-box" style="--sb-color:#10b981;" data-filter="status" data-value="completed" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-check-circle-fill"></i></div>
-                <div>
-                    <div class="sb-val">21</div>
-                    <div class="sb-lbl">Completed</div>
-                </div>
-            </div>
-            <div class="stat-box" style="--sb-color:#64748b;" data-filter="status" data-value="on-hold" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-pause-circle-fill"></i></div>
-                <div>
-                    <div class="sb-val">8</div>
-                    <div class="sb-lbl">On Hold</div>
-                </div>
-            </div>
-
-            <div class="stat-divider"></div>
-            <span class="stat-section-lbl">Payment</span>
-
-            <div class="stat-box" style="--sb-color:#10b981;" data-filter="payment" data-value="paid" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-check2-circle"></i></div>
-                <div>
-                    <div class="sb-val" style="color:#10b981;">34</div>
-                    <div class="sb-lbl">Paid</div>
-                </div>
-            </div>
-            <div class="stat-box" style="--sb-color:#f59e0b;" data-filter="payment" data-value="partial" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-pie-chart-fill"></i></div>
-                <div>
-                    <div class="sb-val" style="color:#f59e0b;">19</div>
-                    <div class="sb-lbl">Partial</div>
-                </div>
-            </div>
-            <div class="stat-box" style="--sb-color:#ef4444;" data-filter="payment" data-value="pending" onclick="filterProjects(this)">
-                <div class="sb-icon"><i class="bi bi-clock-fill"></i></div>
-                <div>
-                    <div class="sb-val" style="color:#ef4444;">11</div>
-                    <div class="sb-lbl">Pending</div>
-                </div>
-            </div>
-
-        </div> -->
 
         {{-- ── TABLE ── --}}
         <div class="dash-grid">
@@ -175,29 +93,14 @@
                 <div class="card-head">
                     <div>
                         <div class="card-title">Project Pipeline</div>
-                        <div class="card-sub" id="projectTableSub">64 total projects</div>
+                        <div class="card-sub" id="projectTableSub">{{ $projects->total() }} total projects</div>
                     </div>
                     <div class="card-actions mb-2">
-                        <form class="global-search">
+                        <form class="global-search" action="{{ route('admin.projects.index') }}" method="GET">
                             <i class="bi bi-search"></i>
-                            <input type="text" placeholder="Search projects...">
+                            <input type="text" name="q" placeholder="Search projects..." value="{{ request('q') }}">
                             <button type="submit" class="btn-primary-solid sm">Search</button>
                         </form>
-                        <select class="filter-select">
-                            <option>All CMS</option>
-                            <option>WordPress</option>
-                            <option>Shopify</option>
-                            <option>Custom</option>
-                        </select>
-                        <select class="filter-select">
-                            <option>All Status</option>
-                            <option>New</option>
-                            <option>Design Phase</option>
-                            <option>Development</option>
-                            <option>Testing</option>
-                            <option>Completed</option>
-                            <option>On Hold</option>
-                        </select>
                     </div>
                 </div>
 
@@ -220,125 +123,87 @@
                             </tr>
                         </thead>
                         <tbody>
-
-                            <tr data-status="development" data-payment="partial">
-                                <td><span class="mono">#PRJ-0041</span></td>
+                        @forelse($projects as $project)
+                            <tr>
+                                <td><span class="mono">#PRJ-{{ str_pad($project->id, 4, '0', STR_PAD_LEFT) }}</span></td>
                                 <td>
                                     <div class="lead-cell">
-                                        <div class="mini-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">NT</div>
+                                        @php
+                                            $nameParts = explode('.', $project->project_name);
+                                            $initials = strtoupper(substr($nameParts[0], 0, 2));
+                                        @endphp
+                                        <div class="mini-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">{{ $initials }}</div>
                                         <div>
-                                            <div class="ln">novatech.io</div>
-                                            <div class="ls">NovaTech Solutions</div>
+                                            <div class="ln">{{ $project->project_name }}</div>
+                                            <div class="ls">{{ $project->company_name ?? 'N/A' }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="ln">Anita Verma</div>
-                                    <div class="ls">9812345678</div>
+                                    <div class="ln">{{ $project->client_name }}</div>
+                                    <div class="ls">{{ $project->phone ?? $project->email }}</div>
                                 </td>
-                                <td><span class="cms-tag wordpress">WordPress</span></td>
                                 <td>
-                                    <div class="ls">15 Jan 2026</div>
+                                    @if($project->cms_platform)
+                                        <span class="cms-tag {{ strtolower($project->cms_platform) }}">{{ $project->cms_platform == 'other' ? $project->cms_custom : $project->cms_platform }}</span>
+                                    @else
+                                        <span style="color:var(--t4);font-size:11px;">N/A</span>
+                                    @endif
                                 </td>
-                                <td><span class="date-cell warn">15 Apr 2026</span></td>
-                                <td><span class="proj-status development">Development</span></td>
-                                <td><span class="money-cell">₹2,40,000</span></td>
-                                <td><span class="money-cell" style="color:#10b981;">₹1,20,000</span></td>
-                                <td><span class="money-cell" style="color:#ef4444;">₹1,20,000</span></td>
-                                <td><span class="status-pill pending">Partial</span></td>
+                                <td>
+                                    <div class="ls">{{ $project->project_start_date ? $project->project_start_date->format('d M Y') : 'N/A' }}</div>
+                                </td>
+                                <td>
+                                    @if($project->expected_delivery_date)
+                                        <span class="date-cell {{ $project->expected_delivery_date->isPast() ? 'danger' : 'warn' }}">
+                                            {{ $project->expected_delivery_date->format('d M Y') }}
+                                        </span>
+                                    @else
+                                        <span style="color:var(--t4);font-size:11px;">N/A</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @php
+                                        $statusClass = strtolower(str_replace(' ', '-', $project->project_status ?? 'new'));
+                                    @endphp
+                                    <span class="proj-status {{ $statusClass }}">{{ $project->project_status ?? 'New' }}</span>
+                                </td>
+                                <td><span class="money-cell">₹{{ number_format($project->project_price, 0) }}</span></td>
+                                <td><span class="money-cell" style="color:#10b981;">₹{{ number_format($project->advance_payment, 0) }}</span></td>
+                                <td><span class="money-cell" style="color:#ef4444;">₹{{ number_format($project->remaining_amount, 0) }}</span></td>
+                                <td>
+                                    @php
+                                        $payStatus = strtolower($project->financial_payment_status ?? 'pending');
+                                        $payClass = $payStatus == 'paid' ? 'paid' : ($payStatus == 'partial' ? 'pending' : 'overdue');
+                                    @endphp
+                                    <span class="status-pill {{ $payClass }}">{{ $project->financial_payment_status ?? 'Pending' }}</span>
+                                </td>
                                 <td>
                                     <div class="row-actions">
-                                        <a href="{{ route('admin.projects.show', 1) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                        <button class="ra-btn" title="Edit" onclick="openModal('editProjectModal')"><i class="bi bi-pencil-fill"></i></button>
-                                        <button class="ra-btn danger" title="Delete" onclick="openModal('deleteProjectModal')"><i class="bi bi-trash-fill"></i></button>
+                                        <a href="{{ route('admin.projects.show', $project->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
+                                        <a href="{{ route('admin.projects.edit', $project->id) }}" class="ra-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
+                                        <form action="{{ route('admin.projects.destroy', $project->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this project?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="ra-btn danger" title="Delete"><i class="bi bi-trash-fill"></i></button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
-
-                            <tr data-status="completed" data-payment="paid">
-                                <td><span class="mono">#PRJ-0038</span></td>
-                                <td>
-                                    <div class="lead-cell">
-                                        <div class="mini-ava" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">DF</div>
-                                        <div>
-                                            <div class="ln">datafirst.io</div>
-                                            <div class="ls">DataFirst Corp</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="ln">Raj Sharma</div>
-                                    <div class="ls">9565528200</div>
-                                </td>
-                                <td><span class="cms-tag shopify">Shopify</span></td>
-                                <td>
-                                    <div class="ls">10 Nov 2025</div>
-                                </td>
-                                <td><span class="date-cell ok">10 Feb 2026</span></td>
-                                <td><span class="proj-status completed">Completed</span></td>
-                                <td><span class="money-cell">₹1,80,000</span></td>
-                                <td><span class="money-cell" style="color:#10b981;">₹1,80,000</span></td>
-                                <td><span class="money-cell" style="color:#10b981;">₹0</span></td>
-                                <td><span class="status-pill paid">Paid</span></td>
-                                <td>
-                                    <div class="row-actions">
-                                        <a href="{{ route('admin.projects.show', 1) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                        <button class="ra-btn" title="Edit" onclick="openModal('editProjectModal')"><i class="bi bi-pencil-fill"></i></button>
-                                        <button class="ra-btn danger" title="Delete" onclick="openModal('deleteProjectModal')"><i class="bi bi-trash-fill"></i></button>
-                                    </div>
-                                </td>
+                        @empty
+                            <tr>
+                                <td colspan="12" style="text-align:center;padding:40px;color:var(--t4);">No projects found matching your criteria.</td>
                             </tr>
-
-                            <tr data-status="design" data-payment="pending">
-                                <td><span class="mono">#PRJ-0044</span></td>
-                                <td>
-                                    <div class="lead-cell">
-                                        <div class="mini-ava" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">AV</div>
-                                        <div>
-                                            <div class="ln">avantika.store</div>
-                                            <div class="ls">Avantika Retail</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="ln">Priya Nair</div>
-                                    <div class="ls">9871234560</div>
-                                </td>
-                                <td><span class="cms-tag custom">Custom</span></td>
-                                <td>
-                                    <div class="ls">01 Mar 2026</div>
-                                </td>
-                                <td><span class="date-cell danger">30 Apr 2026</span></td>
-                                <td><span class="proj-status design">Design Phase</span></td>
-                                <td><span class="money-cell">₹3,20,000</span></td>
-                                <td><span class="money-cell" style="color:#f59e0b;">₹0</span></td>
-                                <td><span class="money-cell" style="color:#ef4444;">₹3,20,000</span></td>
-                                <td><span class="status-pill overdue">Pending</span></td>
-                                <td>
-                                    <div class="row-actions">
-                                        <a href="{{ route('admin.projects.show', 1) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                        <button class="ra-btn" title="Edit" onclick="openModal('editProjectModal')"><i class="bi bi-pencil-fill"></i></button>
-                                        <button class="ra-btn danger" title="Delete" onclick="openModal('deleteProjectModal')"><i class="bi bi-trash-fill"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-
+                        @endforelse
                         </tbody>
                     </table>
                 </div>
 
                 <div class="table-footer">
-                    <span class="tf-info" id="projCount">Showing 3 of 64 Projects</span>
+                    <span class="tf-info" id="projCount">Showing {{ $projects->firstItem() ?? 0 }} to {{ $projects->lastItem() ?? 0 }} of {{ $projects->total() }} Projects</span>
                     <div class="tf-pagination">
-                        <button class="pg-btn"><i class="bi bi-chevron-left"></i></button>
-                        <button class="pg-btn active">1</button>
-                        <button class="pg-btn">2</button>
-                        <button class="pg-btn">3</button>
-                        <span class="pg-ellipsis">…</span>
-                        <button class="pg-btn">7</button>
-                        <button class="pg-btn"><i class="bi bi-chevron-right"></i></button>
+                        {{ $projects->links() }}
                     </div>
-                    <div class="tf-per-page"></div>
                 </div>
             </div>
         </div>

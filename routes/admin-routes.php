@@ -87,7 +87,11 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     // Project
     Route::get('/all-projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('/project/create', [ProjectController::class, 'create'])->name('projects.create');
-    Route::get('/project/show', [ProjectController::class, 'show'])->name('projects.show');
+    Route::post('/project/store', [ProjectController::class, 'store'])->name('projects.store');
+    Route::get('/project/show/{id}', [ProjectController::class, 'show'])->name('projects.show');
+    Route::get('/project/edit/{id}', [ProjectController::class, 'edit'])->name('projects.edit');
+    Route::put('/project/update/{id}', [ProjectController::class, 'update'])->name('projects.update');
+    Route::delete('/project/delete/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
     
     // Marketing Orders
     Route::get('/add-marketing-orders', [MarketingOrderController::class, 'index'])->name('marketing-orders');

@@ -20,12 +20,45 @@
             </div>
         </div>
 
-        <form action="" method="POST">
+        <form action="{{ route('admin.projects.store') }}" method="POST">
             @csrf
+
+            @if(session('success'))
+                <div class="alert alert-success" style="padding:12px;background:#dcfce7;color:#166534;border-radius:8px;margin-bottom:16px;">
+                    <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert alert-danger" style="padding:12px;background:#fee2e2;color:#991b1b;border-radius:8px;margin-bottom:16px;">
+                    @foreach($errors->all() as $error)
+                        <p style="margin:0;"><i class="bi bi-exclamation-triangle-fill"></i> {{ $error }}</p>
+                    @endforeach
+                </div>
+            @endif
+
             <div class="dash-grid">
 
                 {{-- ══ LEFT COL — 8 spans ══ --}}
                 <div class="span-8" style="display:flex;flex-direction:column;gap:16px;">
+
+                    {{-- Link to Order (Optional) --}}
+                    <div class="dash-card">
+                        <div class="card-head">
+                            <div class="card-title"><i class="bi bi-cart-check-fill" style="color:var(--accent);margin-right:6px;"></i>Link to Order</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <label class="form-lbl">Select Order (Optional)</label>
+                                <select name="order_id" class="form-inp">
+                                    <option value="">— Select Order —</option>
+                                    @foreach($orders as $order)
+                                        <option value="{{ $order->id }}">{{ $order->project_name ?? $order->domain_name }} (#{{ $order->id }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
                     {{-- Basic Information --}}
                     <div class="dash-card">
@@ -39,64 +72,64 @@
                             <div class="form-grid">
                                 <div class="form-row">
                                     <label class="form-lbl">Project Name / Domain *</label>
-                                    <input type="text" name="project_name" class="form-inp" placeholder="e.g. novatech.io">
+                                    <input type="text" name="project_name" class="form-inp" placeholder="e.g. novatech.io" required value="{{ old('project_name') }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Client Name *</label>
-                                    <input type="text" name="client_name" class="form-inp" placeholder="Full name">
+                                    <input type="text" name="client_name" class="form-inp" placeholder="Full name" required value="{{ old('client_name') }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Email ID</label>
-                                    <input type="email" name="email" class="form-inp" placeholder="email@company.com">
+                                    <input type="email" name="email" class="form-inp" placeholder="email@company.com" value="{{ old('email') }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Phone Number</label>
-                                    <input type="tel" name="phone" class="form-inp" placeholder="+91 XXXXX XXXXX">
+                                    <input type="tel" name="phone" class="form-inp" placeholder="+91 XXXXX XXXXX" value="{{ old('phone') }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Company Name</label>
-                                    <input type="text" name="company_name" class="form-inp" placeholder="Company name">
+                                    <input type="text" name="company_name" class="form-inp" placeholder="Company name" value="{{ old('company_name') }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Starting Date</label>
-                                    <input type="date" name="starting_date" class="form-inp">
+                                    <input type="date" name="starting_date" class="form-inp" value="{{ old('starting_date') }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Plan Name</label>
-                                    <input type="text" name="plan_name" class="form-inp" placeholder="e.g. dynamick">
+                                    <input type="text" name="plan_name" class="form-inp" placeholder="e.g. dynamick" value="{{ old('plan_name') }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Payment Status</label>
                                     <select name="payment_status" class="form-inp">
                                         <option value="">— Select —</option>
-                                        <option>Pending</option>
-                                        <option>Partial</option>
-                                        <option>Paid</option>
+                                        <option value="Pending" {{ old('payment_status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                                        <option value="Partial" {{ old('payment_status') == 'Partial' ? 'selected' : '' }}>Partial</option>
+                                        <option value="Paid" {{ old('payment_status') == 'Paid' ? 'selected' : '' }}>Paid</option>
                                     </select>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Username</label>
-                                    <input type="text" name="username" class="form-inp" placeholder="Account username">
+                                    <input type="text" name="username" class="form-inp" placeholder="Account username" value="{{ old('username') }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Password</label>
-                                    <input type="text" name="password" class="form-inp" placeholder="Account password">
+                                    <input type="text" name="password" class="form-inp" placeholder="Account password" value="{{ old('password') }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">No. of Mail IDs</label>
-                                    <input type="number" name="no_of_mail_ids" class="form-inp" placeholder="e.g. 5" min="0">
+                                    <input type="number" name="no_of_mail_ids" class="form-inp" placeholder="e.g. 5" min="0" value="{{ old('no_of_mail_ids', 0) }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Mail Password</label>
-                                    <input type="text" name="mail_password" class="form-inp" placeholder="Mail password">
+                                    <input type="text" name="mail_password" class="form-inp" placeholder="Mail password" value="{{ old('mail_password') }}">
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Domain, Server Book</label>
-                                    <input type="text" name="domain_server_book" class="form-inp" placeholder="Domain registrar, server details, control panel…">
+                                    <input type="text" name="domain_server_book" class="form-inp" placeholder="Domain registrar, server details, control panel…" value="{{ old('domain_server_book') }}">
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Full Address</label>
-                                    <textarea name="full_address" class="form-inp" rows="2" placeholder="Street address, city, state, PIN…"></textarea>
+                                    <textarea name="full_address" class="form-inp" rows="2" placeholder="Street address, city, state, PIN…">{{ old('full_address') }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -114,46 +147,46 @@
                             <div class="form-grid">
                                 <div class="form-row">
                                     <label class="form-lbl">Domain Name</label>
-                                    <input type="text" name="domain_name" class="form-inp" placeholder="example.com">
+                                    <input type="text" name="domain_name" class="form-inp" placeholder="example.com" value="{{ old('domain_name') }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Hosting Provider</label>
-                                    <input type="text" name="hosting_provider" class="form-inp" placeholder="Hostinger, GoDaddy, AWS…">
+                                    <input type="text" name="hosting_provider" class="form-inp" placeholder="Hostinger, GoDaddy, AWS…" value="{{ old('hosting_provider') }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">CMS / Platform</label>
                                     <select name="cms_platform" class="form-inp" id="cmsSelect" onchange="toggleCustomCms()">
                                         <option value="">— Select —</option>
-                                        <option>WordPress</option>
-                                        <option>Shopify</option>
-                                        <option>Custom</option>
-                                        <option value="other">Other</option>
+                                        <option value="WordPress" {{ old('cms_platform') == 'WordPress' ? 'selected' : '' }}>WordPress</option>
+                                        <option value="Shopify" {{ old('cms_platform') == 'Shopify' ? 'selected' : '' }}>Shopify</option>
+                                        <option value="Custom" {{ old('cms_platform') == 'Custom' ? 'selected' : '' }}>Custom</option>
+                                        <option value="other" {{ old('cms_platform') == 'other' ? 'selected' : '' }}>Other</option>
                                     </select>
                                 </div>
-                                <div class="form-row" id="customCmsRow" style="display:none;">
+                                <div class="form-row" id="customCmsRow" style="display:{{ old('cms_platform') == 'other' ? 'flex' : 'none' }};">
                                     <label class="form-lbl">Specify Platform</label>
-                                    <input type="text" name="cms_custom" class="form-inp" placeholder="e.g. Wix, Webflow, Laravel…">
+                                    <input type="text" name="cms_custom" class="form-inp" placeholder="e.g. Wix, Webflow, Laravel…" value="{{ old('cms_custom') }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Number of Pages</label>
-                                    <input type="number" name="no_of_pages" class="form-inp" placeholder="e.g. 10" min="1">
+                                    <input type="number" name="no_of_pages" class="form-inp" placeholder="e.g. 10" min="1" value="{{ old('no_of_pages', 1) }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Website Payment Status</label>
                                     <select name="website_payment_status" class="form-inp">
                                         <option value="">— Select —</option>
-                                        <option>Pending</option>
-                                        <option>Partial</option>
-                                        <option>Paid</option>
+                                        <option value="Pending" {{ old('website_payment_status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                                        <option value="Partial" {{ old('website_payment_status') == 'Partial' ? 'selected' : '' }}>Partial</option>
+                                        <option value="Paid" {{ old('website_payment_status') == 'Paid' ? 'selected' : '' }}>Paid</option>
                                     </select>
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Required Features</label>
-                                    <textarea name="required_features" class="form-inp" rows="2" placeholder="Login, payment gateway, product catalogue, blog, multilingual…"></textarea>
+                                    <textarea name="required_features" class="form-inp" rows="2" placeholder="Login, payment gateway, product catalogue, blog, multilingual…">{{ old('required_features') }}</textarea>
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Reference Websites</label>
-                                    <input type="text" name="reference_websites" class="form-inp" placeholder="https://example1.com, https://example2.com">
+                                    <input type="text" name="reference_websites" class="form-inp" placeholder="https://example1.com, https://example2.com" value="{{ old('reference_websites') }}">
                                 </div>
                             </div>
                         </div>
@@ -171,15 +204,15 @@
                             <div class="form-grid">
                                 <div class="form-row">
                                     <label class="form-lbl">Last Update Date</label>
-                                    <input type="date" name="last_update_date" class="form-inp">
+                                    <input type="date" name="last_update_date" class="form-inp" value="{{ old('last_update_date') }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Client Feedback</label>
-                                    <input type="text" name="client_feedback" class="form-inp" placeholder="Client feedback summary">
+                                    <input type="text" name="client_feedback_summary" class="form-inp" placeholder="Client feedback summary" value="{{ old('client_feedback_summary') }}">
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Internal Notes</label>
-                                    <textarea name="internal_notes" class="form-inp" rows="3" placeholder="Internal notes visible only to the team…"></textarea>
+                                    <textarea name="internal_notes" class="form-inp" rows="3" placeholder="Internal notes visible only to the team…">{{ old('internal_notes') }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -191,7 +224,7 @@
                 <div class="span-4" style="display:flex;flex-direction:column;gap:16px;">
 
                     {{-- Project Timeline --}}
-                    <div class="dash-card" style="position:sticky;top:80px;">
+                    <div class="dash-card">
                         <div class="card-head">
                             <div>
                                 <div class="card-title"><i class="bi bi-calendar3" style="color:#f59e0b;margin-right:6px;"></i>Project Timeline</div>
@@ -201,27 +234,81 @@
                         <div class="card-body">
                             <div class="form-row">
                                 <label class="form-lbl">Project Start Date</label>
-                                <input type="date" name="project_start_date" class="form-inp">
+                                <input type="date" name="project_start_date" class="form-inp" value="{{ old('project_start_date') }}">
                             </div>
                             <div class="form-row">
                                 <label class="form-lbl">Expected Delivery Date</label>
-                                <input type="date" name="expected_delivery_date" class="form-inp">
+                                <input type="date" name="expected_delivery_date" class="form-inp" value="{{ old('expected_delivery_date') }}">
                             </div>
                             <div class="form-row">
                                 <label class="form-lbl">Actual Delivery Date</label>
-                                <input type="date" name="actual_delivery_date" class="form-inp">
+                                <input type="date" name="actual_delivery_date" class="form-inp" value="{{ old('actual_delivery_date') }}">
                             </div>
                             <div class="form-row">
                                 <label class="form-lbl">Project Status</label>
                                 <select name="project_status" class="form-inp">
                                     <option value="">— Select —</option>
-                                    <option>New</option>
-                                    <option>Design Phase</option>
-                                    <option>Development</option>
-                                    <option>Testing</option>
-                                    <option>Completed</option>
-                                    <option>On Hold</option>
+                                    <option value="New" {{ old('project_status') == 'New' ? 'selected' : '' }}>New</option>
+                                    <option value="Design Phase" {{ old('project_status') == 'Design Phase' ? 'selected' : '' }}>Design Phase</option>
+                                    <option value="Development" {{ old('project_status') == 'Development' ? 'selected' : '' }}>Development</option>
+                                    <option value="Testing" {{ old('project_status') == 'Testing' ? 'selected' : '' }}>Testing</option>
+                                    <option value="Completed" {{ old('project_status') == 'Completed' ? 'selected' : '' }}>Completed</option>
+                                    <option value="On Hold" {{ old('project_status') == 'On Hold' ? 'selected' : '' }}>On Hold</option>
                                 </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Assign To — Multiple Developers --}}
+                    <div class="dash-card" style="overflow:visible;">
+                        <div class="card-head">
+                            <div>
+                                <div class="card-title"><i class="bi bi-people-fill" style="color:#10b981;margin-right:6px;"></i>Assign To</div>
+                                <div class="card-sub">Select one or more team members</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="ms-wrap" id="addAssignWrap">
+                                <div class="ms-trigger" onclick="toggleMs('addAssignWrap')">
+                                    <div class="ms-pills" id="addAssignPills">
+                                        <span class="ms-placeholder">Select team members…</span>
+                                    </div>
+                                    <i class="bi bi-chevron-down ms-arrow"></i>
+                                </div>
+                                <div class="ms-dropdown" id="addAssignDropdown">
+                                    <div class="ms-search-wrap">
+                                        <i class="bi bi-search"></i>
+                                        <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'addAssignDropdown')">
+                                    </div>
+                                    <div class="ms-opts">
+                                        @php
+                                            $gradients = [
+                                                'linear-gradient(135deg,#6366f1,#06b6d4)',
+                                                'linear-gradient(135deg,#ec4899,#f59e0b)',
+                                                'linear-gradient(135deg,#10b981,#06b6d4)',
+                                                'linear-gradient(135deg,#8b5cf6,#ec4899)',
+                                                'linear-gradient(135deg,#f59e0b,#ef4444)',
+                                                'linear-gradient(135deg,#14b8a6,#6366f1)'
+                                            ];
+                                        @endphp
+                                        @foreach($developers as $index => $dev)
+                                            @php
+                                                $words = explode(' ', $dev->name);
+                                                $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+                                            @endphp
+                                            <label class="ms-opt">
+                                                <input type="checkbox" name="assign_to[]" value="{{ $dev->id }}" 
+                                                    data-name="{{ $dev->name }}" data-initials="{{ $initials }}"
+                                                    onchange="updateMs('addAssignWrap')">
+                                                <span class="ms-ava" style="background:{{ $gradients[$index % count($gradients)] }}">{{ $initials }}</span>
+                                                <div style="display:flex;flex-direction:column;">
+                                                    <span style="font-weight:500;color:var(--t1);">{{ $dev->name }}</span>
+                                                    <span style="font-size:11px;color:var(--t3);">{{ $dev->email }}</span>
+                                                </div>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -237,29 +324,29 @@
                         <div class="card-body">
                             <div class="form-row">
                                 <label class="form-lbl">Project Price *</label>
-                                <input type="number" name="project_price" id="projectPrice" class="form-inp" placeholder="₹ Amount" oninput="calcRemaining()">
+                                <input type="number" name="project_price" id="projectPrice" class="form-inp" placeholder="₹ Amount" oninput="calcRemaining()" required value="{{ old('project_price') }}">
                             </div>
                             <div class="form-row">
                                 <label class="form-lbl">Advance Payment</label>
-                                <input type="number" name="advance_payment" id="advancePayment" class="form-inp" placeholder="₹ Amount" oninput="calcRemaining()">
+                                <input type="number" name="advance_payment" id="advancePayment" class="form-inp" placeholder="₹ Amount" oninput="calcRemaining()" value="{{ old('advance_payment', 0) }}">
                             </div>
                             <div class="form-row">
                                 <label class="form-lbl">Remaining Amount</label>
-                                <div style="padding:9px 12px;background:var(--bg4);border:1px solid var(--b1);border-radius:var(--r-sm);font-size:13px;font-weight:700;color:#ef4444;font-family:var(--mono);" id="remainingDisplay">₹ 0</div>
-                                <input type="hidden" name="remaining_amount" id="remainingHidden" value="0">
+                                <div style="padding:9px 12px;background:var(--bg4);border:1px solid var(--b1);border-radius:var(--r-sm);font-size:13px;font-weight:700;color:#ef4444;font-family:var(--mono);" id="remainingDisplay">₹ {{ old('remaining_amount', 0) }}</div>
+                                <input type="hidden" name="remaining_amount" id="remainingHidden" value="{{ old('remaining_amount', 0) }}">
                             </div>
                             <div class="form-row">
-                                <label class="form-lbl">Payment Status</label>
+                                <label class="form-lbl">Financial Payment Status</label>
                                 <select name="financial_payment_status" class="form-inp">
                                     <option value="">— Select —</option>
-                                    <option>Pending</option>
-                                    <option>Partial</option>
-                                    <option>Paid</option>
+                                    <option value="Pending" {{ old('financial_payment_status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="Partial" {{ old('financial_payment_status') == 'Partial' ? 'selected' : '' }}>Partial</option>
+                                    <option value="Paid" {{ old('financial_payment_status') == 'Paid' ? 'selected' : '' }}>Paid</option>
                                 </select>
                             </div>
                             <div class="form-row" style="margin-bottom:0;">
                                 <label class="form-lbl">Invoice Number</label>
-                                <input type="text" name="invoice_number" class="form-inp" placeholder="INV-XXXX">
+                                <input type="text" name="invoice_number" class="form-inp" placeholder="INV-XXXX" value="{{ old('invoice_number') }}">
                             </div>
                         </div>
                     </div>
@@ -301,7 +388,12 @@
         const today = new Date().toISOString().split('T')[0];
         document.querySelector('input[name="project_start_date"]').value = today;
         document.querySelector('input[name="last_update_date"]').value = today;
+
+        // Trigger multi-select update
+        updateMs('addAssignWrap');
     });
 </script>
+
+@include('admin.project._multiselect_assets')
 
 @endsection
