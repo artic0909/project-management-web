@@ -3,19 +3,19 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Models\Project;
 use App\Models\Order;
 use App\Models\Developer;
 use App\Models\ProjectAssign;
+use App\Models\ClientFeedback;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
     public function index()
     {
-        $projects = Project::with(['developers', 'order'])->latest()->paginate(10);
+        $projects = Project::latest()->get();
         return view('admin.project.index', compact('projects'));
     }
 
@@ -35,7 +35,7 @@ class ProjectController extends Controller
         ]);
 
         $data = $request->all();
-        
+
         // Handle Multi-Email
         $data['emails'] = $request->email ?? [];
 
@@ -57,6 +57,16 @@ class ProjectController extends Controller
         $data['created_by_type'] = get_class(Auth::user());
 
         $project = Project::create($data);
+
+        // Historical Logging
+        if ($request->anyFilled(['last_update_date', 'client_feedback_summary', 'internal_notes'])) {
+            $project->feedbacks()->create([
+                'status' => $project->project_status,
+                'last_update_date' => $request->last_update_date,
+                'feedback_summary' => $request->client_feedback_summary,
+                'internal_notes' => $request->internal_notes,
+            ]);
+        }
 
         if ($request->has('assign_to')) {
             foreach ($request->assign_to as $developerId) {
@@ -115,6 +125,16 @@ class ProjectController extends Controller
         $data['phones'] = $phones;
         
         $project->update($data);
+
+        // Historical Logging
+        if ($request->anyFilled(['last_update_date', 'client_feedback_summary', 'internal_notes'])) {
+            $project->feedbacks()->create([
+                'status' => $project->project_status,
+                'last_update_date' => $request->last_update_date,
+                'feedback_summary' => $request->client_feedback_summary,
+                'internal_notes' => $request->internal_notes,
+            ]);
+        }
 
         if ($request->has('assign_to')) {
             ProjectAssign::where('project_id', $project->id)->delete();

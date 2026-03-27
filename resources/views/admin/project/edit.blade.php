@@ -227,26 +227,33 @@
                     </div>
 
                     {{-- Communication & Tracking --}}
+                    @php $latestFb = $project->feedbacks()->latest()->first(); @endphp
                     <div class="dash-card">
                         <div class="card-head">
                             <div>
                                 <div class="card-title"><i class="bi bi-chat-dots" style="color:#ec4899;margin-right:6px;"></i>Communication & Tracking</div>
-                                <div class="card-sub">Notes and status logging</div>
+                                <div class="card-sub" style="color:var(--accent);">
+                                    @if($latestFb)
+                                        <i class="bi bi-clock-history"></i> Latest: "{{ $latestFb->feedback_summary }}" ({{ $latestFb->last_update_date ? $latestFb->last_update_date->format('d M') : $latestFb->created_at->format('d M') }})
+                                    @else
+                                        Notes and status logging (Creates a new history entry)
+                                    @endif
+                                </div>
                             </div>
                         </div>
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row">
-                                    <label class="form-lbl">Last Update Date</label>
-                                    <input type="date" name="last_update_date" class="form-inp" value="{{ old('last_update_date', $project->last_update_date ? $project->last_update_date->format('Y-m-d') : '') }}">
+                                    <label class="form-lbl">Update Date</label>
+                                    <input type="date" name="last_update_date" class="form-inp" value="{{ old('last_update_date', date('Y-m-d')) }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Client Feedback Summary</label>
-                                    <input type="text" name="client_feedback_summary" class="form-inp" placeholder="Latest feedback summary" value="{{ old('client_feedback_summary', $project->client_feedback_summary) }}">
+                                    <input type="text" name="client_feedback_summary" class="form-inp" placeholder="Add new feedback summary" value="{{ old('client_feedback_summary') }}">
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1;margin-bottom:0;">
                                     <label class="form-lbl">Internal Notes</label>
-                                    <textarea name="internal_notes" class="form-inp" rows="3" placeholder="Private internal notes…">{{ old('internal_notes', $project->internal_notes) }}</textarea>
+                                    <textarea name="internal_notes" class="form-inp" rows="3" placeholder="Add new internal notes for this update…">{{ old('internal_notes') }}</textarea>
                                 </div>
                             </div>
                         </div>
