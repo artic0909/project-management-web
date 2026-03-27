@@ -283,9 +283,7 @@
                                 <td>
                                     @if($project->createdBy)
                                         <div class="ln">{{ $project->createdBy->name }}</div>
-                                        @if($project->created_by_type === \App\Models\Sale::class)
-                                            <div class="ls" style="font-size:10px">{{ $project->createdBy->email }}</div>
-                                        @endif
+                                        <div class="ls" style="font-size:10px">{{ $project->createdBy->email }}</div>
                                     @else
                                         <div class="ln">System</div>
                                     @endif

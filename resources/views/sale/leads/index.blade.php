@@ -779,6 +779,12 @@
                             <option value="Warm" {{ request('priority') == 'Warm' ? 'selected' : '' }}>Warm</option>
                             <option value="Cold" {{ request('priority') == 'Cold' ? 'selected' : '' }}>Cold</option>
                         </select>
+                        <select name="status_id" class="filter-select" onchange="this.form.submit()">
+                            <option value="">All Statuses</option>
+                            @foreach($statuses as $status)
+                                <option value="{{ $status->id }}" {{ request('status_id') == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
+                            @endforeach
+                        </select>
                         <select name="assigned_to" class="filter-select" onchange="this.form.submit()">
                             <option value="">Assign To</option>
                             @foreach($sales as $sale)
@@ -808,7 +814,7 @@
                         <tbody>
                             @forelse($leads as $index => $lead)
                             <tr>
-                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $leads->firstItem() + $index }}</td>
                                 <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $lead->created_at->format('d M Y') }}</div></td>
                                 <td>
                                     <div class="lead-cell">
@@ -836,9 +842,7 @@
                                 <td>
                                     @if($lead->createdBy)
                                         <div class="ln">{{ $lead->createdBy->name }}</div>
-                                        @if($lead->created_by_type === \App\Models\Sale::class)
-                                            <div class="ls">{{ $lead->createdBy->email }}</div>
-                                        @endif
+                                        <div class="ls" style="font-size:10px">{{ $lead->createdBy->email }}</div>
                                     @else
                                         <div class="ln">System</div>
                                     @endif

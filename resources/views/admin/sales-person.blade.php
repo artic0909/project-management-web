@@ -732,7 +732,7 @@
                         <tbody>
                             @foreach ($salesPeople as $index => $person)
                             <tr>
-                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $salesPeople->firstItem() + $index }}</td>
                                 <td>
                                     <div class="lead-cell">
                                         <div class="mini-ava" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">
@@ -762,23 +762,9 @@
 
                 <!-- Pagination -->
                 <div class="table-footer">
-                    <span class="tf-info">Showing {{ $salesPeople->count() }} of {{ $salesPeople->count() }} Sales Persons</span>
+                    <span class="tf-info">Showing {{ $salesPeople->firstItem() ?? 0 }} to {{ $salesPeople->lastItem() ?? 0 }} of {{ $salesPeople->total() }} Sales Persons</span>
                     <div class="tf-pagination">
-                        <button class="pg-btn"><i class="bi bi-chevron-left"></i></button>
-                        <button class="pg-btn active">1</button>
-                        <button class="pg-btn">2</button>
-                        <button class="pg-btn">3</button>
-                        <span class="pg-ellipsis">…</span>
-                        <button class="pg-btn">5</button>
-                        <button class="pg-btn"><i class="bi bi-chevron-right"></i></button>
-                    </div>
-                    <div class="tf-per-page">
-                        <!-- <span>Rows:</span>
-                            <select>
-                                <option>5</option>
-                                <option>10</option>
-                                <option>25</option>
-                            </select> -->
+                        {{ $salesPeople->links() }}
                     </div>
                 </div>
             </div>

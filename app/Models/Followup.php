@@ -23,6 +23,6 @@ class Followup extends Model
 
     public function creator()
     {
-        return $this->morphTo('created_by');
+        return $this->morphTo(null, 'created_by_type', 'created_by_id');
     }
 }

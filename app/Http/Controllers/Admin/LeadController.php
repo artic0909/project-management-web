@@ -49,6 +49,9 @@ class LeadController extends Controller
         if ($request->has('priority') && !empty($request->priority)) {
             $query->where('priority', $request->priority);
         }
+        if ($request->has('status_id') && !empty($request->status_id)) {
+            $query->where('status_id', $request->status_id);
+        }
         if ($request->filled('assigned_to')) {
             $query->whereHas('assignments', function($q) use ($request) {
                 $q->where('assigned_to', $request->assigned_to);

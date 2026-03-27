@@ -13,7 +13,7 @@ class SalesPersonController extends Controller
 {
     public function index()
     {
-        $salesPeople = Sale::latest()->get();
+        $salesPeople = Sale::latest()->paginate(14)->withQueryString();
         return view('admin.sales-person', compact('salesPeople'));
     }
 

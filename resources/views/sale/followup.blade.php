@@ -239,7 +239,7 @@
                                             <div style="font-size:10px;color:var(--t4);">
                                                 Logged by: 
                                                 @if($followup->creator)
-                                                    {{ $followup->created_by_type == \App\Models\Admin::class ? 'System' : $followup->creator->name }}
+                                                    {{ $followup->creator->name }} - {{ $followup->creator->email }}
                                                 @else
                                                     System
                                                 @endif

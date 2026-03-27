@@ -62,6 +62,9 @@ class LeadController extends Controller
         if ($request->has('priority') && !empty($request->priority)) {
             $query->where('priority', $request->priority);
         }
+        if ($request->has('status_id') && !empty($request->status_id)) {
+            $query->where('status_id', $request->status_id);
+        }
 
         $leads = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
 

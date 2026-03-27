@@ -238,10 +238,8 @@
                                             </div>
                                             <div style="font-size:10px;color:var(--t4);">
                                                 Logged by: 
-                                                @if($followup->creator instanceof \App\Models\Admin)
-                                                    System
-                                                @elseif($followup->creator)
-                                                    {{ $followup->creator->name }}
+                                                @if($followup->creator)
+                                                    {{ $followup->creator->name }} - {{ $followup->creator->email }}
                                                 @else
                                                     System
                                                 @endif

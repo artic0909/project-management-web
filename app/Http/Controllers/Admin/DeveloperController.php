@@ -13,7 +13,7 @@ class DeveloperController extends Controller
 {
     public function index()
     {
-        $developers = Developer::latest()->get();
+        $developers = Developer::latest()->paginate(14)->withQueryString();
         return view('admin.developers', compact('developers'));
     }
 
