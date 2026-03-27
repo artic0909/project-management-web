@@ -3041,9 +3041,7 @@
                     <i class="bi bi-list"></i>
                 </button>
                 <div class="page-breadcrumb">
-                    <span class="breadcrumb-panel" id="activePanelLabel">Dev Panel</span>
-                    <i class="bi bi-chevron-right bc-sep"></i>
-                    <span class="breadcrumb-page" id="activePageLabel">Services</span>
+                    <span class="breadcrumb-panel" id="activePanelLabel">Developer</span>
                 </div>
             </div>
 
@@ -3056,14 +3054,14 @@
             </div>
 
             <div class="topbar-right">
-                <div class="tb-btn" onclick="showToast('info','Syncing data...','bi-arrow-clockwise')" data-tooltip="Sync">
+                <!-- <div class="tb-btn" onclick="showToast('info','Syncing data...','bi-arrow-clockwise')" data-tooltip="Sync">
                     <i class="bi bi-arrow-clockwise"></i>
                 </div>
 
                 <div class="tb-btn notif-btn" data-tooltip="Notifications" onclick="toggleNotifPanel()">
                     <i class="bi bi-bell-fill"></i>
                     <span class="notif-badge">7</span>
-                </div>
+                </div> -->
 
                 <!-- Notification dropdown -->
                 <div class="notif-panel" id="notifPanel">
@@ -3104,8 +3102,8 @@
 
                 <div class="tb-divider"></div>
                 <div class="tb-user" onclick="toggleUserMenu()">
-                    <div class="user-ava sm" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">RK</div>
-                    <span class="tb-user-name">Rahul Kumar</span>
+                    <div class="user-ava sm" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">{{ strtoupper(substr(auth()->guard('developer')->user()->name ?? 'U', 0, 2)) }}</div>
+                    <span class="tb-user-name">{{ auth()->guard('developer')->user()->name }}</span>
                     <i class="bi bi-chevron-down" style="font-size:10px;color:var(--t3)"></i>
                 </div>
                 <div class="user-menu" id="userMenu">
