@@ -109,7 +109,7 @@
       </div>
       <div class="user-info">
         <div class="user-name">{{ auth()->user()->name ?? 'Admin' }}</div>
-        <div class="user-role">{{ auth()->user()->role ?? 'Super Admin' }}</div>
+        <div class="user-role">{{ auth()->user()->email ?? 'Super Admin' }}</div>
       </div>
       <div class="user-status-dot"></div>
     </div>
