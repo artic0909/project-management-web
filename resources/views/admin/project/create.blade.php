@@ -299,11 +299,11 @@
                                             @endphp
                                             <label class="ms-opt">
                                                 <input type="checkbox" name="assign_to[]" value="{{ $dev->id }}" 
-                                                    data-name="{{ $dev->name }}" data-initials="{{ $initials }}"
+                                                    data-name="{{ $dev->name }} - {{ $dev->designation }}" data-initials="{{ $initials }}"
                                                     onchange="updateMs('addAssignWrap')">
                                                 <span class="ms-ava" style="background:{{ $gradients[$index % count($gradients)] }}">{{ $initials }}</span>
                                                 <div style="display:flex;flex-direction:column;">
-                                                    <span style="font-weight:500;color:var(--t1);">{{ $dev->name }}</span>
+                                                    <span style="font-weight:500;color:var(--t1);">{{ $dev->name }} - {{ $dev->designation }}</span>
                                                     <span style="font-size:11px;color:var(--t3);">{{ $dev->email }}</span>
                                                 </div>
                                             </label>

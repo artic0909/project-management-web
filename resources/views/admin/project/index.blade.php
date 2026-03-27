@@ -158,6 +158,7 @@
                                 <th>CMS</th>
                                 <th>Start Date</th>
                                 <th>Delivery</th>
+                                <th>Assigned To</th>
                                 <th>Project Status</th>
                                 <th>Project Price</th>
                                 <th>Advance</th>
@@ -216,6 +217,20 @@
                                     @endif
                                 </td>
                                 <td>
+                                    <div style="display:flex; flex-direction:column; gap:4px;">
+                                        @forelse($project->developers as $dev)
+                                            <div style="font-size:12px; white-space:nowrap;">
+                                                <span style="font-weight:600;color:var(--t1);">{{ $dev->name }}</span>
+                                                @if($dev->designation)
+                                                    <span style="font-size:10px;color:var(--t3);"> - {{ $dev->designation }}</span>
+                                                @endif
+                                            </div>
+                                        @empty
+                                            <span style="color:var(--t4);font-size:11px;">Unassigned</span>
+                                        @endforelse
+                                    </div>
+                                </td>
+                                <td>
                                     @php
                                         $displayProjStatus = $project->projectStatus ? $project->projectStatus->name : ($project->project_status ?? 'New');
                                         $statusClass = strtolower(str_replace(' ', '-', $displayProjStatus));
@@ -247,7 +262,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="12" style="text-align:center;padding:40px;color:var(--t4);">No projects found matching your criteria.</td>
+                                <td colspan="13" style="text-align:center;padding:40px;color:var(--t4);">No projects found matching your criteria.</td>
                             </tr>
                         @endforelse
                         </tbody>

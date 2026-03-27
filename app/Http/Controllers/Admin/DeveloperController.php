@@ -21,6 +21,7 @@ class DeveloperController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
+            'designation' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:developers',
             'password' => 'required|string|min:4|confirmed',
         ]);
@@ -31,6 +32,7 @@ class DeveloperController extends Controller
 
         Developer::create([
             'name' => $request->name,
+            'designation' => $request->designation,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
@@ -44,6 +46,7 @@ class DeveloperController extends Controller
 
         $rules = [
             'name' => 'required|string|max:255',
+            'designation' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:developers,email,' . $id,
         ];
 
@@ -59,6 +62,7 @@ class DeveloperController extends Controller
 
         $developer->update([
             'name' => $request->name,
+            'designation' => $request->designation,
             'email' => $request->email,
         ]);
 

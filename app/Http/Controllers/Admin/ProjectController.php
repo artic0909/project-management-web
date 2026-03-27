@@ -16,7 +16,7 @@ class ProjectController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Project::with(['projectStatus', 'paymentStatus']);
+        $query = Project::with(['projectStatus', 'paymentStatus', 'developers']);
 
         // Search Filter
         if ($request->filled('q')) {

@@ -369,7 +369,7 @@
                                             {{ $initials }}</div>
                                         <div style="display:flex;flex-direction:column;overflow:hidden;">
                                             <span
-                                                style="font-size:14px;font-weight:700;color:var(--t1);">{{ $dev->name }}</span>
+                                                style="font-size:14px;font-weight:700;color:var(--t1);">{{ $dev->name }} - {{ $dev->designation }}</span>
                                             <span style="font-size:11px;color:var(--t4);">{{ $dev->email }}</span>
                                         </div>
                                     </div>

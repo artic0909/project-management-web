@@ -805,6 +805,10 @@
                             <label class="form-lbl">Email *</label>
                             <input type="email" name="email" class="form-inp" placeholder="email@company.com" required>
                         </div>
+                        <div class="form-row" style="grid-column: 1 / -1;">
+                            <label class="form-lbl">Designation *</label>
+                            <input type="text" name="designation" class="form-inp" placeholder="Developer Designation" required>
+                        </div>
                         <div class="form-row">
                             <label class="form-lbl">Set Password *</label>
                             <input type="password" name="password" class="form-inp" value="12345" required>
@@ -842,6 +846,10 @@
                         <div class="form-row">
                             <label class="form-lbl">Email *</label>
                             <input type="email" name="email" id="edit_email" class="form-inp" placeholder="email@company.com" required>
+                        </div>
+                        <div class="form-row" style="grid-column: 1 / -1;">
+                            <label class="form-lbl">Designation *</label>
+                            <input type="text" name="designation" id="edit_designation" class="form-inp" placeholder="Developer Designation" required>
                         </div>
                         <div class="form-row">
                             <label class="form-lbl">Set Password (leave blank to keep current)</label>
@@ -895,6 +903,7 @@
             document.getElementById('editForm').action = `{{ url('admin/add-developer') }}/${developer.id}`;
             document.getElementById('edit_name').value = developer.name;
             document.getElementById('edit_email').value = developer.email;
+            document.getElementById('edit_designation').value = developer.designation;
             // Clear password fields on open
             document.querySelector('#editForm [name="password"]').value = '';
             document.querySelector('#editForm [name="password_confirmation"]').value = '';
