@@ -141,7 +141,16 @@
                                 </td>
                                 <td>
                                     <div class="ln">{{ $project->client_name }}</div>
-                                    <div class="ls">{{ $project->phone ?? $project->email }}</div>
+                                    <div class="ls">
+                                        @if(is_array($project->phones) && count($project->phones) > 0)
+                                            {{ is_array($project->phones[0]) ? $project->phones[0]['num'] : $project->phones[0] }}
+                                            @if(count($project->phones) > 1) <small class="text-muted">(+{{ count($project->phones)-1 }})</small> @endif
+                                        @elseif($project->phones)
+                                            {{ $project->phones }}
+                                        @else
+                                            {{ is_array($project->emails) && count($project->emails) > 0 ? $project->emails[0] : ($project->emails ?? 'N/A') }}
+                                        @endif
+                                    </div>
                                 </td>
                                 <td>
                                     @if($project->cms_platform)

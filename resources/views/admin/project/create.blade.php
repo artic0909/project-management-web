@@ -42,20 +42,44 @@
                 {{-- ══ LEFT COL — 8 spans ══ --}}
                 <div class="span-8" style="display:flex;flex-direction:column;gap:16px;">
 
-                    {{-- Link to Order (Optional) --}}
-                    <div class="dash-card">
-                        <div class="card-head">
-                            <div class="card-title"><i class="bi bi-cart-check-fill" style="color:var(--accent);margin-right:6px;"></i>Link to Order</div>
+                    {{-- ── LINK TO ORDER (Optional) ── --}}
+                    <div class="dash-card" style="overflow:visible;border:1px solid var(--accent);box-shadow:0 0 20px rgba(99,102,241,0.08);">
+                        <div class="card-head" style="border-bottom:1px solid var(--b1);background:rgba(99,102,241,0.03);">
+                             <div class="card-title"><i class="bi bi-cart-fill" style="color:var(--accent);margin-right:6px;"></i>Link to Order</div>
+                             <div class="card-sub">Select an existing order to auto-fill details</div>
                         </div>
-                        <div class="card-body">
-                            <div class="form-row">
-                                <label class="form-lbl">Select Order (Optional)</label>
-                                <select name="order_id" class="form-inp">
-                                    <option value="">— Select Order —</option>
-                                    @foreach($orders as $order)
-                                        <option value="{{ $order->id }}">{{ $order->project_name ?? $order->domain_name }} (#{{ $order->id }})</option>
-                                    @endforeach
-                                </select>
+                        <div class="card-body" style="padding:15px 20px;">
+                            <div class="order-select-wrap">
+                                <input type="hidden" name="order_id" id="selectedOrderId" value="{{ old('order_id') }}">
+                                <div class="os-trigger" onclick="toggleOs()">
+                                    <div class="os-selected-text">
+                                        <span class="os-placeholder">— Select Order (Optional) —</span>
+                                    </div>
+                                    <i class="bi bi-chevron-down ms-arrow"></i>
+                                </div>
+                                <div class="os-dropdown shadow-lg">
+                                    <div class="os-search-box">
+                                        <i class="bi bi-search"></i>
+                                        <input type="text" class="os-search-inp" placeholder="Search orders by company, domain, or name..." onkeyup="filterOs(this.value)">
+                                    </div>
+                                    <div class="os-options">
+                                        <div class="os-opt" onclick="selectOrder('')">
+                                            <div class="os-opt-main" style="color:var(--t4)">None / Manual Entry</div>
+                                        </div>
+                                        @foreach($orders as $o)
+                                            <div class="os-opt" data-id="{{ $o->id }}" onclick="selectOrder('{{ $o->id }}')">
+                                                <div class="os-opt-main">
+                                                    <span>{{ $o->company_name ?? 'No Company' }}</span>
+                                                    <span class="os-date">{{ $o->created_at->format('d M Y') }}</span>
+                                                </div>
+                                                <div class="os-opt-sub">
+                                                    <span><i class="bi bi-globe" style="margin-right:3px"></i>{{ $o->domain_name ?? 'N/A' }}</span>
+                                                    <span><i class="bi bi-person" style="margin-right:3px"></i>{{ $o->client_name }}</span>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -78,14 +102,21 @@
                                     <label class="form-lbl">Client Name *</label>
                                     <input type="text" name="client_name" class="form-inp" placeholder="Full name" required value="{{ old('client_name') }}">
                                 </div>
-                                <div class="form-row">
-                                    <label class="form-lbl">Email ID</label>
-                                    <input type="email" name="email" class="form-inp" placeholder="email@company.com" value="{{ old('email') }}">
+                                
+                                <div class="form-row" style="grid-column:1/-1">
+                                    <label class="form-lbl">Email ID(s)</label>
+                                    <div id="add-email-list">
+                                        {{-- Multi-email rows injected by JS --}}
+                                    </div>
                                 </div>
-                                <div class="form-row">
-                                    <label class="form-lbl">Phone Number</label>
-                                    <input type="tel" name="phone" class="form-inp" placeholder="+91 XXXXX XXXXX" value="{{ old('phone') }}">
+
+                                <div class="form-row" style="grid-column:1/-1">
+                                    <label class="form-lbl">Phone Number(s)</label>
+                                    <div id="add-phone-list">
+                                        {{-- Multi-phone rows injected by JS --}}
+                                    </div>
                                 </div>
+
                                 <div class="form-row">
                                     <label class="form-lbl">Company Name</label>
                                     <input type="text" name="company_name" class="form-inp" placeholder="Company name" value="{{ old('company_name') }}">
@@ -262,10 +293,8 @@
                     {{-- Assign To — Multiple Developers --}}
                     <div class="dash-card" style="overflow:visible;">
                         <div class="card-head">
-                            <div>
-                                <div class="card-title"><i class="bi bi-people-fill" style="color:#10b981;margin-right:6px;"></i>Assign To</div>
-                                <div class="card-sub">Select one or more team members</div>
-                            </div>
+                            <div class="card-title"><i class="bi bi-people-fill" style="color:#10b981;margin-right:6px;"></i>Assign To</div>
+                            <div class="card-sub">Select one or more team members</div>
                         </div>
                         <div class="card-body">
                             <div class="ms-wrap" id="addAssignWrap">
@@ -316,10 +345,8 @@
                     {{-- Financial Fields --}}
                     <div class="dash-card">
                         <div class="card-head">
-                            <div>
-                                <div class="card-title"><i class="bi bi-currency-rupee" style="color:#8b5cf6;margin-right:6px;"></i>Financial Fields</div>
-                                <div class="card-sub">Pricing & payment info</div>
-                            </div>
+                            <div class="card-title"><i class="bi bi-currency-rupee" style="color:#8b5cf6;margin-right:6px;"></i>Financial Fields</div>
+                            <div class="card-sub">Pricing & payment info</div>
                         </div>
                         <div class="card-body">
                             <div class="form-row">
@@ -395,5 +422,7 @@
 </script>
 
 @include('admin.project._multiselect_assets')
+@include('admin.project._order_select_assets')
+@include('admin.project._phone_email_assets')
 
 @endsection

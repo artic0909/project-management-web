@@ -38,9 +38,55 @@
             @method('PUT')
             <div class="dash-grid">
 
-                {{-- Left Column: Project Details --}}
-                <div class="span-8" style="display:flex;flex-direction:column;gap:20px;">
+                {{-- ══ LEFT COL — 8 spans ══ --}}
+                <div class="span-8" style="display:flex;flex-direction:column;gap:16px;">
                     
+                    {{-- ── LINK TO ORDER (Optional) ── --}}
+                    <div class="dash-card" style="overflow:visible;border:1px solid var(--accent);box-shadow:0 0 20px rgba(99,102,241,0.08);">
+                        <div class="card-head" style="border-bottom:1px solid var(--b1);background:rgba(99,102,241,0.03);">
+                             <div class="card-title"><i class="bi bi-cart-fill" style="color:var(--accent);margin-right:6px;"></i>Link to Order</div>
+                             <div class="card-sub">Select an order to refresh details</div>
+                        </div>
+                        <div class="card-body" style="padding:15px 20px;">
+                            <div class="order-select-wrap">
+                                <input type="hidden" name="order_id" id="selectedOrderId" value="{{ old('order_id', $project->order_id) }}">
+                                <div class="os-trigger" onclick="toggleOs()">
+                                    <div class="os-selected-text">
+                                        @if($project->order)
+                                            {{ $project->order->company_name ?? 'No Company' }} <span style="color:var(--t4);font-weight:400;margin-left:8px;">({{ $project->order->domain_name ?? 'N/A' }})</span>
+                                        @else
+                                            <span class="os-placeholder">— Select Order (Optional) —</span>
+                                        @endif
+                                    </div>
+                                    <i class="bi bi-chevron-down ms-arrow"></i>
+                                </div>
+                                <div class="os-dropdown shadow-lg">
+                                    <div class="os-search-box">
+                                        <i class="bi bi-search"></i>
+                                        <input type="text" class="os-search-inp" placeholder="Search orders..." onkeyup="filterOs(this.value)">
+                                    </div>
+                                    <div class="os-options">
+                                        <div class="os-opt {{ !$project->order_id ? 'active' : '' }}" onclick="selectOrder('')">
+                                            <div class="os-opt-main" style="color:var(--t4)">None / Manual Entry</div>
+                                        </div>
+                                        @foreach($orders as $o)
+                                            <div class="os-opt {{ $project->order_id == $o->id ? 'active' : '' }}" data-id="{{ $o->id }}" onclick="selectOrder('{{ $o->id }}')">
+                                                <div class="os-opt-main">
+                                                    <span>{{ $o->company_name ?? 'No Company' }}</span>
+                                                    <span class="os-date">{{ $o->created_at->format('d M Y') }}</span>
+                                                </div>
+                                                <div class="os-opt-sub">
+                                                    <span><i class="bi bi-globe" style="margin-right:3px"></i>{{ $o->domain_name ?? 'N/A' }}</span>
+                                                    <span><i class="bi bi-person" style="margin-right:3px"></i>{{ $o->client_name }}</span>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- Basic Information --}}
                     <div class="dash-card">
                         <div class="card-head">
@@ -59,14 +105,21 @@
                                     <label class="form-lbl">Client Name *</label>
                                     <input type="text" name="client_name" class="form-inp" placeholder="Full name" required value="{{ old('client_name', $project->client_name) }}">
                                 </div>
-                                <div class="form-row">
-                                    <label class="form-lbl">Email</label>
-                                    <input type="email" name="email" class="form-inp" placeholder="email@company.com" value="{{ old('email', $project->email) }}">
+
+                                <div class="form-row" style="grid-column:1/-1">
+                                    <label class="form-lbl">Email ID(s)</label>
+                                    <div id="edit-email-list">
+                                        {{-- Multi-email rows injected by JS --}}
+                                    </div>
                                 </div>
-                                <div class="form-row">
-                                    <label class="form-lbl">Phone</label>
-                                    <input type="tel" name="phone" class="form-inp" placeholder="+91 XXXXX XXXXX" value="{{ old('phone', $project->phone) }}">
+
+                                <div class="form-row" style="grid-column:1/-1">
+                                    <label class="form-lbl">Phone Number(s)</label>
+                                    <div id="edit-phone-list">
+                                        {{-- Multi-phone rows injected by JS --}}
+                                    </div>
                                 </div>
+
                                 <div class="form-row">
                                     <label class="form-lbl">Company Name</label>
                                     <input type="text" name="company_name" class="form-inp" placeholder="Company name" value="{{ old('company_name', $project->company_name) }}">
@@ -146,7 +199,7 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Number of Pages</label>
-                                    <input type="number" name="number_of_pages" class="form-inp" placeholder="e.g. 10" value="{{ old('number_of_pages', $project->number_of_pages) }}">
+                                    <input type="number" name="no_of_pages" class="form-inp" placeholder="e.g. 10" value="{{ old('no_of_pages', $project->no_of_pages) }}">
                                 </div>
                                 <div class="form-row" id="customCmsRow" style="display:{{ old('cms_platform', $project->cms_platform) == 'other' ? 'flex' : 'none' }};grid-column:1/-1;">
                                     <label class="form-lbl">Specify CMS *</label>
@@ -189,7 +242,7 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Client Feedback Summary</label>
-                                    <input type="text" name="client_feedback" class="form-inp" placeholder="Latest feedback summary" value="{{ old('client_feedback', $project->client_feedback) }}">
+                                    <input type="text" name="client_feedback_summary" class="form-inp" placeholder="Latest feedback summary" value="{{ old('client_feedback_summary', $project->client_feedback_summary) }}">
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1;margin-bottom:0;">
                                     <label class="form-lbl">Internal Notes</label>
@@ -202,13 +255,13 @@
                 </div>
 
                 {{-- Right Column: Timeline, Assign, Financial --}}
-                <div class="span-4" style="display:flex;flex-direction:column;gap:20px;">
+                <div class="span-4" style="display:flex;flex-direction:column;gap:16px;">
                     
                     {{-- Timeline & Status --}}
                     <div class="dash-card">
                         <div class="card-head">
                             <div>
-                                <div class="card-title"><i class="bi bi-calendar3" style="color:#10b981;margin-right:6px;"></i>Project Timeline</div>
+                                <div class="card-title"><i class="bi bi-calendar3" style="color:#f59e0b;margin-right:6px;"></i>Project Timeline</div>
                                 <div class="card-sub">Schedule & progress</div>
                             </div>
                         </div>
@@ -296,10 +349,8 @@
                     {{-- Financial Fields --}}
                     <div class="dash-card">
                         <div class="card-head">
-                            <div>
-                                <div class="card-title"><i class="bi bi-currency-rupee" style="color:#8b5cf6;margin-right:6px;"></i>Financial Fields</div>
-                                <div class="card-sub">Pricing & payment info</div>
-                            </div>
+                            <div class="card-title"><i class="bi bi-currency-rupee" style="color:#8b5cf6;margin-right:6px;"></i>Financial Fields</div>
+                            <div class="card-sub">Pricing & payment info</div>
                         </div>
                         <div class="card-body">
                             <div class="form-row">
@@ -369,11 +420,30 @@
     document.addEventListener('DOMContentLoaded', function() {
         toggleCustomCms();
         calcRemaining();
-        // Trigger multi-select update to show pre-selected values
         updateMs('addAssignWrap');
+
+        // Seed Existing Emails
+        @if($project->emails && is_array($project->emails))
+            @foreach($project->emails as $email)
+                addEmailRow('edit-email-list', '{{ $email }}');
+            @endforeach
+        @endif
+        
+        // Seed Existing Phones
+        @if($project->phones && is_array($project->phones))
+            @foreach($project->phones as $phone)
+                @if(is_array($phone))
+                    addPhoneRow('edit-phone-list', '{{ $phone['num'] }}', '{{ $phone['code'] }}');
+                @else
+                    addPhoneRow('edit-phone-list', '{{ $phone }}');
+                @endif
+            @endforeach
+        @endif
     });
 </script>
 
 @include('admin.project._multiselect_assets')
+@include('admin.project._order_select_assets')
+@include('admin.project._phone_email_assets')
 
 @endsection

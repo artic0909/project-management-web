@@ -35,6 +35,24 @@ class ProjectController extends Controller
         ]);
 
         $data = $request->all();
+        
+        // Handle Multi-Email
+        $data['emails'] = $request->email ?? [];
+
+        // Handle Multi-Phone with Country Codes
+        $phones = [];
+        if ($request->has('phone')) {
+            foreach ($request->phone as $idx => $num) {
+                if ($num) {
+                    $phones[] = [
+                        'code' => $request->country_code[$idx] ?? null,
+                        'num' => $num
+                    ];
+                }
+            }
+        }
+        $data['phones'] = $phones;
+
         $data['created_by'] = Auth::id();
         $data['created_by_type'] = get_class(Auth::user());
 
@@ -77,7 +95,26 @@ class ProjectController extends Controller
             'project_price' => 'required|numeric',
         ]);
 
-        $project->update($request->all());
+        $data = $request->all();
+        
+        // Handle Multi-Email
+        $data['emails'] = $request->email ?? [];
+
+        // Handle Multi-Phone with Country Codes
+        $phones = [];
+        if ($request->has('phone')) {
+            foreach ($request->phone as $idx => $num) {
+                if ($num) {
+                    $phones[] = [
+                        'code' => $request->country_code[$idx] ?? null,
+                        'num' => $num
+                    ];
+                }
+            }
+        }
+        $data['phones'] = $phones;
+        
+        $project->update($data);
 
         if ($request->has('assign_to')) {
             ProjectAssign::where('project_id', $project->id)->delete();
