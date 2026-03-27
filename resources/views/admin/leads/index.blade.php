@@ -779,6 +779,12 @@
                             <option value="Warm" {{ request('priority') == 'Warm' ? 'selected' : '' }}>Warm</option>
                             <option value="Cold" {{ request('priority') == 'Cold' ? 'selected' : '' }}>Cold</option>
                         </select>
+                        <select name="assigned_to" class="filter-select" onchange="this.form.submit()">
+                            <option value="">Assign To</option>
+                            @foreach($sales as $sale)
+                                <option value="{{ $sale->id }}" {{ request('assigned_to') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
+                            @endforeach
+                        </select>
                     </form>
                 </div>
 

@@ -140,6 +140,13 @@
                                     <option value="{{ $s->id }}" {{ request('payment_status_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
                                 @endforeach
                             </select>
+
+                            <select name="assigned_to" class="filter-select" onchange="this.form.submit()">
+                                <option value="">Assign To</option>
+                                @foreach($allDevelopers as $dev)
+                                    <option value="{{ $dev->id }}" {{ request('assigned_to') == $dev->id ? 'selected' : '' }}>{{ $dev->name }}</option>
+                                @endforeach
+                            </select>
                         </form>
 
                         <div style="position:relative;">

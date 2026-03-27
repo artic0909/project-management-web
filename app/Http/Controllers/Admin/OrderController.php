@@ -49,6 +49,11 @@ class OrderController extends Controller
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
         }
+        if ($request->filled('assigned_to')) {
+            $query->whereHas('sales', function($q) use ($request) {
+                $q->where('assigned_to', $request->assigned_to);
+            });
+        }
 
         $orders = $query->latest()->paginate(20)->withQueryString();
         
@@ -66,9 +71,10 @@ class OrderController extends Controller
 
         $allStatuses = Status::where('type', 'order')->get();
         $allServices = Service::all();
+        $allSales = Sale::all();
 
         return view('admin.orders.index', compact(
-            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue', 'allStatuses', 'allServices'
+            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue', 'allStatuses', 'allServices', 'allSales'
         ));
     }
 

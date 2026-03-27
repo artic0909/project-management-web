@@ -43,6 +43,11 @@ class ProjectController extends Controller
         if ($request->filled('payment_status_id')) {
             $query->where('payment_status_id', $request->payment_status_id);
         }
+        if ($request->filled('assigned_to')) {
+            $query->whereHas('developers', function($q) use ($request) {
+                $q->where('assigned_to', $request->assigned_to);
+            });
+        }
 
         $projects = $query->latest()->paginate(10)->withQueryString();
         
@@ -62,6 +67,7 @@ class ProjectController extends Controller
         })->count();
 
         $statuses = $this->getStatusOptions();
+        $allDevelopers = Developer::all();
 
         return view('admin.project.index', compact(
             'projects', 
@@ -69,7 +75,8 @@ class ProjectController extends Controller
             'activeProjects', 
             'completedProjects', 
             'onHoldProjects',
-            'statuses'
+            'statuses',
+            'allDevelopers'
         ));
     }
 

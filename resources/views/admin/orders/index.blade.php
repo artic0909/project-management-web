@@ -163,6 +163,13 @@
                                     <option value="{{ $st->id }}" {{ request('status_id') == $st->id ? 'selected' : '' }}>{{ $st->name }}</option>
                                 @endforeach
                             </select>
+
+                            <select name="assigned_to" class="filter-select" onchange="this.form.submit()">
+                                <option value="">Assign To</option>
+                                @foreach($allSales as $sale)
+                                    <option value="{{ $sale->id }}" {{ request('assigned_to') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
+                                @endforeach
+                            </select>
                         </form>
 
                         <!-- {{-- Date Range Picker (replaces simple select) --}} -->

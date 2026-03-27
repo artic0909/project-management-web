@@ -49,6 +49,11 @@ class LeadController extends Controller
         if ($request->has('priority') && !empty($request->priority)) {
             $query->where('priority', $request->priority);
         }
+        if ($request->filled('assigned_to')) {
+            $query->whereHas('assignments', function($q) use ($request) {
+                $q->where('assigned_to', $request->assigned_to);
+            });
+        }
 
         $leads = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
 
@@ -77,9 +82,11 @@ class LeadController extends Controller
             ->pluck('total', 'priority')
             ->toArray();
 
+        $sales = Sale::all();
+
         return view('admin.leads.index', compact(
             'leads', 'totalLeads', 'convertedLeads', 'statuses', 
-            'sources', 'services', 'campaigns', 'priorityCounts'
+            'sources', 'services', 'campaigns', 'priorityCounts', 'sales'
         ));
     }
 
@@ -289,14 +296,20 @@ class LeadController extends Controller
         if ($request->has('priority') && !empty($request->priority)) {
             $query->where('priority', $request->priority);
         }
+        if ($request->filled('assigned_to')) {
+            $query->whereHas('assignments', function($q) use ($request) {
+                $q->where('assigned_to', $request->assigned_to);
+            });
+        }
 
         $totalLostLeads = $query->count();
         $leads = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
 
         $sources = Source::all();
         $services = Service::all();
+        $sales = Sale::all();
 
-        return view('admin.losted-leads', compact('leads', 'totalLostLeads', 'sources', 'services'));
+        return view('admin.losted-leads', compact('leads', 'totalLostLeads', 'sources', 'services', 'sales'));
     }
     public function destroy($id)
     {
