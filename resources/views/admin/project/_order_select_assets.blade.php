@@ -144,16 +144,29 @@
         if (!list) return;
 
         list.innerHTML = '';
-        if (Array.isArray(data) && data.length > 0) {
-            data.forEach(item => {
-                if (type === 'email') addEmailRow(list.id, item);
-                else {
-                    // Item might be string or object {code, num}
-                    if (typeof item === 'object') addPhoneRow(list.id, item.num, item.code);
-                    else addPhoneRow(list.id, item);
+        const items = Array.isArray(data) ? data : (data ? [data] : []);
+        
+        if (items.length > 0) {
+            items.forEach(item => {
+                if (type === 'email') {
+                    const emailVal = typeof item === 'object' ? (item.email || item.val || '') : item;
+                    addEmailRow(list.id, emailVal);
+                } else {
+                    // Improved Phone handling
+                    let num = '', code = null;
+                    if (typeof item === 'object' && item !== null) {
+                        num = item.num || item.phone || item.number || '';
+                        code = item.code || item.country_code || item.index || null;
+                    } else {
+                        num = item || '';
+                    }
+                    if (num) addPhoneRow(list.id, num, code);
                 }
             });
-        } else {
+        }
+        
+        // Ensure at least one row exists
+        if (list.children.length === 0) {
             if (type === 'email') addEmailRow(list.id);
             else addPhoneRow(list.id);
         }
