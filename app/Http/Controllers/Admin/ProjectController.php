@@ -14,18 +14,63 @@ use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Use pagination to support $projects->total() in view
-        $projects = Project::with(['projectStatus', 'paymentStatus'])->latest()->paginate(10);
+        $query = Project::with(['projectStatus', 'paymentStatus']);
+
+        // Search Filter
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function($qq) use ($q) {
+                $qq->where('project_name', 'like', "%$q%")
+                   ->orWhere('client_name', 'like', "%$q%")
+                   ->orWhere('company_name', 'like', "%$q%")
+                   ->orWhere('domain_name', 'like', "%$q%");
+            });
+        }
+
+        // Date Range Filter
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+        }
+
+        // Project Status Filter
+        if ($request->filled('project_status_id')) {
+            $query->where('project_status_id', $request->project_status_id);
+        }
+
+        // Payment Status Filter
+        if ($request->filled('payment_status_id')) {
+            $query->where('payment_status_id', $request->payment_status_id);
+        }
+
+        $projects = $query->latest()->paginate(10)->withQueryString();
         
-        // Provide total counts for KPI cards if needed (since paginate() only counts current page)
+        // Accurate Counts for KPI Cards (independent of pagination/filters for the summary)
         $totalProjects = Project::count();
+        
         $activeProjects = Project::whereHas('projectStatus', function($q) {
-            $q->where('name', 'Development');
+            $q->where('name', 'development');
         })->count();
 
-        return view('admin.project.index', compact('projects', 'totalProjects', 'activeProjects'));
+        $completedProjects = Project::whereHas('projectStatus', function($q) {
+            $q->where('name', 'complete');
+        })->count();
+
+        $onHoldProjects = Project::whereHas('projectStatus', function($q) {
+            $q->where('name', 'on hold');
+        })->count();
+
+        $statuses = $this->getStatusOptions();
+
+        return view('admin.project.index', compact(
+            'projects', 
+            'totalProjects', 
+            'activeProjects', 
+            'completedProjects', 
+            'onHoldProjects',
+            'statuses'
+        ));
     }
 
     private function getStatusOptions()

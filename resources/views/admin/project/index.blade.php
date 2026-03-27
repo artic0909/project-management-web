@@ -29,7 +29,8 @@
         {{-- ── KPI CARDS ── --}}
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;">
 
-            <div class="dash-card" style="padding:16px 18px;">
+            <div class="dash-card {{ !request()->has('q') && !request()->has('project_status_id') && !request()->has('start_date') ? 'active' : '' }}" 
+                style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route('admin.projects.index') }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(99,102,241,.13);display:flex;align-items:center;justify-content:center;">
                         <i class="bi bi-kanban-fill" style="font-size:17px;color:#6366f1;"></i>
@@ -43,7 +44,11 @@
                 </div>
             </div>
 
-            <div class="dash-card" style="padding:16px 18px;">
+            @php 
+                $activeStatus = $statuses['project_statuses']->where('name', 'development')->first(); 
+            @endphp
+            <div class="dash-card {{ request('project_status_id') == ($activeStatus->id ?? 'xxx') ? 'active' : '' }}" 
+                style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route('admin.projects.index', ['project_status_id' => ($activeStatus->id ?? '')]) }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(6,182,212,.13);display:flex;align-items:center;justify-content:center;">
                         <i class="bi bi-play-circle-fill" style="font-size:17px;color:#06b6d4;"></i>
@@ -53,35 +58,43 @@
                 <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $activeProjects }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">In Progress</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:50%;background:#06b6d4;border-radius:3px;"></div>
+                    <div style="height:100%;width:{{ $totalProjects > 0 ? ($activeProjects / $totalProjects) * 100 : 0 }}%;background:#06b6d4;border-radius:3px;"></div>
                 </div>
             </div>
 
-            <div class="dash-card" style="padding:16px 18px;">
+            @php 
+                $doneStatus = $statuses['project_statuses']->where('name', 'complete')->first(); 
+            @endphp
+            <div class="dash-card {{ request('project_status_id') == ($doneStatus->id ?? 'xxx') ? 'active' : '' }}" 
+                style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route('admin.projects.index', ['project_status_id' => ($doneStatus->id ?? '')]) }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(16,185,129,.13);display:flex;align-items:center;justify-content:center;">
                         <i class="bi bi-check-circle-fill" style="font-size:17px;color:#10b981;"></i>
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.1);color:#10b981;">Done</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $projects->where('project_status', 'Completed')->count() }}</div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $completedProjects }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Completed</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:50%;background:#10b981;border-radius:3px;"></div>
+                    <div style="height:100%;width:{{ $totalProjects > 0 ? ($completedProjects / $totalProjects) * 100 : 0 }}%;background:#10b981;border-radius:3px;"></div>
                 </div>
             </div>
 
-            <div class="dash-card" style="padding:16px 18px;">
+            @php 
+                $holdStatus = $statuses['project_statuses']->where('name', 'on hold')->first(); 
+            @endphp
+            <div class="dash-card {{ request('project_status_id') == ($holdStatus->id ?? 'xxx') ? 'active' : '' }}" 
+                style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route('admin.projects.index', ['project_status_id' => ($holdStatus->id ?? '')]) }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(245,158,11,.13);display:flex;align-items:center;justify-content:center;">
                         <i class="bi bi-pause-circle-fill" style="font-size:17px;color:#f59e0b;"></i>
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(245,158,11,.1);color:#f59e0b;">Hold</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $projects->where('project_status', 'On Hold')->count() }}</div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $onHoldProjects }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">On Hold</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                    <div style="height:100%;width:50%;background:#f59e0b;border-radius:3px;"></div>
+                    <div style="height:100%;width:{{ $totalProjects > 0 ? ($onHoldProjects / $totalProjects) * 100 : 0 }}%;background:#f59e0b;border-radius:3px;"></div>
                 </div>
             </div>
 
@@ -96,11 +109,42 @@
                         <div class="card-sub" id="projectTableSub">{{ $projects->total() }} total projects</div>
                     </div>
                     <div class="card-actions mb-2">
-                        <form class="global-search" action="{{ route('admin.projects.index') }}" method="GET">
-                            <i class="bi bi-search"></i>
-                            <input type="text" name="q" placeholder="Search projects..." value="{{ request('q') }}">
-                            <button type="submit" class="btn-primary-solid sm">Search</button>
+                        <form action="{{ route('admin.projects.index') }}" method="GET" class="card-actions mb-0">
+                            <div class="global-search">
+                                <i class="bi bi-search"></i>
+                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search projects...">
+                                <button type="submit" class="btn-primary-solid sm">Search</button>
+                            </div>
+
+                            <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
+                            <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
+                                <i class="bi bi-calendar3"></i>
+                                <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'All Time' }}</span>
+                                <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
+                            </button>
+
+                            <!-- Hidden inputs for date range -->
+                            <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
+                            <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
+
+                            <select name="project_status_id" class="filter-select" onchange="this.form.submit()">
+                                <option value="">All Statuses</option>
+                                @foreach($statuses['project_statuses'] as $s)
+                                    <option value="{{ $s->id }}" {{ request('project_status_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
+                                @endforeach
+                            </select>
+
+                            <select name="payment_status_id" class="filter-select" onchange="this.form.submit()">
+                                <option value="">All Payments</option>
+                                @foreach($statuses['payment_statuses'] as $s)
+                                    <option value="{{ $s->id }}" {{ request('payment_status_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
+                                @endforeach
+                            </select>
                         </form>
+
+                        <div style="position:relative;">
+                            @include('admin.includes.date-range-picker')
+                        </div>
                     </div>
                 </div>
 
@@ -592,21 +636,37 @@
 </style>
 
 <script>
-    function filterProjects(el) {
-        const group = el.dataset.filter;
-        document.querySelectorAll(`.stat-box[data-filter="${group}"]`).forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-        const val = el.dataset.value;
-        const rows = document.querySelectorAll('#projectsTable tbody tr');
-        rows.forEach(row => {
-            let show = true;
-            if (group === 'status' && val !== 'all') show = row.dataset.status === val;
-            else if (group === 'payment') show = row.dataset.payment === val;
-            row.style.display = show ? '' : 'none';
-        });
-        const visible = [...rows].filter(r => r.style.display !== 'none').length;
-        document.getElementById('projCount').textContent = `Showing ${visible} of {{ $projects->total() }} Projects`;
-    }
+    /* ── Listen for date range applied from our custom picker ── */
+    document.addEventListener('dateRangeApplied', function(e) {
+        const { start, end } = e.detail;
+        
+        function formatDate(date) {
+            if(!date) return '';
+            let d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+            return [year, month, day].join('-');
+        }
+
+        const sInp = document.getElementById('drpStartInput');
+        const eInp = document.getElementById('drpEndInput');
+        if(sInp && eInp) {
+            sInp.value = formatDate(start);
+            eInp.value = formatDate(end);
+            sInp.closest('form').submit();
+        }
+    });
+
+    /* ── Global search shortcuts if needed ── */
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            document.querySelector('.global-search input').focus();
+        }
+    });
 </script>
 
 @endsection
