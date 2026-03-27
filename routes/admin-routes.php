@@ -91,6 +91,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::get('/project/show/{id}', [ProjectController::class, 'show'])->name('projects.show');
     Route::get('/project/edit/{id}', [ProjectController::class, 'edit'])->name('projects.edit');
     Route::put('/project/update/{id}', [ProjectController::class, 'update'])->name('projects.update');
+    Route::post('/project/quick-update/{id}', [ProjectController::class, 'quickUpdate'])->name('projects.quickUpdate');
     Route::delete('/project/delete/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
     
     // Marketing Orders

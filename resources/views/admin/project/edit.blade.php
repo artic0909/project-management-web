@@ -134,11 +134,11 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Payment Status</label>
-                                    <select name="payment_status" class="form-inp">
+                                    <select name="payment_status_id" class="form-inp">
                                         <option value="">— Select —</option>
-                                        <option value="Paid" {{ old('payment_status', $project->payment_status) == 'Paid' ? 'selected' : '' }}>Paid</option>
-                                        <option value="Partial" {{ old('payment_status', $project->payment_status) == 'Partial' ? 'selected' : '' }}>Partial</option>
-                                        <option value="Pending" {{ old('payment_status', $project->payment_status) == 'Pending' ? 'selected' : '' }}>Pending</option>
+                                        @foreach($statuses['payment_statuses'] as $ps)
+                                            <option value="{{ $ps->id }}" {{ old('payment_status_id', $project->payment_status_id) == $ps->id ? 'selected' : '' }}>{{ $ps->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="form-row">
@@ -275,13 +275,10 @@
                         <div class="card-body">
                             <div class="form-row">
                                 <label class="form-lbl">Project Status *</label>
-                                <select name="project_status" class="form-inp" required>
-                                    <option value="New" {{ old('project_status', $project->project_status) == 'New' ? 'selected' : '' }}>New</option>
-                                    <option value="Design Phase" {{ old('project_status', $project->project_status) == 'Design Phase' ? 'selected' : '' }}>Design Phase</option>
-                                    <option value="Development" {{ old('project_status', $project->project_status) == 'Development' ? 'selected' : '' }}>Development</option>
-                                    <option value="Testing" {{ old('project_status', $project->project_status) == 'Testing' ? 'selected' : '' }}>Testing</option>
-                                    <option value="Completed" {{ old('project_status', $project->project_status) == 'Completed' ? 'selected' : '' }}>Completed</option>
-                                    <option value="On Hold" {{ old('project_status', $project->project_status) == 'On Hold' ? 'selected' : '' }}>On Hold</option>
+                                <select name="project_status_id" class="form-inp" required>
+                                    @foreach($statuses['project_statuses'] as $ps)
+                                        <option value="{{ $ps->id }}" {{ old('project_status_id', $project->project_status_id) == $ps->id ? 'selected' : '' }}>{{ $ps->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="form-row">

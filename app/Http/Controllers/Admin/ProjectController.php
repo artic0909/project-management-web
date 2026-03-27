@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Developer;
 use App\Models\ProjectAssign;
 use App\Models\ClientFeedback;
+use App\Models\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,15 +16,32 @@ class ProjectController extends Controller
 {
     public function index()
     {
-        $projects = Project::latest()->get();
-        return view('admin.project.index', compact('projects'));
+        // Use pagination to support $projects->total() in view
+        $projects = Project::with(['projectStatus', 'paymentStatus'])->latest()->paginate(10);
+        
+        // Provide total counts for KPI cards if needed (since paginate() only counts current page)
+        $totalProjects = Project::count();
+        $activeProjects = Project::whereHas('projectStatus', function($q) {
+            $q->where('name', 'Development');
+        })->count();
+
+        return view('admin.project.index', compact('projects', 'totalProjects', 'activeProjects'));
+    }
+
+    private function getStatusOptions()
+    {
+        return [
+            'project_statuses' => Status::where('type', 'project')->get(),
+            'payment_statuses' => Status::where('type', 'payment')->get(),
+        ];
     }
 
     public function create()
     {
         $orders = Order::latest()->get();
         $developers = Developer::latest()->get();
-        return view('admin.project.create', compact('orders', 'developers'));
+        $statuses = $this->getStatusOptions();
+        return view('admin.project.create', compact('orders', 'developers', 'statuses'));
     }
 
     public function store(Request $request)
@@ -56,9 +74,17 @@ class ProjectController extends Controller
         $data['created_by'] = Auth::id();
         $data['created_by_type'] = get_class(Auth::user());
 
+        // Map statuses to IDs if provided
+        if ($request->project_status_id) {
+            $data['project_status'] = Status::find($request->project_status_id)?->name;
+        }
+        if ($request->payment_status_id) {
+            $data['payment_status'] = Status::find($request->payment_status_id)?->name;
+        }
+
         $project = Project::create($data);
 
-        // Historical Logging
+        // Historical Logging (if any fields provided)
         if ($request->anyFilled(['last_update_date', 'client_feedback_summary', 'internal_notes'])) {
             $project->feedbacks()->create([
                 'status' => $project->project_status,
@@ -83,8 +109,34 @@ class ProjectController extends Controller
 
     public function show($id)
     {
-        $project = Project::with(['developers', 'order', 'feedbacks'])->findOrFail($id);
-        return view('admin.project.show', compact('project'));
+        $project = Project::with(['developers', 'order', 'feedbacks', 'projectStatus', 'paymentStatus'])->findOrFail($id);
+        $statuses = $this->getStatusOptions();
+        return view('admin.project.show', compact('project', 'statuses'));
+    }
+
+    public function quickUpdate(Request $request, $id)
+    {
+        $project = Project::findOrFail($id);
+        
+        // Update Statuses
+        $project->update([
+            'project_status_id' => $request->project_status_id,
+            'payment_status_id' => $request->payment_status_id,
+            'project_status' => Status::find($request->project_status_id)?->name,
+            'payment_status' => Status::find($request->payment_status_id)?->name,
+        ]);
+
+        // Add Feedback Log if notes provided
+        if ($request->filled('internal_notes') || $request->filled('feedback_summary')) {
+            $project->feedbacks()->create([
+                'status' => $project->project_status,
+                'last_update_date' => now(),
+                'feedback_summary' => $request->feedback_summary ?? 'Quick status update',
+                'internal_notes' => $request->internal_notes,
+            ]);
+        }
+
+        return back()->with('success', 'Project updated successfully.');
     }
 
     public function edit($id)
@@ -92,7 +144,8 @@ class ProjectController extends Controller
         $project = Project::with('developers')->findOrFail($id);
         $orders = Order::latest()->get();
         $developers = Developer::latest()->get();
-        return view('admin.project.edit', compact('project', 'orders', 'developers'));
+        $statuses = $this->getStatusOptions();
+        return view('admin.project.edit', compact('project', 'orders', 'developers', 'statuses'));
     }
 
     public function update(Request $request, $id)
@@ -123,6 +176,14 @@ class ProjectController extends Controller
             }
         }
         $data['phones'] = $phones;
+
+        // Map statuses to IDs if provided
+        if ($request->project_status_id) {
+            $data['project_status'] = Status::find($request->project_status_id)?->name;
+        }
+        if ($request->payment_status_id) {
+            $data['payment_status'] = Status::find($request->payment_status_id)?->name;
+        }
         
         $project->update($data);
 

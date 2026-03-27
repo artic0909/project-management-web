@@ -36,7 +36,7 @@
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(99,102,241,.1);color:#818cf8;">Total</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $projects->total() }}</div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $totalProjects }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Total Projects</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
                     <div style="height:100%;width:100%;background:#6366f1;border-radius:3px;"></div>
@@ -50,7 +50,7 @@
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(6,182,212,.1);color:#06b6d4;">Active</span>
                 </div>
-                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $projects->where('project_status', 'Development')->count() }}</div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $activeProjects }}</div>
                 <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">In Progress</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
                     <div style="height:100%;width:50%;background:#06b6d4;border-radius:3px;"></div>
@@ -173,19 +173,21 @@
                                 </td>
                                 <td>
                                     @php
-                                        $statusClass = strtolower(str_replace(' ', '-', $project->project_status ?? 'new'));
+                                        $displayProjStatus = $project->projectStatus ? $project->projectStatus->name : ($project->project_status ?? 'New');
+                                        $statusClass = strtolower(str_replace(' ', '-', $displayProjStatus));
                                     @endphp
-                                    <span class="proj-status {{ $statusClass }}">{{ $project->project_status ?? 'New' }}</span>
+                                    <span class="proj-status {{ $statusClass }}">{{ $displayProjStatus }}</span>
                                 </td>
                                 <td><span class="money-cell">₹{{ number_format($project->project_price, 0) }}</span></td>
                                 <td><span class="money-cell" style="color:#10b981;">₹{{ number_format($project->advance_payment, 0) }}</span></td>
                                 <td><span class="money-cell" style="color:#ef4444;">₹{{ number_format($project->remaining_amount, 0) }}</span></td>
                                 <td>
                                     @php
-                                        $payStatus = strtolower($project->financial_payment_status ?? 'pending');
-                                        $payClass = $payStatus == 'paid' ? 'paid' : ($payStatus == 'partial' ? 'pending' : 'overdue');
+                                        $displayPayStatus = $project->paymentStatus ? $project->paymentStatus->name : ($project->financial_payment_status ?? 'Pending');
+                                        $payLower = strtolower($displayPayStatus);
+                                        $payClass = $payLower == 'paid' ? 'paid' : ($payLower == 'partial' ? 'pending' : 'overdue');
                                     @endphp
-                                    <span class="status-pill {{ $payClass }}">{{ $project->financial_payment_status ?? 'Pending' }}</span>
+                                    <span class="status-pill {{ $payClass }}">{{ $displayPayStatus }}</span>
                                 </td>
                                 <td>
                                     <div class="row-actions">
@@ -211,7 +213,7 @@
                 <div class="table-footer">
                     <span class="tf-info" id="projCount">Showing {{ $projects->firstItem() ?? 0 }} to {{ $projects->lastItem() ?? 0 }} of {{ $projects->total() }} Projects</span>
                     <div class="tf-pagination">
-                        {{ $projects->links() }}
+                        {{ $projects->links('pagination::bootstrap-4') }}
                     </div>
                 </div>
             </div>
@@ -603,7 +605,7 @@
             row.style.display = show ? '' : 'none';
         });
         const visible = [...rows].filter(r => r.style.display !== 'none').length;
-        document.getElementById('projCount').textContent = `Showing ${visible} of 64 Projects`;
+        document.getElementById('projCount').textContent = `Showing ${visible} of {{ $projects->total() }} Projects`;
     }
 </script>
 

@@ -15,8 +15,10 @@
                             $statusClass = strtolower(str_replace(' ', '-', $project->project_status ?? 'new'));
                         @endphp
                         <span class="proj-status {{ $statusClass }}">{{ $project->project_status ?? 'New' }}</span>
-                        <span
-                            style="font-size:12px;color:var(--t4);font-weight:500;">#PRJ-{{ str_pad($project->id, 5, '0', STR_PAD_LEFT) }}</span>
+                        @if($project->paymentStatus)
+                            <span class="status-pill {{ strtolower($project->paymentStatus->name) == 'paid' ? 'paid' : 'pending' }}" style="font-size:10px;padding:2px 8px;">{{ $project->paymentStatus->name }}</span>
+                        @endif
+                           <span style="font-size:12px;color:var(--t4);font-weight:500;">#PRJ-{{ str_pad($project->id, 5, '0', STR_PAD_LEFT) }}</span>
                         @if($project->order_id)
                             <span
                                 style="font-size:11px;background:var(--accent-bg);color:var(--accent);padding:2px 8px;border-radius:4px;font-weight:700;display:flex;align-items:center;gap:4px;">
@@ -256,8 +258,45 @@
 
                 </div>
 
-                {{-- Right Column: Financials, Team, Dates --}}
+                {{-- Right Column: Quick Update, Financials, Team, Dates --}}
                 <div class="span-4" style="display:flex;flex-direction:column;gap:20px;">
+
+                    {{-- Quick Update Form --}}
+                    <div class="dash-card" style="border: 2px solid var(--accent);box-shadow: 0 10px 30px rgba(99,102,241,0.1);">
+                        <div class="card-head" style="background:rgba(99,102,241,0.05);border-bottom:1px solid var(--b1);">
+                            <div class="card-title"><i class="bi bi-lightning-charge-fill" style="color:var(--accent);margin-right:6px;"></i>Quick Update</div>
+                        </div>
+                        <div class="card-body" style="padding:15px;">
+                            <form action="{{ route('admin.projects.quickUpdate', $project->id) }}" method="POST">
+                                @csrf
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                                    <div class="form-row" style="margin-bottom:0;">
+                                        <label class="form-lbl" style="font-size:9px;">Project Status</label>
+                                        <select name="project_status_id" class="form-inp" style="padding:6px 8px;font-size:12px;">
+                                            @foreach($statuses['project_statuses'] as $s)
+                                                <option value="{{ $s->id }}" {{ $project->project_status_id == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-row" style="margin-bottom:0;">
+                                        <label class="form-lbl" style="font-size:9px;">Payment Status</label>
+                                        <select name="payment_status_id" class="form-inp" style="padding:6px 8px;font-size:12px;">
+                                            @foreach($statuses['payment_statuses'] as $s)
+                                                <option value="{{ $s->id }}" {{ $project->payment_status_id == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row" style="margin-bottom:12px;">
+                                    <label class="form-lbl" style="font-size:9px;">Latest Feedback / Notes</label>
+                                    <textarea name="internal_notes" class="form-inp" rows="2" style="font-size:12px;padding:8px;" placeholder="Add a quick note..."></textarea>
+                                </div>
+                                <button type="submit" class="btn-primary-solid" style="width:100%;justify-content:center;padding:8px;font-size:13px;">
+                                    Update Now
+                                </button>
+                            </form>
+                        </div>
+                    </div>
 
                     {{-- Financials --}}
                     <div class="dash-card fb-top-accent">

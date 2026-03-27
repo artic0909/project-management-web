@@ -131,11 +131,11 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Payment Status</label>
-                                    <select name="payment_status" class="form-inp">
+                                    <select name="payment_status_id" class="form-inp">
                                         <option value="">— Select —</option>
-                                        <option value="Pending" {{ old('payment_status') == 'Pending' ? 'selected' : '' }}>Pending</option>
-                                        <option value="Partial" {{ old('payment_status') == 'Partial' ? 'selected' : '' }}>Partial</option>
-                                        <option value="Paid" {{ old('payment_status') == 'Paid' ? 'selected' : '' }}>Paid</option>
+                                        @foreach($statuses['payment_statuses'] as $ps)
+                                            <option value="{{ $ps->id }}" {{ old('payment_status_id') == $ps->id ? 'selected' : '' }}>{{ $ps->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="form-row">
@@ -223,31 +223,6 @@
                         </div>
                     </div>
 
-                    {{-- Communication & Tracking --}}
-                    <div class="dash-card">
-                        <div class="card-head">
-                            <div>
-                                <div class="card-title"><i class="bi bi-chat-dots-fill" style="color:#10b981;margin-right:6px;"></i>Communication & Tracking</div>
-                                <div class="card-sub">Feedback and internal notes</div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-grid">
-                                <div class="form-row">
-                                    <label class="form-lbl">Last Update Date</label>
-                                    <input type="date" name="last_update_date" class="form-inp" value="{{ old('last_update_date') }}">
-                                </div>
-                                <div class="form-row">
-                                    <label class="form-lbl">Client Feedback</label>
-                                    <input type="text" name="client_feedback_summary" class="form-inp" placeholder="Client feedback summary" value="{{ old('client_feedback_summary') }}">
-                                </div>
-                                <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Internal Notes</label>
-                                    <textarea name="internal_notes" class="form-inp" rows="3" placeholder="Internal notes visible only to the team…">{{ old('internal_notes') }}</textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                 </div>
 
@@ -277,14 +252,11 @@
                             </div>
                             <div class="form-row">
                                 <label class="form-lbl">Project Status</label>
-                                <select name="project_status" class="form-inp">
+                                <select name="project_status_id" class="form-inp">
                                     <option value="">— Select —</option>
-                                    <option value="New" {{ old('project_status') == 'New' ? 'selected' : '' }}>New</option>
-                                    <option value="Design Phase" {{ old('project_status') == 'Design Phase' ? 'selected' : '' }}>Design Phase</option>
-                                    <option value="Development" {{ old('project_status') == 'Development' ? 'selected' : '' }}>Development</option>
-                                    <option value="Testing" {{ old('project_status') == 'Testing' ? 'selected' : '' }}>Testing</option>
-                                    <option value="Completed" {{ old('project_status') == 'Completed' ? 'selected' : '' }}>Completed</option>
-                                    <option value="On Hold" {{ old('project_status') == 'On Hold' ? 'selected' : '' }}>On Hold</option>
+                                    @foreach($statuses['project_statuses'] as $ps)
+                                        <option value="{{ $ps->id }}" {{ old('project_status_id') == $ps->id ? 'selected' : '' }}>{{ $ps->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -414,7 +386,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         const today = new Date().toISOString().split('T')[0];
         document.querySelector('input[name="project_start_date"]').value = today;
-        document.querySelector('input[name="last_update_date"]').value = today;
 
         // Trigger multi-select update
         updateMs('addAssignWrap');
