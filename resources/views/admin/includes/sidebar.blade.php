@@ -52,11 +52,11 @@
 
       <div class="nav-section-label">Business</div>
       <a class="nav-item {{ request()->routeIs($routePrefix . 'leads*') ? 'active' : '' }}" href="{{ route($routePrefix . 'leads.index') }}">
-        <i class="bi bi-person-lines-fill"></i><span>Leads</span>
+        <i class="bi bi-person-lines-fill"></i><span>{{ $guard === 'sale' ? 'My Leads' : 'Leads' }}</span>
         <span class="nav-count">{{ $leadCount }}</span>
       </a>
       <a class="nav-item {{ request()->routeIs($routePrefix . 'orders*') ? 'active' : '' }}" href="{{ route($routePrefix . 'orders.index') }}">
-        <i class="bi bi-bag-check-fill"></i><span>Orders</span>
+        <i class="bi bi-bag-check-fill"></i><span>{{ $guard === 'sale' ? 'My Orders' : 'Orders' }}</span>
         <span class="nav-count">{{ $orderCount }}</span>
       </a>  
 
@@ -66,7 +66,7 @@
 
 
       <a class="nav-item {{ request()->routeIs($routePrefix . 'projects*') ? 'active' : '' }}" href="{{ route($routePrefix . 'projects.index') }}">
-        <i class="bi bi-kanban-fill"></i><span>Projects</span>
+        <i class="bi bi-kanban-fill"></i><span>{{ $guard === 'sale' ? 'My Projects' : 'Projects' }}</span>
         <span class="nav-count">{{ $projectCount }}</span>
       </a>
 
@@ -83,7 +83,7 @@
       </a>
       @endif
       <a class="nav-item" href="#">
-        <i class="bi bi-clock-history"></i><span>Sales Attendance</span>
+        <i class="bi bi-clock-history"></i><span>{{ $guard === 'sale' ? 'My Attendances' : 'Sales Attendance' }}</span>
         <div class="nav-dot green"></div>
       </a>
       <a class="nav-item {{ request()->routeIs($routePrefix . 'developer*') ? 'active' : '' }}" href="{{ route($routePrefix . 'developer') }}">
@@ -91,11 +91,12 @@
         <span class="nav-count">{{ $developerCount }}</span>
       </a>
       <a class="nav-item" href="#">
-        <i class="bi bi-clock-history"></i><span>Developer Attendance</span>
+        <i class="bi bi-clock-history"></i><span>Developer Attendances</span>
         <div class="nav-dot green"></div>
       </a>
 
       <div class="nav-section-label">Others</div>
+      @if($guard === 'admin')
       <a class="nav-item " href="#">
         <i class="bi bi-headset"></i><span>Support</span>
       </a>
@@ -103,6 +104,7 @@
       <a class="nav-item " href="#">
         <i class="bi bi-browser-chrome"></i><span>Inquiries</span>
       </a>
+      @endif
 
       <a class="nav-item {{ request()->routeIs($routePrefix . 'account-settings*') ? 'active' : '' }}" href="{{ route($routePrefix . 'account-settings') }}">
         <i class="bi bi-gear-fill"></i><span>Settings</span>

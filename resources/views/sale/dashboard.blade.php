@@ -23,7 +23,7 @@
       
         <div class="kpi-card" style="--kpi-accent:#6366f1"><div class="kpi-top"><div class="kpi-icon" style="background:rgba(99,102,241,.15);color:#6366f1"><i class="bi bi-trophy-fill"></i></div></div><div class="kpi-value">₹{{ number_format($revenue, 2) }}</div><div class="kpi-label">My Revenue</div></div>
         <div class="kpi-card" style="--kpi-accent:#10b981"><div class="kpi-top"><div class="kpi-icon" style="background:rgba(16,185,129,.15);color:#10b981"><i class="bi bi-person-lines-fill"></i></div></div><div class="kpi-value">{{ $totalLeads }}</div><div class="kpi-label">My Leads</div></div>
-        <div class="kpi-card" style="--kpi-accent:#f59e0b"><div class="kpi-top"><div class="kpi-icon" style="background:rgba(245,158,11,.15);color:#f59e0b"><i class="bi bi-bag-fill"></i></div></div><div class="kpi-value">{{ $totalOrders }}</div><div class="kpi-label">Orders Closed</div></div>
+        <div class="kpi-card" style="--kpi-accent:#f59e0b"><div class="kpi-top"><div class="kpi-icon" style="background:rgba(245,158,11,.15);color:#f59e0b"><i class="bi bi-bag-fill"></i></div></div><div class="kpi-value">{{ $totalOrders }}</div><div class="kpi-label">My Orders</div></div>
         <div class="kpi-card" style="--kpi-accent:#06b6d4"><div class="kpi-top"><div class="kpi-icon" style="background:rgba(6,182,212,.15);color:#06b6d4"><i class="bi bi-bullseye"></i></div></div><div class="kpi-value">{{ $marketingOrders }}</div><div class="kpi-label">My Marketing Orders</div></div>
         </div>
     </div>
