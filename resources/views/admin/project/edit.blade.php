@@ -299,32 +299,24 @@
                     {{-- Dynamic Developer Assignment --}}
                     <div class="dash-card" style="overflow:visible;">
                         <div class="card-head">
-                            <div class="card-title"><i class="bi bi-people-fill" style="color:#10b981;margin-right:6px;"></i>Assign To</div>
+                            <div class="card-title"><i class="bi bi-people-fill" style="color:#10b981;margin-right:6px;"></i>Assign To (Developers)</div>
                             <div class="card-sub">Select one or more team members</div>
                         </div>
                         <div class="card-body">
-                            <div class="ms-wrap" id="addAssignWrap">
-                                <div class="ms-trigger" onclick="toggleMs('addAssignWrap')">
-                                    <div class="ms-pills" id="addAssignPills">
+                            <div class="ms-wrap" id="editAssignWrap">
+                                <div class="ms-trigger" onclick="toggleMs('editAssignWrap')">
+                                    <div class="ms-pills" id="editAssignPills">
                                         <span class="ms-placeholder">Select developers…</span>
                                     </div>
                                     <i class="bi bi-chevron-down ms-arrow"></i>
                                 </div>
-                                <div class="ms-dropdown" id="addAssignDropdown">
+                                <div class="ms-dropdown" id="editAssignDropdown">
                                     <div class="ms-search-wrap">
                                         <i class="bi bi-search"></i>
-                                        <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'addAssignDropdown')">
+                                        <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'editAssignDropdown')">
                                     </div>
                                     <div class="ms-opts">
                                         @php
-                                            $gradients = [
-                                                'linear-gradient(135deg,#6366f1,#06b6d4)',
-                                                'linear-gradient(135deg,#ec4899,#f59e0b)',
-                                                'linear-gradient(135deg,#10b981,#06b6d4)',
-                                                'linear-gradient(135deg,#8b5cf6,#ec4899)',
-                                                'linear-gradient(135deg,#f59e0b,#ef4444)',
-                                                'linear-gradient(135deg,#14b8a6,#6366f1)'
-                                            ];
                                             $assignedIds = $project->developers->pluck('id')->toArray();
                                         @endphp
                                         @foreach($developers as $index => $dev)
@@ -334,13 +326,59 @@
                                             @endphp
                                             <label class="ms-opt">
                                                 <input type="checkbox" name="assign_to[]" value="{{ $dev->id }}" 
-                                                    data-name="{{ $dev->name }} - {{ $dev->designation }}" data-initials="{{ $initials }}"
-                                                    onchange="updateMs('addAssignWrap')"
+                                                    data-name="{{ $dev->name }}" data-initials="{{ $initials }}"
+                                                    onchange="updateMs('editAssignWrap')"
                                                     {{ in_array($dev->id, old('assign_to', $assignedIds)) ? 'checked' : '' }}>
-                                                <span class="ms-ava" style="background:{{ $gradients[$index % count($gradients)] }}">{{ $initials }}</span>
+                                                <span class="ms-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">{{ $initials }}</span>
                                                 <div style="display:flex;flex-direction:column;">
-                                                    <span style="font-weight:500;color:var(--t1);">{{ $dev->name }} - {{ $dev->designation }}</span>
-                                                    <span style="font-size:11px;color:var(--t3);">{{ $dev->email }}</span>
+                                                    <span style="font-weight:500;color:var(--t1);">{{ $dev->name }}</span>
+                                                    <span style="font-size:11px;color:var(--t3);">{{ $dev->designation }}</span>
+                                                </div>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Assign To — Multiple Sales Persons --}}
+                    <div class="dash-card" style="overflow:visible;">
+                        <div class="card-head">
+                            <div class="card-title"><i class="bi bi-person-badge-fill" style="color:var(--accent);margin-right:6px;"></i>Assign To (Sales)</div>
+                            <div class="card-sub">Select one or more sales personnel</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="ms-wrap" id="editSaleAssignWrap">
+                                <div class="ms-trigger" onclick="toggleMs('editSaleAssignWrap')">
+                                    <div class="ms-pills" id="editSaleAssignPills">
+                                        <span class="ms-placeholder">Select sales staff…</span>
+                                    </div>
+                                    <i class="bi bi-chevron-down ms-arrow"></i>
+                                </div>
+                                <div class="ms-dropdown" id="editSaleAssignDropdown">
+                                    <div class="ms-search-wrap">
+                                        <i class="bi bi-search"></i>
+                                        <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'editSaleAssignDropdown')">
+                                    </div>
+                                    <div class="ms-opts">
+                                        @php
+                                            $assignedSaleIds = $project->salesPersons->pluck('id')->toArray();
+                                        @endphp
+                                        @foreach($salesPersons as $index => $sale)
+                                            @php
+                                                $words = explode(' ', $sale->name);
+                                                $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+                                            @endphp
+                                            <label class="ms-opt">
+                                                <input type="checkbox" name="sales_person_ids[]" value="{{ $sale->id }}" 
+                                                    data-name="{{ $sale->name }}" data-initials="{{ $initials }}"
+                                                    onchange="updateMs('editSaleAssignWrap')"
+                                                    {{ in_array($sale->id, old('sales_person_ids', $assignedSaleIds)) ? 'checked' : '' }}>
+                                                <span class="ms-ava" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">{{ $initials }}</span>
+                                                <div style="display:flex;flex-direction:column;">
+                                                    <span style="font-weight:500;color:var(--t1);">{{ $sale->name }}</span>
+                                                    <span style="font-size:11px;color:var(--t3);">{{ $sale->email }}</span>
                                                 </div>
                                             </label>
                                         @endforeach
@@ -424,7 +462,8 @@
     document.addEventListener('DOMContentLoaded', function() {
         toggleCustomCms();
         calcRemaining();
-        updateMs('addAssignWrap');
+        updateMs('editAssignWrap');
+        updateMs('editSaleAssignWrap');
 
         // Seed Existing Emails
         @if($project->emails && is_array($project->emails))

@@ -131,10 +131,10 @@
                                                                     <td><span class="mono" style="font-size:11px">{{ $pay->transaction_id ?? 'N/A' }}</span>
                                                                     </td>
                                                                     <td>
-                                                                        <div class="ln">{{ $pay->createdBy instanceof \App\Models\Admin
-                                            ? 'System'
-                                            : (($pay->createdBy->name ?? 'N/A') . ' (' . ($pay->createdBy->email ?? 'no-email') . ')') 
-                                    }}</div>
+                                                                        <div class="ln">{{ $pay->createdBy->name ?? 'System' }}</div>
+                                                                        @if($pay->created_by_type === \App\Models\Sale::class && $pay->createdBy)
+                                                                            <div class="ls" style="font-size:10px">{{ $pay->createdBy->email }}</div>
+                                                                        @endif
                                                                     </td>
                                                                     <td>
                                                                         @if($pay->screenshot)

@@ -835,8 +835,8 @@
                                 <td><strong style="color:var(--accent)">{{ $lead->status->name ?? 'N/A' }}</strong></td>
                                 <td>
                                     @if($lead->createdBy)
-                                        <div class="ln">{{ $lead->created_by_type == \App\Models\Admin::class ? 'System' : $lead->createdBy->name }}</div>
-                                        @if($lead->created_by_type == \App\Models\Sale::class)
+                                        <div class="ln">{{ $lead->createdBy->name }}</div>
+                                        @if($lead->created_by_type === \App\Models\Sale::class)
                                             <div class="ls">{{ $lead->createdBy->email }}</div>
                                         @endif
                                     @else

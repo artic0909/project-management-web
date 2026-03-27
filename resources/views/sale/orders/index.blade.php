@@ -235,7 +235,7 @@
                                 </td>
                                 <td>
                                     @if($order->createdBy)
-                                        <div class="ln">{{ $order->created_by_type == \App\Models\Admin::class ? 'System' : $order->createdBy->name }}</div>
+                                        <div class="ln">{{ $order->createdBy->name }}</div>
                                         @if($order->created_by_type == \App\Models\Sale::class)
                                             <div class="ls">{{ $order->createdBy->email }}</div>
                                         @endif

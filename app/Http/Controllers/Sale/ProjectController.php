@@ -22,6 +22,8 @@ class ProjectController extends Controller
         return Project::where(function($q) use ($saleId, $saleType) {
             $q->where('created_by', $saleId)
               ->where('created_by_type', $saleType);
+        })->orWhereHas('salesPersons', function($q) use ($saleId) {
+            $q->where('sale_id', $saleId);
         })->orWhereHas('order', function($q) use ($saleId, $saleType) {
             $q->where('created_by', $saleId)->where('created_by_type', $saleType)
               ->orWhereHas('assignments', function($sq) use ($saleId) {
@@ -32,7 +34,7 @@ class ProjectController extends Controller
 
     public function index(Request $request)
     {
-        $query = $this->getFilteredProjects()->with(['projectStatus', 'paymentStatus', 'developers', 'order.assignments.sale', 'order.createdBy']);
+        $query = $this->getFilteredProjects()->with(['projectStatus', 'paymentStatus', 'developers', 'salesPersons', 'createdBy', 'order.assignments.sale', 'order.createdBy']);
 
         // Search Filter
         if ($request->filled('q')) {
@@ -112,8 +114,9 @@ class ProjectController extends Controller
         })->latest()->get();
 
         $developers = Developer::latest()->get();
+        $salesPersons = \App\Models\Sale::latest()->get();
         $statuses = $this->getStatusOptions();
-        return view('sale.project.create', compact('orders', 'developers', 'statuses'));
+        return view('sale.project.create', compact('orders', 'developers', 'salesPersons', 'statuses'));
     }
 
     public function store(Request $request)
@@ -130,12 +133,11 @@ class ProjectController extends Controller
         ]);
 
         if ($request->has('assign_to')) {
-            foreach ($request->assign_to as $developer_id) {
-                ProjectAssign::create([
-                    'project_id' => $project->id,
-                    'assigned_to' => $developer_id,
-                ]);
-            }
+            $project->developers()->sync($request->assign_to);
+        }
+
+        if ($request->has('sales_person_ids')) {
+            $project->salesPersons()->sync($request->sales_person_ids);
         }
 
         return redirect()->route('sale.projects.index')->with('success', 'Project created successfully!');
@@ -145,12 +147,12 @@ class ProjectController extends Controller
     {
         $project = $this->getFilteredProjects()->with(['projectStatus', 'paymentStatus', 'developers', 'feedbacks', 'order'])->findOrFail($id);
         $statuses = $this->getStatusOptions();
-        return view('sale.projects.show', compact('project', 'statuses'));
+        return view('sale.project.show', compact('project', 'statuses'));
     }
 
     public function edit($id)
     {
-        $project = $this->getFilteredProjects()->with('developers')->findOrFail($id);
+        $project = $this->getFilteredProjects()->with(['developers', 'salesPersons'])->findOrFail($id);
         $saleId = auth()->guard('sale')->id();
         $saleType = \App\Models\Sale::class;
 
@@ -162,8 +164,9 @@ class ProjectController extends Controller
         })->latest()->get();
 
         $developers = Developer::all();
+        $salesPersons = \App\Models\Sale::all();
         $statuses = $this->getStatusOptions();
-        return view('sale.projects.edit', compact('project', 'orders', 'developers', 'statuses'));
+        return view('sale.project.edit', compact('project', 'orders', 'developers', 'salesPersons', 'statuses'));
     }
 
     public function update(Request $request, $id)
@@ -171,14 +174,12 @@ class ProjectController extends Controller
         $project = $this->getFilteredProjects()->findOrFail($id);
         $project->update($request->all());
 
-        ProjectAssign::where('project_id', $id)->delete();
         if ($request->has('assign_to')) {
-            foreach ($request->assign_to as $developer_id) {
-                ProjectAssign::create([
-                    'project_id' => $project->id,
-                    'assigned_to' => $developer_id,
-                ]);
-            }
+            $project->developers()->sync($request->assign_to);
+        }
+
+        if ($request->has('sales_person_ids')) {
+            $project->salesPersons()->sync($request->sales_person_ids);
         }
 
         return redirect()->route('sale.projects.index')->with('success', 'Project updated successfully!');

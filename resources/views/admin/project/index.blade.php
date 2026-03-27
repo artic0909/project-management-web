@@ -166,11 +166,13 @@
                                 <th>Start Date</th>
                                 <th>Delivery</th>
                                 <th>Assigned To</th>
+                                <th>Sales Person</th>
                                 <th>Project Status</th>
                                 <th>Project Price</th>
                                 <th>Advance</th>
                                 <th>Remaining</th>
                                 <th>Payment</th>
+                                <th>Created By</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -238,6 +240,17 @@
                                     </div>
                                 </td>
                                 <td>
+                                    <div style="display:flex; flex-direction:column; gap:4px;">
+                                        @forelse($project->salesPersons as $sale)
+                                            <div style="font-size:12px; white-space:nowrap;">
+                                                <span style="font-weight:600;color:var(--t1);">{{ $sale->name }}</span>
+                                            </div>
+                                        @empty
+                                            <span style="color:var(--t4);font-size:11px;">Unassigned</span>
+                                        @endforelse
+                                    </div>
+                                </td>
+                                <td>
                                     @php
                                         $displayProjStatus = $project->projectStatus ? $project->projectStatus->name : ($project->project_status ?? 'New');
                                         $statusClass = strtolower(str_replace(' ', '-', $displayProjStatus));
@@ -249,11 +262,20 @@
                                 <td><span class="money-cell" style="color:#ef4444;">₹{{ number_format($project->remaining_amount, 0) }}</span></td>
                                 <td>
                                     @php
-                                        $displayPayStatus = $project->paymentStatus ? $project->paymentStatus->name : ($project->financial_payment_status ?? 'Pending');
-                                        $payLower = strtolower($displayPayStatus);
-                                        $payClass = $payLower == 'paid' ? 'paid' : ($payLower == 'partial' ? 'pending' : 'overdue');
+                                        $displayPayStatus = $project->paymentStatus ? $project->paymentStatus->name : ($project->payment_status ?? 'N/A');
+                                        $payClass = strtolower(str_replace(' ', '-', $displayPayStatus));
                                     @endphp
                                     <span class="status-pill {{ $payClass }}">{{ $displayPayStatus }}</span>
+                                </td>
+                                <td>
+                                    @if($project->createdBy)
+                                        <div class="ln">{{ $project->createdBy->name }}</div>
+                                        @if($project->created_by_type === \App\Models\Sale::class)
+                                            <div class="ls" style="font-size:10px">{{ $project->createdBy->email }}</div>
+                                        @endif
+                                    @else
+                                        <div class="ln">System</div>
+                                    @endif
                                 </td>
                                 <td>
                                     <div class="row-actions">

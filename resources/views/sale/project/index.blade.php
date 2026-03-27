@@ -204,17 +204,27 @@
                                     </div>
                                 </td>
                                 <td>
-                                    @if($project->order)
-                                        @foreach($project->order->assignments as $assign)
-                                            <div class="ln">{{ $assign->sale->name ?? 'N/A' }}</div>
-                                            <div class="ls">{{ $assign->sale->email ?? 'N/A' }}</div>
-                                        @endforeach
-                                        @if($project->order->assignments->isEmpty())
-                                            <span style="color:var(--t4)">Unassigned</span>
+                                    <div style="display:flex; flex-direction:column; gap:4px;">
+                                        @php $hasSales = false; @endphp
+                                        {{-- Order Assignments --}}
+                                        @if($project->order)
+                                            @foreach($project->order->assignments as $assign)
+                                                <div class="ln">{{ $assign->sale->name ?? 'N/A' }}</div>
+                                                <div class="ls" style="font-size:10px">{{ $assign->sale->email ?? '' }}</div>
+                                                @php $hasSales = true; @endphp
+                                            @endforeach
                                         @endif
-                                    @else
-                                        <span style="color:var(--t4)">Direct Project</span>
-                                    @endif
+                                        {{-- Project Assignments --}}
+                                        @foreach($project->salesPersons as $sale)
+                                            <div class="ln">{{ $sale->name }}</div>
+                                            <div class="ls" style="font-size:10px">{{ $sale->email }}</div>
+                                            @php $hasSales = true; @endphp
+                                        @endforeach
+
+                                        @if(!$hasSales)
+                                            <span style="color:var(--t4);font-size:11px;">Unassigned</span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td>
                                     @if($project->cms_platform)
@@ -269,9 +279,9 @@
                                 </td>
                                 <td>
                                     @if($project->createdBy)
-                                        <div class="ln">{{ $project->created_by_type == \App\Models\Admin::class ? 'System' : $project->createdBy->name }}</div>
-                                        @if($project->created_by_type == \App\Models\Sale::class)
-                                            <div class="ls">{{ $project->createdBy->email }}</div>
+                                        <div class="ln">{{ $project->createdBy->name }}</div>
+                                        @if($project->created_by_type === \App\Models\Sale::class)
+                                            <div class="ls" style="font-size:10px">{{ $project->createdBy->email }}</div>
                                         @endif
                                     @else
                                         <div class="ln">System</div>

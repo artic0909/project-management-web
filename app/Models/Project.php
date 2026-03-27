@@ -44,6 +44,11 @@ class Project extends Model
         return $this->belongsToMany(Developer::class, 'project_assigns', 'project_id', 'assigned_to');
     }
 
+    public function salesPersons()
+    {
+        return $this->belongsToMany(Sale::class, 'project_sale_assigns', 'project_id', 'sale_id');
+    }
+
     public function feedbacks()
     {
         return $this->hasMany(ClientFeedback::class);

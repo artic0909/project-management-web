@@ -107,7 +107,14 @@
                                 <td><span class="money-cell" style="color:#10b981; font-size:14px;">₹{{ number_format($pay->amount, 0) }}</span></td>
                                 <td><span class="mono" style="font-size:11px">{{ $pay->transaction_id ?? 'N/A' }}</span></td>
                                 <td>
-                                    <div class="ln">{{ $pay->createdBy instanceof \App\Models\Admin ? 'System' : ($pay->createdBy->name ?? 'N/A') }}</div>
+                                    @if($pay->createdBy)
+                                        <div class="ln">{{ $pay->createdBy->name }}</div>
+                                        @if($pay->created_by_type === \App\Models\Sale::class)
+                                            <div class="ls" style="font-size:10px">{{ $pay->createdBy->email }}</div>
+                                        @endif
+                                    @else
+                                        <div class="ln">System</div>
+                                    @endif
                                 </td>
                                 <td>
                                     @if($pay->screenshot)

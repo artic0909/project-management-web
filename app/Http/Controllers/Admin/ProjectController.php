@@ -16,7 +16,7 @@ class ProjectController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Project::with(['projectStatus', 'paymentStatus', 'developers']);
+        $query = Project::with(['projectStatus', 'paymentStatus', 'developers', 'salesPersons', 'createdBy']);
 
         // Search Filter
         if ($request->filled('q')) {
@@ -92,8 +92,9 @@ class ProjectController extends Controller
     {
         $orders = Order::latest()->get();
         $developers = Developer::latest()->get();
+        $salesPersons = \App\Models\Sale::latest()->get();
         $statuses = $this->getStatusOptions();
-        return view('admin.project.create', compact('orders', 'developers', 'statuses'));
+        return view('admin.project.create', compact('orders', 'developers', 'salesPersons', 'statuses'));
     }
 
     public function store(Request $request)
@@ -147,13 +148,11 @@ class ProjectController extends Controller
         }
 
         if ($request->has('assign_to')) {
-            foreach ($request->assign_to as $developerId) {
-                ProjectAssign::create([
-                    'project_id' => $project->id,
-                    'assigned_to' => $developerId,
-                    'type' => 'developer'
-                ]);
-            }
+            $project->developers()->sync($request->assign_to);
+        }
+
+        if ($request->has('sales_person_ids')) {
+            $project->salesPersons()->sync($request->sales_person_ids);
         }
 
         return redirect()->route('admin.projects.index')->with('success', 'Project created successfully.');
@@ -193,11 +192,12 @@ class ProjectController extends Controller
 
     public function edit($id)
     {
-        $project = Project::with('developers')->findOrFail($id);
+        $project = Project::with(['developers', 'salesPersons'])->findOrFail($id);
         $orders = Order::latest()->get();
         $developers = Developer::latest()->get();
+        $salesPersons = \App\Models\Sale::latest()->get();
         $statuses = $this->getStatusOptions();
-        return view('admin.project.edit', compact('project', 'orders', 'developers', 'statuses'));
+        return view('admin.project.edit', compact('project', 'orders', 'developers', 'salesPersons', 'statuses'));
     }
 
     public function update(Request $request, $id)
@@ -250,14 +250,11 @@ class ProjectController extends Controller
         }
 
         if ($request->has('assign_to')) {
-            ProjectAssign::where('project_id', $project->id)->delete();
-            foreach ($request->assign_to as $developerId) {
-                ProjectAssign::create([
-                    'project_id' => $project->id,
-                    'assigned_to' => $developerId,
-                    'type' => 'developer'
-                ]);
-            }
+            $project->developers()->sync($request->assign_to);
+        }
+
+        if ($request->has('sales_person_ids')) {
+            $project->salesPersons()->sync($request->sales_person_ids);
         }
 
         return redirect()->route('admin.projects.index')->with('success', 'Project updated successfully.');
