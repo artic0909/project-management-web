@@ -17,7 +17,7 @@
   </div>
 
   <nav class="sidebar-nav" id="sidebarNav">
-    <div class="nav-panel" id="nav-admin">
+    <div class="nav-panel" id="nav-developer">
 
       <div class="nav-section-label">Overview</div>
       <a class="nav-item {{ request()->routeIs('developer.dashboard') ? 'active' : '' }}" href="{{ route('developer.dashboard') }}">
@@ -26,9 +26,13 @@
       </a>
 
       <div class="nav-section-label">Personal</div>
-      <a class="nav-item" href="#">
+      <a class="nav-item {{ request()->routeIs('developer.projects*') ? 'active' : '' }}" href="{{ route('developer.projects.index') }}">
         <i class="bi bi-kanban-fill"></i><span>My Projects</span>
-        <span class="nav-count">24</span>
+        <span class="nav-count">{{ $projectCount }}</span>
+      </a>
+
+      <a class="nav-item {{ request()->routeIs('developer.tasks.completed*') ? 'active' : '' }}" href="{{ route('developer.tasks.completed') }}">
+        <i class="bi bi-list-check"></i><span>Completed Tasks</span>
       </a>
 
       <a class="nav-item" href="#">
@@ -60,7 +64,7 @@
       </div>
       <div class="user-info">
         <div class="user-name">{{ auth()->user()->name ?? 'Dev' }}</div>
-        <div class="user-role">{{ auth()->user()->role ?? 'Developer' }}</div>
+        <div class="user-role">{{ auth()->user()->email ?? 'Developer' }}</div>
       </div>
       <div class="user-status-dot"></div>
     </div>

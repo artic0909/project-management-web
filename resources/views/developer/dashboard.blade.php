@@ -26,22 +26,22 @@
                 <div class="kpi-top">
                     <div class="kpi-icon" style="background:rgba(99,102,241,.15);color:#6366f1"><i class="bi bi-kanban-fill"></i></div>
                 </div>
-                <div class="kpi-value">6</div>
-                <div class="kpi-label">Active Projects</div>
+                <div class="kpi-value">{{ $totalProjects }}</div>
+                <div class="kpi-label">My Projects</div>
+            </div>
+            <div class="kpi-card" style="--kpi-accent:#10b981">
+                <div class="kpi-top">
+                    <div class="kpi-icon" style="background:rgba(255, 209, 2, 0.15);color:#10b981"><i class="bi bi-hourglass-split"></i></div>
+                </div>
+                <div class="kpi-value">{{ $openTasks }}</div>
+                <div class="kpi-label">Open Tasks</div>
             </div>
             <div class="kpi-card" style="--kpi-accent:#10b981">
                 <div class="kpi-top">
                     <div class="kpi-icon" style="background:rgba(16,185,129,.15);color:#10b981"><i class="bi bi-check2-all"></i></div>
                 </div>
-                <div class="kpi-value">14</div>
-                <div class="kpi-label">Open Tasks</div>
-            </div>
-            <div class="kpi-card" style="--kpi-accent:#f59e0b">
-                <div class="kpi-top">
-                    <div class="kpi-icon" style="background:rgba(245,158,11,.15);color:#f59e0b"><i class="bi bi-git"></i></div>
-                </div>
-                <div class="kpi-value">47</div>
-                <div class="kpi-label">Commits (Month)</div>
+                <div class="kpi-value">{{ $completedTasks }}</div>
+                <div class="kpi-label">Completed Tasks</div>
             </div>
             <div class="kpi-card" style="--kpi-accent:#06b6d4">
                 <div class="kpi-top">

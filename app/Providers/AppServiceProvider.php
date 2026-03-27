@@ -83,6 +83,11 @@ class AppServiceProvider extends ServiceProvider
                           $sq->where('assigned_to', $saleId);
                       });
                 })->count();
+            } elseif (auth()->guard('developer')->check()) {
+                $devId = auth()->guard('developer')->id();
+                $projectCount = \App\Models\Project::whereHas('developers', function($q) use ($devId) {
+                    $q->where('assigned_to', $devId);
+                })->count();
             }
 
             $view->with([

@@ -9,6 +9,12 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        return view('developer.dashboard');
+        $dev = auth()->guard('developer')->user();
+        
+        $totalProjects = $dev->projects()->count();
+        $openTasks = $dev->tasks()->where('status', '!=', 'Completed')->count();
+        $completedTasks = $dev->tasks()->where('status', 'Completed')->count();
+
+        return view('developer.dashboard', compact('totalProjects', 'openTasks', 'completedTasks'));
     }
 }

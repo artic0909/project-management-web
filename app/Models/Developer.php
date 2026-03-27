@@ -36,6 +36,16 @@ class Developer extends Authenticatable
         'two_factor_secret',
     ];
 
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class, 'project_assigns', 'assigned_to', 'project_id');
+    }
+
+    public function tasks()
+    {
+        return $this->belongsToMany(ProjectTask::class, 'project_task_assigns', 'developer_id', 'task_id');
+    }
+
     protected function casts(): array
     {
         return [
