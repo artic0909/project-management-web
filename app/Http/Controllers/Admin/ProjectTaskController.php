@@ -24,7 +24,8 @@ class ProjectTaskController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'task' => 'required',
-            'developer_id' => 'nullable|exists:developers,id',
+            'developer_ids' => 'nullable|array',
+            'developer_ids.*' => 'exists:developers,id',
             'remarks' => 'nullable|string',
         ]);
 
@@ -39,13 +40,15 @@ class ProjectTaskController extends Controller
                 'created_by_type' => get_class(auth()->guard('admin')->user()),
             ]);
 
-            if ($request->developer_id) {
-                ProjectTaskAssign::create([
-                    'project_id' => $projectId,
-                    'task_id' => $task->id,
-                    'developer_id' => $request->developer_id,
-                    'remarks' => $request->remarks,
-                ]);
+            if ($request->developer_ids) {
+                foreach ($request->developer_ids as $devId) {
+                    ProjectTaskAssign::create([
+                        'project_id' => $projectId,
+                        'task_id' => $task->id,
+                        'developer_id' => $devId,
+                        'remarks' => $request->remarks,
+                    ]);
+                }
             }
 
             DB::commit();

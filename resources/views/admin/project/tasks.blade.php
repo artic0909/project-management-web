@@ -21,7 +21,7 @@
             <div class="dash-grid">
                 <!-- Left Column: Task Form -->
                 <div class="span-12">
-                    <div class="dash-card">
+                    <div class="dash-card" style="overflow:visible;">
                         <div class="card-head">
                             <div class="card-title"><i class="bi bi-plus-circle-fill" style="color:var(--accent);margin-right:8px;"></i>Create New Task</div>
                         </div>
@@ -37,13 +37,39 @@
                                     <textarea name="task" class="form-inp" rows="4" placeholder="Detailed instructions..." required></textarea>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Assign to Developer</label>
-                                    <select name="developer_id" class="form-inp select2">
-                                        <option value="">-- No Assignment --</option>
-                                        @foreach($developers as $dev)
-                                            <option value="{{ $dev->id }}">{{ $dev->name }} ({{ $dev->designation }})</option>
-                                        @endforeach
-                                    </select>
+                                    <label class="form-lbl">Assign to Developer(s)</label>
+                                    <div class="ms-wrap" id="taskAssignWrap">
+                                        <div class="ms-trigger" onclick="toggleMs('taskAssignWrap')">
+                                            <div class="ms-pills" id="taskAssignPills">
+                                                <span class="ms-placeholder">Select developers…</span>
+                                            </div>
+                                            <i class="bi bi-chevron-down ms-arrow"></i>
+                                        </div>
+                                        <div class="ms-dropdown" id="taskAssignDropdown">
+                                            <div class="ms-search-wrap">
+                                                <i class="bi bi-search"></i>
+                                                <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'taskAssignDropdown')">
+                                            </div>
+                                            <div class="ms-opts">
+                                                @foreach($developers as $index => $dev)
+                                                    @php
+                                                        $words = explode(' ', $dev->name);
+                                                        $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+                                                    @endphp
+                                                    <label class="ms-opt">
+                                                        <input type="checkbox" name="developer_ids[]" value="{{ $dev->id }}" 
+                                                            data-name="{{ $dev->name }}" data-initials="{{ $initials }}"
+                                                            onchange="updateMs('taskAssignWrap')">
+                                                        <span class="ms-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">{{ $initials }}</span>
+                                                        <div style="display:flex;flex-direction:column;">
+                                                            <span style="font-weight:500;color:var(--t1);">{{ $dev->name }}</span>
+                                                            <span style="font-size:11px;color:var(--t3);">{{ $dev->designation }}</span>
+                                                        </div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Internal Remarks (Optional)</label>
@@ -57,7 +83,7 @@
 
                 <!-- Right Column: Task History -->
                 <div class="span-12">
-                    <div class="dash-card">
+                    <div class="dash-card" style="overflow:visible;">
                         <div class="card-head">
                             <div class="card-title"><i class="bi bi-history" style="color:#ec4899;margin-right:8px;"></i>Task History</div>
                             <div class="card-sub">{{ $project->tasks->count() }} tasks recorded</div>
@@ -187,4 +213,10 @@
         .status-pill.in-progress { background: rgba(99, 102, 241, .12); color: #6366f1; }
         .status-pill.completed { background: rgba(16, 185, 129, .12); color: #10b981; }
     </style>
+    @include('admin.project._multiselect_assets')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            updateMs('taskAssignWrap');
+        });
+    </script>
 @endsection
