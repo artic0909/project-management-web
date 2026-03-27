@@ -10,6 +10,7 @@ use App\Http\Controllers\Sale\MarketingOrderController;
 use App\Http\Controllers\Sale\OrderController;
 use App\Http\Controllers\Sale\PaymentController;
 use App\Http\Controllers\Sale\ProjectController;
+use App\Http\Controllers\Sale\ProjectTaskController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function () {
@@ -56,6 +57,8 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     Route::put('/project/update/{id}', [ProjectController::class, 'update'])->name('projects.update');
     Route::post('/project/quick-update/{id}', [ProjectController::class, 'quickUpdate'])->name('projects.quickUpdate');
     Route::delete('/project/delete/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
+    Route::get('/project/{project}/tasks', [ProjectTaskController::class, 'index'])->name('projects.tasks');
+    Route::post('/project/{project}/tasks', [ProjectTaskController::class, 'store'])->name('projects.tasks.store');
     
     // Payments
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');

@@ -290,6 +290,7 @@
                                 </td>
                                 <td>
                                     <div class="row-actions">
+                                        <a href="{{ route('sale.projects.tasks', $project->id) }}" class="ra-btn" title="Tasks" style="color:#6366f1;background:rgba(99,102,241,0.1);"><i class="bi bi-list-task"></i></a>
                                         <a href="{{ route('sale.projects.show', $project->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
                                         <a href="{{ route('sale.projects.edit', $project->id) }}" class="ra-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
                                         <form action="{{ route('sale.projects.destroy', $project->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this project?')">

@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\MarketingOrderController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ProjectController;
+use App\Http\Controllers\Admin\ProjectTaskController;
 use App\Http\Controllers\Admin\SalesPersonController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SourceController;
@@ -93,6 +94,8 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::put('/project/update/{id}', [ProjectController::class, 'update'])->name('projects.update');
     Route::post('/project/quick-update/{id}', [ProjectController::class, 'quickUpdate'])->name('projects.quickUpdate');
     Route::delete('/project/delete/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
+    Route::get('/project/{project}/tasks', [ProjectTaskController::class, 'index'])->name('projects.tasks');
+    Route::post('/project/{project}/tasks', [ProjectTaskController::class, 'store'])->name('projects.tasks.store');
     
     // Marketing Orders
     Route::get('/add-marketing-orders', [MarketingOrderController::class, 'index'])->name('marketing-orders');

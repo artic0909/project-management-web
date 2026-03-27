@@ -68,4 +68,14 @@ class Project extends Model
     {
         return $this->morphTo(null, 'created_by_type', 'created_by');
     }
+
+    public function tasks()
+    {
+        return $this->hasMany(ProjectTask::class);
+    }
+
+    public function taskAssignments()
+    {
+        return $this->hasMany(ProjectTaskAssign::class);
+    }
 }
