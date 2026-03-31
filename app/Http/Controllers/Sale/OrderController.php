@@ -154,6 +154,7 @@ class OrderController extends Controller
             'company_name' => $request->company_name,
             'client_name' => $request->client_name,
             'order_value' => $request->order_value,
+            'advance_payment' => $request->advance_payment ?? 0,
             'status_id' => $request->status_id,
             'service_id' => $request->service_id,
             'emails' => array_values($emails),
@@ -173,6 +174,20 @@ class OrderController extends Controller
             'created_by' => auth()->guard('sale')->id(),
             'created_by_type' => \App\Models\Sale::class,
         ]);
+
+        // Automatic Payment record for Advance Payment
+        if ($order->advance_payment > 0) {
+            \App\Models\Payment::create([
+                'order_id' => $order->id,
+                'transaction_date' => now(),
+                'amount' => $order->advance_payment,
+                'payment_method' => 'Advance',
+                'notes' => 'Automated Advance Payment',
+                'status_id' => 21, // 'paid'
+                'created_by' => auth()->guard('sale')->id(),
+                'created_by_type' => \App\Models\Sale::class,
+            ]);
+        }
 
         if ($request->has('assign_to')) {
             foreach ($request->assign_to as $sale_id) {
@@ -241,6 +256,7 @@ class OrderController extends Controller
             'company_name' => $request->company_name,
             'client_name' => $request->client_name,
             'order_value' => $request->order_value,
+            'advance_payment' => $request->advance_payment ?? 0,
             'status_id' => $request->status_id,
             'service_id' => $request->service_id,
             'emails' => array_values($emails),
@@ -258,6 +274,20 @@ class OrderController extends Controller
             'mkt_username' => $request->mkt_username,
             'mkt_password' => $request->mkt_password,
         ]);
+
+        // Update Advance Payment Record if none exists
+        if ($order->advance_payment > 0 && !$order->payments()->where('payment_method', 'Advance')->exists()) {
+            \App\Models\Payment::create([
+                'order_id' => $order->id,
+                'transaction_date' => now(),
+                'amount' => $order->advance_payment,
+                'payment_method' => 'Advance',
+                'notes' => 'Automated Advance Payment',
+                'status_id' => 21, // 'paid'
+                'created_by' => auth()->guard('sale')->id(),
+                'created_by_type' => \App\Models\Sale::class,
+            ]);
+        }
 
         if ($request->has('assign_to')) {
             OrderAssign::where('order_id', $id)->delete();

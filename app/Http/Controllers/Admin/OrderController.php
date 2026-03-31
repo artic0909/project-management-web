@@ -131,7 +131,7 @@ class OrderController extends Controller
 
         $orderData = $request->only([
             'lead_id', 'company_name', 'client_name', 'domain_name', 'service_id',
-            'order_value', 'payment_terms_id', 'delivery_date', 'city', 'state',
+            'order_value', 'advance_payment', 'payment_terms_id', 'delivery_date', 'city', 'state',
             'zip_code', 'full_address', 'status_id', 'plan_name',
             'mkt_payment_status_id', 'mkt_starting_date', 'mkt_username', 'mkt_password'
         ]);
@@ -145,6 +145,20 @@ class OrderController extends Controller
         $orderData['created_by_type'] = get_class(Auth::user());
 
         $order = Order::create($orderData);
+
+        // Automatic Payment record for Advance Payment
+        if ($order->advance_payment > 0) {
+            \App\Models\Payment::create([
+                'order_id' => $order->id,
+                'transaction_date' => now(),
+                'amount' => $order->advance_payment,
+                'payment_method' => 'Advance',
+                'notes' => 'Automated Advance Payment',
+                'status_id' => $order->status_id,
+                'created_by' => Auth::id(),
+                'created_by_type' => get_class(Auth::user()),
+            ]);
+        }
 
         // Assign Sales Personnel
         if ($request->has('sales_person')) {
@@ -226,7 +240,7 @@ class OrderController extends Controller
 
         $orderData = $request->only([
             'company_name', 'client_name', 'domain_name', 'service_id',
-            'order_value', 'payment_terms_id', 'delivery_date', 'city', 'state',
+            'order_value', 'advance_payment', 'payment_terms_id', 'delivery_date', 'city', 'state',
             'zip_code', 'full_address', 'status_id', 'plan_name',
             'mkt_payment_status_id', 'mkt_starting_date', 'mkt_username', 'mkt_password'
         ]);
@@ -236,6 +250,20 @@ class OrderController extends Controller
         $orderData['is_marketing'] = $request->has('is_marketing'); 
 
         $order->update($orderData);
+
+        // Update Advance Payment Record if none exists
+        if ($order->advance_payment > 0 && !$order->payments()->where('payment_method', 'Advance')->exists()) {
+            \App\Models\Payment::create([
+                'order_id' => $order->id,
+                'transaction_date' => now(),
+                'amount' => $order->advance_payment,
+                'payment_method' => 'Advance',
+                'notes' => 'Automated Advance Payment',
+                'status_id' => 21, // 'paid'
+                'created_by' => Auth::id(),
+                'created_by_type' => get_class(Auth::user()),
+            ]);
+        }
 
         // Update Assignments
         if ($request->has('sales_person')) {

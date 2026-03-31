@@ -72,6 +72,10 @@
                                     <input type="number" name="order_value" class="form-inp" value="{{ old('order_value', $order->order_value) }}" placeholder="₹ Amount" required>
                                 </div>
                                 <div class="form-row">
+                                    <label class="form-lbl">Advance Payment</label>
+                                    <input type="number" name="advance_payment" class="form-inp" value="{{ old('advance_payment', $order->advance_payment) }}" placeholder="₹ Advance Received">
+                                </div>
+                                <div class="form-row">
                                     <label class="form-lbl">Payment Terms</label>
                                     <select name="payment_terms_id" class="form-inp">
                                         <option value="">— Select Terms —</option>
