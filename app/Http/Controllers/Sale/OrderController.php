@@ -30,7 +30,7 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
-        $query = $this->getFilteredOrders()->with(['status', 'service', 'assignments.sale', 'createdBy']);
+        $query = $this->getFilteredOrders()->with(['status', 'service', 'assignments.sale', 'createdBy'])->withCount('followups');
 
         // Search Filter
         if ($request->filled('q')) {

@@ -18,7 +18,7 @@ class LeadController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Lead::with(['status', 'service', 'source', 'campaign', 'assignments', 'createdBy'])
+        $query = Lead::with(['status', 'service', 'source', 'campaign', 'assignments', 'createdBy'])->withCount('followups')
             ->whereHas('status', function($sq) {
                 $sq->where('name', '!=', 'lost');
             });

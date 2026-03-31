@@ -16,7 +16,7 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Order::with(['status', 'service', 'assignments.sale', 'createdBy']);
+        $query = Order::with(['status', 'service', 'assignments.sale', 'createdBy'])->withCount('followups');
 
         // Search Filter
         if ($request->filled('q')) {

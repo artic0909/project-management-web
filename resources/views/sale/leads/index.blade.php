@@ -824,6 +824,7 @@
                                 <th>Status</th>
                                 <th>Created By</th>
                                 <th>Sales Person</th>
+                                <th>Followup</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -871,6 +872,11 @@
                                     @if($lead->assignments->isEmpty())
                                         <span style="color:var(--t4)">Unassigned</span>
                                     @endif
+                                </td>
+                                <td>
+                                    <span class="badge" style="background:rgba(99, 102, 241, 0.1); color:var(--accent); padding:4px 10px; border-radius:6px; font-weight:700; font-family:var(--font-mono); font-size:12px;">
+                                        {{ $lead->followups_count }}
+                                    </span>
                                 </td>
                                 <td>
                                     <div class="row-actions">

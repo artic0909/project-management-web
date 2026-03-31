@@ -214,6 +214,7 @@
                                 <th>Status</th>
                                 <th>Created By</th>
                                 <th>Sales Person</th>
+                                <th>Followup</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -269,6 +270,11 @@
                                             <div class="ls" style="font-size:10px;">{{ $assign->sale->email }}</div>
                                         @endforeach
                                     </div>
+                                </td>
+                                <td>
+                                    <span class="badge" style="background:rgba(99, 102, 241, 0.1); color:var(--accent); padding:4px 10px; border-radius:6px; font-weight:700; font-family:var(--font-mono); font-size:12px;">
+                                        {{ $order->followups_count }}
+                                    </span>
                                 </td>
                                 <td>
                                     <div class="row-actions">
