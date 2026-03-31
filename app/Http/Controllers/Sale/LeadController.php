@@ -223,7 +223,7 @@ class LeadController extends Controller
 
     public function show($id)
     {
-        $lead = $this->getFilteredLeads()->with(['status', 'source', 'service', 'campaign', 'createdBy', 'assignments.sale'])->findOrFail($id);
+        $lead = $this->getFilteredLeads()->with(['status', 'source', 'service', 'campaign', 'createdBy', 'assignments.sale', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         $statuses = Status::where('type', 'lead')->get();
         return view('sale.leads.show', compact('lead', 'statuses'));
     }

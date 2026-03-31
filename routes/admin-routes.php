@@ -69,6 +69,11 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::get('/lead-followup/{id}', [FollowupController::class, 'index'])->name('leads.followup');
     Route::post('/lead-followup/{id}', [FollowupController::class, 'store'])->name('leads.followup.store');
     
+    // Lead Notes
+    Route::post('/lead-notes/{lead}', [\App\Http\Controllers\LeadNoteController::class, 'store'])->name('lead-notes.store');
+    Route::put('/lead-notes/{note}', [\App\Http\Controllers\LeadNoteController::class, 'update'])->name('lead-notes.update');
+    Route::delete('/lead-notes/{note}', [\App\Http\Controllers\LeadNoteController::class, 'destroy'])->name('lead-notes.destroy');
+    
     // Losted Leads
     Route::get('/losted-leads', [LeadController::class, 'lostedLeads'])->name('losted-leads');
 

@@ -51,4 +51,9 @@ class Lead extends Model
     {
         return $this->morphMany(Followup::class, 'followable')->latest();
     }
+
+    public function notes_history()
+    {
+        return $this->hasMany(LeadNote::class)->latest();
+    }
 }

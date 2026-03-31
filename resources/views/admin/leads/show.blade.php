@@ -97,87 +97,91 @@
         <!-- ── MAIN CONTENT GRID ── -->
         <div class="dash-grid">
             
-            <!-- LEFT: Profile & Identity (span-4) -->
-            <div class="dash-card span-4" style="height:fit-content;">
-                <div class="card-head" style="padding:16px 18px;">
-                    <div class="card-title">Identity & Contact</div>
-                </div>
-                <div class="card-body" style="padding:0 18px 24px;">
-                    
-                    @php 
-                        $emails = $lead->emails ?? [];
-                        $phones = $lead->phones ?? [];
-                        $initials = strtoupper(substr($lead->company, 0, 1) . substr($lead->contact_person, 0, 1));
-                    @endphp
-
-                    <!-- Avatar + Name -->
-                    <div style="display:flex;flex-direction:column;align-items:center;padding:24px 0 20px;border-bottom:1px solid var(--b1);text-align:center;">
-                        <div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#6366f1,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;margin-bottom:14px;box-shadow:0 8px 30px rgba(99,102,241,.3);">{{ $initials }}</div>
-                        <div style="font-size:19px;font-weight:800;color:var(--t1);letter-spacing:-.4px;">{{ $lead->company }}</div>
-                        <div style="font-size:13px;color:var(--t3);margin-top:4px;">{{ $emails[0] ?? 'No primary email' }}</div>
-                        <div style="margin-top:12px;display:flex;gap:6px; flex-wrap:wrap; justify-content:center;">
-                            <span class="src-tag {{ strtolower($lead->source->name ?? 'none') }}">{{ $lead->source->name ?? 'N/A' }}</span>
-                            <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(99,102,241,.1);color:var(--accent);">{{ $lead->service->name ?? 'N/A' }}</span>
+            <!-- LEFT COLUMN: Profile & History (span-4) -->
+            <div class="span-4" style="display:flex; flex-direction:column; gap:16px;">
+                
+                {{-- Identity & Contact Card --}}
+                <div class="dash-card">
+                    <div class="card-head" style="padding:16px 18px;">
+                        <div class="card-title">Identity & Contact</div>
+                    </div>
+                    <div class="card-body" style="padding:0 18px 24px;">
+                        @php 
+                            $emails = $lead->emails ?? [];
+                            $phones = $lead->phones ?? [];
+                            $initials = strtoupper(substr($lead->company, 0, 1) . substr($lead->contact_person, 0, 1));
+                        @endphp
+                        <div style="display:flex;flex-direction:column;align-items:center;padding:24px 0 20px;border-bottom:1px solid var(--b1);text-align:center;">
+                            <div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#6366f1,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;margin-bottom:14px;box-shadow:0 8px 30px rgba(99,102,241,.3);">{{ $initials }}</div>
+                            <div style="font-size:19px;font-weight:800;color:var(--t1);letter-spacing:-.4px;">{{ $lead->company }}</div>
+                            <div style="font-size:13px;color:var(--t3);margin-top:4px;">{{ $emails[0] ?? 'No primary email' }}</div>
+                            <div style="margin-top:12px;display:flex;gap:6px; flex-wrap:wrap; justify-content:center;">
+                                <span class="src-tag {{ strtolower($lead->source->name ?? 'none') }}">{{ $lead->source->name ?? 'N/A' }}</span>
+                                <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(99,102,241,.1);color:var(--accent);">{{ $lead->service->name ?? 'N/A' }}</span>
+                            </div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:4px;margin-top:16px;">
+                            <div class="detail-row"><div class="detail-icon"><i class="bi bi-person-fill"></i></div><div><div class="detail-lbl">Contact Person</div><div class="detail-val">{{ $lead->contact_person }}</div></div></div>
+                            <div class="detail-row"><div class="detail-icon"><i class="bi bi-building"></i></div><div><div class="detail-lbl">Business Type</div><div class="detail-val">{{ $lead->business_type ?? 'N/A' }}</div></div></div>
+                            <div class="detail-row"><div class="detail-icon"><i class="bi bi-megaphone-fill"></i></div><div><div class="detail-lbl">Campaign</div><div class="detail-val">{{ $lead->campaign->name ?? 'Organic' }}</div></div></div>
+                            <div class="detail-row"><div class="detail-icon"><i class="bi bi-geo-alt-fill"></i></div><div><div class="detail-lbl">Address</div><div class="detail-val">{{ $lead->address ?? 'No address set' }}</div></div></div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Vertical Detail List -->
-                    <div style="display:flex;flex-direction:column;gap:4px;margin-top:16px;">
-                        
-                        <div class="detail-row">
-                            <div class="detail-icon"><i class="bi bi-person-fill"></i></div>
-                            <div>
-                                <div class="detail-lbl">Contact Person</div>
-                                <div class="detail-val">{{ $lead->contact_person }}</div>
+                {{-- Lead Notes History Card --}}
+                <div class="dash-card">
+                    <div class="card-head" style="padding:16px 18px; border-bottom:1px solid var(--b1);">
+                        <div class="card-title">Notes History</div>
+                    </div>
+                    <div class="card-body" style="padding:18px;">
+                        <form action="{{ route('admin.lead-notes.store', $lead->id) }}" method="POST" style="margin-bottom:20px;">
+                            @csrf
+                            <div style="position:relative;">
+                                <textarea name="notes" class="form-inp" rows="3" placeholder="Add internal note..." style="padding-right:45px; border-radius:12px; font-size:13px; min-height:80px;"></textarea>
+                                <button type="submit" style="position:absolute; bottom:10px; right:12px; width:32px; height:32px; border-radius:50%; background:var(--accent); border:none; color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 12px rgba(99,102,241,0.3);">
+                                    <i class="bi bi-send-fill" style="font-size:14px;"></i>
+                                </button>
                             </div>
-                        </div>
+                        </form>
 
-                        <div class="detail-row">
-                            <div class="detail-icon"><i class="bi bi-building"></i></div>
-                            <div>
-                                <div class="detail-lbl">Business Type</div>
-                                <div class="detail-val">{{ $lead->business_type ?? 'N/A' }}</div>
-                            </div>
-                        </div>
-
-                        <div class="detail-row">
-                            <div class="detail-icon"><i class="bi bi-megaphone-fill"></i></div>
-                            <div>
-                                <div class="detail-lbl">Campaign</div>
-                                <div class="detail-val">{{ $lead->campaign->name ?? 'Organic' }}</div>
-                            </div>
-                        </div>
-
-                        <div class="detail-row">
-                            <div class="detail-icon"><i class="bi bi-geo-alt-fill"></i></div>
-                            <div>
-                                <div class="detail-lbl">Address</div>
-                                <div class="detail-val">{{ $lead->address ?? 'No address set' }}</div>
-                            </div>
-                        </div>
-
-                        <div class="detail-row">
-                            <div class="detail-icon"><i class="bi bi-shield-lock-fill"></i></div>
-                            <div>
-                                <div class="detail-lbl">Created By</div>
-                                <div class="detail-val" style="display:flex; flex-direction:column;">
-                                    @if($lead->createdBy instanceof \App\Models\Admin)
-                                        <span>System</span>
-                                    @elseif($lead->createdBy)
-                                        <span>{{ $lead->createdBy->name }}</span>
-                                        <span style="font-size:10px; color:var(--t3)">{{ $lead->createdBy->email }}</span>
-                                    @else
-                                        <span>System</span>
-                                    @endif
+                        <div class="notes-timeline">
+                            @forelse($lead->notes_history as $note)
+                                <div class="note-item">
+                                    <div class="note-header">
+                                        <div class="note-author">
+                                            <div class="mini-ava">{{ strtoupper(substr($note->createdBy->name ?? 'S', 0, 1)) }}</div>
+                                            <div class="author-info">
+                                                <span class="name">{{ $note->createdBy->name ?? 'System' }}</span>
+                                                <span class="role">{{ $note->created_by_type == \App\Models\Admin::class ? 'Admin' : 'Sale' }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="note-actions">
+                                            <button type="button" class="not-btn" onclick="openEditNoteModal({{ $note->id }}, '{{ addslashes($note->notes) }}')"><i class="bi bi-pencil"></i></button>
+                                            <form action="{{ route('admin.lead-notes.destroy', $note->id) }}" method="POST" style="display:inline;">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="not-btn danger" onclick="return confirm('Delete note?')"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="note-content">{{ $note->notes }}</div>
+                                    <div class="note-footer">
+                                        {{ $note->created_at->diffForHumans() }}
+                                        @if($note->updated_at > $note->created_at)
+                                            <span class="ed">• Ed</span>
+                                        @endif
+                                    </div>
                                 </div>
-                            </div>
+                            @empty
+                                <div style="text-align:center; padding:10px; color:var(--t4); font-size:12px;">No notes recorded.</div>
+                            @endforelse
                         </div>
-
                     </div>
                 </div>
-            </div>
 
-            <!-- RIGHT: Actions & Information (span-8) -->
+            </div> <!-- END LEFT -->
+
+            <!-- RIGHT COLUMN: Actions & Updates (span-8) -->
             <div class="span-8" style="display:flex;flex-direction:column;gap:16px;">
                 
                 @if(session('success'))
@@ -262,10 +266,10 @@
                                         <option value="Cold" {{ $lead->priority == 'Cold' ? 'selected' : '' }}>Cold</option>
                                     </select>
                                 </div>
-                                <div class="form-row" style="grid-column:1/-1; margin-bottom:0;">
+                                <!-- <div class="form-row" style="grid-column:1/-1; margin-bottom:0;">
                                     <label class="form-lbl">Lead Notes / Internal Briefing</label>
                                     <textarea name="notes" class="form-inp" rows="5" placeholder="Add private notes about this lead here...">{{ $lead->notes }}</textarea>
-                                </div>
+                                </div> -->
                             </div>
                             <div style="display:flex;justify-content:flex-end;margin-top:20px;">
                                 <button type="submit" class="btn-primary-solid">
@@ -356,11 +360,62 @@
     .src-tag.facebook { background:rgba(59,130,246,.12); color:#3b82f6; }
     .src-tag.website { background:rgba(16,185,129,.12); color:#10b981; }
     .src-tag.direct { background:rgba(99,102,241,.12); color:#6366f1; }
+
+    /* Notes Timeline Styling */
+    .notes-timeline { display: flex; flex-direction: column; gap: 12px; }
+    .note-item { padding: 12px; background: var(--bg3); border: 1px solid var(--b1); border-radius: 12px; }
+    .note-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .note-author { display: flex; align-items: center; gap: 8px; }
+    .mini-ava { width: 24px; height: 24px; border-radius: 6px; background: var(--bg4); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: var(--t2); }
+    .author-info { display: flex; flex-direction: column; }
+    .author-info .name { font-size: 12px; font-weight: 700; color: var(--t1); line-height: 1; }
+    .author-info .role { font-size: 9px; font-weight: 600; color: var(--t4); text-transform: uppercase; margin-top: 1px; }
+    .note-actions { display: flex; gap: 2px; }
+    .not-btn { width: 22px; height: 22px; border-radius: 4px; border: none; background: transparent; color: var(--t4); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 11px; }
+    .not-btn:hover { background: var(--bg4); color: var(--accent); }
+    .not-btn.danger:hover { color: #ef4444; }
+    .note-content { font-size: 12.5px; line-height: 1.5; color: var(--t2); white-space: pre-wrap; margin-bottom: 6px; }
+    .note-footer { font-size: 10px; color: var(--t4); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+    .note-footer .ed { color: var(--accent); }
 </style>
 
 <script>
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    function openEditNoteModal(id, notes) {
+        const modal = document.getElementById('editNoteModal');
+        const form = document.getElementById('editNoteForm');
+        const textarea = form.querySelector('textarea');
+        
+        textarea.value = notes;
+        form.action = `/admin/lead-notes/${id}`;
+        modal.style.display = 'flex';
+    }
 </script>
+
+{{-- Edit Note Modal --}}
+<div class="modal-backdrop" id="editNoteModal" onclick="closeModal('editNoteModal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-hd">
+            <span>Edit Note</span>
+            <button class="modal-close" onclick="closeModal('editNoteModal')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-bd">
+            <form id="editNoteForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="form-row">
+                    <label class="form-lbl">Update your note</label>
+                    <textarea name="notes" class="form-inp" rows="5" required></textarea>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                    <button type="button" class="btn-ghost" onclick="closeModal('editNoteModal')">Cancel</button>
+                    <button type="submit" class="btn-primary-solid">Update Note</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @endsection
