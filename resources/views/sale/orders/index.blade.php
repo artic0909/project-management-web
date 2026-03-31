@@ -224,6 +224,7 @@
                                 <th>Contact Person</th>
                                 <th>Service</th>
                                 <th>Value</th>
+                                <th>Advance</th>
                                 <th>Status</th>
                                 <th>Created By</th>
                                 <th>Sales Person</th>
@@ -263,6 +264,7 @@
                                 </td>
                                 <td><span class="src-tag">{{ $order->service->name ?? 'N/A' }}</span></td>
                                 <td><span class="src-tag">₹{{ number_format($order->order_value, 0) }}</span></td>
+                                <td><span class="src-tag" style="background:#10b98120; color:#10b981;">₹{{ number_format($order->advance_payment, 0) }}</span></td>
                                 <td>
                                     <span class="status-pill" style="background:{{ ($order->status->color ?? '#6366f1') }}20; color:{{ $order->status->color ?? '#6366f1' }};">
                                         {{ $order->status->name ?? 'Pending' }}
