@@ -172,7 +172,7 @@
                             <div class="form-grid">
                                 <div class="form-row">
                                     <label class="form-lbl">Transaction Date *</label>
-                                    <input type="datetime-local" name="followup_date" class="form-inp" value="{{ date('Y-m-d\TH:i') }}" required>
+                                    <input type="datetime-local" name="followup_date" class="form-inp" value="{{ date('Y-m-d\TH:i') }}" max="{{ date('Y-m-d\TH:i') }}" required>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Interaction Vector</label>
@@ -301,5 +301,32 @@
     .history-item-box { transition: var(--transition); }
     .history-item-box:hover { transform: translateX(5px); border-color: var(--accent) !important; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const typeSelect = document.querySelector('select[name="followup_type"]');
+    const callingArea = document.querySelector('textarea[name="calling_note"]').closest('.form-row');
+    const messageArea = document.querySelector('textarea[name="message_note"]').closest('.form-row');
+
+    function toggleAreas() {
+        const val = typeSelect.value;
+        if (val === 'Calling') {
+            callingArea.style.display = 'block';
+            messageArea.style.display = 'none';
+        } else if (val === 'Message') {
+            callingArea.style.display = 'none';
+            messageArea.style.display = 'block';
+        } else if (val === 'Both') {
+            callingArea.style.display = 'block';
+            messageArea.style.display = 'block';
+        }
+    }
+
+    if (typeSelect) {
+        typeSelect.addEventListener('change', toggleAreas);
+        toggleAreas();
+    }
+});
+</script>
 
 @endsection
