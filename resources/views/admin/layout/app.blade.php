@@ -133,6 +133,7 @@
             background: rgba(99, 102, 241, .3);
         }
 
+
         /* ─── LAYOUT ─── */
         .sidebar {
             position: fixed;
@@ -3427,6 +3428,7 @@
             });
         @endif
     </script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </body>
 
 </html>

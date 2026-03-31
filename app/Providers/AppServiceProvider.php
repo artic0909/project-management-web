@@ -45,12 +45,15 @@ class AppServiceProvider extends ServiceProvider
             $statusCount = \App\Models\Status::count();
             $developerCount = \App\Models\Developer::count();
             $salesPersonCount = \App\Models\Sale::count();
+            $meetingCount = 0;
+
 
             if (auth()->guard('admin')->check()) {
                 $leadCount = \App\Models\Lead::whereHas('status', function($q){ $q->where('name','!=','lost'); })->count();
                 $orderCount = \App\Models\Order::count();
                 $lostLeadCount = \App\Models\Lead::whereHas('status', function($q){ $q->where('name','lost'); })->count();
                 $projectCount = \App\Models\Project::count();
+                $meetingCount = \App\Models\Meeting::where('status', 'pending')->count();
             } elseif (auth()->guard('sale')->check()) {
                 $saleId = auth()->guard('sale')->id();
                 $saleType = \App\Models\Sale::class;
@@ -83,11 +86,17 @@ class AppServiceProvider extends ServiceProvider
                           $sq->where('assigned_to', $saleId);
                       });
                 })->count();
+
+                $meetingCount = \App\Models\Meeting::whereJsonContains('assignsale_ids', (string)$saleId)
+                    ->where('status', 'pending')->count();
             } elseif (auth()->guard('developer')->check()) {
                 $devId = auth()->guard('developer')->id();
                 $projectCount = \App\Models\Project::whereHas('developers', function($q) use ($devId) {
                     $q->where('assigned_to', $devId);
                 })->count();
+
+                $meetingCount = \App\Models\Meeting::whereJsonContains('assigndev_ids', (string)$devId)
+                    ->where('status', 'pending')->count();
             }
 
             $view->with([
@@ -101,6 +110,7 @@ class AppServiceProvider extends ServiceProvider
                 'orderCount' => $orderCount,
                 'lostLeadCount' => $lostLeadCount,
                 'projectCount' => $projectCount,
+                'meetingCount' => $meetingCount,
             ]);
         });
     }

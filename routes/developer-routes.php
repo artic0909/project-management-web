@@ -22,4 +22,7 @@ Route::middleware(['auth:developer'])->prefix('developer')->name('developer.')->
     // Account Settings
     Route::get('/my-account', [AccountSettingController::class, 'index'])->name('account-settings');
     Route::post('/my-account/update', [AccountSettingController::class, 'update'])->name('account-settings.update');
+    // Meetings
+    Route::get('/meetings', [\App\Http\Controllers\Developer\MeetingController::class, 'index'])->name('meetings.index');
+    Route::get('/meetings/{meeting}', [\App\Http\Controllers\Developer\MeetingController::class, 'show'])->name('meetings.show');
 });

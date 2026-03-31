@@ -83,4 +83,6 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     // Account Settings
     Route::get('/my-account', [AccountSettingController::class, 'index'])->name('account-settings');
     Route::post('/my-account', [\App\Http\Controllers\Auth\LoginController::class, 'saleProfileAndPasswordUpdate'])->name('account-settings.update');
+    // Meetings
+    Route::resource('meetings', \App\Http\Controllers\Sale\MeetingController::class);
 });
