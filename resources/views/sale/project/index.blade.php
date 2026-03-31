@@ -168,10 +168,10 @@
                                 <th>Delivery</th>
                                 <th>Assigned To</th>
                                 <th>Project Status</th>
-                                <th>Project Price</th>
+                                <!-- <th>Project Price</th>
                                 <th>Advance</th>
                                 <th>Remaining</th>
-                                <th>Payment</th>
+                                <th>Payment</th> -->
                                 <th>Created By</th>
                                 <th>Action</th>
                             </tr>
@@ -269,7 +269,7 @@
                                     @endphp
                                     <span class="proj-status {{ $statusClass }}">{{ $displayProjStatus }}</span>
                                 </td>
-                                <td><span class="money-cell">₹{{ number_format($project->project_price, 0) }}</span></td>
+                                <!-- <td><span class="money-cell">₹{{ number_format($project->project_price, 0) }}</span></td>
                                 <td><span class="money-cell" style="color:#10b981;">₹{{ number_format($project->advance_payment, 0) }}</span></td>
                                 <td><span class="money-cell" style="color:#ef4444;">₹{{ number_format($project->remaining_amount, 0) }}</span></td>
                                 <td>
@@ -279,7 +279,7 @@
                                         $payClass = $payLower == 'paid' ? 'paid' : ($payLower == 'partial' ? 'pending' : 'overdue');
                                     @endphp
                                     <span class="status-pill {{ $payClass }}">{{ $displayPayStatus }}</span>
-                                </td>
+                                </td> -->
                                 <td>
                                     @if($project->createdBy)
                                         <div class="ln">{{ $project->createdBy->name }}</div>

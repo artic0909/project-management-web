@@ -299,7 +299,7 @@
                     </div>
 
                     {{-- Financials --}}
-                    <div class="dash-card fb-top-accent">
+                    <!-- <div class="dash-card fb-top-accent">
                         <div class="card-head">
                             <div class="card-title text-accent"><i class="bi bi-currency-rupee"></i> Financial Summary</div>
                         </div>
@@ -347,7 +347,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     {{-- Team Members --}}
                     <div class="dash-card">
