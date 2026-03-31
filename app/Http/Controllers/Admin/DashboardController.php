@@ -18,8 +18,8 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $selectedMonth = $request->get('month', Carbon::now()->month);
-        $selectedYear = $request->get('year', Carbon::now()->year);
+        $selectedMonth = $request->input('month', Carbon::now()->month);
+        $selectedYear = $request->input('year', Carbon::now()->year);
 
         $startDate = Carbon::create($selectedYear, $selectedMonth, 1)->startOfMonth();
         $endDate = $startDate->copy()->endOfMonth();
