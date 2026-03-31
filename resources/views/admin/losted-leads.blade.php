@@ -672,7 +672,7 @@
         </div>
 
         <!-- SUMMARY STAT BOXES -->
-        <div class="stat-scroll-row">
+        <div id="statsWrap" class="stat-scroll-row">
             <div class="stat-box" style="--sb-color:#6366f1;">
                 <div class="sb-icon"><i class="bi bi-people-fill"></i></div>
                 <div>
@@ -684,7 +684,7 @@
 
 
         <!-- MAIN GRID -->
-        <div class="dash-grid">
+        <div class="dash-grid" id="tableWrap">
             <div class="dash-card span-12">
                 <div class="card-head">
                     <div>
@@ -694,8 +694,8 @@
                         <form action="{{ route('admin.losted-leads') }}" method="GET" class="card-actions mb-2">
                              <div class="global-search">
                                  <i class="bi bi-search"></i>
-                                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Search...">
-                                 <button type="submit" class="btn-primary-solid sm">Search</button>
+                                 <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search...">
+                                 <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
                              </div>
 
                              <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
@@ -707,27 +707,27 @@
                                  <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
                              </button>
 
-                             <select name="source_id" class="filter-select" onchange="this.form.submit()">
+                             <select name="source_id" class="filter-select" onchange="updateFilters()">
                                  <option value="">Lead Source</option>
                                  @foreach($sources as $source)
                                      <option value="{{ $source->id }}" {{ request('source_id') == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
                                  @endforeach
                              </select>
 
-                             <select name="service_id" class="filter-select" onchange="this.form.submit()">
+                             <select name="service_id" class="filter-select" onchange="updateFilters()">
                                  <option value="">All Services</option>
                                  @foreach($services as $service)
                                      <option value="{{ $service->id }}" {{ request('service_id') == $service->id ? 'selected' : '' }}>{{ $service->name }}</option>
                                  @endforeach
                              </select>
 
-                             <select name="priority" class="filter-select" onchange="this.form.submit()">
+                             <select name="priority" class="filter-select" onchange="updateFilters()">
                                  <option value="">Priority</option>
                                  <option value="Hot 🔥" {{ request('priority') == 'Hot 🔥' ? 'selected' : '' }}>Hot 🔥</option>
                                  <option value="Warm" {{ request('priority') == 'Warm' ? 'selected' : '' }}>Warm</option>
                                  <option value="Cold" {{ request('priority') == 'Cold' ? 'selected' : '' }}>Cold</option>
                              </select>
-                             <select name="assigned_to" class="filter-select" onchange="this.form.submit()">
+                             <select name="assigned_to" class="filter-select" onchange="updateFilters()">
                                  <option value="">Assign To</option>
                                  @foreach($sales as $sale)
                                      <option value="{{ $sale->id }}" {{ request('assigned_to') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
@@ -1155,7 +1155,64 @@
             
             document.getElementById('startDateInp').value = formatDate(start);
             document.getElementById('endDateInp').value = formatDate(end);
-            document.getElementById('startDateInp').form.submit();
+            updateFilters();
+        }
+    });
+
+    window.updateFilters = function() {
+        const form = document.querySelector('.card-actions form') || document.querySelector('.card-actions');
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+        const url = new URL(window.location.pathname, window.location.origin);
+        url.search = params.toString();
+        fetchAndReplace(url);
+    };
+
+    async function fetchAndReplace(url) {
+        const tableWrap = document.getElementById('tableWrap');
+        const statsWrap = document.getElementById('statsWrap');
+        if (tableWrap) tableWrap.style.opacity = '0.5';
+
+        try {
+            const response = await fetch(url.toString(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            const newTable = doc.getElementById('tableWrap');
+            if (newTable && tableWrap) {
+                tableWrap.innerHTML = newTable.innerHTML;
+            }
+            
+            const newStats = doc.getElementById('statsWrap');
+            if (newStats && statsWrap) {
+                statsWrap.innerHTML = newStats.innerHTML;
+            }
+
+            if (tableWrap) tableWrap.style.opacity = '1';
+            window.history.pushState({}, '', url);
+        } catch (error) {
+            console.error('AJAX error:', error);
+            if (tableWrap) tableWrap.style.opacity = '1';
+        }
+    }
+
+    let debounceTimer;
+    document.addEventListener('input', function(e) {
+        if (e.target && e.target.id === 'searchQuery') {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(updateFilters, 500);
+        }
+    });
+
+    // Intercept pagination clicks
+    document.addEventListener('click', function(e) {
+        const paginationLink = e.target.closest('.tf-pagination a');
+        if (paginationLink) {
+            e.preventDefault();
+            fetchAndReplace(new URL(paginationLink.href));
         }
     });
 </script>

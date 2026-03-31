@@ -15,7 +15,7 @@
         </div>
 
         {{-- SUMMARY BOXES --}}
-        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:24px;max-width:600px;">
+        <div id="statsWrap" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:24px;max-width:600px;">
             <div class="dash-card" style="padding:20px 22px;">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
                     <div style="width:44px;height:44px;border-radius:11px;background:rgba(16,185,129,.14);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -45,7 +45,7 @@
             </div>
         </div>
 
-        <div class="dash-grid">
+        <div class="dash-grid" id="tableWrap">
             <div class="dash-card span-12">
                 <div class="card-head">
                     <div>
@@ -56,11 +56,11 @@
                         <form action="{{ route('admin.payments.index') }}" method="GET" class="card-actions mb-0">
                             <div class="global-search">
                                 <i class="bi bi-search"></i>
-                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search Company / Order #...">
-                                <button type="submit" class="btn-primary-solid sm">Search</button>
+                                <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search Company / Order #...">
+                                <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
                             </div>
                             
-                            <select name="status_id" class="filter-select" onchange="this.form.submit()">
+                            <select name="status_id" class="filter-select" onchange="updateFilters()">
                                 <option value="">Payment Status</option>
                                 @foreach($allStatuses as $st)
                                     <option value="{{ $st->id }}" {{ request('status_id') == $st->id ? 'selected' : '' }}>{{ $st->name }}</option>
@@ -179,5 +179,62 @@
         form.action = url;
         openModal('deleteModal');
     }
+
+    window.updateFilters = function() {
+        const form = document.querySelector('.card-actions form') || document.querySelector('.card-actions');
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+        const url = new URL(window.location.pathname, window.location.origin);
+        url.search = params.toString();
+        fetchAndReplace(url);
+    };
+
+    async function fetchAndReplace(url) {
+        const tableWrap = document.getElementById('tableWrap');
+        const statsWrap = document.getElementById('statsWrap');
+        if (tableWrap) tableWrap.style.opacity = '0.5';
+
+        try {
+            const response = await fetch(url.toString(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            const newTable = doc.getElementById('tableWrap');
+            if (newTable && tableWrap) {
+                tableWrap.innerHTML = newTable.innerHTML;
+            }
+            
+            const newStats = doc.getElementById('statsWrap');
+            if (newStats && statsWrap) {
+                statsWrap.innerHTML = newStats.innerHTML;
+            }
+
+            if (tableWrap) tableWrap.style.opacity = '1';
+            window.history.pushState({}, '', url);
+        } catch (error) {
+            console.error('AJAX error:', error);
+            if (tableWrap) tableWrap.style.opacity = '1';
+        }
+    }
+
+    let debounceTimer;
+    document.addEventListener('input', function(e) {
+        if (e.target && e.target.id === 'searchQuery') {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(updateFilters, 500);
+        }
+    });
+
+    // Intercept pagination clicks
+    document.addEventListener('click', function(e) {
+        const paginationLink = e.target.closest('.tf-pagination a');
+        if (paginationLink) {
+            e.preventDefault();
+            fetchAndReplace(new URL(paginationLink.href));
+        }
+    });
 </script>
 @endsection

@@ -27,7 +27,7 @@
         </div>
 
         {{-- ── KPI CARDS ── --}}
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;">
+        <div id="statsWrap" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;">
 
             <div class="dash-card {{ !request()->has('q') && !request()->has('project_status_id') && !request()->has('start_date') ? 'active' : '' }}" 
                 style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route('admin.projects.index') }}'">
@@ -101,7 +101,7 @@
         </div>
 
         {{-- ── TABLE ── --}}
-        <div class="dash-grid">
+        <div class="dash-grid" id="tableWrap">
             <div class="dash-card span-12">
                 <div class="card-head">
                     <div>
@@ -112,8 +112,8 @@
                         <form action="{{ route('admin.projects.index') }}" method="GET" class="card-actions mb-0">
                             <div class="global-search">
                                 <i class="bi bi-search"></i>
-                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search projects...">
-                                <button type="submit" class="btn-primary-solid sm">Search</button>
+                                <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search projects...">
+                                <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
                             </div>
 
                             <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
@@ -127,28 +127,28 @@
                             <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
                             <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
 
-                            <select name="project_status_id" class="filter-select" onchange="this.form.submit()">
+                            <select name="project_status_id" class="filter-select" onchange="updateFilters()">
                                 <option value="">All Statuses</option>
                                 @foreach($statuses['project_statuses'] as $s)
                                     <option value="{{ $s->id }}" {{ request('project_status_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
                                 @endforeach
                             </select>
 
-                            <select name="payment_status_id" class="filter-select" onchange="this.form.submit()">
+                            <select name="payment_status_id" class="filter-select" onchange="updateFilters()">
                                 <option value="">All Payments</option>
                                 @foreach($statuses['payment_statuses'] as $s)
                                     <option value="{{ $s->id }}" {{ request('payment_status_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
                                 @endforeach
                             </select>
 
-                            <select name="assigned_to" class="filter-select" onchange="this.form.submit()">
+                            <select name="assigned_to" class="filter-select" onchange="updateFilters()">
                                 <option value="">Developers</option>
                                 @foreach($allDevelopers as $dev)
                                     <option value="{{ $dev->id }}" {{ request('assigned_to') == $dev->id ? 'selected' : '' }}>{{ $dev->name }}</option>
                                 @endforeach
                             </select>
 
-                            <select name="sales_person_id" class="filter-select" onchange="this.form.submit()">
+                            <select name="sales_person_id" class="filter-select" onchange="updateFilters()">
                                 <option value="">Sales Person</option>
                                 @foreach($allSales as $sale)
                                     <option value="{{ $sale->id }}" {{ request('sales_person_id') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
@@ -706,7 +706,64 @@
         if(sInp && eInp) {
             sInp.value = formatDate(start);
             eInp.value = formatDate(end);
-            sInp.closest('form').submit();
+            updateFilters();
+        }
+    });
+
+    window.updateFilters = function() {
+        const form = document.querySelector('.card-actions form') || document.querySelector('.card-actions');
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+        const url = new URL(window.location.pathname, window.location.origin);
+        url.search = params.toString();
+        fetchAndReplace(url);
+    };
+
+    async function fetchAndReplace(url) {
+        const tableWrap = document.getElementById('tableWrap');
+        const statsWrap = document.getElementById('statsWrap');
+        if (tableWrap) tableWrap.style.opacity = '0.5';
+
+        try {
+            const response = await fetch(url.toString(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            const newTable = doc.getElementById('tableWrap');
+            if (newTable && tableWrap) {
+                tableWrap.innerHTML = newTable.innerHTML;
+            }
+            
+            const newStats = doc.getElementById('statsWrap');
+            if (newStats && statsWrap) {
+                statsWrap.innerHTML = newStats.innerHTML;
+            }
+
+            if (tableWrap) tableWrap.style.opacity = '1';
+            window.history.pushState({}, '', url);
+        } catch (error) {
+            console.error('AJAX error:', error);
+            if (tableWrap) tableWrap.style.opacity = '1';
+        }
+    }
+
+    let debounceTimer;
+    document.addEventListener('input', function(e) {
+        if (e.target && e.target.id === 'searchQuery') {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(updateFilters, 500);
+        }
+    });
+
+    // Intercept pagination clicks
+    document.addEventListener('click', function(e) {
+        const paginationLink = e.target.closest('.tf-pagination a');
+        if (paginationLink) {
+            e.preventDefault();
+            fetchAndReplace(new URL(paginationLink.href));
         }
     });
 

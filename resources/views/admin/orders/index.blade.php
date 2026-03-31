@@ -33,7 +33,7 @@
         <!-- {{-- ═══════════════════════════════════════════════════
              6 KPI SUMMARY CARDS
         ════════════════════════════════════════════════════ --}} -->
-        <div style="display:grid;grid-template-columns:repeat({{ request('assigned_to') ? 8 : 6 }},1fr);gap:14px;margin-bottom:24px;">
+        <div id="statsWrap" style="display:grid;grid-template-columns:repeat({{ request('assigned_to') ? 8 : 6 }},1fr);gap:14px;margin-bottom:24px;">
 
             @if(request('assigned_to'))
                 @php
@@ -163,7 +163,7 @@
         </div>
         <!-- {{-- END KPI CARDS --}} -->
 
-        <div class="dash-grid">
+        <div class="dash-grid" id="tableWrap">
             <div class="dash-card span-12">
                 <div class="card-head">
                     <div>
@@ -175,8 +175,8 @@
                         <form action="{{ route('admin.orders.index') }}" method="GET" class="card-actions mb-0">
                             <div class="global-search">
                                 <i class="bi bi-search"></i>
-                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search...">
-                                <button type="submit" class="btn-primary-solid sm">Search</button>
+                                <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search...">
+                                <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
                             </div>
 
                             <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
@@ -190,27 +190,27 @@
                             <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
                             <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
 
-                             <select name="is_marketing" class="filter-select" onchange="this.form.submit()">
+                             <select name="is_marketing" class="filter-select" onchange="updateFilters()">
                                  <option value="">All Types</option>
                                  <option value="1" {{ request('is_marketing') == '1' ? 'selected' : '' }}>Marketing</option>
                                  <option value="0" {{ request('is_marketing') == '0' ? 'selected' : '' }}>Website</option>
                              </select>
 
-                            <select name="service_id" class="filter-select" onchange="this.form.submit()">
+                            <select name="service_id" class="filter-select" onchange="updateFilters()">
                                 <option value="">All Services</option>
                                 @foreach($allServices as $srv)
                                     <option value="{{ $srv->id }}" {{ request('service_id') == $srv->id ? 'selected' : '' }}>{{ $srv->name }}</option>
                                 @endforeach
                             </select>
 
-                            <select name="status_id" class="filter-select" onchange="this.form.submit()">
+                            <select name="status_id" class="filter-select" onchange="updateFilters()">
                                 <option value="">All Status</option>
                                 @foreach($allStatuses as $st)
                                     <option value="{{ $st->id }}" {{ request('status_id') == $st->id ? 'selected' : '' }}>{{ $st->name }}</option>
                                 @endforeach
                             </select>
 
-                            <select name="assigned_to" class="filter-select" onchange="this.form.submit()">
+                            <select name="assigned_to" class="filter-select" onchange="updateFilters()">
                                 <option value="">Sales Person</option>
                                 @foreach($allSales as $sale)
                                     <option value="{{ $sale->id }}" {{ request('assigned_to') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
@@ -795,7 +795,64 @@
         if(sInp && eInp) {
             sInp.value = formatDate(start);
             eInp.value = formatDate(end);
-            sInp.closest('form').submit();
+            updateFilters();
+        }
+    });
+
+    window.updateFilters = function() {
+        const form = document.querySelector('.card-actions form') || document.querySelector('.card-actions');
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+        const url = new URL(window.location.pathname, window.location.origin);
+        url.search = params.toString();
+        fetchAndReplace(url);
+    };
+
+    async function fetchAndReplace(url) {
+        const tableWrap = document.getElementById('tableWrap');
+        const statsWrap = document.getElementById('statsWrap');
+        if (tableWrap) tableWrap.style.opacity = '0.5';
+
+        try {
+            const response = await fetch(url.toString(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            const newTable = doc.getElementById('tableWrap');
+            if (newTable && tableWrap) {
+                tableWrap.innerHTML = newTable.innerHTML;
+            }
+            
+            const newStats = doc.getElementById('statsWrap');
+            if (newStats && statsWrap) {
+                statsWrap.innerHTML = newStats.innerHTML;
+            }
+
+            if (tableWrap) tableWrap.style.opacity = '1';
+            window.history.pushState({}, '', url);
+        } catch (error) {
+            console.error('AJAX error:', error);
+            if (tableWrap) tableWrap.style.opacity = '1';
+        }
+    }
+
+    let debounceTimer;
+    document.addEventListener('input', function(e) {
+        if (e.target && e.target.id === 'searchQuery') {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(updateFilters, 500);
+        }
+    });
+
+    // Intercept pagination clicks
+    document.addEventListener('click', function(e) {
+        const paginationLink = e.target.closest('.tf-pagination a');
+        if (paginationLink) {
+            e.preventDefault();
+            fetchAndReplace(new URL(paginationLink.href));
         }
     });
 </script>
