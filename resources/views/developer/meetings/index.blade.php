@@ -94,6 +94,7 @@
                     <table class="orion-table">
                         <thead>
                             <tr>
+                                <th style="width:60px;">SL.</th>
                                 <th style="width:120px;">Date & Time</th>
                                 <th style="width:180px;">Target (Order/Lead)</th>
                                 <th style="width:200px;">Meeting Subject</th>
@@ -108,6 +109,7 @@
                         <tbody>
                             @forelse($meetings as $meeting)
                                 <tr>
+                                    <td style="font-weight:700; color:var(--t3);">{{ $meetings->firstItem() + $loop->index }}</td>
                                     <td>
                                         <div style="font-weight:800; color:var(--t1);">{{ $meeting->meeting_date->format('d M, Y') }}</div>
                                         <div style="font-size:11px; font-weight:700; color:var(--t3); margin-top:2px;">

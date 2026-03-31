@@ -47,7 +47,9 @@ class MeetingController extends Controller
             'canceled' => Meeting::where('status', 'canceled')->count(),
         ];
 
-        $meetings = $query->latest('meeting_date')->latest('meeting_time')->paginate(15);
+        $meetings = $query->orderByRaw('ABS(DATEDIFF(meeting_date, CURDATE())) ASC')
+            ->orderBy('meeting_time', 'asc')
+            ->paginate(15);
         $sales = Sale::all();
         $developers = Developer::all();
             
