@@ -48,6 +48,11 @@ class ProjectController extends Controller
                 $q->where('assigned_to', $request->assigned_to);
             });
         }
+        if ($request->filled('sales_person_id')) {
+            $query->whereHas('salesPersons', function($q) use ($request) {
+                $q->where('sale_id', $request->sales_person_id);
+            });
+        }
 
         $projects = $query->latest()->paginate(10)->withQueryString();
         
@@ -68,6 +73,7 @@ class ProjectController extends Controller
 
         $statuses = $this->getStatusOptions();
         $allDevelopers = Developer::all();
+        $allSales = \App\Models\Sale::all();
 
         return view('admin.project.index', compact(
             'projects', 
@@ -76,7 +82,8 @@ class ProjectController extends Controller
             'completedProjects', 
             'onHoldProjects',
             'statuses',
-            'allDevelopers'
+            'allDevelopers',
+            'allSales'
         ));
     }
 

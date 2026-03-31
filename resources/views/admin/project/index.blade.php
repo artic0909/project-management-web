@@ -142,9 +142,16 @@
                             </select>
 
                             <select name="assigned_to" class="filter-select" onchange="this.form.submit()">
-                                <option value="">Assign To</option>
+                                <option value="">Developers</option>
                                 @foreach($allDevelopers as $dev)
                                     <option value="{{ $dev->id }}" {{ request('assigned_to') == $dev->id ? 'selected' : '' }}>{{ $dev->name }}</option>
+                                @endforeach
+                            </select>
+
+                            <select name="sales_person_id" class="filter-select" onchange="this.form.submit()">
+                                <option value="">Sales Person</option>
+                                @foreach($allSales as $sale)
+                                    <option value="{{ $sale->id }}" {{ request('sales_person_id') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
                                 @endforeach
                             </select>
                         </form>
