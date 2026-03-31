@@ -33,9 +33,6 @@
         <!-- {{-- ═══════════════════════════════════════════════════
              6 KPI SUMMARY CARDS
         ════════════════════════════════════════════════════ --}} -->
-        <!-- {{-- ═══════════════════════════════════════════════════
-             6 KPI SUMMARY CARDS
-        ════════════════════════════════════════════════════ --}} -->
         <div style="display:grid;grid-template-columns:repeat({{ request('assigned_to') ? 7 : 5 }},1fr);gap:14px;margin-bottom:24px;">
 
             @if(request('assigned_to'))

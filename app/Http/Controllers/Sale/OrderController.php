@@ -20,10 +20,10 @@ class OrderController extends Controller
         $saleId = auth()->guard('sale')->id();
         $saleType = \App\Models\Sale::class;
 
-        return Order::where(function($q) use ($saleId, $saleType) {
+        return Order::where(function ($q) use ($saleId, $saleType) {
             $q->where('created_by', $saleId)
-              ->where('created_by_type', $saleType);
-        })->orWhereHas('assignments', function($q) use ($saleId) {
+                ->where('created_by_type', $saleType);
+        })->orWhereHas('assignments', function ($q) use ($saleId) {
             $q->where('assigned_to', $saleId);
         });
     }
@@ -61,7 +61,7 @@ class OrderController extends Controller
 
         // Assigned To Filter
         if ($request->filled('assigned_to')) {
-            $query->whereHas('assignments', function($q) use ($request) {
+            $query->whereHas('assignments', function ($q) use ($request) {
                 $q->where('assigned_to', $request->assigned_to);
             });
         }
@@ -80,23 +80,23 @@ class OrderController extends Controller
                 'followable',
                 [\App\Models\Order::class],
                 function ($q) use ($request) {
-                    $q->whereHas('assignments', function($sq) use ($request) {
+                    $q->whereHas('assignments', function ($sq) use ($request) {
                         $sq->where('assigned_to', $request->assigned_to);
                     });
                 }
             )->count();
         }
-        
+
         // Counts (Only for their orders)
         $totalOrders = $this->getFilteredOrders()->count();
         $marketingOrders = $this->getFilteredOrders()->where('is_marketing', true)->count();
-        $totalValue = $this->getFilteredOrders()->whereHas('status', function($q) {
+        $totalValue = $this->getFilteredOrders()->whereHas('status', function ($q) {
             $q->where('name', '!=', 'cancel');
         })->sum('order_value');
-        $cancelledOrders = $this->getFilteredOrders()->whereHas('status', function($q) {
+        $cancelledOrders = $this->getFilteredOrders()->whereHas('status', function ($q) {
             $q->where('name', 'cancel');
         })->count();
-        
+
         $orderIds = $this->getFilteredOrders()->pluck('id');
         $totalCollected = \App\Models\Payment::whereIn('order_id', $orderIds)->sum('amount');
         $pendingValue = $totalValue - $totalCollected;
@@ -106,7 +106,16 @@ class OrderController extends Controller
         $allSales = Sale::all();
 
         return view('sale.orders.index', compact(
-            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue', 'allStatuses', 'allServices', 'allSales', 'totalFollowupsFiltered'
+            'orders',
+            'totalOrders',
+            'marketingOrders',
+            'totalValue',
+            'cancelledOrders',
+            'pendingValue',
+            'allStatuses',
+            'allServices',
+            'allSales',
+            'totalFollowupsFiltered'
         ));
     }
 
@@ -115,9 +124,9 @@ class OrderController extends Controller
         $saleId = auth()->guard('sale')->id();
         $saleType = \App\Models\Sale::class;
 
-        $lead = $lead_id ? Lead::where(function($q) use ($saleId, $saleType) {
+        $lead = $lead_id ? Lead::where(function ($q) use ($saleId, $saleType) {
             $q->where('created_by', $saleId)->where('created_by_type', $saleType);
-        })->orWhereHas('assignments', function($q) use ($saleId) {
+        })->orWhereHas('assignments', function ($q) use ($saleId) {
             $q->where('assigned_to', $saleId);
         })->with(['status', 'source', 'service', 'assignments'])->find($lead_id) : null;
 
@@ -125,7 +134,7 @@ class OrderController extends Controller
         $sales = Sale::all();
         $orderStatuses = Status::where('type', 'order')->get();
         $paymentStatuses = Status::where('type', 'payment')->get();
-        
+
         return view('sale.orders.create', compact('lead', 'services', 'sales', 'orderStatuses', 'paymentStatuses'));
     }
 
@@ -211,7 +220,7 @@ class OrderController extends Controller
         $sales = Sale::all();
         $orderStatuses = Status::where('type', 'order')->get();
         $paymentStatuses = Status::where('type', 'payment')->get();
-        
+
         return view('sale.orders.edit', compact('order', 'services', 'sales', 'orderStatuses', 'paymentStatuses'));
     }
 
@@ -281,7 +290,7 @@ class OrderController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $order = $this->getFilteredOrders()->findOrFail($id);
-        
+
         $order->update([
             'status_id' => $request->status_id,
         ]);

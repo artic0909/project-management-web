@@ -184,47 +184,6 @@
                                 </select>
                             </div>
 
-                          
-                            {{-- Assign Sales — multi-select --}}
-                            @php 
-                                $assignedIds = old('sales_person', $order->assignments->pluck('assigned_to')->toArray());
-                            @endphp
-                            <div class="form-row" style="margin-bottom:20px;">
-                                <label class="form-lbl">Assign Personnel</label>
-                                <div class="ms-wrap" id="salesWrap">
-                                    <div class="ms-trigger" onclick="toggleMs('salesWrap')">
-                                        <div class="ms-pills"><span class="ms-placeholder">Select staff members…</span></div>
-                                        <i class="bi bi-chevron-down ms-arrow"></i>
-                                    </div>
-                                    <div class="ms-dropdown" id="salesDropdown">
-                                        <div class="ms-search-wrap">
-                                            <i class="bi bi-search"></i>
-                                            <input type="text" class="ms-search" placeholder="Search staff…" oninput="filterMs(this,'salesDropdown')">
-                                        </div>
-                                        <div class="ms-opts">
-                                            @foreach($sales as $m)
-                                                @php 
-                                                    $initials = strtoupper(substr($m->name, 0, 2)); 
-                                                    $colors = ['#6366f1','#ec4899','#10b981','#f59e0b','#ef4444','#8b5cf6'];
-                                                    $bg = $colors[$m->id % count($colors)];
-                                                @endphp
-                                                <label class="ms-opt">
-                                                    <input type="checkbox" name="sales_person[]" value="{{ $m->id }}" 
-                                                        data-name="{{ $m->name }}" data-initials="{{ $initials }}"
-                                                        onchange="updateMs('salesWrap')"
-                                                        {{ in_array($m->id, $assignedIds) ? 'checked' : '' }}>
-                                                    <span class="ms-ava" style="background:{{ $bg }}">{{ $initials }}</span>
-                                                    <div>
-                                                        <div style="font-size:12.5px;font-weight:600;color:var(--t1);">{{ $m->name }}</div>
-                                                        <div style="font-size:10.5px;color:var(--t3);">{{ $m->email }}</div>
-                                                    </div>
-                                                </label>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                             <div style="display:flex;flex-direction:column;gap:8px;">
                                 <button type="submit" class="btn-primary-solid" style="width:100%;justify-content:center;padding:11px;">
                                     <i class="bi bi-check-all"></i> Update Order
