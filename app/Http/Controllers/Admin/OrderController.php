@@ -80,15 +80,15 @@ class OrderController extends Controller
         $cancelledOrders = Order::whereHas('status', function($q) {
             $q->where('name', 'cancel'); // Corrected from 'Cancelled'
         })->count();
-        $totalCollected = \App\Models\Payment::sum('amount');
-        $pendingValue = $totalValue - $totalCollected;
+        $totalReceived = \App\Models\Payment::sum('amount');
+        $pendingValue = $totalValue - $totalReceived;
 
         $allStatuses = Status::where('type', 'order')->get();
         $allServices = Service::all();
         $allSales = Sale::all();
 
         return view('admin.orders.index', compact(
-            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue', 'allStatuses', 'allServices', 'allSales', 'totalFollowupsFiltered'
+            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue', 'totalReceived', 'allStatuses', 'allServices', 'allSales', 'totalFollowupsFiltered'
         ));
     }
 

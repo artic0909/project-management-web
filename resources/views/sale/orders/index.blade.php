@@ -33,7 +33,7 @@
         <!-- {{-- ═══════════════════════════════════════════════════
              6 KPI SUMMARY CARDS
         ════════════════════════════════════════════════════ --}} -->
-        <div style="display:grid;grid-template-columns:repeat(7, 1fr);gap:14px;margin-bottom:24px;">
+        <div style="display:grid;grid-template-columns:repeat(8, 1fr);gap:14px;margin-bottom:24px;">
 
             {{-- Permanent User Profile Card --}}
             <div class="dash-card active" style="padding:16px 18px; border: 2px solid var(--accent);">
@@ -108,6 +108,20 @@
                     <div style="height:100%;width:100%;background:#06b6d4;border-radius:3px;"></div>
                 </div>
             </div>
+            
+            <div class="dash-card" style="padding:16px 18px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+                    <div style="width:38px;height:38px;border-radius:10px;background:rgba(16,185,129,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="bi bi-cash-stack" style="font-size:17px;color:#10b981;"></i>
+                    </div>
+                    <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.1);color:#10b981;white-space:nowrap;">Received</span>
+                </div>
+                <div style="font-size:22px;font-weight:800;color:#10b981;letter-spacing:-.5px;line-height:1;">₹{{ number_format($totalReceived, 0) }}</div>
+                <div style="font-size:11px;color:var(--t3);font-weight:600;margin-top:4px;">Total Received</div>
+                <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
+                    <div style="height:100%;width:{{ $totalValue > 0 ? ($totalReceived / $totalValue) * 100 : 0 }}%;background:#10b981;border-radius:3px;"></div>
+                </div>
+            </div>
 
             <div class="dash-card" style="padding:16px 18px;">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
@@ -117,7 +131,7 @@
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(245,158,11,.1);color:#f59e0b;white-space:nowrap;">Pending</span>
                 </div>
                 <div style="font-size:22px;font-weight:800;color:#f59e0b;letter-spacing:-.5px;line-height:1;">₹{{ number_format($pendingValue, 0) }}</div>
-                <div style="font-size:11px;color:var(--t3);font-weight:600;margin-top:4px;">Pending Collections</div>
+                <div style="font-size:11px;color:var(--t3);font-weight:600;margin-top:4px;">Remaining Amounts</div>
                 <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
                     <div style="height:100%;width:{{ $totalValue > 0 ? ($pendingValue / $totalValue) * 100 : 0 }}%;background:#f59e0b;border-radius:3px;"></div>
                 </div>

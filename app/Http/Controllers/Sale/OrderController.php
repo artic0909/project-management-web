@@ -83,8 +83,8 @@ class OrderController extends Controller
         })->count();
 
         $orderIds = $this->getFilteredOrders()->pluck('id');
-        $totalCollected = \App\Models\Payment::whereIn('order_id', $orderIds)->sum('amount');
-        $pendingValue = $totalValue - $totalCollected;
+        $totalReceived = \App\Models\Payment::whereIn('order_id', $orderIds)->sum('amount');
+        $pendingValue = $totalValue - $totalReceived;
 
         $allStatuses = Status::where('type', 'order')->get();
         $allServices = Service::all();
@@ -97,6 +97,7 @@ class OrderController extends Controller
             'totalValue',
             'cancelledOrders',
             'pendingValue',
+            'totalReceived',
             'allStatuses',
             'allServices',
             'allSales',
