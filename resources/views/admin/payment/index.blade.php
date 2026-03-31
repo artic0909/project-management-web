@@ -59,13 +59,6 @@
                                 <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search Company / Order #...">
                                 <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
                             </div>
-                            
-                            <select name="status_id" class="filter-select" onchange="updateFilters()">
-                                <option value="">Payment Status</option>
-                                @foreach($allStatuses as $st)
-                                    <option value="{{ $st->id }}" {{ request('status_id') == $st->id ? 'selected' : '' }}>{{ $st->name }}</option>
-                                @endforeach
-                            </select>
                         </form>
                     </div>
                 </div>

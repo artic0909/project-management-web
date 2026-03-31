@@ -389,7 +389,7 @@
                     </div>
 
                     {{-- Financial Fields --}}
-                    <div class="dash-card">
+                    <!-- <div class="dash-card">
                         <div class="card-head">
                             <div class="card-title"><i class="bi bi-currency-rupee" style="color:#8b5cf6;margin-right:6px;"></i>Financial Fields</div>
                             <div class="card-sub">Pricing & payment info</div>
@@ -422,7 +422,7 @@
                                 <input type="text" name="invoice_number" class="form-inp" placeholder="INV-XXXX" value="{{ old('invoice_number', $project->invoice_number) }}">
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     {{-- Submit --}}
                     <div style="display:flex;flex-direction:column;gap:8px;">
