@@ -672,12 +672,14 @@
         </div>
 
         <!-- SUMMARY STAT BOXES -->
-        <div class="stat-scroll-row">
-            <div class="stat-box" style="--sb-color:#6366f1;">
-                <div class="sb-icon"><i class="bi bi-people-fill"></i></div>
-                <div>
-                    <div class="sb-val">{{ $totalLostLeads }}</div>
-                    <div class="sb-lbl">Total Losted Leads</div>
+        <div id="statsWrap">
+            <div class="stat-scroll-row">
+                <div class="stat-box" style="--sb-color:#6366f1;">
+                    <div class="sb-icon"><i class="bi bi-people-fill"></i></div>
+                    <div>
+                        <div class="sb-val">{{ $totalLostLeads }}</div>
+                        <div class="sb-lbl">Total Losted Leads</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -691,43 +693,43 @@
                         <div class="card-title">Losted Lead Pipeline</div>
                         <div class="card-sub">{{ $leads->count() }} total leads identified as lost</div>
                     </div>
-                        <form action="{{ route('sale.losted-leads') }}" method="GET" class="card-actions mb-2">
+                        <form action="{{ route('sale.losted-leads') }}" method="GET" class="card-actions mb-2" id="filterForm">
                              <div class="global-search">
                                  <i class="bi bi-search"></i>
-                                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Search...">
-                                 <button type="submit" class="btn-primary-solid sm">Search</button>
+                                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Search..." id="searchQuery" oninput="debounceFilter()">
+                                 <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
                              </div>
 
                              <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
-                             <input type="hidden" name="start_date" id="startDateInp" value="{{ request('start_date') }}">
-                             <input type="hidden" name="end_date" id="endDateInp" value="{{ request('end_date') }}">
+                             <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
+                             <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
                              <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
                                  <i class="bi bi-calendar3"></i>
                                  <span id="drpLabel">{{ request('start_date') ? request('start_date').' to '.request('end_date') : 'Select Date Range' }}</span>
                                  <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
                              </button>
 
-                             <select name="source_id" class="filter-select" onchange="this.form.submit()">
+                             <select name="source_id" class="filter-select" onchange="updateFilters()">
                                  <option value="">Lead Source</option>
                                  @foreach($sources as $source)
                                      <option value="{{ $source->id }}" {{ request('source_id') == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
                                  @endforeach
                              </select>
 
-                             <select name="service_id" class="filter-select" onchange="this.form.submit()">
+                             <select name="service_id" class="filter-select" onchange="updateFilters()">
                                  <option value="">All Services</option>
                                  @foreach($services as $service)
                                      <option value="{{ $service->id }}" {{ request('service_id') == $service->id ? 'selected' : '' }}>{{ $service->name }}</option>
                                  @endforeach
                              </select>
 
-                             <select name="priority" class="filter-select" onchange="this.form.submit()">
+                             <select name="priority" class="filter-select" onchange="updateFilters()">
                                  <option value="">Priority</option>
                                  <option value="Hot 🔥" {{ request('priority') == 'Hot 🔥' ? 'selected' : '' }}>Hot 🔥</option>
                                  <option value="Warm" {{ request('priority') == 'Warm' ? 'selected' : '' }}>Warm</option>
                                  <option value="Cold" {{ request('priority') == 'Cold' ? 'selected' : '' }}>Cold</option>
                              </select>
-                             <select name="assigned_to" class="filter-select" onchange="this.form.submit()">
+                             <select name="assigned_to" class="filter-select" onchange="updateFilters()">
                                  <option value="">Assign To</option>
                                  @foreach($sales as $sale)
                                      <option value="{{ $sale->id }}" {{ request('assigned_to') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
@@ -736,7 +738,8 @@
                         </form>
                 </div>
 
-                <div class="table-wrap">
+                <div id="tableWrap">
+                    <div class="table-wrap">
                     <table class="data-table">
                         <thead>
                             <tr>
@@ -823,6 +826,7 @@
                     <div class="tf-per-page"></div>
                 </div>
             </div>
+        </div>
         </div>
     </div>
 
@@ -2358,4 +2362,92 @@
     }
 </script>
 
+<script>
+    /* ── Listen for date range applied from our custom picker ── */
+    document.addEventListener('dateRangeApplied', function(e) {
+        const { start, end } = e.detail;
+        
+        function formatDate(date) {
+            if(!date) return '';
+            let d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+            return [year, month, day].join('-');
+        }
+
+        const sInp = document.getElementById('drpStartInput');
+        const eInp = document.getElementById('drpEndInput');
+        if(sInp && eInp) {
+            sInp.value = formatDate(start);
+            eInp.value = formatDate(end);
+            updateFilters();
+        }
+    });
+
+    // Handle pagination interception on initial load
+    document.addEventListener('DOMContentLoaded', interceptPagination);
+
+    // AJAX FILTER LOGIC
+    let debounceTimer;
+    function debounceFilter() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            updateFilters();
+        }, 500);
+    }
+
+    function updateFilters() {
+        const form = document.getElementById('filterForm');
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+
+        // Remove empty params
+        const finalParams = new URLSearchParams();
+        for (const [key, value] of params.entries()) {
+            if (value) finalParams.append(key, value);
+        }
+
+        const url = `${window.location.pathname}?${finalParams.toString()}`;
+        fetchAndReplace(url);
+    }
+
+    async function fetchAndReplace(url) {
+        const tableWrap = document.getElementById('tableWrap');
+
+        if (tableWrap) tableWrap.style.opacity = '0.5';
+
+        try {
+            const response = await fetch(url);
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            if (tableWrap) {
+                const newTable = doc.getElementById('tableWrap');
+                if (newTable) tableWrap.innerHTML = newTable.innerHTML;
+            }
+
+            window.history.pushState({}, '', url);
+            interceptPagination();
+        } catch (error) {
+            console.error('AJAX Error:', error);
+        } finally {
+            if (tableWrap) tableWrap.style.opacity = '1';
+        }
+    }
+
+    function interceptPagination() {
+        document.querySelectorAll('.tf-pagination a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                fetchAndReplace(this.href);
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', interceptPagination);
+</script>
 @endsection

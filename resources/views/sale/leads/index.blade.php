@@ -630,7 +630,7 @@
         @endif
 
         <!-- SUMMARY STAT BOXES -->
-        <div class="stat-grid-wrap" style="margin-bottom:20px;">
+        <div class="stat-grid-wrap" id="statsWrap" style="margin-bottom:20px;">
 
             @if(request('assigned_to'))
                 @php
@@ -761,11 +761,11 @@
                         <div class="card-title">Lead Pipeline</div>
                         <div class="card-sub" id="drpActiveSub">Last 7 Days · 147 total · 38 hot leads</div>
                     </div>
-                    <form action="{{ route('sale.leads.index') }}" method="GET" class="card-actions mb-2">
+                    <form action="{{ route('sale.leads.index') }}" method="GET" class="card-actions mb-2" id="filterForm">
                         <div class="global-search">
                             <i class="bi bi-search"></i>
-                            <input type="text" name="q" value="{{ request('q') }}" placeholder="Search...">
-                            <button type="submit" class="btn-primary-solid sm">Search</button>
+                            <input type="text" name="q" value="{{ request('q') }}" placeholder="Search..." id="searchQuery" oninput="debounceFilter()">
+                            <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
                         </div>
 
                         <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
@@ -784,33 +784,33 @@
                             @include('admin.includes.date-range-picker')
                         </div>
 
-                        <select name="source_id" class="filter-select" onchange="this.form.submit()">
+                        <select name="source_id" class="filter-select" onchange="updateFilters()">
                             <option value="">Lead Source</option>
                             @foreach($sources as $source)
                                 <option value="{{ $source->id }}" {{ request('source_id') == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
                             @endforeach
                         </select>
 
-                        <select name="service_id" class="filter-select" onchange="this.form.submit()">
+                        <select name="service_id" class="filter-select" onchange="updateFilters()">
                             <option value="">All Services</option>
                             @foreach($services as $service)
                                 <option value="{{ $service->id }}" {{ request('service_id') == $service->id ? 'selected' : '' }}>{{ $service->name }}</option>
                             @endforeach
                         </select>
 
-                        <select name="priority" class="filter-select" onchange="this.form.submit()">
+                        <select name="priority" class="filter-select" onchange="updateFilters()">
                             <option value="">Priority</option>
                             <option value="Hot 🔥" {{ request('priority') == 'Hot 🔥' ? 'selected' : '' }}>Hot 🔥</option>
                             <option value="Warm" {{ request('priority') == 'Warm' ? 'selected' : '' }}>Warm</option>
                             <option value="Cold" {{ request('priority') == 'Cold' ? 'selected' : '' }}>Cold</option>
                         </select>
-                        <select name="status_id" class="filter-select" onchange="this.form.submit()">
+                        <select name="status_id" class="filter-select" onchange="updateFilters()">
                             <option value="">All Statuses</option>
                             @foreach($statuses as $status)
                                 <option value="{{ $status->id }}" {{ request('status_id') == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
                             @endforeach
                         </select>
-                        <select name="assigned_to" class="filter-select" onchange="this.form.submit()">
+                        <select name="assigned_to" class="filter-select" onchange="updateFilters()">
                             <option value="">Sales Person</option>
                             @foreach($sales as $sale)
                                 <option value="{{ $sale->id }}" {{ request('assigned_to') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
@@ -819,100 +819,102 @@
                     </form>
                 </div>
 
-                <div class="table-wrap">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>SL</th>
-                                <th>Date</th>
-                                <th>Lead</th>
-                                <th>Source</th>
-                                <th>Contact Person</th>
-                                <th>Service Need</th>
-                                <th>Priority</th>
-                                <th>Status</th>
-                                <th>Created By</th>
-                                <th>Sales Person</th>
-                                <th>Followup</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($leads as $index => $lead)
-                            <tr>
-                                <td>{{ $leads->firstItem() + $index }}</td>
-                                <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $lead->created_at->format('d M Y') }}</div></td>
-                                <td>
-                                    <div class="lead-cell">
-                                        @php
-                                            $initials = strtoupper(substr($lead->company, 0, 1) . substr($lead->contact_person, 0, 1));
-                                            $emails = is_array($lead->emails) ? $lead->emails[0] : (json_decode($lead->emails)[0] ?? 'N/A');
-                                        @endphp
-                                        <div class="mini-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">{{ $initials }}</div>
-                                        <div>
-                                            <div class="ln">{{ $lead->company }}</div>
-                                            <div class="ls">{{ $emails }}</div>
+                <div id="tableWrap">
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>SL</th>
+                                    <th>Date</th>
+                                    <th>Lead</th>
+                                    <th>Source</th>
+                                    <th>Contact Person</th>
+                                    <th>Service Need</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Created By</th>
+                                    <th>Sales Person</th>
+                                    <th>Followup</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($leads as $index => $lead)
+                                <tr>
+                                    <td>{{ $leads->firstItem() + $index }}</td>
+                                    <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $lead->created_at->format('d M Y') }}</div></td>
+                                    <td>
+                                        <div class="lead-cell">
+                                            @php
+                                                $initials = strtoupper(substr($lead->company, 0, 1) . substr($lead->contact_person, 0, 1));
+                                                $emails = is_array($lead->emails) ? $lead->emails[0] : (json_decode($lead->emails)[0] ?? 'N/A');
+                                            @endphp
+                                            <div class="mini-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">{{ $initials }}</div>
+                                            <div>
+                                                <div class="ln">{{ $lead->company }}</div>
+                                                <div class="ls">{{ $emails }}</div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td><span class="src-tag">{{ $lead->source->name ?? 'N/A' }}</span></td>
-                                <td><strong style="color:var(--t2)">{{ $lead->contact_person }}</strong></td>
-                                <td><strong style="color:var(--t2)">{{ $lead->service->name ?? 'N/A' }}</strong></td>
-                                <td>
-                                    @php
-                                        $pCls = strtolower(str_replace([' ', '🔥'], '', $lead->priority));
-                                    @endphp
-                                    <span class="lead-stage {{ $pCls }}">{{ $lead->priority }}</span>
-                                </td>
-                                <td><strong style="color:var(--accent)">{{ $lead->status->name ?? 'N/A' }}</strong></td>
-                                <td>
-                                    @if($lead->createdBy)
-                                        <div class="ln">{{ $lead->createdBy->name }}</div>
-                                        <div class="ls" style="font-size:10px">{{ $lead->createdBy->email }}</div>
-                                    @else
-                                        <div class="ln">System</div>
-                                    @endif
-                                </td>
-                                <td>
-                                    @foreach($lead->assignments as $assign)
-                                        <div class="ln">{{ $assign->sale->name ?? 'N/A' }} - {{ $assign->sale->email ?? 'N/A' }}</div>
-                                        
-                                    @endforeach
-                                    @if($lead->assignments->isEmpty())
-                                        <span style="color:var(--t4)">Unassigned</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <span class="badge" style="background:rgba(99, 102, 241, 0.1); color:var(--accent); padding:4px 10px; border-radius:6px; font-weight:700; font-family:var(--font-mono); font-size:12px;">
-                                        {{ $lead->followups_count }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="row-actions">
-                                        <a href="{{ route('sale.leads.show', $lead->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                        <!-- <button class="ra-btn" title="Call"><i class="bi bi-telephone-fill"></i></button>
-                                        <button class="ra-btn" title="Email"><i class="bi bi-envelope-fill"></i></button> -->
-                                        <a href="{{route('sale.leads.followup', $lead->id)}}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
-                                        <a class="ra-btn" title="Edit" href="{{route('sale.leads.edit', $lead->id)}}"><i class="bi bi-pencil-fill"></i></a>
-                                        <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route('sale.leads.destroy', $lead->id) }}')"><i class="bi bi-trash-fill"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="10" style="text-align:center;padding:40px;color:var(--t4);">No leads found.</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="table-footer">
-                    <span class="tf-info">Showing {{ $leads->count() }} of {{ $leads->total() }} Leads</span>
-                    <div class="tf-pagination">
-                        {{ $leads->links('admin.includes.pagination') }}
+                                    </td>
+                                    <td><span class="src-tag">{{ $lead->source->name ?? 'N/A' }}</span></td>
+                                    <td><strong style="color:var(--t2)">{{ $lead->contact_person }}</strong></td>
+                                    <td><strong style="color:var(--t2)">{{ $lead->service->name ?? 'N/A' }}</strong></td>
+                                    <td>
+                                        @php
+                                            $pCls = strtolower(str_replace([' ', '🔥'], '', $lead->priority));
+                                        @endphp
+                                        <span class="lead-stage {{ $pCls }}">{{ $lead->priority }}</span>
+                                    </td>
+                                    <td><strong style="color:var(--accent)">{{ $lead->status->name ?? 'N/A' }}</strong></td>
+                                    <td>
+                                        @if($lead->createdBy)
+                                            <div class="ln">{{ $lead->createdBy->name }}</div>
+                                            <div class="ls" style="font-size:10px">{{ $lead->createdBy->email }}</div>
+                                        @else
+                                            <div class="ln">System</div>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @foreach($lead->assignments as $assign)
+                                            <div class="ln">{{ $assign->sale->name ?? 'N/A' }} - {{ $assign->sale->email ?? 'N/A' }}</div>
+                                            
+                                        @endforeach
+                                        @if($lead->assignments->isEmpty())
+                                            <span style="color:var(--t4)">Unassigned</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span class="badge" style="background:rgba(99, 102, 241, 0.1); color:var(--accent); padding:4px 10px; border-radius:6px; font-weight:700; font-family:var(--font-mono); font-size:12px;">
+                                            {{ $lead->followups_count }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="row-actions">
+                                            <a href="{{ route('sale.leads.show', $lead->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
+                                            <!-- <button class="ra-btn" title="Call"><i class="bi bi-telephone-fill"></i></button>
+                                            <button class="ra-btn" title="Email"><i class="bi bi-envelope-fill"></i></button> -->
+                                            <a href="{{route('sale.leads.followup', $lead->id)}}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
+                                            <a class="ra-btn" title="Edit" href="{{route('sale.leads.edit', $lead->id)}}"><i class="bi bi-pencil-fill"></i></a>
+                                            <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route('sale.leads.destroy', $lead->id) }}')"><i class="bi bi-trash-fill"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="10" style="text-align:center;padding:40px;color:var(--t4);">No leads found.</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="tf-per-page"></div>
+
+                    <div class="table-footer">
+                        <span class="tf-info">Showing {{ $leads->count() }} of {{ $leads->total() }} Leads</span>
+                        <div class="tf-pagination">
+                            {{ $leads->links('admin.includes.pagination') }}
+                        </div>
+                        <div class="tf-per-page"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2308,10 +2310,77 @@
             if(startInp && endInp) {
                 startInp.value = formatDate(start);
                 endInp.value = formatDate(end);
-                startInp.form.submit();
+                updateFilters(); // Modernized
             }
         }
     });
+
+    // AJAX FILTER LOGIC
+    let debounceTimer;
+    function debounceFilter() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            updateFilters();
+        }, 500);
+    }
+
+    function updateFilters() {
+        const form = document.getElementById('filterForm');
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+
+        // Remove empty params
+        const finalParams = new URLSearchParams();
+        for (const [key, value] of params.entries()) {
+            if (value) finalParams.append(key, value);
+        }
+
+        const url = `${window.location.pathname}?${finalParams.toString()}`;
+        fetchAndReplace(url);
+    }
+
+    async function fetchAndReplace(url) {
+        const tableWrap = document.getElementById('tableWrap');
+        const statsWrap = document.getElementById('statsWrap');
+
+        if (tableWrap) tableWrap.style.opacity = '0.5';
+        if (statsWrap) statsWrap.style.opacity = '0.5';
+
+        try {
+            const response = await fetch(url);
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            if (tableWrap) {
+                const newTable = doc.getElementById('tableWrap');
+                if (newTable) tableWrap.innerHTML = newTable.innerHTML;
+            }
+            if (statsWrap) {
+                const newStats = doc.getElementById('statsWrap');
+                if (newStats) statsWrap.innerHTML = newStats.innerHTML;
+            }
+
+            window.history.pushState({}, '', url);
+            interceptPagination();
+        } catch (error) {
+            console.error('AJAX Error:', error);
+        } finally {
+            if (tableWrap) tableWrap.style.opacity = '1';
+            if (statsWrap) statsWrap.style.opacity = '1';
+        }
+    }
+
+    function interceptPagination() {
+        document.querySelectorAll('.tf-pagination a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                fetchAndReplace(this.href);
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', interceptPagination);
 </script>
 
 @endsection

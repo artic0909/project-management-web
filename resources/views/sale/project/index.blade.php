@@ -27,7 +27,7 @@
         </div>
 
         {{-- ── KPI CARDS ── --}}
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;">
+        <div id="statsWrap" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;">
 
             <div class="dash-card {{ !request()->has('q') && !request()->has('project_status_id') && !request()->has('start_date') ? 'active' : '' }}" 
                 style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route('sale.projects.index') }}'">
@@ -109,11 +109,11 @@
                         <div class="card-sub" id="projectTableSub">{{ $projects->total() }} total projects</div>
                     </div>
                     <div class="card-actions mb-2">
-                        <form action="{{ route('sale.projects.index') }}" method="GET" class="card-actions mb-0">
+                        <form action="{{ route('sale.projects.index') }}" method="GET" class="card-actions mb-0" id="filterForm">
                             <div class="global-search">
                                 <i class="bi bi-search"></i>
-                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search projects...">
-                                <button type="submit" class="btn-primary-solid sm">Search</button>
+                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search projects..." id="searchQuery" oninput="debounceFilter()">
+                                <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
                             </div>
 
                             <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
@@ -127,21 +127,21 @@
                             <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
                             <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
 
-                            <select name="project_status_id" class="filter-select" onchange="this.form.submit()">
+                            <select name="project_status_id" class="filter-select" onchange="updateFilters()">
                                 <option value="">All Statuses</option>
                                 @foreach($statuses['project_statuses'] as $s)
                                     <option value="{{ $s->id }}" {{ request('project_status_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
                                 @endforeach
                             </select>
 
-                            <select name="payment_status_id" class="filter-select" onchange="this.form.submit()">
+                            <select name="payment_status_id" class="filter-select" onchange="updateFilters()">
                                 <option value="">All Payments</option>
                                 @foreach($statuses['payment_statuses'] as $s)
                                     <option value="{{ $s->id }}" {{ request('payment_status_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
                                 @endforeach
                             </select>
 
-                            <select name="assigned_to" class="filter-select" onchange="this.form.submit()">
+                            <select name="assigned_to" class="filter-select" onchange="updateFilters()">
                                 <option value="">Assign To</option>
                                 @foreach($allDevelopers as $dev)
                                     <option value="{{ $dev->id }}" {{ request('assigned_to') == $dev->id ? 'selected' : '' }}>{{ $dev->name }}</option>
@@ -155,165 +155,167 @@
                     </div>
                 </div>
 
-                <div class="table-wrap">
-                    <table class="data-table" id="projectsTable">
-                        <thead>
-                            <tr>
-                                <th>Project ID</th>
-                                <th>Project / Domain</th>
-                                <th>Client</th>
-                                <th>Sales Person</th>
-                                <th>CMS</th>
-                                <th>Start Date</th>
-                                <th>Delivery</th>
-                                <th>Assigned To</th>
-                                <th>Project Status</th>
-                                <!-- <th>Project Price</th>
-                                <th>Advance</th>
-                                <th>Remaining</th>
-                                <th>Payment</th> -->
-                                <th>Created By</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @forelse($projects as $project)
-                            <tr>
-                                <td><span class="mono">#PRJ-{{ str_pad($project->id, 4, '0', STR_PAD_LEFT) }}</span></td>
-                                <td>
-                                    <div class="lead-cell">
-                                        @php
-                                            $nameParts = explode('.', $project->project_name);
-                                            $initials = strtoupper(substr($nameParts[0], 0, 2));
-                                        @endphp
-                                        <div class="mini-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">{{ $initials }}</div>
-                                        <div>
-                                            <div class="ln">{{ $project->project_name }}</div>
-                                            <div class="ls">{{ $project->company_name ?? 'N/A' }}</div>
+                <div id="tableWrap">
+                    <div class="table-wrap">
+                        <table class="data-table" id="projectsTable">
+                            <thead>
+                                <tr>
+                                    <th>Project ID</th>
+                                    <th>Project / Domain</th>
+                                    <th>Client</th>
+                                    <th>Sales Person</th>
+                                    <th>CMS</th>
+                                    <th>Start Date</th>
+                                    <th>Delivery</th>
+                                    <th>Assigned To</th>
+                                    <th>Project Status</th>
+                                    <!-- <th>Project Price</th>
+                                    <th>Advance</th>
+                                    <th>Remaining</th>
+                                    <th>Payment</th> -->
+                                    <th>Created By</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @forelse($projects as $project)
+                                <tr>
+                                    <td><span class="mono">#PRJ-{{ str_pad($project->id, 4, '0', STR_PAD_LEFT) }}</span></td>
+                                    <td>
+                                        <div class="lead-cell">
+                                            @php
+                                                $nameParts = explode('.', $project->project_name);
+                                                $initials = strtoupper(substr($nameParts[0], 0, 2));
+                                            @endphp
+                                            <div class="mini-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">{{ $initials }}</div>
+                                            <div>
+                                                <div class="ln">{{ $project->project_name }}</div>
+                                                <div class="ls">{{ $project->company_name ?? 'N/A' }}</div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="ln">{{ $project->client_name }}</div>
-                                    <div class="ls">
-                                        @if(is_array($project->phones) && count($project->phones) > 0)
-                                            {{ is_array($project->phones[0]) ? $project->phones[0]['num'] : $project->phones[0] }}
-                                            @if(count($project->phones) > 1) <small class="text-muted">(+{{ count($project->phones)-1 }})</small> @endif
-                                        @elseif($project->phones)
-                                            {{ $project->phones }}
-                                        @else
-                                            {{ is_array($project->emails) && count($project->emails) > 0 ? $project->emails[0] : ($project->emails ?? 'N/A') }}
-                                        @endif
-                                    </div>
-                                </td>
-                                <td>
-                                    <div style="display:flex; flex-direction:column; gap:4px;">
-                                        @php $hasSales = false; @endphp
-                                        {{-- Order Assignments --}}
-                                        @if($project->order)
-                                            @foreach($project->order->assignments as $assign)
-                                                <div class="ln">{{ $assign->sale->name ?? 'N/A' }}</div>
-                                                <div class="ls" style="font-size:10px">{{ $assign->sale->email ?? '' }}</div>
+                                    </td>
+                                    <td>
+                                        <div class="ln">{{ $project->client_name }}</div>
+                                        <div class="ls">
+                                            @if(is_array($project->phones) && count($project->phones) > 0)
+                                                {{ is_array($project->phones[0]) ? $project->phones[0]['num'] : $project->phones[0] }}
+                                                @if(count($project->phones) > 1) <small class="text-muted">(+{{ count($project->phones)-1 }})</small> @endif
+                                            @elseif($project->phones)
+                                                {{ $project->phones }}
+                                            @else
+                                                {{ is_array($project->emails) && count($project->emails) > 0 ? $project->emails[0] : ($project->emails ?? 'N/A') }}
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="display:flex; flex-direction:column; gap:4px;">
+                                            @php $hasSales = false; @endphp
+                                            {{-- Order Assignments --}}
+                                            @if($project->order)
+                                                @foreach($project->order->assignments as $assign)
+                                                    <div class="ln">{{ $assign->sale->name ?? 'N/A' }}</div>
+                                                    <div class="ls" style="font-size:10px">{{ $assign->sale->email ?? '' }}</div>
+                                                    @php $hasSales = true; @endphp
+                                                @endforeach
+                                            @endif
+                                            {{-- Project Assignments --}}
+                                            @foreach($project->salesPersons as $sale)
+                                                <div class="ln">{{ $sale->name }}</div>
+                                                <div class="ls" style="font-size:10px">{{ $sale->email }}</div>
                                                 @php $hasSales = true; @endphp
                                             @endforeach
-                                        @endif
-                                        {{-- Project Assignments --}}
-                                        @foreach($project->salesPersons as $sale)
-                                            <div class="ln">{{ $sale->name }}</div>
-                                            <div class="ls" style="font-size:10px">{{ $sale->email }}</div>
-                                            @php $hasSales = true; @endphp
-                                        @endforeach
 
-                                        @if(!$hasSales)
-                                            <span style="color:var(--t4);font-size:11px;">Unassigned</span>
+                                            @if(!$hasSales)
+                                                <span style="color:var(--t4);font-size:11px;">Unassigned</span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if($project->cms_platform)
+                                            <span class="cms-tag {{ strtolower($project->cms_platform) }}">{{ $project->cms_platform == 'other' ? $project->cms_custom : $project->cms_platform }}</span>
+                                        @else
+                                            <span style="color:var(--t4);font-size:11px;">N/A</span>
                                         @endif
-                                    </div>
-                                </td>
-                                <td>
-                                    @if($project->cms_platform)
-                                        <span class="cms-tag {{ strtolower($project->cms_platform) }}">{{ $project->cms_platform == 'other' ? $project->cms_custom : $project->cms_platform }}</span>
-                                    @else
-                                        <span style="color:var(--t4);font-size:11px;">N/A</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="ls">{{ $project->project_start_date ? $project->project_start_date->format('d M Y') : 'N/A' }}</div>
-                                </td>
-                                <td>
-                                    @if($project->expected_delivery_date)
-                                        <span class="date-cell {{ $project->expected_delivery_date->isPast() ? 'danger' : 'warn' }}">
-                                            {{ $project->expected_delivery_date->format('d M Y') }}
-                                        </span>
-                                    @else
-                                        <span style="color:var(--t4);font-size:11px;">N/A</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div style="display:flex; flex-direction:column; gap:4px;">
-                                        @forelse($project->developers as $dev)
-                                            <div style="font-size:12px; white-space:nowrap;">
-                                                <span style="font-weight:600;color:var(--t1);">{{ $dev->name }}</span>
-                                                @if($dev->designation)
-                                                    <span style="font-size:10px;color:var(--t3);"> - {{ $dev->designation }}</span>
-                                                @endif
-                                            </div>
-                                        @empty
-                                            <span style="color:var(--t4);font-size:11px;">Unassigned</span>
-                                        @endforelse
-                                    </div>
-                                </td>
-                                <td>
-                                    @php
-                                        $displayProjStatus = $project->projectStatus ? $project->projectStatus->name : ($project->project_status ?? 'New');
-                                        $statusClass = strtolower(str_replace(' ', '-', $displayProjStatus));
-                                    @endphp
-                                    <span class="proj-status {{ $statusClass }}">{{ $displayProjStatus }}</span>
-                                </td>
-                                <!-- <td><span class="money-cell">₹{{ number_format($project->project_price, 0) }}</span></td>
-                                <td><span class="money-cell" style="color:#10b981;">₹{{ number_format($project->advance_payment, 0) }}</span></td>
-                                <td><span class="money-cell" style="color:#ef4444;">₹{{ number_format($project->remaining_amount, 0) }}</span></td>
-                                <td>
-                                    @php
-                                        $displayPayStatus = $project->paymentStatus ? $project->paymentStatus->name : ($project->financial_payment_status ?? 'Pending');
-                                        $payLower = strtolower($displayPayStatus);
-                                        $payClass = $payLower == 'paid' ? 'paid' : ($payLower == 'partial' ? 'pending' : 'overdue');
-                                    @endphp
-                                    <span class="status-pill {{ $payClass }}">{{ $displayPayStatus }}</span>
-                                </td> -->
-                                <td>
-                                    @if($project->createdBy)
-                                        <div class="ln">{{ $project->createdBy->name }}</div>
-                                        <div class="ls" style="font-size:10px">{{ $project->createdBy->email }}</div>
-                                    @else
-                                        <div class="ln">System</div>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="row-actions">
-                                        <a href="{{ route('sale.projects.tasks', $project->id) }}" class="ra-btn" title="Tasks" style="color:#6366f1;background:rgba(99,102,241,0.1);"><i class="bi bi-list-task"></i></a>
-                                        <a href="{{ route('sale.projects.show', $project->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                        <a href="{{ route('sale.projects.edit', $project->id) }}" class="ra-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
-                                        <form action="{{ route('sale.projects.destroy', $project->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this project?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="ra-btn danger" title="Delete"><i class="bi bi-trash-fill"></i></button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="13" style="text-align:center;padding:40px;color:var(--t4);">No projects found matching your criteria.</td>
-                            </tr>
-                        @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                                    </td>
+                                    <td>
+                                        <div class="ls">{{ $project->project_start_date ? $project->project_start_date->format('d M Y') : 'N/A' }}</div>
+                                    </td>
+                                    <td>
+                                        @if($project->expected_delivery_date)
+                                            <span class="date-cell {{ $project->expected_delivery_date->isPast() ? 'danger' : 'warn' }}">
+                                                {{ $project->expected_delivery_date->format('d M Y') }}
+                                            </span>
+                                        @else
+                                            <span style="color:var(--t4);font-size:11px;">N/A</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div style="display:flex; flex-direction:column; gap:4px;">
+                                            @forelse($project->developers as $dev)
+                                                <div style="font-size:12px; white-space:nowrap;">
+                                                    <span style="font-weight:600;color:var(--t1);">{{ $dev->name }}</span>
+                                                    @if($dev->designation)
+                                                        <span style="font-size:10px;color:var(--t3);"> - {{ $dev->designation }}</span>
+                                                    @endif
+                                                </div>
+                                            @empty
+                                                <span style="color:var(--t4);font-size:11px;">Unassigned</span>
+                                            @endforelse
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @php
+                                            $displayProjStatus = $project->projectStatus ? $project->projectStatus->name : ($project->project_status ?? 'New');
+                                            $statusClass = strtolower(str_replace(' ', '-', $displayProjStatus));
+                                        @endphp
+                                        <span class="proj-status {{ $statusClass }}">{{ $displayProjStatus }}</span>
+                                    </td>
+                                    <!-- <td><span class="money-cell">₹{{ number_format($project->project_price, 0) }}</span></td>
+                                    <td><span class="money-cell" style="color:#10b981;">₹{{ number_format($project->advance_payment, 0) }}</span></td>
+                                    <td><span class="money-cell" style="color:#ef4444;">₹{{ number_format($project->remaining_amount, 0) }}</span></td>
+                                    <td>
+                                        @php
+                                            $displayPayStatus = $project->paymentStatus ? $project->paymentStatus->name : ($project->financial_payment_status ?? 'Pending');
+                                            $payLower = strtolower($displayPayStatus);
+                                            $payClass = $payLower == 'paid' ? 'paid' : ($payLower == 'partial' ? 'pending' : 'overdue');
+                                        @endphp
+                                        <span class="status-pill {{ $payClass }}">{{ $displayPayStatus }}</span>
+                                    </td> -->
+                                    <td>
+                                        @if($project->createdBy)
+                                            <div class="ln">{{ $project->createdBy->name }}</div>
+                                            <div class="ls" style="font-size:10px">{{ $project->createdBy->email }}</div>
+                                        @else
+                                            <div class="ln">System</div>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="row-actions">
+                                            <a href="{{ route('sale.projects.tasks', $project->id) }}" class="ra-btn" title="Tasks" style="color:#6366f1;background:rgba(99,102,241,0.1);"><i class="bi bi-list-task"></i></a>
+                                            <a href="{{ route('sale.projects.show', $project->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
+                                            <a href="{{ route('sale.projects.edit', $project->id) }}" class="ra-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
+                                            <form action="{{ route('sale.projects.destroy', $project->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this project?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="ra-btn danger" title="Delete"><i class="bi bi-trash-fill"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="13" style="text-align:center;padding:40px;color:var(--t4);">No projects found matching your criteria.</td>
+                                </tr>
+                            @endforelse
+                            </tbody>
+                        </table>
+                    </div>
 
-                <div class="table-footer">
-                    <span class="tf-info" id="projCount">Showing {{ $projects->firstItem() ?? 0 }} to {{ $projects->lastItem() ?? 0 }} of {{ $projects->total() }} Projects</span>
-                    <div class="tf-pagination">
-                        {{ $projects->links('pagination::bootstrap-4') }}
+                    <div class="table-footer">
+                        <span class="tf-info" id="projCount">Showing {{ $projects->firstItem() ?? 0 }} to {{ $projects->lastItem() ?? 0 }} of {{ $projects->total() }} Projects</span>
+                        <div class="tf-pagination">
+                            {{ $projects->links('pagination::bootstrap-4') }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -712,7 +714,7 @@
         if(sInp && eInp) {
             sInp.value = formatDate(start);
             eInp.value = formatDate(end);
-            sInp.closest('form').submit();
+            updateFilters(); // Modernized
         }
     });
 
@@ -725,4 +727,72 @@
     });
 </script>
 
+<script>
+    // AJAX FILTER LOGIC
+    let debounceTimer;
+    function debounceFilter() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            updateFilters();
+        }, 500);
+    }
+
+    function updateFilters() {
+        const form = document.getElementById('filterForm');
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+
+        // Remove empty params
+        const finalParams = new URLSearchParams();
+        for (const [key, value] of params.entries()) {
+            if (value) finalParams.append(key, value);
+        }
+
+        const url = `${window.location.pathname}?${finalParams.toString()}`;
+        fetchAndReplace(url);
+    }
+
+    async function fetchAndReplace(url) {
+        const tableWrap = document.getElementById('tableWrap');
+        const statsWrap = document.getElementById('statsWrap');
+
+        if (tableWrap) tableWrap.style.opacity = '0.5';
+        if (statsWrap) statsWrap.style.opacity = '0.5';
+
+        try {
+            const response = await fetch(url);
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            if (tableWrap) {
+                const newTable = doc.getElementById('tableWrap');
+                if (newTable) tableWrap.innerHTML = newTable.innerHTML;
+            }
+            if (statsWrap) {
+                const newStats = doc.getElementById('statsWrap');
+                if (newStats) statsWrap.innerHTML = newStats.innerHTML;
+            }
+
+            window.history.pushState({}, '', url);
+            interceptPagination();
+        } catch (error) {
+            console.error('AJAX Error:', error);
+        } finally {
+            if (tableWrap) tableWrap.style.opacity = '1';
+            if (statsWrap) statsWrap.style.opacity = '1';
+        }
+    }
+
+    function interceptPagination() {
+        document.querySelectorAll('.tf-pagination a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                fetchAndReplace(this.href);
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', interceptPagination);
+</script>
 @endsection

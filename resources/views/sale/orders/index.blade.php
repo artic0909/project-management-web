@@ -33,8 +33,7 @@
         <!-- {{-- ═══════════════════════════════════════════════════
              6 KPI SUMMARY CARDS
         ════════════════════════════════════════════════════ --}} -->
-        <div style="display:grid;grid-template-columns:repeat(8, 1fr);gap:14px;margin-bottom:24px;">
-
+        <div id="statsWrap" style="display:grid;grid-template-columns:repeat(8, 1fr);gap:14px;margin-bottom:24px;">
             {{-- Permanent User Profile Card --}}
             <div class="dash-card active" style="padding:16px 18px; border: 2px solid var(--accent);">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
@@ -154,7 +153,6 @@
                     <div style="height:100%;width:{{ $totalOrders > 0 ? ($cancelledOrders / $totalOrders) * 100 : 0 }}%;background:#ef4444;border-radius:3px;"></div>
                 </div>
             </div>
-
         </div>
         <!-- {{-- END KPI CARDS --}} -->
 
@@ -167,11 +165,11 @@
                     </div>
                     <div class="card-actions mb-2">
 
-                        <form action="{{ route('sale.orders.index') }}" method="GET" class="card-actions mb-0">
+                        <form action="{{ route('sale.orders.index') }}" method="GET" class="card-actions mb-0" id="filterForm">
                             <div class="global-search">
                                 <i class="bi bi-search"></i>
-                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search...">
-                                <button type="submit" class="btn-primary-solid sm">Search</button>
+                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search..." id="searchQuery" oninput="debounceFilter()">
+                                <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
                             </div>
 
                             <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
@@ -185,20 +183,20 @@
                             <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
                             <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
 
-                             <select name="is_marketing" class="filter-select" onchange="this.form.submit()">
+                             <select name="is_marketing" class="filter-select" onchange="updateFilters()">
                                  <option value="">All Types</option>
                                  <option value="1" {{ request('is_marketing') == '1' ? 'selected' : '' }}>Marketing</option>
                                  <option value="0" {{ request('is_marketing') == '0' ? 'selected' : '' }}>Website</option>
                              </select>
 
-                            <select name="service_id" class="filter-select" onchange="this.form.submit()">
+                            <select name="service_id" class="filter-select" onchange="updateFilters()">
                                 <option value="">All Services</option>
                                 @foreach($allServices as $srv)
                                     <option value="{{ $srv->id }}" {{ request('service_id') == $srv->id ? 'selected' : '' }}>{{ $srv->name }}</option>
                                 @endforeach
                             </select>
 
-                            <select name="status_id" class="filter-select" onchange="this.form.submit()">
+                            <select name="status_id" class="filter-select" onchange="updateFilters()">
                                 <option value="">All Status</option>
                                 @foreach($allStatuses as $st)
                                     <option value="{{ $st->id }}" {{ request('status_id') == $st->id ? 'selected' : '' }}>{{ $st->name }}</option>
@@ -213,103 +211,105 @@
                     </div>
                 </div>
 
-                <div class="table-wrap">
-                    <table class="data-table" id="ordersTable">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Date</th>
-                                <th>Type</th>
-                                <th>Company</th>
-                                <th>Contact Person</th>
-                                <th>Service</th>
-                                <th>Value</th>
-                                <th>Advance</th>
-                                <th>Status</th>
-                                <th>Created By</th>
-                                <th>Sales Person</th>
-                                <th>Followup</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($orders as $order)
-                            <tr data-order-type="{{ $order->is_marketing ? 'marketing' : 'website' }}" 
-                                data-status="{{ strtolower($order->status->name ?? '') }}"
-                                data-service="{{ $order->service_id }}">
-                                <td><span class="mono">#ORD-{{ 1000 + $order->id }}</span></td>
-                                <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $order->created_at->format('d M Y') }}</div></td>
-                                <td>
-                                    <span class="type-badge {{ $order->is_marketing ? 'marketing-type' : 'website-type' }}">
-                                        {{ $order->is_marketing ? 'Marketing' : 'Website' }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="lead-cell">
-                                        @php 
-                                            $initials = strtoupper(substr($order->company_name, 0, 2)); 
-                                            $bg = 'linear-gradient(135deg,#6366f1,#06b6d4)';
-                                            if($order->is_marketing) $bg = 'linear-gradient(135deg,#8b5cf6,#ec4899)';
-                                        @endphp
-                                        <div class="mini-ava" style="background:{{ $bg }}">{{ $initials }}</div>
-                                        <div>
-                                            <div class="ln">{{ $order->company_name }}</div>
-                                            <div class="ls">{{ $order->emails[0] ?? 'N/A' }}</div>
+                <div id="tableWrap">
+                    <div class="table-wrap">
+                        <table class="data-table" id="ordersTable">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Company</th>
+                                    <th>Contact Person</th>
+                                    <th>Service</th>
+                                    <th>Value</th>
+                                    <th>Advance</th>
+                                    <th>Status</th>
+                                    <th>Created By</th>
+                                    <th>Sales Person</th>
+                                    <th>Followup</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($orders as $order)
+                                <tr data-order-type="{{ $order->is_marketing ? 'marketing' : 'website' }}" 
+                                    data-status="{{ strtolower($order->status->name ?? '') }}"
+                                    data-service="{{ $order->service_id }}">
+                                    <td><span class="mono">#ORD-{{ 1000 + $order->id }}</span></td>
+                                    <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $order->created_at->format('d M Y') }}</div></td>
+                                    <td>
+                                        <span class="type-badge {{ $order->is_marketing ? 'marketing-type' : 'website-type' }}">
+                                            {{ $order->is_marketing ? 'Marketing' : 'Website' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="lead-cell">
+                                            @php 
+                                                $initials = strtoupper(substr($order->company_name, 0, 2)); 
+                                                $bg = 'linear-gradient(135deg,#6366f1,#06b6d4)';
+                                                if($order->is_marketing) $bg = 'linear-gradient(135deg,#8b5cf6,#ec4899)';
+                                            @endphp
+                                            <div class="mini-ava" style="background:{{ $bg }}">{{ $initials }}</div>
+                                            <div>
+                                                <div class="ln">{{ $order->company_name }}</div>
+                                                <div class="ls">{{ $order->emails[0] ?? 'N/A' }}</div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="ln">{{ $order->client_name }}</div>
-                                    <div class="ls">{{ $order->phones[0]['number'] ?? 'N/A' }}</div>
-                                </td>
-                                <td><span class="src-tag">{{ $order->service->name ?? 'N/A' }}</span></td>
-                                <td><span class="src-tag">₹{{ number_format($order->order_value, 0) }}</span></td>
-                                <td><span class="src-tag" style="background:#10b98120; color:#10b981;">₹{{ number_format($order->advance_payment, 0) }}</span></td>
-                                <td>
-                                    <span class="status-pill" style="background:{{ ($order->status->color ?? '#6366f1') }}20; color:{{ $order->status->color ?? '#6366f1' }};">
-                                        {{ $order->status->name ?? 'Pending' }}
-                                    </span>
-                                </td>
-                                <td>
-                                    @if($order->createdBy)
-                                        <div class="ln">{{ $order->createdBy->name }}</div>
-                                        <div class="ls" style="font-size:10px">{{ $order->createdBy->email }}</div>
-                                    @else
-                                        <div class="ln">System</div>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div style="display:flex;flex-direction:column;gap:2px;">
-                                        @foreach($order->assignments as $assign)
-                                            <div class="ln" style="font-size:12.5px;">{{ $assign->sale->name }}</div>
-                                            <div class="ls" style="font-size:10px;">{{ $assign->sale->email }}</div>
-                                        @endforeach
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge" style="background:rgba(99, 102, 241, 0.1); color:var(--accent); padding:4px 10px; border-radius:6px; font-weight:700; font-family:var(--font-mono); font-size:12px;">
-                                        {{ $order->followups_count }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="row-actions">
-                                        <a href="{{ route('sale.orders.show', $order->id) }}" class="ra-btn"><i class="bi bi-eye-fill"></i></a>
-                                        <a href="{{ route('sale.orders.edit', $order->id) }}" class="ra-btn"><i class="bi bi-pencil-fill"></i></a>
-                                        <a href="{{ route('sale.orders.followup', $order->id) }}" class="ra-btn"><i class="bi bi-arrow-counterclockwise"></i></a>
-                                        <a href="{{route('sale.payments.create', $order->id)}}" class="ra-btn"><i class="bi bi-wallet2"></i></a>
-                                        <button class="ra-btn danger" onclick="confirmDelete('{{ route('sale.orders.destroy', $order->id) }}')"><i class="bi bi-trash-fill"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                                    </td>
+                                    <td>
+                                        <div class="ln">{{ $order->client_name }}</div>
+                                        <div class="ls">{{ $order->phones[0]['number'] ?? 'N/A' }}</div>
+                                    </td>
+                                    <td><span class="src-tag">{{ $order->service->name ?? 'N/A' }}</span></td>
+                                    <td><span class="src-tag">₹{{ number_format($order->order_value, 0) }}</span></td>
+                                    <td><span class="src-tag" style="background:#10b98120; color:#10b981;">₹{{ number_format($order->advance_payment, 0) }}</span></td>
+                                    <td>
+                                        <span class="status-pill" style="background:{{ ($order->status->color ?? '#6366f1') }}20; color:{{ $order->status->color ?? '#6366f1' }};">
+                                            {{ $order->status->name ?? 'Pending' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if($order->createdBy)
+                                            <div class="ln">{{ $order->createdBy->name }}</div>
+                                            <div class="ls" style="font-size:10px">{{ $order->createdBy->email }}</div>
+                                        @else
+                                            <div class="ln">System</div>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div style="display:flex;flex-direction:column;gap:2px;">
+                                            @foreach($order->assignments as $assign)
+                                                <div class="ln" style="font-size:12.5px;">{{ $assign->sale->name }}</div>
+                                                <div class="ls" style="font-size:10px;">{{ $assign->sale->email }}</div>
+                                            @endforeach
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge" style="background:rgba(99, 102, 241, 0.1); color:var(--accent); padding:4px 10px; border-radius:6px; font-weight:700; font-family:var(--font-mono); font-size:12px;">
+                                            {{ $order->followups_count }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="row-actions">
+                                            <a href="{{ route('sale.orders.show', $order->id) }}" class="ra-btn"><i class="bi bi-eye-fill"></i></a>
+                                            <a href="{{ route('sale.orders.edit', $order->id) }}" class="ra-btn"><i class="bi bi-pencil-fill"></i></a>
+                                            <a href="{{ route('sale.orders.followup', $order->id) }}" class="ra-btn"><i class="bi bi-arrow-counterclockwise"></i></a>
+                                            <a href="{{route('sale.payments.create', $order->id)}}" class="ra-btn"><i class="bi bi-wallet2"></i></a>
+                                            <button class="ra-btn danger" onclick="confirmDelete('{{ route('sale.orders.destroy', $order->id) }}')"><i class="bi bi-trash-fill"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
 
-                <div class="table-footer" style="padding:16px 20px; border-top:1px solid var(--b2); display:flex; justify-content:space-between; align-items:center; background:var(--bg2);">
-                    <span class="tf-info" id="ordersCount" style="font-size:13px; color:var(--t3); font-weight:500;">Showing {{ $orders->count() }} of {{ $orders->total() }} Orders</span>
-                    <div class="tf-pagination">
-                        {{ $orders->links('admin.includes.pagination') }}
+                    <div class="table-footer" style="padding:16px 20px; border-top:1px solid var(--b2); display:flex; justify-content:space-between; align-items:center; background:var(--bg2);">
+                        <span class="tf-info" id="ordersCount" style="font-size:13px; color:var(--t3); font-weight:500;">Showing {{ $orders->count() }} of {{ $orders->total() }} Orders</span>
+                        <div class="tf-pagination">
+                            {{ $orders->links('admin.includes.pagination') }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -783,9 +783,76 @@
         if(sInp && eInp) {
             sInp.value = formatDate(start);
             eInp.value = formatDate(end);
-            sInp.closest('form').submit();
+            updateFilters(); // Modernized
         }
     });
+
+    // AJAX FILTER LOGIC
+    let debounceTimer;
+    function debounceFilter() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            updateFilters();
+        }, 500);
+    }
+
+    function updateFilters() {
+        const form = document.getElementById('filterForm');
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+
+        // Remove empty params
+        const finalParams = new URLSearchParams();
+        for (const [key, value] of params.entries()) {
+            if (value) finalParams.append(key, value);
+        }
+
+        const url = `${window.location.pathname}?${finalParams.toString()}`;
+        fetchAndReplace(url);
+    }
+
+    async function fetchAndReplace(url) {
+        const tableWrap = document.getElementById('tableWrap');
+        const statsWrap = document.getElementById('statsWrap');
+
+        if (tableWrap) tableWrap.style.opacity = '0.5';
+        if (statsWrap) statsWrap.style.opacity = '0.5';
+
+        try {
+            const response = await fetch(url);
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            if (tableWrap) {
+                const newTable = doc.getElementById('tableWrap');
+                if (newTable) tableWrap.innerHTML = newTable.innerHTML;
+            }
+            if (statsWrap) {
+                const newStats = doc.getElementById('statsWrap');
+                if (newStats) statsWrap.innerHTML = newStats.innerHTML;
+            }
+
+            window.history.pushState({}, '', url);
+            interceptPagination();
+        } catch (error) {
+            console.error('AJAX Error:', error);
+        } finally {
+            if (tableWrap) tableWrap.style.opacity = '1';
+            if (statsWrap) statsWrap.style.opacity = '1';
+        }
+    }
+
+    function interceptPagination() {
+        document.querySelectorAll('.tf-pagination a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                fetchAndReplace(this.href);
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', interceptPagination);
 </script>
 
 @endsection

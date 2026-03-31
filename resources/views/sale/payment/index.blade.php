@@ -15,7 +15,7 @@
             </div>
 
             {{-- SUMMARY BOXES --}}
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:24px;max-width:600px;">
+            <div id="statsWrap" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:24px;max-width:600px;">
                 <div class="dash-card" style="padding:20px 22px;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
                         <div
@@ -66,15 +66,15 @@
                             <div class="card-sub">Total {{ $payments->count() }} transaction entries</div>
                         </div>
                         <div class="card-actions mb-2">
-                            <form action="{{ route('sale.payments.index') }}" method="GET" class="card-actions mb-0">
+                            <form action="{{ route('sale.payments.index') }}" method="GET" class="card-actions mb-0" id="filterForm">
                                 <div class="global-search">
                                     <i class="bi bi-search"></i>
                                     <input type="text" name="q" value="{{ request('q') }}"
-                                        placeholder="Search Company / Order #...">
-                                    <button type="submit" class="btn-primary-solid sm">Search</button>
+                                        placeholder="Search Company / Order #..." id="searchQuery" oninput="debounceFilter()">
+                                    <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
                                 </div>
 
-                                <select name="status_id" class="filter-select" onchange="this.form.submit()">
+                                <select name="status_id" class="filter-select" onchange="updateFilters()">
                                     <option value="">Payment Status</option>
                                     @foreach($allStatuses as $st)
                                         <option value="{{ $st->id }}" {{ request('status_id') == $st->id ? 'selected' : '' }}>
@@ -85,84 +85,86 @@
                         </div>
                     </div>
 
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Order ID</th>
-                                    <th>Company</th>
-                                    <th>Contact</th>
-                                    <th>Method</th>
-                                    <th>Amount</th>
-                                    <th>Trans ID / Ref</th>
-                                    <th>By</th>
-                                    <th>Proof</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($payments as $pay)
-                                                                <tr>
-                                                                    <td>
-                                                                        <div class="ls">{{ $pay->transaction_date->format('d M Y') }}</div>
-                                                                    </td>
-                                                                    <td>
-                                                                        <a href="{{ route('sale.orders.show', $pay->order_id) }}"
-                                                                            style="text-decoration:none">
-                                                                            <span class="mono"
-                                                                                style="color:var(--accent); font-weight:700;">#ORD-{{ 1000 + $pay->order_id }}</span>
-                                                                        </a>
-                                                                    </td>
-                                                                    <td>
-                                                                        <div class="ln">{{ $pay->order->company_name }}</div>
-                                                                        <div class="ls" style="font-size:10px">{{ $pay->order->emails[0] ?? '' }}</div>
-                                                                    </td>
-                                                                    <td>
-                                                                        <div class="ln">{{ $pay->order->client_name }}</div>
-                                                                        <div class="ls">{{ $pay->order->phones[0]['number'] ?? '' }}</div>
-                                                                    </td>
-                                                                    <td><span class="src-tag google-type"
-                                                                            style="padding:2px 7px;font-size:10px">{{ $pay->payment_method ?? 'N/A' }}</span>
-                                                                    </td>
-                                                                    <td><span class="money-cell"
-                                                                            style="color:#10b981; font-size:14px;">₹{{ number_format($pay->amount, 0) }}</span>
-                                                                    </td>
-                                                                    <td><span class="mono" style="font-size:11px">{{ $pay->transaction_id ?? 'N/A' }}</span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <div class="ln">{{ $pay->createdBy->name ?? 'System' }}</div>
-                                                                        @if($pay->created_by_type === \App\Models\Sale::class && $pay->createdBy)
-                                                                            <div class="ls" style="font-size:10px">{{ $pay->createdBy->email }}</div>
-                                                                        @endif
-                                                                    </td>
-                                                                    <td>
-                                                                        @if($pay->screenshot)
-                                                                            <a href="{{ asset('storage/' . $pay->screenshot) }}" target="_blank"
-                                                                                class="ra-btn sm" title="View Proof"><i
-                                                                                    class="bi bi-file-earmark-image"></i></a>
-                                                                        @else
-                                                                            <span style="color:var(--t4); font-style:italic; font-size:10px">No Proof</span>
-                                                                        @endif
-                                                                    </td>
-                                                                    <td>
-                                                                        <div class="row-actions">
-                                                                            <a href="{{ route('sale.payments.create', $pay->order_id) }}" class="ra-btn"
-                                                                                title="View Details"><i class="bi bi-eye"></i></a>
-                                                                            <button class="ra-btn danger"
-                                                                                onclick="confirmDelete('{{ route('sale.payments.destroy', $pay->id) }}')">
-                                                                                <i class="bi bi-trash-fill"></i>
-                                                                            </button>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                    <div id="tableWrap">
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Order ID</th>
+                                        <th>Company</th>
+                                        <th>Contact</th>
+                                        <th>Method</th>
+                                        <th>Amount</th>
+                                        <th>Trans ID / Ref</th>
+                                        <th>By</th>
+                                        <th>Proof</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($payments as $pay)
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div class="ls">{{ $pay->transaction_date->format('d M Y') }}</div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <a href="{{ route('sale.orders.show', $pay->order_id) }}"
+                                                                                style="text-decoration:none">
+                                                                                <span class="mono"
+                                                                                    style="color:var(--accent); font-weight:700;">#ORD-{{ 1000 + $pay->order_id }}</span>
+                                                                            </a>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="ln">{{ $pay->order->company_name }}</div>
+                                                                            <div class="ls" style="font-size:10px">{{ $pay->order->emails[0] ?? '' }}</div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="ln">{{ $pay->order->client_name }}</div>
+                                                                            <div class="ls">{{ $pay->order->phones[0]['number'] ?? '' }}</div>
+                                                                        </td>
+                                                                        <td><span class="src-tag google-type"
+                                                                                style="padding:2px 7px;font-size:10px">{{ $pay->payment_method ?? 'N/A' }}</span>
+                                                                        </td>
+                                                                        <td><span class="money-cell"
+                                                                                style="color:#10b981; font-size:14px;">₹{{ number_format($pay->amount, 0) }}</span>
+                                                                        </td>
+                                                                        <td><span class="mono" style="font-size:11px">{{ $pay->transaction_id ?? 'N/A' }}</span>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="ln">{{ $pay->createdBy->name ?? 'System' }}</div>
+                                                                            @if($pay->created_by_type === \App\Models\Sale::class && $pay->createdBy)
+                                                                                <div class="ls" style="font-size:10px">{{ $pay->createdBy->email }}</div>
+                                                                            @endif
+                                                                        </td>
+                                                                        <td>
+                                                                            @if($pay->screenshot)
+                                                                                <a href="{{ asset('storage/' . $pay->screenshot) }}" target="_blank"
+                                                                                    class="ra-btn sm" title="View Proof"><i
+                                                                                        class="bi bi-file-earmark-image"></i></a>
+                                                                            @else
+                                                                                <span style="color:var(--t4); font-style:italic; font-size:10px">No Proof</span>
+                                                                            @endif
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="row-actions">
+                                                                                <a href="{{ route('sale.payments.create', $pay->order_id) }}" class="ra-btn"
+                                                                                    title="View Details"><i class="bi bi-eye"></i></a>
+                                                                                <button class="ra-btn danger"
+                                                                                    onclick="confirmDelete('{{ route('sale.payments.destroy', $pay->id) }}')">
+                                                                                    <i class="bi bi-trash-fill"></i>
+                                                                                </button>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
 
-                    <div class="table-footer">
-                        <span class="tf-info">Total Transactions: {{ $payments->count() }}</span>
+                        <div class="table-footer">
+                            <span class="tf-info">Total Transactions: {{ $payments->count() }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -207,5 +209,72 @@
             form.action = url;
             openModal('deleteModal');
         }
+
+        // AJAX FILTER LOGIC
+        let debounceTimer;
+        function debounceFilter() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                updateFilters();
+            }, 500);
+        }
+
+        function updateFilters() {
+            const form = document.getElementById('filterForm');
+            const formData = new FormData(form);
+            const params = new URLSearchParams(formData);
+
+            // Remove empty params
+            const finalParams = new URLSearchParams();
+            for (const [key, value] of params.entries()) {
+                if (value) finalParams.append(key, value);
+            }
+
+            const url = `${window.location.pathname}?${finalParams.toString()}`;
+            fetchAndReplace(url);
+        }
+
+        async function fetchAndReplace(url) {
+            const tableWrap = document.getElementById('tableWrap');
+            const statsWrap = document.getElementById('statsWrap');
+
+            if (tableWrap) tableWrap.style.opacity = '0.5';
+            if (statsWrap) statsWrap.style.opacity = '0.5';
+
+            try {
+                const response = await fetch(url);
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                if (tableWrap) {
+                    const newTable = doc.getElementById('tableWrap');
+                    if (newTable) tableWrap.innerHTML = newTable.innerHTML;
+                }
+                if (statsWrap) {
+                    const newStats = doc.getElementById('statsWrap');
+                    if (newStats) statsWrap.innerHTML = newStats.innerHTML;
+                }
+
+                window.history.pushState({}, '', url);
+                interceptPagination();
+            } catch (error) {
+                console.error('AJAX Error:', error);
+            } finally {
+                if (tableWrap) tableWrap.style.opacity = '1';
+                if (statsWrap) statsWrap.style.opacity = '1';
+            }
+        }
+
+        function interceptPagination() {
+            document.querySelectorAll('.tf-pagination a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    fetchAndReplace(this.href);
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', interceptPagination);
     </script>
 @endsection

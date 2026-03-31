@@ -348,7 +348,7 @@ class LeadController extends Controller
         $services = Service::all();
         $sales = Sale::all();
 
-        return view('sale.leads.losted-leads', compact('leads', 'totalLostLeads', 'sources', 'services', 'sales'));
+        return view('sale.losted-leads', compact('leads', 'totalLostLeads', 'sources', 'services', 'sales'));
     }
 
     public function updateStatus(Request $request, $id)
