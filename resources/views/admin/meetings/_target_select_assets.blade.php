@@ -15,7 +15,7 @@
     
     $projectsData = $projects->map(fn($p) => [
         'id' => $p->id,
-        'name' => $p->name,
+        'name' => $p->project_name ?? 'Unnamed Project',
         'sub' => $p->project_id . ($p->company_name ? ' • ' . $p->company_name : ''),
         'type' => 'project'
     ]);
@@ -109,7 +109,7 @@
         optsContainer.innerHTML = '';
 
         data.forEach(item => {
-            const initials = item.name.substring(0, 1).toUpperCase();
+            const initials = (item.name || "P").substring(0, 1).toUpperCase();
             const opt = document.createElement('div');
             opt.className = 'ts-opt';
             opt.dataset.id = item.id;
@@ -160,21 +160,40 @@
         });
     }
 
+    function updateDevSectionVisibility() {
+        const typeSelect = document.getElementById('meetingType');
+        const devSection = document.getElementById('devSection');
+        if (typeSelect && devSection) {
+            devSection.style.display = typeSelect.value === 'project' ? 'block' : 'none';
+        }
+    }
+
+    function toggleTargets(isInitial = false) {
+        const typeSelect = document.getElementById('meetingType');
+        if (!typeSelect) return;
+        
+        activeType = typeSelect.value + 's';
+        renderTsOptions();
+        updateDevSectionVisibility();
+        
+        if (!isInitial) {
+            // Clear selection text if this was a manual user change
+            const selectedText = document.querySelector('.ts-selected-text');
+            if (selectedText) {
+                selectedText.innerHTML = '<span class="ts-placeholder">— Select Target —</span>';
+            }
+            // Clear hidden inputs
+            if (document.getElementById('hidden_lead_id')) document.getElementById('hidden_lead_id').value = '';
+            if (document.getElementById('hidden_order_id')) document.getElementById('hidden_order_id').value = '';
+            if (document.getElementById('hidden_project_id')) document.getElementById('hidden_project_id').value = '';
+        }
+    }
+
     // Handle type switching
     window.addEventListener('load', () => {
         initTs();
-        const typeSelect = document.getElementById('meetingType');
-        if (typeSelect) {
-            typeSelect.addEventListener('change', () => {
-                activeType = typeSelect.value + 's';
-                renderTsOptions();
-                // Clear selection
-                document.querySelector('.ts-selected-text').innerHTML = '<span class="ts-placeholder">— Select Target —</span>';
-                document.getElementById('hidden_lead_id').value = '';
-                document.getElementById('hidden_order_id').value = '';
-                document.getElementById('hidden_project_id').value = '';
-            });
-        }
+        // Initial setup for current type (crucial for Edit view)
+        toggleTargets(true);
     });
 
     document.addEventListener('click', (e) => {

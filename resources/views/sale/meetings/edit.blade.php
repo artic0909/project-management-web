@@ -117,19 +117,27 @@
                                 @if($sale->id !== auth()->guard('sale')->id())
                                     <label class="check-item">
                                         <input type="checkbox" name="assignsale_ids[]" value="{{ $sale->id }}" {{ in_array($sale->id, $meeting->assignsale_ids ?? []) ? 'checked' : '' }}>
-                                        <span>{{ $sale->name }}</span>
+                                        <div style="display:flex; flex-direction:column; line-height:1.2;">
+                                            <span>{{ $sale->name }}</span>
+                                            <small style="font-size:10px; color:var(--t4); font-weight:500;">{{ $sale->email }}</small>
+                                        </div>
                                     </label>
                                 @endif
                             @endforeach
                         </div>
-                        <span class="form-lbl" style="margin-top:20px; display:block;">Development Team</span>
-                        <div class="multi-select-wrap">
-                            @foreach($developers as $dev)
-                                <label class="check-item">
-                                    <input type="checkbox" name="assigndev_ids[]" value="{{ $dev->id }}" {{ in_array($dev->id, $meeting->assigndev_ids ?? []) ? 'checked' : '' }}>
-                                    <span>{{ $dev->name }}</span>
-                                </label>
-                            @endforeach
+                        <div id="devSection" style="display:none;">
+                            <span class="form-lbl" style="margin-top:20px; display:block;">Development Team</span>
+                            <div class="multi-select-wrap">
+                                @foreach($developers as $dev)
+                                    <label class="check-item">
+                                        <input type="checkbox" name="assigndev_ids[]" value="{{ $dev->id }}" {{ in_array($dev->id, $meeting->assigndev_ids ?? []) ? 'checked' : '' }}>
+                                        <div style="display:flex; flex-direction:column; line-height:1.2;">
+                                            <span>{{ $dev->name }}</span>
+                                            <small style="font-size:10px; color:var(--t4); font-weight:500;">{{ $dev->email }}</small>
+                                        </div>
+                                    </label>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 </div>

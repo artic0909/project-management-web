@@ -113,21 +113,29 @@
                                     @if($sale->id !== auth()->guard('sale')->id())
                                         <label class="check-item">
                                             <input type="checkbox" name="assignsale_ids[]" value="{{ $sale->id }}">
-                                            <span>{{ $sale->name }}</span>
+                                            <div style="display:flex; flex-direction:column; line-height:1.2;">
+                                                <span>{{ $sale->name }}</span>
+                                                <small style="font-size:10px; color:var(--t4); font-weight:500;">{{ $sale->email }}</small>
+                                            </div>
                                         </label>
                                     @endif
                                 @endforeach
                             </div>
                         </div>
-                        <div class="form-row" style="margin-top:20px;">
-                            <label class="form-lbl">Developers</label>
-                            <div class="multi-select-wrap">
-                                @foreach($developers as $dev)
-                                    <label class="check-item">
-                                        <input type="checkbox" name="assigndev_ids[]" value="{{ $dev->id }}">
-                                        <span>{{ $dev->name }}</span>
-                                    </label>
-                                @endforeach
+                        <div id="devSection" style="display:none;">
+                            <div class="form-row" style="margin-top:20px;">
+                                <label class="form-lbl">Developers</label>
+                                <div class="multi-select-wrap">
+                                    @foreach($developers as $dev)
+                                        <label class="check-item">
+                                            <input type="checkbox" name="assigndev_ids[]" value="{{ $dev->id }}">
+                                            <div style="display:flex; flex-direction:column; line-height:1.2;">
+                                                <span>{{ $dev->name }}</span>
+                                                <small style="font-size:10px; color:var(--t4); font-weight:500;">{{ $dev->email }}</small>
+                                            </div>
+                                        </label>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                     </div>
