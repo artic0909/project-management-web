@@ -50,7 +50,7 @@ class OrderController extends Controller
             $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
         }
         if ($request->filled('assigned_to')) {
-            $query->whereHas('sales', function($q) use ($request) {
+            $query->whereHas('assignments', function($q) use ($request) {
                 $q->where('assigned_to', $request->assigned_to);
             });
         }

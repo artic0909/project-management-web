@@ -59,6 +59,13 @@ class OrderController extends Controller
             $query->where('is_marketing', $request->is_marketing == '1');
         }
 
+        // Assigned To Filter
+        if ($request->filled('assigned_to')) {
+            $query->whereHas('assignments', function($q) use ($request) {
+                $q->where('assigned_to', $request->assigned_to);
+            });
+        }
+
         // Date Range Filter
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);

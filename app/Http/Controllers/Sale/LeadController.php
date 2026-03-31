@@ -66,6 +66,12 @@ class LeadController extends Controller
             $query->where('status_id', $request->status_id);
         }
 
+        if ($request->filled('assigned_to')) {
+            $query->whereHas('assignments', function($q) use ($request) {
+                $q->where('assigned_to', $request->assigned_to);
+            });
+        }
+
         $leads = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
 
         // Statistics (Only for those they can see)
