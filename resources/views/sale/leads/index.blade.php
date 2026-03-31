@@ -632,6 +632,22 @@
         <!-- SUMMARY STAT BOXES -->
         <div class="stat-grid-wrap" style="margin-bottom:20px;">
 
+            @if(request('assigned_to'))
+                @php
+                    $selectedSalesPerson = $sales->where('id', request('assigned_to'))->first();
+                @endphp
+                @if($selectedSalesPerson)
+                <div class="stat-box" style="--sb-color:#10b981; border: 2px solid var(--accent);">
+                    <div class="sb-icon"><i class="bi bi-person-badge-fill"></i></div>
+                    <div class="sb-content">
+                        <div class="sb-cat" style="--cat-color:#10b981;">Filtered Sales Person</div>
+                        <div class="sb-val">{{ $leads->total() }}</div>
+                        <div class="sb-lbl">{{ $selectedSalesPerson->name }}</div>
+                    </div>
+                </div>
+                @endif
+            @endif
+
             {{-- Row 1: Overview (2) + Priority (4) = 6 --}}
 
             <div class="stat-box" style="--sb-color:#6366f1;">
@@ -786,7 +802,7 @@
                             @endforeach
                         </select>
                         <select name="assigned_to" class="filter-select" onchange="this.form.submit()">
-                            <option value="">Assign To</option>
+                            <option value="">Sales Person</option>
                             @foreach($sales as $sale)
                                 <option value="{{ $sale->id }}" {{ request('assigned_to') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
                             @endforeach
@@ -807,7 +823,7 @@
                                 <th>Priority</th>
                                 <th>Status</th>
                                 <th>Created By</th>
-                                <th>Assign To</th>
+                                <th>Sales Person</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
