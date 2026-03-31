@@ -36,7 +36,28 @@
         <!-- {{-- ═══════════════════════════════════════════════════
              6 KPI SUMMARY CARDS
         ════════════════════════════════════════════════════ --}} -->
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;">
+        <div style="display:grid;grid-template-columns:repeat({{ request('assigned_to') ? 6 : 5 }},1fr);gap:14px;margin-bottom:24px;">
+
+            @if(request('assigned_to'))
+                @php
+                    $selectedSalesPerson = $allSales->where('id', request('assigned_to'))->first();
+                @endphp
+                @if($selectedSalesPerson)
+                <div class="dash-card active" style="padding:16px 18px; border: 2px solid var(--accent);">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+                        <div style="width:38px;height:38px;border-radius:10px;background:rgba(16,185,129,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="bi bi-person-badge-fill" style="font-size:17px;color:#10b981;"></i>
+                        </div>
+                        <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.1);color:#10b981;white-space:nowrap;">Filtered Person</span>
+                    </div>
+                    <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $orders->total() }}</div>
+                    <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">{{ $selectedSalesPerson->name }}</div>
+                    <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
+                        <div style="height:100%;width:100%;background:#10b981;border-radius:3px;"></div>
+                    </div>
+                </div>
+                @endif
+            @endif
 
             <div class="dash-card {{ request()->has('q') || request()->has('status_id') || request()->has('service_id') || request()->has('is_marketing') ? '' : 'active' }}" 
                 style="padding:16px 18px; cursor:pointer;" onclick="window.location.href='{{ route('sale.orders.index') }}'">
@@ -165,7 +186,7 @@
                             </select>
 
                             <select name="assigned_to" class="filter-select" onchange="this.form.submit()">
-                                <option value="">Assign To</option>
+                                <option value="">Sales Person</option>
                                 @foreach($allSales as $sale)
                                     <option value="{{ $sale->id }}" {{ request('assigned_to') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
                                 @endforeach
@@ -192,7 +213,7 @@
                                 <th>Value</th>
                                 <th>Status</th>
                                 <th>Created By</th>
-                                <th>Assigned To</th>
+                                <th>Sales Person</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
