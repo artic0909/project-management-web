@@ -13,16 +13,48 @@ use Illuminate\Http\Request;
 
 class MeetingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $saleId = auth()->guard('sale')->id();
-        $meetings = Meeting::whereJsonContains('assignsale_ids', (string)$saleId)
-            ->with(['lead', 'order', 'project', 'createdBy'])
-            ->orderBy('meeting_date', 'desc')
-            ->orderBy('meeting_time', 'desc')
-            ->paginate(15);
+        $query = Meeting::whereJsonContains('assignsale_ids', (string)$saleId)
+            ->with(['lead', 'order', 'project', 'createdBy']);
+
+        // Filtering
+        if ($request->filled('date')) {
+            $query->whereDate('meeting_date', $request->date);
+        }
+
+        if ($request->filled('sale_id')) {
+            $query->whereJsonContains('assignsale_ids', (string)$request->sale_id);
+        }
+
+        if ($request->filled('dev_id')) {
+            $query->whereJsonContains('assigndev_ids', (string)$request->dev_id);
+        }
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function($q) use ($s) {
+                $q->where('meeting_title', 'like', "%$s%")
+                  ->orWhere('meeting_description', 'like', "%$s%");
+            });
+        }
+
+        // Scoped Status Counts
+        $countQuery = Meeting::whereJsonContains('assignsale_ids', (string)$saleId);
+        $counts = [
+            'total' => (clone $countQuery)->count(),
+            'pending' => (clone $countQuery)->where('status', 'pending')->count(),
+            'rescheduled' => (clone $countQuery)->where('status', 'rescheduled')->count(),
+            'completed' => (clone $countQuery)->where('status', 'completed')->count(),
+            'canceled' => (clone $countQuery)->where('status', 'canceled')->count(),
+        ];
+
+        $meetings = $query->latest('meeting_date')->latest('meeting_time')->paginate(15);
+        $sales = Sale::all();
+        $developers = Developer::all();
             
-        return view('sale.meetings.index', compact('meetings'));
+        return view('sale.meetings.index', compact('meetings', 'counts', 'sales', 'developers'));
     }
 
     public function create()

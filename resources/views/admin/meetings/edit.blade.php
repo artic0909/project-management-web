@@ -104,6 +104,7 @@
                                     <label class="form-lbl">Status</label>
                                     <select name="status" class="form-inp" required>
                                         <option value="pending" {{ $meeting->status == 'pending' ? 'selected' : '' }}>Upcoming / Pending</option>
+                                        <option value="rescheduled" {{ $meeting->status == 'rescheduled' ? 'selected' : '' }}>Rescheduled</option>
                                         <option value="completed" {{ $meeting->status == 'completed' ? 'selected' : '' }}>Completed</option>
                                         <option value="canceled" {{ $meeting->status == 'canceled' ? 'selected' : '' }}>Canceled</option>
                                     </select>

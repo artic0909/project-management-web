@@ -13,14 +13,45 @@ use Illuminate\Http\Request;
 
 class MeetingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $meetings = Meeting::with(['lead', 'order', 'project', 'createdBy'])
-            ->orderBy('meeting_date', 'desc')
-            ->orderBy('meeting_time', 'desc')
-            ->paginate(15);
+        $query = Meeting::with(['lead', 'order', 'project', 'createdBy']);
+
+        // Filtering
+        if ($request->filled('date')) {
+            $query->whereDate('meeting_date', $request->date);
+        }
+
+        if ($request->filled('sale_id')) {
+            $query->whereJsonContains('assignsale_ids', (string)$request->sale_id);
+        }
+
+        if ($request->filled('dev_id')) {
+            $query->whereJsonContains('assigndev_ids', (string)$request->dev_id);
+        }
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function($q) use ($s) {
+                $q->where('meeting_title', 'like', "%$s%")
+                  ->orWhere('meeting_description', 'like', "%$s%");
+            });
+        }
+
+        // Status Counts
+        $counts = [
+            'total' => Meeting::count(),
+            'pending' => Meeting::where('status', 'pending')->count(),
+            'rescheduled' => Meeting::where('status', 'rescheduled')->count(),
+            'completed' => Meeting::where('status', 'completed')->count(),
+            'canceled' => Meeting::where('status', 'canceled')->count(),
+        ];
+
+        $meetings = $query->latest('meeting_date')->latest('meeting_time')->paginate(15);
+        $sales = Sale::all();
+        $developers = Developer::all();
             
-        return view('admin.meetings.index', compact('meetings'));
+        return view('admin.meetings.index', compact('meetings', 'counts', 'sales', 'developers'));
     }
 
     public function create()

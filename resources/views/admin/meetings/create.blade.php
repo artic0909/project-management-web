@@ -99,6 +99,7 @@
                                     <label class="form-lbl">Current Status</label>
                                     <select name="status" class="form-inp" required>
                                         <option value="pending">Upcoming / Pending</option>
+                                        <option value="rescheduled">Rescheduled</option>
                                         <option value="completed">Completed</option>
                                         <option value="canceled">Canceled</option>
                                     </select>

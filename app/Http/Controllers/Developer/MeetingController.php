@@ -4,20 +4,46 @@ namespace App\Http\Controllers\Developer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Meeting;
+use App\Models\Sale;
+use App\Models\Developer;
 use Illuminate\Http\Request;
 
 class MeetingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $devId = auth()->guard('developer')->id();
-        $meetings = Meeting::whereJsonContains('assigndev_ids', (string)$devId)
-            ->with(['lead', 'order', 'project', 'createdBy'])
-            ->orderBy('meeting_date', 'desc')
-            ->orderBy('meeting_time', 'desc')
-            ->paginate(15);
+        $query = Meeting::whereJsonContains('assigndev_ids', (string)$devId)
+            ->with(['lead', 'order', 'project', 'createdBy']);
+
+        // Filtering
+        if ($request->filled('date')) {
+            $query->whereDate('meeting_date', $request->date);
+        }
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function($q) use ($s) {
+                $q->where('meeting_title', 'like', "%$s%")
+                  ->orWhere('meeting_description', 'like', "%$s%");
+            });
+        }
+
+        // Scoped Status Counts
+        $countQuery = Meeting::whereJsonContains('assigndev_ids', (string)$devId);
+        $counts = [
+            'total' => (clone $countQuery)->count(),
+            'pending' => (clone $countQuery)->where('status', 'pending')->count(),
+            'rescheduled' => (clone $countQuery)->where('status', 'rescheduled')->count(),
+            'completed' => (clone $countQuery)->where('status', 'completed')->count(),
+            'canceled' => (clone $countQuery)->where('status', 'canceled')->count(),
+        ];
+
+        $meetings = $query->latest('meeting_date')->latest('meeting_time')->paginate(15);
+        $sales = Sale::all();
+        $developers = Developer::all();
             
-        return view('developer.meetings.index', compact('meetings'));
+        return view('developer.meetings.index', compact('meetings', 'counts', 'sales', 'developers'));
     }
 
     public function show(Meeting $meeting)
