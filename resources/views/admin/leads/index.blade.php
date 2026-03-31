@@ -764,8 +764,8 @@
                     <form action="{{ route('admin.leads.index') }}" method="GET" class="card-actions mb-2">
                         <div class="global-search">
                             <i class="bi bi-search"></i>
-                            <input type="text" name="q" value="{{ request('q') }}" placeholder="Search...">
-                            <button type="submit" class="btn-primary-solid sm">Search</button>
+                            <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search..." autocomplete="off">
+                            <button type="submit" class="btn-primary-solid sm" style="display: none;">Search</button>
                         </div>
 
                         <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
@@ -784,33 +784,33 @@
                             @include('admin.includes.date-range-picker')
                         </div>
 
-                        <select name="source_id" class="filter-select" onchange="this.form.submit()">
+                        <select name="source_id" class="filter-select" onchange="updateFilters()">
                             <option value="">Lead Source</option>
                             @foreach($sources as $source)
                                 <option value="{{ $source->id }}" {{ request('source_id') == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
                             @endforeach
                         </select>
 
-                        <select name="service_id" class="filter-select" onchange="this.form.submit()">
+                        <select name="service_id" class="filter-select" onchange="updateFilters()">
                             <option value="">All Services</option>
                             @foreach($services as $service)
                                 <option value="{{ $service->id }}" {{ request('service_id') == $service->id ? 'selected' : '' }}>{{ $service->name }}</option>
                             @endforeach
                         </select>
 
-                        <select name="priority" class="filter-select" onchange="this.form.submit()">
+                        <select name="priority" class="filter-select" onchange="updateFilters()">
                             <option value="">Priority</option>
                             <option value="Hot 🔥" {{ request('priority') == 'Hot 🔥' ? 'selected' : '' }}>Hot 🔥</option>
                             <option value="Warm" {{ request('priority') == 'Warm' ? 'selected' : '' }}>Warm</option>
                             <option value="Cold" {{ request('priority') == 'Cold' ? 'selected' : '' }}>Cold</option>
                         </select>
-                        <select name="status_id" class="filter-select" onchange="this.form.submit()">
+                        <select name="status_id" class="filter-select" onchange="updateFilters()">
                             <option value="">All Statuses</option>
                             @foreach($statuses as $status)
                                 <option value="{{ $status->id }}" {{ request('status_id') == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
                             @endforeach
                         </select>
-                        <select name="assigned_to" class="filter-select" onchange="this.form.submit()">
+                        <select name="assigned_to" class="filter-select" onchange="updateFilters()">
                             <option value="">Sales Person</option>
                             @foreach($sales as $sale)
                                 <option value="{{ $sale->id }}" {{ request('assigned_to') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
@@ -819,7 +819,8 @@
                     </form>
                 </div>
 
-                <div class="table-wrap">
+                <div id="leadsTableWrap">
+                    <div class="table-wrap">
                     <table class="data-table">
                         <thead>
                             <tr>
@@ -913,6 +914,7 @@
                         {{ $leads->links('admin.includes.pagination') }}
                     </div>
                     <div class="tf-per-page"></div>
+                </div>
                 </div>
             </div>
         </div>
@@ -1433,10 +1435,72 @@
 
             closeDatePicker();
             
-            // Submit the parent form
-            const form = document.getElementById('drpStartInput').closest('form');
-            if (form) form.submit();
+            // Trigger automatic AJAX update instead of full form submit
+            updateFilters();
         };
+
+        window.updateFilters = function() {
+            const form = document.querySelector('.card-actions');
+            const formData = new FormData(form);
+            const params = new URLSearchParams(formData);
+            const url = new URL(window.location.pathname, window.location.origin);
+            url.search = params.toString();
+            fetchAndReplace(url);
+        };
+
+        async function fetchAndReplace(url) {
+            const wrap = document.getElementById('leadsTableWrap');
+            if (wrap) wrap.style.opacity = '0.5';
+
+            try {
+                const response = await fetch(url.toString(), {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                const newContent = doc.getElementById('leadsTableWrap');
+                if (newContent && wrap) {
+                    wrap.innerHTML = newContent.innerHTML;
+                }
+                
+                const newStats = doc.querySelector('.stat-grid-wrap');
+                const oldStats = document.querySelector('.stat-grid-wrap');
+                if (newStats && oldStats) {
+                    oldStats.innerHTML = newStats.innerHTML;
+                }
+
+                const newSub = doc.getElementById('drpActiveSub');
+                const oldSub = document.getElementById('drpActiveSub');
+                if (newSub && oldSub) {
+                    oldSub.innerHTML = newSub.innerHTML;
+                }
+
+                if (wrap) wrap.style.opacity = '1';
+                window.history.pushState({}, '', url);
+            } catch (error) {
+                console.error('AJAX error:', error);
+                if (wrap) wrap.style.opacity = '1';
+            }
+        }
+
+        let debounceTimer;
+        document.addEventListener('input', function(e) {
+            if (e.target && e.target.id === 'searchQuery') {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(updateFilters, 500);
+            }
+        });
+
+        // Intercept pagination clicks
+        document.addEventListener('click', function(e) {
+            const paginationLink = e.target.closest('.tf-pagination a');
+            if (paginationLink) {
+                e.preventDefault();
+                fetchAndReplace(new URL(paginationLink.href));
+            }
+        });
 
         document.addEventListener('click', function(e) {
             const panel = document.getElementById('dateRangePanel');
