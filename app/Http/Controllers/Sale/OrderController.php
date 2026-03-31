@@ -59,13 +59,6 @@ class OrderController extends Controller
             $query->where('is_marketing', $request->is_marketing == '1');
         }
 
-        // Assigned To Filter
-        if ($request->filled('assigned_to')) {
-            $query->whereHas('assignments', function ($q) use ($request) {
-                $q->where('assigned_to', $request->assigned_to);
-            });
-        }
-
         // Date Range Filter
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
@@ -73,19 +66,11 @@ class OrderController extends Controller
 
         $orders = $query->latest()->paginate(20)->withQueryString();
 
-        // Total Followups for filtered salesperson
-        $totalFollowupsFiltered = 0;
-        if ($request->filled('assigned_to')) {
-            $totalFollowupsFiltered = \App\Models\Followup::whereHasMorph(
-                'followable',
-                [\App\Models\Order::class],
-                function ($q) use ($request) {
-                    $q->whereHas('assignments', function ($sq) use ($request) {
-                        $sq->where('assigned_to', $request->assigned_to);
-                    });
-                }
-            )->count();
-        }
+        // Total Followups for the logged-in salesperson's assigned orders
+        $orderIds = $this->getFilteredOrders()->pluck('id');
+        $totalUserFollowups = \App\Models\Followup::whereIn('followable_id', $orderIds)
+            ->where('followable_type', \App\Models\Order::class)
+            ->count();
 
         // Counts (Only for their orders)
         $totalOrders = $this->getFilteredOrders()->count();
@@ -115,7 +100,7 @@ class OrderController extends Controller
             'allStatuses',
             'allServices',
             'allSales',
-            'totalFollowupsFiltered'
+            'totalUserFollowups'
         ));
     }
 

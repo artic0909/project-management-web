@@ -33,42 +33,37 @@
         <!-- {{-- ═══════════════════════════════════════════════════
              6 KPI SUMMARY CARDS
         ════════════════════════════════════════════════════ --}} -->
-        <div style="display:grid;grid-template-columns:repeat({{ request('assigned_to') ? 7 : 5 }},1fr);gap:14px;margin-bottom:24px;">
+        <div style="display:grid;grid-template-columns:repeat(7, 1fr);gap:14px;margin-bottom:24px;">
 
-            @if(request('assigned_to'))
-                @php
-                    $selectedSalesPerson = $allSales->where('id', request('assigned_to'))->first();
-                @endphp
-                @if($selectedSalesPerson)
-                <div class="dash-card active" style="padding:16px 18px; border: 2px solid var(--accent);">
-                    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
-                        <div style="width:38px;height:38px;border-radius:10px;background:rgba(16,185,129,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <i class="bi bi-person-badge-fill" style="font-size:17px;color:#10b981;"></i>
-                        </div>
-                        <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.1);color:#10b981;white-space:nowrap;">Filtered Person</span>
+            {{-- Permanent User Profile Card --}}
+            <div class="dash-card active" style="padding:16px 18px; border: 2px solid var(--accent);">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+                    <div style="width:38px;height:38px;border-radius:10px;background:rgba(16,185,129,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="bi bi-person-badge-fill" style="font-size:17px;color:#10b981;"></i>
                     </div>
-                    <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $orders->total() }}</div>
-                    <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">{{ $selectedSalesPerson->name }}</div>
-                    <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                        <div style="height:100%;width:100%;background:#10b981;border-radius:3px;"></div>
-                    </div>
+                    <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.1);color:#10b981;white-space:nowrap;">Sales Executive</span>
                 </div>
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $totalOrders }}</div>
+                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">{{ auth()->guard('sale')->user()->name }}</div>
+                <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
+                    <div style="height:100%;width:100%;background:#10b981;border-radius:3px;"></div>
+                </div>
+            </div>
 
-                <div class="dash-card active" style="padding:16px 18px; border: 2px solid #8b5cf6;">
-                    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
-                        <div style="width:38px;height:38px;border-radius:10px;background:rgba(139,92,246,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <i class="bi bi-arrow-counterclockwise" style="font-size:17px;color:#8b5cf6;"></i>
-                        </div>
-                        <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(139,92,246,.1);color:#8b5cf6;white-space:nowrap;">Total Followup</span>
+            {{-- Permanent Total Followup Card --}}
+            <div class="dash-card active" style="padding:16px 18px; border: 2px solid #8b5cf6;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+                    <div style="width:38px;height:38px;border-radius:10px;background:rgba(139,92,246,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="bi bi-arrow-counterclockwise" style="font-size:17px;color:#8b5cf6;"></i>
                     </div>
-                    <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $totalFollowupsFiltered }}</div>
-                    <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Assigned Followups</div>
-                    <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                        <div style="height:100%;width:100%;background:#8b5cf6;border-radius:3px;"></div>
-                    </div>
+                    <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(139,92,246,.1);color:#8b5cf6;white-space:nowrap;">Total Followup</span>
                 </div>
-                @endif
-            @endif
+                <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $totalUserFollowups }}</div>
+                <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Assigned Followups</div>
+                <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
+                    <div style="height:100%;width:100%;background:#8b5cf6;border-radius:3px;"></div>
+                </div>
+            </div>
 
             <div class="dash-card {{ request()->has('q') || request()->has('status_id') || request()->has('service_id') || request()->has('is_marketing') ? '' : 'active' }}" 
                 style="padding:16px 18px; cursor:pointer;" onclick="window.location.href='{{ route('sale.orders.index') }}'">
@@ -193,13 +188,6 @@
                                 <option value="">All Status</option>
                                 @foreach($allStatuses as $st)
                                     <option value="{{ $st->id }}" {{ request('status_id') == $st->id ? 'selected' : '' }}>{{ $st->name }}</option>
-                                @endforeach
-                            </select>
-
-                            <select name="assigned_to" class="filter-select" onchange="this.form.submit()">
-                                <option value="">Sales Person</option>
-                                @foreach($allSales as $sale)
-                                    <option value="{{ $sale->id }}" {{ request('assigned_to') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
                                 @endforeach
                             </select>
                         </form>
