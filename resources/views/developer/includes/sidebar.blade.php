@@ -35,6 +35,10 @@
         <i class="bi bi-list-check"></i><span>Completed Tasks</span>
       </a>
 
+      <a class="nav-item {{ request()->routeIs('developer.meetings*') ? 'active' : '' }}" href="{{ route('developer.meetings.index') }}">
+        <i class="bi bi-calendar-check"></i><span>My Meetings</span>
+      </a>
+
       <a class="nav-item" href="#">
         <i class="bi bi-clock-history"></i><span>MY Attendance</span>
         <div class="nav-dot green"></div>
