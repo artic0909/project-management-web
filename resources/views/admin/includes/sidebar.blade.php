@@ -90,10 +90,12 @@
         <i class="bi bi-person-workspace"></i><span>Developers</span>
         <span class="nav-count">{{ $developerCount }}</span>
       </a>
+      @if($guard === 'admin')
       <a class="nav-item" href="#">
         <i class="bi bi-clock-history"></i><span>Developer Attendances</span>
         <div class="nav-dot green"></div>
       </a>
+      @endif
 
       <div class="nav-section-label">Others</div>
       @if($guard === 'admin')

@@ -210,8 +210,10 @@ class OrderController extends Controller
     public function show($id)
     {
         $order = $this->getFilteredOrders()->with(['status', 'service', 'assignments.sale', 'createdBy', 'lead'])->findOrFail($id);
-        $allStatuses = Status::where('type', 'order')->get();
-        return view('sale.orders.show', compact('order', 'allStatuses'));
+        $orderStatuses = Status::where('type', 'order')->get();
+        $paymentStatuses = Status::where('type', 'payment')->get();
+
+        return view('sale.orders.show', compact('order', 'orderStatuses', 'paymentStatuses'));
     }
 
     public function edit($id)
@@ -309,6 +311,8 @@ class OrderController extends Controller
 
         $order->update([
             'status_id' => $request->status_id,
+            'payment_terms_id' => $request->payment_terms_id,
+            'mkt_payment_status_id' => $request->mkt_payment_status_id,
         ]);
 
         return redirect()->back()->with('success', 'Order status updated!');
