@@ -69,6 +69,16 @@ class FollowupController extends Controller
         $model = $isOrder ? Order::findOrFail($id) : Lead::findOrFail($id);
         $this->checkAccess($model);
 
+        // Exclusive Re-assignment logic: 
+        // If assigned to more than one sales person, re-assign exclusively to the one who makes the followup.
+        $currentSaleId = auth()->guard('sale')->id();
+        if ($model->assignments()->count() > 1) {
+            $model->assignments()->delete();
+            $model->assignments()->create([
+                'assigned_to' => $currentSaleId
+            ]);
+        }
+
         $model->followups()->create([
             'followup_date' => $request->followup_date,
             'followup_type' => $request->followup_type,
