@@ -23,11 +23,11 @@ class MeetingController extends Controller
         }
 
         if ($request->filled('sale_id')) {
-            $query->whereJsonContains('assignsale_ids', (string)$request->sale_id);
+            $query->whereJsonContains('assignsale_ids', (int)$request->sale_id);
         }
 
         if ($request->filled('dev_id')) {
-            $query->whereJsonContains('assigndev_ids', (string)$request->dev_id);
+            $query->whereJsonContains('assigndev_ids', (int)$request->dev_id);
         }
 
         if ($request->filled('search')) {
@@ -78,8 +78,8 @@ class MeetingController extends Controller
         $meeting = new Meeting($request->all());
         $meeting->created_by_id = auth()->guard('admin')->id();
         $meeting->created_by_type = \App\Models\Admin::class;
-        $meeting->assigndev_ids = $request->assigndev_ids ?? [];
-        $meeting->assignsale_ids = $request->assignsale_ids ?? [];
+        $meeting->assigndev_ids = array_map('intval', (array)($request->assigndev_ids ?? []));
+        $meeting->assignsale_ids = array_map('intval', (array)($request->assignsale_ids ?? []));
         $meeting->save();
 
         return redirect()->route('admin.meetings.index')->with('success', 'Meeting scheduled successfully.');
@@ -113,8 +113,8 @@ class MeetingController extends Controller
         ]);
 
         $meeting->fill($request->all());
-        $meeting->assigndev_ids = $request->assigndev_ids ?? [];
-        $meeting->assignsale_ids = $request->assignsale_ids ?? [];
+        $meeting->assigndev_ids = array_map('intval', (array)($request->assigndev_ids ?? []));
+        $meeting->assignsale_ids = array_map('intval', (array)($request->assignsale_ids ?? []));
         $meeting->save();
 
         return redirect()->route('admin.meetings.index')->with('success', 'Meeting updated successfully.');

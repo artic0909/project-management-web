@@ -12,8 +12,8 @@ class MeetingController extends Controller
 {
     public function index(Request $request)
     {
-        $devId = auth()->guard('developer')->id();
-        $query = Meeting::whereJsonContains('assigndev_ids', (string)$devId)
+        $devId = (int)auth()->guard('developer')->id();
+        $query = Meeting::whereJsonContains('assigndev_ids', $devId)
             ->with(['lead', 'order', 'project', 'createdBy']);
 
         // Filtering
@@ -29,8 +29,12 @@ class MeetingController extends Controller
             });
         }
 
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
         // Scoped Status Counts
-        $countQuery = Meeting::whereJsonContains('assigndev_ids', (string)$devId);
+        $countQuery = Meeting::whereJsonContains('assigndev_ids', $devId);
         $counts = [
             'total' => (clone $countQuery)->count(),
             'pending' => (clone $countQuery)->where('status', 'pending')->count(),
@@ -48,8 +52,8 @@ class MeetingController extends Controller
 
     public function show(Meeting $meeting)
     {
-        $devId = auth()->guard('developer')->id();
-        if (!in_array((string)$devId, $meeting->assigndev_ids ?? [])) {
+        $devId = (int)auth()->guard('developer')->id();
+        if (!in_array($devId, $meeting->assigndev_ids ?? [])) {
             abort(403);
         }
         

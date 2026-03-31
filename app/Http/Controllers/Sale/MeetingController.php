@@ -15,8 +15,8 @@ class MeetingController extends Controller
 {
     public function index(Request $request)
     {
-        $saleId = auth()->guard('sale')->id();
-        $query = Meeting::whereJsonContains('assignsale_ids', (string)$saleId)
+        $saleId = (int)auth()->guard('sale')->id();
+        $query = Meeting::whereJsonContains('assignsale_ids', $saleId)
             ->with(['lead', 'order', 'project', 'createdBy']);
 
         // Filtering
@@ -40,8 +40,12 @@ class MeetingController extends Controller
             });
         }
 
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
         // Scoped Status Counts
-        $countQuery = Meeting::whereJsonContains('assignsale_ids', (string)$saleId);
+        $countQuery = Meeting::whereJsonContains('assignsale_ids', $saleId);
         $counts = [
             'total' => (clone $countQuery)->count(),
             'pending' => (clone $countQuery)->where('status', 'pending')->count(),
@@ -59,9 +63,32 @@ class MeetingController extends Controller
 
     public function create()
     {
-        $leads = Lead::all();
-        $orders = Order::all();
-        $projects = Project::all();
+        $saleId = (int)auth()->guard('sale')->id();
+
+        $leads = Lead::where(function($q) use ($saleId) {
+            $q->whereHas('assignments', fn($aq) => $aq->where('assigned_to', $saleId))
+              ->orWhere(function($oq) use ($saleId) {
+                  $oq->where('created_by', $saleId)
+                     ->where('created_by_type', \App\Models\Sale::class);
+              });
+        })->get();
+
+        $orders = Order::where(function($q) use ($saleId) {
+            $q->whereHas('sales', fn($aq) => $aq->where('assigned_to', $saleId))
+              ->orWhere(function($oq) use ($saleId) {
+                  $oq->where('created_by', $saleId)
+                     ->where('created_by_type', \App\Models\Sale::class);
+              });
+        })->get();
+
+        $projects = Project::where(function($q) use ($saleId) {
+            $q->whereHas('salesPersons', fn($aq) => $aq->where('sale_id', $saleId))
+              ->orWhere(function($oq) use ($saleId) {
+                  $oq->where('created_by', $saleId)
+                     ->where('created_by_type', \App\Models\Sale::class);
+              });
+        })->get();
+
         $developers = Developer::all();
         $sales = Sale::all();
         
@@ -81,11 +108,11 @@ class MeetingController extends Controller
         $meeting = new Meeting($request->all());
         $meeting->created_by_id = auth()->guard('sale')->id();
         $meeting->created_by_type = \App\Models\Sale::class;
-        $meeting->assigndev_ids = $request->assigndev_ids ?? [];
-        $meeting->assignsale_ids = $request->assignsale_ids ?? [];
+        $meeting->assigndev_ids = array_map('intval', (array)($request->assigndev_ids ?? []));
+        $meeting->assignsale_ids = array_map('intval', (array)($request->assignsale_ids ?? []));
         
         // Ensure the salesperson themselves is included in assignments if not already
-        $saleId = auth()->guard('sale')->id();
+        $saleId = (int)auth()->guard('sale')->id();
         if (!in_array($saleId, $meeting->assignsale_ids)) {
             $meeting->assignsale_ids = array_merge([$saleId], $meeting->assignsale_ids);
         }
@@ -108,14 +135,35 @@ class MeetingController extends Controller
 
     public function edit(Meeting $meeting)
     {
-        $saleId = auth()->guard('sale')->id();
+        $saleId = (int)auth()->guard('sale')->id();
         if (!in_array($saleId, $meeting->assignsale_ids ?? [])) {
             abort(403);
         }
         
-        $leads = Lead::all();
-        $orders = Order::all();
-        $projects = Project::all();
+        $leads = Lead::where(function($q) use ($saleId) {
+            $q->whereHas('assignments', fn($aq) => $aq->where('assigned_to', $saleId))
+              ->orWhere(function($oq) use ($saleId) {
+                  $oq->where('created_by', $saleId)
+                     ->where('created_by_type', \App\Models\Sale::class);
+              });
+        })->get();
+
+        $orders = Order::where(function($q) use ($saleId) {
+            $q->whereHas('sales', fn($aq) => $aq->where('assigned_to', $saleId))
+              ->orWhere(function($oq) use ($saleId) {
+                  $oq->where('created_by', $saleId)
+                     ->where('created_by_type', \App\Models\Sale::class);
+              });
+        })->get();
+
+        $projects = Project::where(function($q) use ($saleId) {
+            $q->whereHas('salesPersons', fn($aq) => $aq->where('sale_id', $saleId))
+              ->orWhere(function($oq) use ($saleId) {
+                  $oq->where('created_by', $saleId)
+                     ->where('created_by_type', \App\Models\Sale::class);
+              });
+        })->get();
+
         $developers = Developer::all();
         $sales = Sale::all();
         
@@ -138,8 +186,8 @@ class MeetingController extends Controller
         ]);
 
         $meeting->fill($request->all());
-        $meeting->assigndev_ids = $request->assigndev_ids ?? [];
-        $meeting->assignsale_ids = $request->assignsale_ids ?? [];
+        $meeting->assigndev_ids = array_map('intval', (array)($request->assigndev_ids ?? []));
+        $meeting->assignsale_ids = array_map('intval', (array)($request->assignsale_ids ?? []));
         
         // Ensure the salesperson stays assigned
         if (!in_array($saleId, $meeting->assignsale_ids)) {

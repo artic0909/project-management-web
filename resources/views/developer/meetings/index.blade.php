@@ -17,7 +17,7 @@
         <!-- ── STATUS ANALYTICS ── -->
         <div class="dash-grid" style="margin-bottom:24px;">
             <div class="span-3">
-                <div class="dash-card stat-card pending">
+                <div class="dash-card stat-card pending {{ request('status') == 'pending' ? 'active' : '' }}" onclick="filterByStatus('pending')" style="cursor:pointer;">
                     <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
                     <div class="stat-meta">
                         <span class="stat-lbl">Pending</span>
@@ -26,7 +26,7 @@
                 </div>
             </div>
             <div class="span-3">
-                <div class="dash-card stat-card rescheduled">
+                <div class="dash-card stat-card rescheduled {{ request('status') == 'rescheduled' ? 'active' : '' }}" onclick="filterByStatus('rescheduled')" style="cursor:pointer;">
                     <div class="stat-icon"><i class="bi bi-arrow-repeat"></i></div>
                     <div class="stat-meta">
                         <span class="stat-lbl">Rescheduled</span>
@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div class="span-3">
-                <div class="dash-card stat-card completed">
+                <div class="dash-card stat-card completed {{ request('status') == 'completed' ? 'active' : '' }}" onclick="filterByStatus('completed')" style="cursor:pointer;">
                     <div class="stat-icon"><i class="bi bi-check2-all"></i></div>
                     <div class="stat-meta">
                         <span class="stat-lbl">Completed</span>
@@ -44,7 +44,7 @@
                 </div>
             </div>
             <div class="span-3">
-                <div class="dash-card stat-card canceled">
+                <div class="dash-card stat-card canceled {{ request('status') == 'canceled' ? 'active' : '' }}" onclick="filterByStatus('canceled')" style="cursor:pointer;">
                     <div class="stat-icon"><i class="bi bi-x-circle"></i></div>
                     <div class="stat-meta">
                         <span class="stat-lbl">Cancelled</span>
@@ -67,19 +67,23 @@
                     <div style="width:200px;">
                         <input type="date" name="date" value="{{ request('date') }}" class="filter-inp" onchange="this.form.submit()">
                     </div>
-                    @if(request()->anyFilled(['search', 'date']))
+                    <div style="width:200px;">
+                        <input type="hidden" name="status" id="statusFilter" value="{{ request('status') }}">
+                        <select class="filter-inp" onchange="document.getElementById('statusFilter').value = this.value; this.form.submit();">
+                            <option value="">— All Status —</option>
+                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="rescheduled" {{ request('status') == 'rescheduled' ? 'selected' : '' }}>Rescheduled</option>
+                            <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                            <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : '' }}>Canceled</option>
+                        </select>
+                    </div>
+                    @if(request()->anyFilled(['search', 'date', 'status']))
                         <a href="{{ route('developer.meetings.index') }}" class="btn-primary-ghost" style="padding:8px 12px; border-radius:8px; font-size:13px;"><i class="bi bi-x-lg"></i> Clear</a>
                     @endif
                 </div>
             </form>
         </div>
 
-        <!-- ── MEETINGS TIMELINE ── -->
-        <div class="dash-card">
-            <div class="card-head" style="padding:16px 20px;">
-                <div class="card-title">Schedule List ({{ $meetings->total() }})</div>
-            </div>
-            <div class="card-body" style="padding:0;">
         <!-- ── MEETINGS TABLE ── -->
         <div class="dash-card">
             <div class="card-head" style="padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
@@ -225,7 +229,8 @@
     .m-link i { font-size: 14px; }
     .m-link.active { color: var(--accent); }
 
-    .stat-card { padding: 18px 20px; display: flex; align-items: center; gap: 15px; overflow: hidden; position: relative; }
+    .stat-card { padding: 18px 20px; display: flex; align-items: center; gap: 15px; overflow: hidden; position: relative; border: 2px solid transparent; transition: all 0.2s; }
+    .stat-card.active { border-color: var(--accent); background: var(--bg2); }
     .stat-card .stat-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
     .stat-card.pending .stat-icon { background: #fffbeb; color: #d97706; }
     .stat-card.rescheduled .stat-icon { background: #fff7ed; color: #ea580c; }
@@ -268,6 +273,16 @@
         searchTimeout = setTimeout(() => {
             document.getElementById('filterForm').submit();
         }, 600);
+    }
+
+    function filterByStatus(status) {
+        const currentStatus = document.getElementById('statusFilter').value;
+        if (currentStatus === status) {
+            document.getElementById('statusFilter').value = '';
+        } else {
+            document.getElementById('statusFilter').value = status;
+        }
+        document.getElementById('filterForm').submit();
     }
 </script>
 
