@@ -115,7 +115,7 @@
                         <div class="multi-select-wrap">
                             @foreach($sales as $sale)
                                 @if($sale->id !== auth()->guard('sale')->id())
-                                    <label class="check-item">
+                                    <label class="check-item" data-id="{{ $sale->id }}">
                                         <input type="checkbox" name="assignsale_ids[]" value="{{ $sale->id }}" {{ in_array($sale->id, $meeting->assignsale_ids ?? []) ? 'checked' : '' }}>
                                         <div style="display:flex; flex-direction:column; line-height:1.2;">
                                             <span>{{ $sale->name }}</span>
@@ -129,7 +129,7 @@
                             <span class="form-lbl" style="margin-top:20px; display:block;">Development Team</span>
                             <div class="multi-select-wrap">
                                 @foreach($developers as $dev)
-                                    <label class="check-item">
+                                    <label class="check-item" data-id="{{ $dev->id }}">
                                         <input type="checkbox" name="assigndev_ids[]" value="{{ $dev->id }}" {{ in_array($dev->id, $meeting->assigndev_ids ?? []) ? 'checked' : '' }}>
                                         <div style="display:flex; flex-direction:column; line-height:1.2;">
                                             <span>{{ $dev->name }}</span>

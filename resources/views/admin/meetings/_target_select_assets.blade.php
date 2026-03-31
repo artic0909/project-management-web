@@ -1,27 +1,46 @@
 @php
-    $leadsData = $leads->map(fn($l) => [
-        'id' => $l->id,
-        'name' => $l->company ?? 'Unknown Company',
-        'sub' => ($l->contact_person ? $l->contact_person : '') . ($l->emails && count($l->emails) > 0 ? ' • ' . $l->emails[0] : ''),
-        'type' => 'lead'
-    ]);
+    $leadsData = $leads->map(function($l) {
+        $sIds = $l->assignments->pluck('assigned_to')->unique()->map(fn($id) => (int)$id)->toArray();
+        if ($l->created_by_type === \App\Models\Sale::class) $sIds[] = (int)$l->created_by;
+        return [
+            'id' => $l->id,
+            'name' => $l->company ?? 'Unknown Company',
+            'sub' => ($l->contact_person ? $l->contact_person : '') . ($l->emails && count($l->emails) > 0 ? ' • ' . $l->emails[0] : ''),
+            'type' => 'lead',
+            'sale_ids' => array_values(array_unique($sIds)),
+            'dev_ids' => []
+        ];
+    });
     
-    $ordersData = $orders->map(fn($o) => [
-        'id' => $o->id,
-        'name' => 'Order #' . $o->id,
-        'sub' => ($o->lead->company ?? 'No Company') . ($o->lead->contact_person ? ' • ' . $o->lead->contact_person : ''),
-        'type' => 'order'
-    ]);
+    $ordersData = $orders->map(function($o) {
+        $sIds = $o->sales->pluck('id')->unique()->map(fn($id) => (int)$id)->toArray();
+        if ($o->created_by_type === \App\Models\Sale::class) $sIds[] = (int)$o->created_by;
+        return [
+            'id' => $o->id,
+            'name' => 'Order #' . $o->id,
+            'sub' => ($o->lead->company ?? 'No Company') . ($o->lead->contact_person ? ' • ' . $o->lead->contact_person : ''),
+            'type' => 'order',
+            'sale_ids' => array_values(array_unique($sIds)),
+            'dev_ids' => []
+        ];
+    });
     
-    $projectsData = $projects->map(fn($p) => [
-        'id' => $p->id,
-        'name' => $p->project_name ?? 'Unnamed Project',
-        'sub' => $p->project_id . ($p->company_name ? ' • ' . $p->company_name : ''),
-        'type' => 'project'
-    ]);
+    $projectsData = $projects->map(function($p) {
+        $sIds = $p->salesPersons->pluck('id')->unique()->map(fn($id) => (int)$id)->toArray();
+        if ($p->created_by_type === \App\Models\Sale::class) $sIds[] = (int)$p->created_by;
+        return [
+            'id' => $p->id,
+            'name' => $p->project_name ?? 'Unnamed Project',
+            'sub' => $p->project_id . ($p->company_name ? ' • ' . $p->company_name : ''),
+            'type' => 'project',
+            'sale_ids' => array_values(array_unique($sIds)),
+            'dev_ids' => $p->developers->pluck('id')->unique()->map(fn($id) => (int)$id)->toArray()
+        ];
+    });
 @endphp
 
 <style>
+    .check-item.hidden { display: none !important; }
     .target-select-wrap { position: relative; width: 100%; border-radius: var(--r); }
     .ts-trigger {
         display: flex;
@@ -143,6 +162,55 @@
         wrap.querySelectorAll('.ts-opt').forEach(opt => {
             opt.classList.toggle('active', opt.dataset.id == item.id);
         });
+
+        // Filter and Auto-select Participants
+        updateParticipants(item);
+    }
+
+    function updateParticipants(item) {
+        const saleIds = item.sale_ids || [];
+        const devIds = item.dev_ids || [];
+
+        // Sales Checkboxes
+        document.querySelectorAll('input[name="assignsale_ids[]"]').forEach(chk => {
+            const label = chk.closest('.check-item');
+            const id = parseInt(chk.value);
+            const isAssigned = saleIds.includes(id);
+
+            chk.checked = isAssigned;
+            if (label) {
+                label.classList.toggle('hidden', !isAssigned);
+            }
+        });
+
+        // Developer Checkboxes
+        document.querySelectorAll('input[name="assigndev_ids[]"]').forEach(chk => {
+            const label = chk.closest('.check-item');
+            const id = parseInt(chk.value);
+            const isAssigned = devIds.includes(id);
+
+            chk.checked = isAssigned;
+            if (label) {
+                label.classList.toggle('hidden', !isAssigned);
+            }
+        });
+
+        // Handle Sales Panel specific request: "hide fields"
+        // Target: .span-4 contains the participant dashboard cards
+        const isSalesPanel = document.getElementById('page-meetings-sale-create') || document.getElementById('page-meetings-sale-edit');
+        if (isSalesPanel) {
+            const participantCard = document.querySelector('.span-4');
+            if (participantCard) {
+                // If a target is selected (has IDs), hide the section. If not, hide it anyway or show?
+                // User says "selected must... but hide fields". 
+                // We'll hide it once it's auto-filled.
+                participantCard.style.display = (saleIds.length > 0 || devIds.length > 0) ? 'none' : 'none'; 
+                // Actually, just always 'none' in sales panel as per "hide fields" request?
+                // Or maybe just show it if it's empty?
+                // Let's go with absolute 'none' if it's a sales panel to fulfill "hide fields".
+                participantCard.style.display = 'none';
+            }
+        }
     }
 
     function toggleTs() {
@@ -175,6 +243,19 @@
         activeType = typeSelect.value + 's';
         renderTsOptions();
         updateDevSectionVisibility();
+
+        if (isInitial) {
+            // In edit mode, we need to find the currently selected item and filter participants
+            const currentLead = document.getElementById('hidden_lead_id')?.value;
+            const currentOrder = document.getElementById('hidden_order_id')?.value;
+            const currentProject = document.getElementById('hidden_project_id')?.value;
+            const currentId = currentLead || currentOrder || currentProject;
+            
+            if (currentId) {
+                const item = (TS_DATA[activeType] || []).find(i => i.id == currentId);
+                if (item) updateParticipants(item);
+            }
+        } 
         
         if (!isInitial) {
             // Clear selection text if this was a manual user change
@@ -186,6 +267,11 @@
             if (document.getElementById('hidden_lead_id')) document.getElementById('hidden_lead_id').value = '';
             if (document.getElementById('hidden_order_id')) document.getElementById('hidden_order_id').value = '';
             if (document.getElementById('hidden_project_id')) document.getElementById('hidden_project_id').value = '';
+            
+            // Reset participant filters (show all/uncheck or hide?)
+            // Actually, if no target is selected, better to hide all or show all? 
+            // User says "selected must order/lead/project assign to", so if no target, hide all.
+            updateParticipants({sale_ids: [], dev_ids: []});
         }
     }
 

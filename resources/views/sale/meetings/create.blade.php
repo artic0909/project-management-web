@@ -111,7 +111,7 @@
                             <div class="multi-select-wrap">
                                 @foreach($sales as $sale)
                                     @if($sale->id !== auth()->guard('sale')->id())
-                                        <label class="check-item">
+                                        <label class="check-item" data-id="{{ $sale->id }}">
                                             <input type="checkbox" name="assignsale_ids[]" value="{{ $sale->id }}">
                                             <div style="display:flex; flex-direction:column; line-height:1.2;">
                                                 <span>{{ $sale->name }}</span>
@@ -127,7 +127,7 @@
                                 <label class="form-lbl">Developers</label>
                                 <div class="multi-select-wrap">
                                     @foreach($developers as $dev)
-                                        <label class="check-item">
+                                        <label class="check-item" data-id="{{ $dev->id }}">
                                             <input type="checkbox" name="assigndev_ids[]" value="{{ $dev->id }}">
                                             <div style="display:flex; flex-direction:column; line-height:1.2;">
                                                 <span>{{ $dev->name }}</span>
