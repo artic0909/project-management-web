@@ -57,6 +57,20 @@ class OrderController extends Controller
 
         $orders = $query->latest()->paginate(20)->withQueryString();
         
+        // Total Followups for filtered salesperson
+        $totalFollowupsFiltered = 0;
+        if ($request->filled('assigned_to')) {
+            $totalFollowupsFiltered = \App\Models\Followup::whereHasMorph(
+                'followable',
+                [\App\Models\Order::class],
+                function ($q) use ($request) {
+                    $q->whereHas('assignments', function($sq) use ($request) {
+                        $sq->where('assigned_to', $request->assigned_to);
+                    });
+                }
+            )->count();
+        }
+        
         // Counts
         $totalOrders = Order::count();
         $marketingOrders = Order::where('is_marketing', true)->count();
@@ -74,7 +88,7 @@ class OrderController extends Controller
         $allSales = Sale::all();
 
         return view('admin.orders.index', compact(
-            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue', 'allStatuses', 'allServices', 'allSales'
+            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue', 'allStatuses', 'allServices', 'allSales', 'totalFollowupsFiltered'
         ));
     }
 

@@ -645,6 +645,15 @@
                         <div class="sb-lbl">{{ $selectedSalesPerson->name }}</div>
                     </div>
                 </div>
+
+                <div class="stat-box" style="--sb-color:#8b5cf6; border: 2px solid #8b5cf6;">
+                    <div class="sb-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+                    <div class="sb-content">
+                        <div class="sb-cat" style="--cat-color:#8b5cf6;">Total Followup</div>
+                        <div class="sb-val">{{ $totalFollowupsFiltered }}</div>
+                        <div class="sb-lbl">Assigned Followups</div>
+                    </div>
+                </div>
                 @endif
             @endif
 

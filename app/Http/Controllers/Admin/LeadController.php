@@ -59,6 +59,20 @@ class LeadController extends Controller
         }
 
         $leads = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
+        
+        // Total Followups for filtered salesperson
+        $totalFollowupsFiltered = 0;
+        if ($request->filled('assigned_to')) {
+            $totalFollowupsFiltered = \App\Models\Followup::whereHasMorph(
+                'followable',
+                [\App\Models\Lead::class],
+                function ($q) use ($request) {
+                    $q->whereHas('assignments', function($sq) use ($request) {
+                        $sq->where('assigned_to', $request->assigned_to);
+                    });
+                }
+            )->count();
+        }
 
         // Statistics (Active Leads Only)
         $totalLeads = Lead::whereHas('status', function($sq) {
@@ -89,7 +103,7 @@ class LeadController extends Controller
 
         return view('admin.leads.index', compact(
             'leads', 'totalLeads', 'convertedLeads', 'statuses', 
-            'sources', 'services', 'campaigns', 'priorityCounts', 'sales'
+            'sources', 'services', 'campaigns', 'priorityCounts', 'sales', 'totalFollowupsFiltered'
         ));
     }
 
