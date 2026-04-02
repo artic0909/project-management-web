@@ -141,6 +141,20 @@
                                 @endforeach
                             </select> -->
 
+                            <select name="service_id" class="filter-select" onchange="updateFilters()">
+                                <option value="">Services</option>
+                                @foreach($allServices as $service)
+                                    <option value="{{ $service->id }}" {{ request('service_id') == $service->id ? 'selected' : '' }}>{{ $service->name }}</option>
+                                @endforeach
+                            </select>
+
+                            <select name="source_id" class="filter-select" onchange="updateFilters()">
+                                <option value="">Sources</option>
+                                @foreach($allSources as $source)
+                                    <option value="{{ $source->id }}" {{ request('source_id') == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
+                                @endforeach
+                            </select>
+
                             <select name="assigned_to" class="filter-select" onchange="updateFilters()">
                                 <option value="">Developers</option>
                                 @foreach($allDevelopers as $dev)

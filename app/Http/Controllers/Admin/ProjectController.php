@@ -18,7 +18,7 @@ class ProjectController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Project::with(['projectStatus', 'paymentStatus', 'developers', 'salesPersons', 'createdBy']);
+        $query = Project::with(['projectStatus', 'paymentStatus', 'developers', 'salesPersons', 'createdBy', 'services', 'sources']);
 
         // Search Filter
         if ($request->filled('q')) {
@@ -50,6 +50,16 @@ class ProjectController extends Controller
                 $q->where('assigned_to', $request->assigned_to);
             });
         }
+        if ($request->filled('service_id')) {
+            $query->whereHas('services', function($q) use ($request) {
+                $q->where('services.id', $request->service_id);
+            });
+        }
+        if ($request->filled('source_id')) {
+            $query->whereHas('sources', function($q) use ($request) {
+                $q->where('sources.id', $request->source_id);
+            });
+        }
         if ($request->filled('sales_person_id')) {
             $query->whereHas('salesPersons', function($q) use ($request) {
                 $q->where('sale_id', $request->sales_person_id);
@@ -76,6 +86,8 @@ class ProjectController extends Controller
         $statuses = $this->getStatusOptions();
         $allDevelopers = Developer::all();
         $allSales = \App\Models\Sale::all();
+        $allServices = Service::all();
+        $allSources = Source::all();
 
         $routePrefix = 'admin';
         return view('admin.project.index', compact(
@@ -87,6 +99,8 @@ class ProjectController extends Controller
             'statuses',
             'allDevelopers',
             'allSales',
+            'allServices',
+            'allSources',
             'routePrefix'
         ));
     }

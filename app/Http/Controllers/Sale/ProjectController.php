@@ -37,7 +37,7 @@ class ProjectController extends Controller
 
     public function index(Request $request)
     {
-        $query = $this->getFilteredProjects()->with(['projectStatus', 'paymentStatus', 'developers', 'salesPersons', 'createdBy', 'order.assignments.sale', 'order.createdBy']);
+        $query = $this->getFilteredProjects()->with(['projectStatus', 'paymentStatus', 'developers', 'salesPersons', 'createdBy', 'order.assignments.sale', 'order.createdBy', 'services', 'sources']);
 
         // Search Filter
         if ($request->filled('q')) {
@@ -58,6 +58,17 @@ class ProjectController extends Controller
         // Project Status Filter
         if ($request->filled('project_status_id')) {
             $query->where('project_status_id', $request->project_status_id);
+        }
+
+        if ($request->filled('service_id')) {
+            $query->whereHas('services', function($q) use ($request) {
+                $q->where('services.id', $request->service_id);
+            });
+        }
+        if ($request->filled('source_id')) {
+            $query->whereHas('sources', function($q) use ($request) {
+                $q->where('sources.id', $request->source_id);
+            });
         }
 
         // Payment Status Filter
@@ -84,6 +95,9 @@ class ProjectController extends Controller
 
         $statuses = $this->getStatusOptions();
         $allDevelopers = Developer::all();
+        $allSales = \App\Models\Sale::all();
+        $allServices = \App\Models\Service::all();
+        $allSources = \App\Models\Source::all();
 
         $routePrefix = 'sale';
         return view('admin.project.index', compact(
@@ -94,6 +108,9 @@ class ProjectController extends Controller
             'onHoldProjects',
             'statuses',
             'allDevelopers',
+            'allSales',
+            'allServices',
+            'allSources',
             'routePrefix'
         ));
     }
