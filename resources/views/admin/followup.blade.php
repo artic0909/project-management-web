@@ -240,9 +240,12 @@
                                         </select>
                                     </div>
                                     @endif
-                                    <div class="form-row" style="grid-column: 1/-1; display:flex; justify-content:flex-end; margin-bottom:0;">
-                                        <button type="submit" class="btn-primary-solid">Update Status</button>
-                                    </div>
+                                    
+                                </div>
+                                <div style="display:flex;justify-content:flex-end;margin-top:20px;">
+                                    <button type="submit" class="btn-primary-solid">
+                                        <i class="bi bi-save"></i> Synchronize Updates
+                                    </button>
                                 </div>
                             </form>
                         </div>
