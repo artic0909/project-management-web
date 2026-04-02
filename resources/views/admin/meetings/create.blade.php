@@ -122,7 +122,10 @@
                     </div>
                     <div class="card-body" style="padding:20px;">
                         <div class="form-row">
-                            <label class="form-lbl">Sales Team (Internal)</label>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                <label class="form-lbl" style="margin:0;">Sales Team (Internal)</label>
+                                <a href="javascript:void(0)" onclick="toggleAllList(this, 'assignsale_ids[]')" style="font-size:11px; font-weight:700; color:var(--accent); text-decoration:none;">Select All</a>
+                            </div>
                             <div class="multi-select-wrap">
                                 @foreach($sales as $sale)
                                     <label class="check-item">
@@ -139,7 +142,10 @@
                         @if($routePrefix == 'admin')
                         <div id="devSection" style="display:none;">
                             <div class="form-row" style="margin-top:20px;">
-                                <label class="form-lbl">Developers (Internal)</label>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                    <label class="form-lbl" style="margin:0;">Developers (Internal)</label>
+                                    <a href="javascript:void(0)" onclick="toggleAllList(this, 'assigndev_ids[]')" style="font-size:11px; font-weight:700; color:var(--accent); text-decoration:none;">Select All</a>
+                                </div>
                                 <div class="multi-select-wrap">
                                     @foreach($developers as $dev)
                                         <label class="check-item">
@@ -171,6 +177,19 @@
     .check-item span { font-size: 13px; font-weight: 700; color: var(--t2); }
     .check-item input:checked + span { color: var(--accent); }
 </style>
+
+<script>
+    function toggleAllList(btn, name) {
+        const checkboxes = document.querySelectorAll(`input[name="${name}"]`);
+        const allChecked = [...checkboxes].every(cb => cb.checked);
+        
+        checkboxes.forEach(cb => {
+            cb.checked = !allChecked;
+        });
+        
+        btn.textContent = !allChecked ? 'Deselect All' : 'Select All';
+    }
+</script>
 
 @include('admin.meetings._target_select_assets')
 @endsection

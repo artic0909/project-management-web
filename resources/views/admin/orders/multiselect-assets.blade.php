@@ -218,6 +218,19 @@
         background: var(--accent-bg);
         color: var(--accent);
     }
+    .ms-all-btn {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--accent);
+        background: var(--accent-bg);
+        border: 1px solid rgba(99,102,241,0.2);
+        padding: 4px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: var(--transition);
+        white-space: nowrap;
+    }
+    .ms-all-btn:hover { background: var(--accent); color: #fff; }
 </style>
 
 <script>
@@ -275,6 +288,19 @@
         document.querySelectorAll(`#${dropdownId} .ms-opt`).forEach(opt => {
             opt.classList.toggle('hidden', !opt.textContent.toLowerCase().includes(q));
         });
+    }
+
+    function toggleAllMs(wrapId, dropdownId) {
+        const wrap = document.getElementById(wrapId);
+        const dropdown = document.getElementById(dropdownId);
+        const visibleCheckboxes = [...dropdown.querySelectorAll('.ms-opt:not(.hidden) input[type="checkbox"]')];
+        const allChecked = visibleCheckboxes.every(cb => cb.checked);
+        
+        visibleCheckboxes.forEach(cb => {
+            cb.checked = !allChecked;
+        });
+        
+        updateMs(wrapId);
     }
 
     document.addEventListener('click', function(e) {

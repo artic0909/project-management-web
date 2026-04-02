@@ -206,6 +206,7 @@
                                         <div class="ms-search-wrap">
                                             <i class="bi bi-search"></i>
                                             <input type="text" class="ms-search" placeholder="Search staff…" oninput="filterMs(this,'salesDropdown')">
+                                            <span class="ms-all-btn" onclick="toggleAllMs('salesWrap','salesDropdown')">Select All</span>
                                         </div>
                                         <div class="ms-opts">
                                             @foreach($sales as $m)

@@ -314,6 +314,7 @@
                                     <div class="ms-search-wrap">
                                         <i class="bi bi-search"></i>
                                         <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'editAssignDropdown')">
+                                        <span class="ms-all-btn" onclick="toggleAllMs('editAssignWrap','editAssignDropdown')">Select All</span>
                                     </div>
                                     <div class="ms-opts">
                                         @php
@@ -360,6 +361,7 @@
                                     <div class="ms-search-wrap">
                                         <i class="bi bi-search"></i>
                                         <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'editSaleAssignDropdown')">
+                                        <span class="ms-all-btn" onclick="toggleAllMs('editSaleAssignWrap','editSaleAssignDropdown')">Select All</span>
                                     </div>
                                     <div class="ms-opts">
                                         @php

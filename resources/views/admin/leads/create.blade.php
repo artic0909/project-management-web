@@ -181,6 +181,7 @@
                                     <div class="ms-search-wrap">
                                         <i class="bi bi-search"></i>
                                         <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'addAssignDropdown')">
+                                        <span class="ms-all-btn" onclick="toggleAllMs('addAssignWrap','addAssignDropdown')">Select All</span>
                                     </div>
                                     <div class="ms-opts">
                                         @php

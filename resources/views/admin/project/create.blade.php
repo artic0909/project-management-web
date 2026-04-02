@@ -280,6 +280,7 @@
                                     <div class="ms-search-wrap">
                                         <i class="bi bi-search"></i>
                                         <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'addAssignDropdown')">
+                                        <span class="ms-all-btn" onclick="toggleAllMs('addAssignWrap','addAssignDropdown')">Select All</span>
                                     </div>
                                     <div class="ms-opts">
                                         @foreach($developers as $index => $dev)
@@ -322,6 +323,7 @@
                                     <div class="ms-search-wrap">
                                         <i class="bi bi-search"></i>
                                         <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'addSaleAssignDropdown')">
+                                        <span class="ms-all-btn" onclick="toggleAllMs('addSaleAssignWrap','addSaleAssignDropdown')">Select All</span>
                                     </div>
                                     <div class="ms-opts">
                                         @foreach($salesPersons as $index => $sale)
