@@ -73,79 +73,86 @@
         <div class="dash-grid">
 
             <!-- LEFT: Profile & Identity (Lead/Order Info Card) -->
-            <div class="dash-card span-4" style="height:fit-content;">
-                <div class="card-head" style="padding:16px 18px;">
-                    <div class="card-title">Identity & Profile</div>
-                </div>
-                <div class="card-body" style="padding:0 18px 24px;">
-
-                    @php 
-                        $initials = strtoupper(substr($model->company_name ?? $model->company, 0, 1) . substr($model->client_name ?? $model->contact_person, 0, 1));
-                    @endphp
-
-                    <!-- Avatar + Name -->
-                    <div style="display:flex;flex-direction:column;align-items:center;padding:24px 0 20px;border-bottom:1px solid var(--b1);text-align:center;">
-                        <div style="width:68px;height:68px;border-radius:20px;background:linear-gradient(135deg,#8b5cf6,#ec4899);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;margin-bottom:12px;box-shadow:0 8px 24px rgba(139,92,246,.3);">{{ $initials }}</div>
-                        <div style="font-size:18px;font-weight:800;color:var(--t1);letter-spacing:-.4px;">{{ $model->company_name ?? $model->company }}</div>
-                        <div style="font-size:13px;color:var(--t3);margin-top:4px;">{{ $model->emails[0] ?? 'No primary email' }}</div>
-                        <div style="margin-top:12px;display:flex;gap:6px; flex-wrap:wrap; justify-content:center;">
-                            @if(!$isOrder)
-                                <span class="src-tag {{ strtolower($model->source->name ?? 'none') }}">{{ $model->source->name ?? 'Direct' }}</span>
-                            @else
-                                <span class="src-tag website" style="background:rgba(99,102,241,.1);color:#6366f1;">Order</span>
-                            @endif
-                            <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(16,185,129,.1);color:#10b981;">{{ $model->service->name ?? 'N/A' }}</span>
-                        </div>
+            <div class="span-4" style="display:flex; flex-direction:column; gap:16px;">
+                <div class="dash-card" style="height:fit-content;">
+                    <div class="card-head" style="padding:16px 18px;">
+                        <div class="card-title">Identity & Profile</div>
                     </div>
+                    <div class="card-body" style="padding:0 18px 24px;">
 
-                    <!-- Details List -->
-                    <div style="display:flex;flex-direction:column;gap:4px;margin-top:16px;">
-                        
-                        <div class="detail-row">
-                            <div class="detail-icon"><i class="bi bi-person-fill"></i></div>
-                            <div>
-                                <div class="detail-lbl">Contact Person</div>
-                                <div class="detail-val">{{ $model->client_name ?? $model->contact_person }}</div>
+                        @php 
+                            $initials = strtoupper(substr($model->company_name ?? $model->company, 0, 1) . substr($model->client_name ?? $model->contact_person, 0, 1));
+                        @endphp
+
+                        <!-- Avatar + Name -->
+                        <div style="display:flex;flex-direction:column;align-items:center;padding:24px 0 20px;border-bottom:1px solid var(--b1);text-align:center;">
+                            <div style="width:68px;height:68px;border-radius:20px;background:linear-gradient(135deg,#8b5cf6,#ec4899);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;margin-bottom:12px;box-shadow:0 8px 24px rgba(139,92,246,.3);">{{ $initials }}</div>
+                            <div style="font-size:18px;font-weight:800;color:var(--t1);letter-spacing:-.4px;">{{ $model->company_name ?? $model->company }}</div>
+                            <div style="font-size:13px;color:var(--t3);margin-top:4px;">{{ $model->emails[0] ?? 'No primary email' }}</div>
+                            <div style="margin-top:12px;display:flex;gap:6px; flex-wrap:wrap; justify-content:center;">
+                                @if(!$isOrder)
+                                    <span class="src-tag {{ strtolower($model->source->name ?? 'none') }}">{{ $model->source->name ?? 'Direct' }}</span>
+                                @else
+                                    <span class="src-tag website" style="background:rgba(99,102,241,.1);color:#6366f1;">Order</span>
+                                @endif
+                                <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(16,185,129,.1);color:#10b981;">{{ $model->service->name ?? 'N/A' }}</span>
                             </div>
                         </div>
 
-                        <div class="detail-row">
-                            <div class="detail-icon"><i class="bi bi-telephone-fill"></i></div>
-                            <div>
-                                <div class="detail-lbl">Primary Phone</div>
-                                <div class="detail-val">{{ ($model->phones[0]['number'] ?? 'N/A') }}</div>
-                            </div>
-                        </div>
-
-                        <div class="detail-row">
-                            <div class="detail-icon"><i class="bi bi-building"></i></div>
-                            <div>
-                                <div class="detail-lbl">Business Type</div>
-                                <div class="detail-val">{{ $model->business_type ?? ($isOrder ? 'Converted Lead' : 'N/A') }}</div>
-                            </div>
-                        </div>
-
-                        <div class="detail-row">
-                            <div class="detail-icon"><i class="bi bi-people-fill"></i></div>
-                            <div>
-                                <div class="detail-lbl">Assigned To</div>
-                                <div class="detail-val">
-                                    @php $names = $model->assignments->pluck('sale.name')->toArray(); @endphp
-                                    {{ !empty($names) ? implode(', ', $names) : 'Unassigned' }}
+                        <!-- Details List -->
+                        <div style="display:flex;flex-direction:column;gap:4px;margin-top:16px;">
+                            
+                            <div class="detail-row">
+                                <div class="detail-icon"><i class="bi bi-person-fill"></i></div>
+                                <div>
+                                    <div class="detail-lbl">Contact Person</div>
+                                    <div class="detail-val">{{ $model->client_name ?? $model->contact_person }}</div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="detail-row">
-                            <div class="detail-icon"><i class="bi bi-calendar-check"></i></div>
-                            <div>
-                                <div class="detail-lbl">Created At</div>
-                                <div class="detail-val">{{ $model->created_at->format('d M Y') }}</div>
+                            <div class="detail-row">
+                                <div class="detail-icon"><i class="bi bi-telephone-fill"></i></div>
+                                <div>
+                                    <div class="detail-lbl">Primary Phone</div>
+                                    <div class="detail-val">{{ ($model->phones[0]['number'] ?? 'N/A') }}</div>
+                                </div>
                             </div>
-                        </div>
 
+                            <div class="detail-row">
+                                <div class="detail-icon"><i class="bi bi-building"></i></div>
+                                <div>
+                                    <div class="detail-lbl">Business Type</div>
+                                    <div class="detail-val">{{ $model->business_type ?? ($isOrder ? 'Converted Lead' : 'N/A') }}</div>
+                                </div>
+                            </div>
+
+                            <div class="detail-row">
+                                <div class="detail-icon"><i class="bi bi-people-fill"></i></div>
+                                <div>
+                                    <div class="detail-lbl">Assigned To</div>
+                                    <div class="detail-val">
+                                        @php $names = $model->assignments->pluck('sale.name')->toArray(); @endphp
+                                        {{ !empty($names) ? implode(', ', $names) : 'Unassigned' }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="detail-row">
+                                <div class="detail-icon"><i class="bi bi-calendar-check"></i></div>
+                                <div>
+                                    <div class="detail-lbl">Created At</div>
+                                    <div class="detail-val">{{ $model->created_at->format('d M Y') }}</div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
+
+                {{-- INTERNAL NOTES HISTORY (Leads Only) --}}
+                @if(!$isOrder)
+                    @include('admin.leads._notes_history', ['lead' => $model])
+                @endif
             </div>
 
             <!-- RIGHT: Followup History + Add Form -->
@@ -294,11 +301,7 @@
                         </form>
                     </div>
                 </div>
- 
-                 {{-- INTERNAL NOTES HISTORY (Leads Only) --}}
-                 @if(!$isOrder)
-                    @include('admin.leads._notes_history', ['lead' => $model])
-                 @endif
+
 
                 <!-- Followup History Card -->
                 <div class="dash-card">
