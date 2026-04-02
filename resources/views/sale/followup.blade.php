@@ -157,7 +157,99 @@
                         <span style="font-size:14px;font-weight:600;">{{ session('success') }}</span>
                     </div>
                 @endif
-
+ 
+                {{-- QUICK UPDATE CARD --}}
+                @if(!$isOrder)
+                    {{-- Quick Intelligence Update (Lead) --}}
+                    <div class="dash-card">
+                        <div class="card-head" style="padding:16px 18px;">
+                            <div>
+                                <div class="card-title">Quick Intelligence Update</div>
+                                <div class="card-sub">Fast update status, priority and brief notes</div>
+                            </div>
+                        </div>
+                        <div class="card-body" style="padding:14px 18px 20px;">
+                            <form action="{{ route('sale.leads.updateStatus', $model->id) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <div class="form-grid">
+                                    <div class="form-row">
+                                        <label class="form-lbl">Change Status</label>
+                                        <select name="status_id" class="form-inp">
+                                            @foreach($statuses as $status)
+                                                <option value="{{ $status->id }}" {{ $model->status_id == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-row">
+                                        <label class="form-lbl">Set Priority</label>
+                                        <select name="priority" class="form-inp">
+                                            <option value="Hot 🔥" {{ $model->priority == 'Hot 🔥' ? 'selected' : '' }}>Hot 🔥</option>
+                                            <option value="Warm" {{ $model->priority == 'Warm' ? 'selected' : '' }}>Warm</option>
+                                            <option value="Cold" {{ $model->priority == 'Cold' ? 'selected' : '' }}>Cold</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div style="display:flex;justify-content:flex-end;margin-top:20px;">
+                                    <button type="submit" class="btn-primary-solid">
+                                        <i class="bi bi-save"></i> Synchronize Updates
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                @else
+                    {{-- Quick Status Update (Order) --}}
+                    <div class="dash-card">
+                        <div class="card-head" style="padding:16px 18px;">
+                            <div>
+                                <div class="card-title">Quick Status Update</div>
+                                <div class="card-sub">Fast update status and payment terms</div>
+                            </div>
+                        </div>
+                        <div class="card-body" style="padding:14px 18px 20px;">
+                            <form action="{{ route('sale.orders.updateStatus', $model->id) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <div class="form-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
+                                    <div class="form-row">
+                                        <label class="form-lbl">Order Status</label>
+                                        <select name="status_id" class="form-inp">
+                                            @foreach($orderStatuses as $st)
+                                                <option value="{{ $st->id }}" {{ $model->status_id == $st->id ? 'selected' : '' }}>{{ $st->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-row">
+                                        <label class="form-lbl">Payment Terms</label>
+                                        <select name="payment_terms_id" class="form-inp">
+                                            @foreach($paymentStatuses as $st)
+                                                <option value="{{ $st->id }}" {{ $model->payment_terms_id == $st->id ? 'selected' : '' }}>{{ $st->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    @if($model->is_marketing)
+                                    <div class="form-row">
+                                        <label class="form-lbl">Mkt Payment Status</label>
+                                        <select name="mkt_payment_status_id" class="form-inp">
+                                            @foreach($paymentStatuses as $st)
+                                                <option value="{{ $st->id }}" {{ $model->mkt_payment_status_id == $st->id ? 'selected' : '' }}>{{ $st->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    @endif
+                                </div>
+                                <div style="display:flex;justify-content:flex-end;margin-top:20px;">
+                                    <button type="submit" class="btn-primary-solid">
+                                        <i class="bi bi-save"></i> Synchronize Updates
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                @endif
+ 
+ 
                 <!-- Add Followup Card -->
                 <div class="dash-card">
                     <div class="card-head" style="padding:16px 18px;">
