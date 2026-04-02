@@ -646,12 +646,23 @@
                     </div>
                 </div>
 
-                <div class="stat-box" style="--sb-color:#8b5cf6; border: 2px solid #8b5cf6;">
-                    <div class="sb-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+
+
+                <div class="stat-box" style="--sb-color:#0ea5e9; border: 2px solid #0ea5e9;">
+                    <div class="sb-icon"><i class="bi bi-telephone-fill"></i></div>
                     <div class="sb-content">
-                        <div class="sb-cat" style="--cat-color:#8b5cf6;">Total Followup</div>
-                        <div class="sb-val">{{ $totalFollowupsFiltered }}</div>
-                        <div class="sb-lbl">Assigned Followups</div>
+                        <div class="sb-cat" style="--cat-color:#0ea5e9;">Total Calling</div>
+                        <div class="sb-val">{{ $totalCallingFollowupsFiltered }}</div>
+                        <div class="sb-lbl">Assigned Calling</div>
+                    </div>
+                </div>
+
+                <div class="stat-box" style="--sb-color:#f43f5e; border: 2px solid #f43f5e;">
+                    <div class="sb-icon"><i class="bi bi-chat-dots-fill"></i></div>
+                    <div class="sb-content">
+                        <div class="sb-cat" style="--cat-color:#f43f5e;">Total Message</div>
+                        <div class="sb-val">{{ $totalMessageFollowupsFiltered }}</div>
+                        <div class="sb-lbl">Assigned Message</div>
                     </div>
                 </div>
                 @endif
