@@ -59,21 +59,27 @@ class AppServiceProvider extends ServiceProvider
                 $saleType = \App\Models\Sale::class;
                 
                 $leadCount = \App\Models\Lead::where(function($q) use ($saleId, $saleType) {
-                    $q->where('created_by', $saleId)->where('created_by_type', $saleType);
-                })->orWhereHas('assignments', function($q) use ($saleId) {
-                    $q->where('assigned_to', $saleId);
+                    $q->where(function($sq) use ($saleId, $saleType) {
+                        $sq->where('created_by', $saleId)->where('created_by_type', $saleType);
+                    })->orWhereHas('assignments', function($sq) use ($saleId) {
+                        $sq->where('assigned_to', $saleId);
+                    });
                 })->whereHas('status', function($q){ $q->where('name','!=','lost'); })->count();
                 
                 $orderCount = \App\Models\Order::where(function($q) use ($saleId, $saleType) {
-                    $q->where('created_by', $saleId)->where('created_by_type', $saleType);
-                })->orWhereHas('assignments', function($q) use ($saleId) {
-                    $q->where('assigned_to', $saleId);
+                    $q->where(function($sq) use ($saleId, $saleType) {
+                        $sq->where('created_by', $saleId)->where('created_by_type', $saleType);
+                    })->orWhereHas('assignments', function($sq) use ($saleId) {
+                        $sq->where('assigned_to', $saleId);
+                    });
                 })->count();
                 
                 $lostLeadCount = \App\Models\Lead::where(function($q) use ($saleId, $saleType) {
-                    $q->where('created_by', $saleId)->where('created_by_type', $saleType);
-                })->orWhereHas('assignments', function($q) use ($saleId) {
-                    $q->where('assigned_to', $saleId);
+                    $q->where(function($sq) use ($saleId, $saleType) {
+                        $sq->where('created_by', $saleId)->where('created_by_type', $saleType);
+                    })->orWhereHas('assignments', function($sq) use ($saleId) {
+                        $sq->where('assigned_to', $saleId);
+                    });
                 })->whereHas('status', function($q){ $q->where('name','lost'); })->count();
                 
                 $projectCount = \App\Models\Project::where(function($q) use ($saleId, $saleType) {
