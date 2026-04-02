@@ -183,11 +183,11 @@
                                     </select>
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1;">
-                                    <label class="form-lbl">Voice Communication Intelligence (Calling Note)</label>
+                                    <label class="form-lbl" id="callingLabel">Voice Communication Intelligence (Calling Note)</label>
                                     <textarea name="calling_note" class="form-inp" rows="2" placeholder="What was discussed during the call?"></textarea>
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1;margin-bottom:0;">
-                                    <label class="form-lbl">Text Communication Records (Message Note)</label>
+                                    <label class="form-lbl" id="messageLabel">Text Communication Records (Message Note)</label>
                                     <textarea name="message_note" class="form-inp" rows="2" placeholder="Summary of messages, emails, or drafts sent…"></textarea>
                                 </div>
                             </div>
@@ -307,18 +307,41 @@ document.addEventListener('DOMContentLoaded', function() {
     const typeSelect = document.querySelector('select[name="followup_type"]');
     const callingArea = document.querySelector('textarea[name="calling_note"]').closest('.form-row');
     const messageArea = document.querySelector('textarea[name="message_note"]').closest('.form-row');
+    const callingInp = document.querySelector('textarea[name="calling_note"]');
+    const messageInp = document.querySelector('textarea[name="message_note"]');
+    const callingLbl = document.getElementById('callingLabel');
+    const messageLbl = document.getElementById('messageLabel');
+
+    const callingOrig = "Voice Communication Intelligence (Calling Note)";
+    const messageOrig = "Text Communication Records (Message Note)";
+    const star = ' <span style="color:#ef4444;">*</span>';
 
     function toggleAreas() {
         const val = typeSelect.value;
+        
+        // Default resets
+        callingInp.required = false;
+        messageInp.required = false;
+        callingLbl.innerHTML = callingOrig;
+        messageLbl.innerHTML = messageOrig;
+
         if (val === 'Calling') {
             callingArea.style.display = 'block';
             messageArea.style.display = 'none';
+            callingInp.required = true;
+            callingLbl.innerHTML = callingOrig + star;
         } else if (val === 'Message') {
             callingArea.style.display = 'none';
             messageArea.style.display = 'block';
+            messageInp.required = true;
+            messageLbl.innerHTML = messageOrig + star;
         } else if (val === 'Both') {
             callingArea.style.display = 'block';
             messageArea.style.display = 'block';
+            callingInp.required = true;
+            messageInp.required = true;
+            callingLbl.innerHTML = callingOrig + star;
+            messageLbl.innerHTML = messageOrig + star;
         }
     }
 
