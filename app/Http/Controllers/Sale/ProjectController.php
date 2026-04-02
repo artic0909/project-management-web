@@ -138,8 +138,10 @@ class ProjectController extends Controller
         $developers = Developer::latest()->get();
         $salesPersons = \App\Models\Sale::latest()->get();
         $statuses = $this->getStatusOptions();
+        $services = \App\Models\Service::all();
+        $sources = \App\Models\Source::all();
         $routePrefix = 'sale';
-        return view('admin.project.create', compact('orders', 'developers', 'salesPersons', 'statuses', 'routePrefix'));
+        return view('admin.project.create', compact('orders', 'developers', 'salesPersons', 'statuses', 'services', 'sources', 'routePrefix'));
     }
 
     public function store(Request $request)
@@ -190,8 +192,10 @@ class ProjectController extends Controller
         $developers = Developer::all();
         $salesPersons = \App\Models\Sale::all();
         $statuses = $this->getStatusOptions();
+        $services = \App\Models\Service::all();
+        $sources = \App\Models\Source::all();
         $routePrefix = 'sale';
-        return view('admin.project.edit', compact('project', 'orders', 'developers', 'salesPersons', 'statuses', 'routePrefix'));
+        return view('admin.project.edit', compact('project', 'orders', 'developers', 'salesPersons', 'statuses', 'services', 'sources', 'routePrefix'));
     }
 
     public function update(Request $request, $id)
