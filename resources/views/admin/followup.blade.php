@@ -294,6 +294,11 @@
                         </form>
                     </div>
                 </div>
+ 
+                 {{-- INTERNAL NOTES HISTORY (Leads Only) --}}
+                 @if(!$isOrder)
+                    @include('admin.leads._notes_history', ['lead' => $model])
+                 @endif
 
                 <!-- Followup History Card -->
                 <div class="dash-card">
@@ -446,5 +451,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+@include('admin.leads._notes_assets')
 
 @endsection

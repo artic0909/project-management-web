@@ -170,9 +170,20 @@ class LeadController extends Controller
             'campaign_id' => $request->campaign_id,
             'priority' => $request->priority,
             'status_id' => $request->status_id,
+            'notes' => $request->notes,
             'created_by' => auth()->id(),
             'created_by_type' => get_class(auth()->user()),
         ]);
+
+        // Add initial note to history if present
+        if (!empty($request->notes)) {
+            \App\Models\LeadNote::create([
+                'lead_id' => $lead->id,
+                'notes' => $request->notes,
+                'created_by' => auth()->id(),
+                'created_by_type' => get_class(auth()->user()),
+            ]);
+        }
 
         // Process assignments
         if ($request->has('assign_to')) {
@@ -209,7 +220,7 @@ class LeadController extends Controller
 
     public function edit($id)
     {
-        $lead = Lead::with('assignments')->findOrFail($id);
+        $lead = Lead::with(['assignments', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         $sources = Source::all();
         $services = Service::all();
         $statuses = Status::where('type', 'lead')->get();

@@ -145,6 +145,18 @@
                         </div>
                     </div>
 
+                    {{-- Internal Notes --}}
+                    <div class="dash-card">
+                        <div class="card-head" style="padding:16px 18px; border-bottom:1px solid var(--b1);">
+                            <div class="card-title">Notes History</div>
+                        </div>
+                        <div class="card-body" style="padding:18px;">
+                            <div style="position:relative;">
+                                <textarea name="notes" class="form-inp" rows="5" placeholder="Add initial internal note..." style="border-radius:12px; font-size:13px; min-height:120px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 {{-- ══ RIGHT COL — 4 (sticky) ══ --}}

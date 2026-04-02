@@ -25,7 +25,7 @@ class FollowupController extends Controller
             $paymentStatuses = Status::where('type', 'payment')->get();
             $statuses = [];
         } else {
-            $model = Lead::with(['status', 'source', 'service', 'assignments.sale', 'followups.creator'])->findOrFail($id);
+            $model = Lead::with(['status', 'source', 'service', 'assignments.sale', 'followups.creator', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
             $typeLabel = 'Lead';
             $backRoute = route('admin.leads.index');
             $statuses = Status::where('type', 'lead')->get();

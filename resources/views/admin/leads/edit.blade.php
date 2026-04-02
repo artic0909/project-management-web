@@ -145,16 +145,8 @@
                         </div>
                     </div>
 
-                    {{-- Internal Notes --}}
-                    <div class="dash-card">
-                        <div class="card-head">
-                            <div class="card-title"><i class="bi bi-chat-dots" style="color:#ec4899;margin-right:6px;"></i>Internal Notes</div>
-                            <div class="card-sub">Private team briefings</div>
-                        </div>
-                        <div class="card-body">
-                            <textarea name="notes" class="form-inp" rows="6" placeholder="Add private notes about this lead here...">{{ old('notes', $lead->notes) }}</textarea>
-                        </div>
-                    </div>
+                    {{-- Lead Notes History Card --}}
+                    @include('admin.leads._notes_history')
 
                 </div>
 
@@ -239,6 +231,7 @@
 
 @include('admin.leads._multiselect_assets')
 @include('admin.leads._phone_email_assets')
+@include('admin.leads._notes_assets')
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
