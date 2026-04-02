@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Followup;
 use App\Models\Lead;
 use App\Models\Order;
+use App\Models\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -17,19 +18,25 @@ class FollowupController extends Controller
         $isOrder = Route::is('admin.orders.*');
         
         if ($isOrder) {
-            $model = Order::with(['status', 'service', 'assignments.sale', 'followups.creator'])->findOrFail($id);
+            $model = Order::with(['status', 'service', 'assignments.sale', 'followups.creator', 'paymentTerms', 'mktPaymentStatus'])->findOrFail($id);
             $typeLabel = 'Order';
             $backRoute = route('admin.orders.index');
+            $orderStatuses = Status::where('type', 'order')->get();
+            $paymentStatuses = Status::where('type', 'payment')->get();
+            $statuses = [];
         } else {
             $model = Lead::with(['status', 'source', 'service', 'assignments.sale', 'followups.creator'])->findOrFail($id);
             $typeLabel = 'Lead';
             $backRoute = route('admin.leads.index');
+            $statuses = Status::where('type', 'lead')->get();
+            $orderStatuses = [];
+            $paymentStatuses = [];
         }
         
         $totalFollowups = $model->followups->count();
         $lastFollowup = $model->followups->first();
         
-        return view('admin.followup', compact('model', 'totalFollowups', 'lastFollowup', 'isOrder', 'typeLabel', 'backRoute'));
+        return view('admin.followup', compact('model', 'totalFollowups', 'lastFollowup', 'isOrder', 'typeLabel', 'backRoute', 'orderStatuses', 'paymentStatuses', 'statuses'));
     }
 
     public function store(Request $request, $id)
