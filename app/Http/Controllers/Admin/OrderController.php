@@ -167,6 +167,16 @@ class OrderController extends Controller
             ]);
         }
 
+        // Add initial note to history if present
+        if (!empty($request->notes)) {
+            \App\Models\OrderNote::create([
+                'order_id' => $order->id,
+                'notes' => $request->notes,
+                'created_by' => Auth::id(),
+                'created_by_type' => get_class(Auth::user()),
+            ]);
+        }
+
         // Assign Sales Personnel
         if ($request->has('sales_person')) {
             $order->sales()->sync($request->sales_person);
@@ -188,7 +198,7 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::with(['status', 'service', 'assignments.sale', 'createdBy', 'paymentTerms', 'mktPaymentStatus'])->findOrFail($id);
+        $order = Order::with(['status', 'service', 'assignments.sale', 'createdBy', 'paymentTerms', 'mktPaymentStatus', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         
         $orderStatuses = Status::where('type', 'order')->get();
         $paymentStatuses = Status::where('type', 'payment')->get();
@@ -208,7 +218,7 @@ class OrderController extends Controller
 
     public function edit($id)
     {
-        $order = Order::with('assignments')->findOrFail($id);
+        $order = Order::with(['assignments', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         $services = Service::all();
         $sales = Sale::all();
         $orderStatuses = Status::where('type', 'order')->get();

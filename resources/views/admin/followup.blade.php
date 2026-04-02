@@ -149,9 +149,11 @@
                     </div>
                 </div>
 
-                {{-- INTERNAL NOTES HISTORY (Leads Only) --}}
+                {{-- INTERNAL NOTES HISTORY --}}
                 @if(!$isOrder)
                     @include('admin.leads._notes_history', ['lead' => $model])
+                @else
+                    @include('admin.orders._notes_history', ['order' => $model])
                 @endif
             </div>
 
@@ -455,6 +457,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-@include('admin.leads._notes_assets')
+@if(!$isOrder)
+    @include('admin.leads._notes_assets')
+@else
+    @include('admin.orders._notes_assets')
+@endif
 
 @endsection

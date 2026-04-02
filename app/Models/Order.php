@@ -12,8 +12,13 @@ class Order extends Model
         'delivery_date', 'city', 'state', 'zip_code', 'full_address',
         'status_id', 'is_marketing', 'mkt_payment_status_id',
         'mkt_starting_date', 'plan_name', 'mkt_username', 'mkt_password',
-        'created_by', 'created_by_type'
+        'created_by', 'created_by_type', 'notes'
     ];
+
+    public function notes_history()
+    {
+        return $this->hasMany(OrderNote::class)->latest();
+    }
 
     protected $casts = [
         'emails' => 'array',

@@ -93,6 +93,10 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- Order Notes History Card --}}
+                @include('admin.orders._notes_history')
+
             </div>
 
             {{-- Right Column: Actions & Details (span-8) --}}
@@ -374,5 +378,7 @@
         </div>
     </div>
 </div>
+
+@include('admin.orders._notes_assets')
 
 @endsection

@@ -68,11 +68,16 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::delete('/delete-lead/{id}', [LeadController::class, 'destroy'])->name('leads.destroy');
     Route::get('/lead-followup/{id}', [FollowupController::class, 'index'])->name('leads.followup');
     Route::post('/lead-followup/{id}', [FollowupController::class, 'store'])->name('leads.followup.store');
-    
+
     // Lead Notes
     Route::post('/lead-notes/{lead}', [\App\Http\Controllers\LeadNoteController::class, 'store'])->name('lead-notes.store');
     Route::put('/lead-notes/{note}', [\App\Http\Controllers\LeadNoteController::class, 'update'])->name('lead-notes.update');
     Route::delete('/lead-notes/{note}', [\App\Http\Controllers\LeadNoteController::class, 'destroy'])->name('lead-notes.destroy');
+    
+    // Order Notes
+    Route::post('/order-notes/{order}', [\App\Http\Controllers\OrderNoteController::class, 'store'])->name('order-notes.store');
+    Route::put('/order-notes/{note}', [\App\Http\Controllers\OrderNoteController::class, 'update'])->name('order-notes.update');
+    Route::delete('/order-notes/{note}', [\App\Http\Controllers\OrderNoteController::class, 'destroy'])->name('order-notes.destroy');
     
     // Losted Leads
     Route::get('/losted-leads', [LeadController::class, 'lostedLeads'])->name('losted-leads');
