@@ -22,6 +22,14 @@
                 <h1 class="page-title">Edit Lead Profile</h1>
                 <p class="page-desc">Modify existing lead data and team assignments</p>
             </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                    <div style="display:flex; gap:10px; margin-bottom:5px;">
+                        <a href="{{ route($routePrefix . '.orders.create', ['lead_id' => $lead->id]) }}" class="btn-primary-solid">
+                            <i class="bi bi-box-arrow-in-right"></i> Convert To Order
+                        </a>
+                    </div>
+                </div>
         </div>
 
         <form action="{{ route($routePrefix . '.leads.update', $lead->id) }}" method="POST">

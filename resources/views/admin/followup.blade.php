@@ -23,6 +23,14 @@
                 <h1 class="page-title">{{ $typeLabel }} Followup Command Center</h1>
                 <p class="page-desc">Communication intelligence and lifecycle tracking</p>
             </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                    <div style="display:flex; gap:10px; margin-bottom:5px;">
+                        <a href="{{ route($routePrefix . '.orders.create', ['lead_id' => $model->id]) }}" class="btn-primary-solid">
+                            <i class="bi bi-box-arrow-in-right"></i> Convert To Order
+                        </a>
+                    </div>
+                </div>
         </div>
 
         <!-- TOP STATS ROW -->
