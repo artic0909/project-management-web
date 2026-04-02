@@ -49,20 +49,20 @@
                                     <input type="text" name="client_name" class="form-inp" value="{{ old('client_name', $lead->contact_person ?? '') }}" placeholder="Full name" required>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Contact Emails</label>
+                                    <label class="form-lbl">Contact Emails <span style="color:#ef4444">*</span></label>
                                     <div id="order-email-list"></div>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Contact Phones</label>
+                                    <label class="form-lbl">Contact Phones <span style="color:#ef4444">*</span></label>
                                     <div id="order-phone-list"></div>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Domain Name</label>
-                                    <input type="text" name="domain_name" class="form-inp" placeholder="example.com">
+                                    <label class="form-lbl">Domain Name <span style="color:#ef4444">*</span></label>
+                                    <input type="text" name="domain_name" class="form-inp" placeholder="example.com" required>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Service / Product</label>
-                                    <select name="service_id" id="serviceSelect" class="form-inp" onchange="checkServiceType()">
+                                    <label class="form-lbl">Service / Product <span style="color:#ef4444">*</span></label>
+                                    <select name="service_id" id="serviceSelect" class="form-inp" onchange="checkServiceType()" required>
                                         <option value="">— Select Service —</option>
                                         @foreach($services as $service)
                                             <option value="{{ $service->id }}" {{ (isset($lead) && $lead->service_id == $service->id) ? 'selected' : '' }}>{{ $service->name }}</option>
@@ -74,8 +74,8 @@
                                     <input type="number" name="order_value" class="form-inp" placeholder="₹ Amount" required>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Payment Terms</label>
-                                    <select name="payment_terms_id" class="form-inp">
+                                    <label class="form-lbl">Payment Terms <span style="color:#ef4444">*</span></label>
+                                    <select name="payment_terms_id" class="form-inp" required>
                                         <option value="">— Select Terms —</option>
                                         @foreach($paymentStatuses as $ps)
                                             <option value="{{ $ps->id }}">{{ $ps->name }}</option>
@@ -83,8 +83,8 @@
                                     </select>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Delivery Date</label>
-                                    <input type="date" name="delivery_date" class="form-inp">
+                                    <label class="form-lbl">Delivery Date <span style="color:#ef4444">*</span></label>
+                                    <input type="date" name="delivery_date" class="form-inp" required>
                                 </div>
                             </div>
                         </div>
@@ -99,16 +99,16 @@
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row">
-                                    <label class="form-lbl">Payment Date <span style="color:#ef4444; display:none;" id="payDateReq">*</span></label>
-                                    <input type="date" name="transaction_date" id="payDate" class="form-inp" value="{{ date('Y-m-d') }}">
+                                    <label class="form-lbl">Payment Date <span style="color:#ef4444;">*</span></label>
+                                    <input type="date" name="transaction_date" id="payDate" class="form-inp" value="{{ date('Y-m-d') }}" required>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Amount Received (₹) <span style="color:#ef4444; display:none;" id="payAmountReq">*</span></label>
-                                    <input type="number" name="amount" id="payAmount" class="form-inp" placeholder="e.g. 50000" step="0.01" oninput="togglePaymentRequirements()">
+                                    <label class="form-lbl">Amount Received (₹) <span style="color:#ef4444;">*</span></label>
+                                    <input type="number" name="amount" id="payAmount" class="form-inp" placeholder="e.g. 50000" step="0.01" required>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Payment Mode</label>
-                                    <select name="payment_method" class="form-inp">
+                                    <label class="form-lbl">Payment Mode <span style="color:#ef4444;">*</span></label>
+                                    <select name="payment_method" class="form-inp" required>
                                         <option value="Bank Transfer">Bank Transfer</option>
                                         <option value="UPI">UPI / GPay / PhonePe</option>
                                         <option value="Cheque">Cheque</option>
@@ -117,8 +117,8 @@
                                     </select>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Reference / UTR ID</label>
-                                    <input type="text" name="transaction_id" class="form-inp" placeholder="Transaction ref code">
+                                    <label class="form-lbl">Reference / UTR ID <span style="color:#ef4444;">*</span></label>
+                                    <input type="text" name="transaction_id" class="form-inp" placeholder="Transaction ref code" required>
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Payment Proof / Screenshot</label>
@@ -142,20 +142,20 @@
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row">
-                                    <label class="form-lbl">City</label>
-                                    <input type="text" name="city" class="form-inp" placeholder="City">
+                                    <label class="form-lbl">City <span style="color:#ef4444">*</span></label>
+                                    <input type="text" name="city" class="form-inp" placeholder="City" required>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Region / State</label>
-                                    <input type="text" name="state" class="form-inp" placeholder="State or Province">
+                                    <label class="form-lbl">Region / State <span style="color:#ef4444">*</span></label>
+                                    <input type="text" name="state" class="form-inp" placeholder="State or Province" required>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Zip Code</label>
-                                    <input type="text" name="zip_code" class="form-inp" placeholder="Zip / PIN">
+                                    <label class="form-lbl">Zip Code <span style="color:#ef4444">*</span></label>
+                                    <input type="text" name="zip_code" class="form-inp" placeholder="Zip / PIN" required>
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Full Address</label>
-                                    <textarea name="full_address" class="form-inp" rows="2" placeholder="Street address…">{{ old('full_address', $lead->address ?? '') }}</textarea>
+                                    <label class="form-lbl">Full Address <span style="color:#ef4444">*</span></label>
+                                    <textarea name="full_address" class="form-inp" rows="2" placeholder="Street address…" required>{{ old('full_address', $lead->address ?? '') }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -235,7 +235,7 @@
                                 $assignedIds = isset($lead) ? $lead->assignments->pluck('assigned_to')->toArray() : [];
                             @endphp
                             <div class="form-row" style="margin-bottom:20px;">
-                                <label class="form-lbl">Assign Personnel</label>
+                                <label class="form-lbl">Assign Personnel <span style="color:#ef4444">*</span></label>
                                 <div class="ms-wrap" id="salesWrap">
                                     <div class="ms-trigger" onclick="toggleMs('salesWrap')">
                                         <div class="ms-pills"><span class="ms-placeholder">Select staff members…</span></div>
@@ -346,23 +346,6 @@
             addPhoneRow('order-phone-list');
         }
     });
-
-    function togglePaymentRequirements() {
-        const amt = document.getElementById('payAmount').value;
-        const dateInput = document.getElementById('payDate');
-        const dateReq = document.getElementById('payDateReq');
-        const amtReq = document.getElementById('payAmountReq');
-        
-        if(amt > 0) {
-            dateInput.required = true;
-            dateReq.style.display = 'inline';
-            amtReq.style.display = 'inline';
-        } else {
-            dateInput.required = false;
-            dateReq.style.display = 'none';
-            amtReq.style.display = 'none';
-        }
-    }
 </script>
 
 @endsection

@@ -396,6 +396,7 @@
         inp.className = 'phone-num-inp';
         inp.placeholder = 'XXXXX XXXXX';
         inp.value = val;
+        inp.required = true;
         wrap.appendChild(inp);
         row.appendChild(wrap);
 
@@ -414,6 +415,7 @@
         inp.className = 'form-inp multi-email-inp';
         inp.placeholder = 'email@company.com';
         inp.value = val;
+        inp.required = true;
         row.appendChild(inp);
 
         list.appendChild(row);
