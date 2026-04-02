@@ -28,10 +28,7 @@
                         </div>
                         <div class="note-actions">
                             <button type="button" class="not-btn" onclick="openEditOrderNoteModal({{ $note->id }}, '{{ addslashes($note->notes) }}')"><i class="bi bi-pencil"></i></button>
-                            <form action="{{ route($routePrefix . '.order-notes.destroy', $note->id) }}" method="POST" style="display:inline;">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="not-btn danger" onclick="return confirm('Delete note?')"><i class="bi bi-trash"></i></button>
-                            </form>
+                            <button type="button" class="not-btn danger" onclick="confirmDeleteOrderNote('{{ route($routePrefix . '.order-notes.destroy', $note->id) }}')"><i class="bi bi-trash"></i></button>
                         </div>
                     </div>
                     <div class="note-content">{{ $note->notes }}</div>
