@@ -11,6 +11,7 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Models\OrderAssign;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -58,9 +59,10 @@ class OrderController extends Controller
         $orders = $query->latest()->paginate(20)->withQueryString();
         
         // Total Followups for filtered salesperson
-        $totalFollowupsFiltered = 0;
+        $totalCallingFollowupsFiltered = 0;
+        $totalMessageFollowupsFiltered = 0;
         if ($request->filled('assigned_to')) {
-            $totalFollowupsFiltered = \App\Models\Followup::whereHasMorph(
+            $followupCounts = \App\Models\Followup::whereHasMorph(
                 'followable',
                 [\App\Models\Order::class],
                 function ($q) use ($request) {
@@ -68,7 +70,12 @@ class OrderController extends Controller
                         $sq->where('assigned_to', $request->assigned_to);
                     });
                 }
-            )->count();
+            )->select('followup_type', DB::raw('count(*) as count'))
+            ->groupBy('followup_type')
+            ->pluck('count', 'followup_type');
+
+            $totalCallingFollowupsFiltered = ($followupCounts['Calling'] ?? 0) + ($followupCounts['Both'] ?? 0);
+            $totalMessageFollowupsFiltered = ($followupCounts['Message'] ?? 0) + ($followupCounts['Both'] ?? 0);
         }
         
         // Counts
@@ -88,7 +95,7 @@ class OrderController extends Controller
         $allSales = Sale::all();
 
         return view('admin.orders.index', compact(
-            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue', 'totalReceived', 'allStatuses', 'allServices', 'allSales', 'totalFollowupsFiltered'
+            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue', 'totalReceived', 'allStatuses', 'allServices', 'allSales', 'totalCallingFollowupsFiltered', 'totalMessageFollowupsFiltered'
         ));
     }
 

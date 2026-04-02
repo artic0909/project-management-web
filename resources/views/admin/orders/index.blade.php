@@ -33,7 +33,7 @@
         <!-- {{-- ═══════════════════════════════════════════════════
              6 KPI SUMMARY CARDS
         ════════════════════════════════════════════════════ --}} -->
-        <div id="statsWrap" style="display:grid;grid-template-columns:repeat({{ request('assigned_to') ? 8 : 6 }},1fr);gap:14px;margin-bottom:24px;">
+        <div id="statsWrap" style="display:grid;grid-template-columns:repeat({{ request('assigned_to') ? 9 : 6 }},1fr);gap:14px;margin-bottom:24px;">
 
             @if(request('assigned_to'))
                 @php
@@ -45,7 +45,7 @@
                         <div style="width:38px;height:38px;border-radius:10px;background:rgba(16,185,129,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                             <i class="bi bi-person-badge-fill" style="font-size:17px;color:#10b981;"></i>
                         </div>
-                        <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.1);color:#10b981;white-space:nowrap;">Filtered Person</span>
+                        <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.1);color:#10b981;white-space:nowrap;">Total Orders</span>
                     </div>
                     <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $orders->total() }}</div>
                     <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">{{ $selectedSalesPerson->name }}</div>
@@ -54,17 +54,31 @@
                     </div>
                 </div>
 
-                <div class="dash-card active" style="padding:16px 18px; border: 2px solid #8b5cf6;">
+                <div class="dash-card active" style="padding:16px 18px; border: 2px solid #0ea5e9;">
                     <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
-                        <div style="width:38px;height:38px;border-radius:10px;background:rgba(139,92,246,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <i class="bi bi-arrow-counterclockwise" style="font-size:17px;color:#8b5cf6;"></i>
+                        <div style="width:38px;height:38px;border-radius:10px;background:rgba(14,165,233,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="bi bi-telephone-fill" style="font-size:17px;color:#0ea5e9;"></i>
                         </div>
-                        <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(139,92,246,.1);color:#8b5cf6;white-space:nowrap;">Total Followup</span>
+                        <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(14,165,233,.1);color:#0ea5e9;white-space:nowrap;">Total Calling</span>
                     </div>
-                    <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $totalFollowupsFiltered }}</div>
-                    <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Assigned Followups</div>
+                    <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $totalCallingFollowupsFiltered }}</div>
+                    <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Assigned Calling</div>
                     <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
-                        <div style="height:100%;width:100%;background:#8b5cf6;border-radius:3px;"></div>
+                        <div style="height:100%;width:100%;background:#0ea5e9;border-radius:3px;"></div>
+                    </div>
+                </div>
+
+                <div class="dash-card active" style="padding:16px 18px; border: 2px solid #f43f5e;">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+                        <div style="width:38px;height:38px;border-radius:10px;background:rgba(244,63,94,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="bi bi-chat-dots-fill" style="font-size:17px;color:#f43f5e;"></i>
+                        </div>
+                        <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(244,63,94,.1);color:#f43f5e;white-space:nowrap;">Total Message</span>
+                    </div>
+                    <div style="font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1;">{{ $totalMessageFollowupsFiltered }}</div>
+                    <div style="font-size:11.5px;color:var(--t3);font-weight:500;margin-top:4px;">Assigned Message</div>
+                    <div style="margin-top:10px;height:3px;border-radius:3px;background:var(--b1);overflow:hidden;">
+                        <div style="height:100%;width:100%;background:#f43f5e;border-radius:3px;"></div>
                     </div>
                 </div>
                 @endif
