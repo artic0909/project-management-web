@@ -241,18 +241,15 @@
                         </div>
                     </div>
 
-                    
+                    {{-- Order Notes History Card --}}
+                    @include('admin.orders._notes_history')
 
                 </div>
 
             </div>
         </form>
-    <div class="span-4" style="display:flex;flex-direction:column;gap:16px;">
-    {{-- Order Notes History Card --}}
-    @include('admin.orders._notes_history')
-    </div>
-    </div>
 
+    </div>
 </main>
 
 @include('admin.orders.multiselect-assets')
