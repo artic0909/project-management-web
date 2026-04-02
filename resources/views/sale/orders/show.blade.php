@@ -48,7 +48,7 @@
                         <div style="font-size:20px;font-weight:800;color:var(--t1);letter-spacing:-.5px;line-height:1.2;">{{ $order->company_name }}</div>
                         <div style="font-size:13px;color:var(--t3);margin-top:6px;font-weight:500;">{{ $emails[0] ?? 'No primary email' }}</div>
                         <div style="margin-top:16px;display:flex;gap:6px; flex-wrap:wrap; justify-content:center;">
-                            <span class="src-tag website-type" style="padding:4px 12px; border-radius:8px; font-size:11px; font-weight:700; background:var(--bg4); border:1px solid var(--b2);">{{ $order->is_marketing ? 'Marketing' : 'Website' }}</span>
+                            <!-- <span class="src-tag website-type" style="padding:4px 12px; border-radius:8px; font-size:11px; font-weight:700; background:var(--bg4); border:1px solid var(--b2);">{{ $order->is_marketing ? 'Marketing' : 'Website' }}</span> -->
                             <span style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:8px;background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent);">{{ $order->service->name ?? 'N/A' }}</span>
                         </div>
                     </div>
@@ -73,6 +73,32 @@
                             <div>
                                 <div class="detail-lbl">Domain</div>
                                 <div class="detail-val mono" style="color:var(--accent);">{{ $order->domain_name ?? 'N/A' }}</div>
+                            </div>
+                        </div>
+
+                        <div class="card-body" style="padding:16px;">
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                @foreach($emails as $idx => $email)
+                                    <div style="display:flex; align-items:center; justify-content:space-between; background:var(--bg3); padding:10px 14px; border-radius:10px; border:1px solid var(--b1);">
+                                        <span style="font-size:13px; font-weight:600; color:var(--t2);">{{ $email }}</span>
+                                        <a href="mailto:{{ $email }}" style="color:var(--t4); transition:0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--t4)'">
+                                            <i class="bi bi-envelope-fill"></i>
+                                        </a>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="card-body" style="padding:16px;">
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                @foreach($phones as $idx => $phone)
+                                    <div style="display:flex; align-items:center; justify-content:space-between; background:var(--bg3); padding:10px 14px; border-radius:10px; border:1px solid var(--b1);">
+                                        <span style="font-size:13px; font-weight:600; color:var(--t2);">{{ $phone['number'] }}</span>
+                                        <a href="tel:{{ $phone['number'] }}" style="color:var(--t4); transition:0.2s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='var(--t4)'">
+                                            <i class="bi bi-telephone-fill"></i>
+                                        </a>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -104,9 +130,11 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <button type="submit" class="btn-primary-solid" style="width:100%; height:42px; border-radius:10px; font-weight:700;">
-                                    Update Order
-                                </button>
+                               <div style="display:flex;justify-content:flex-end;margin-top:20px;">
+                                    <button type="submit" class="btn-primary-solid">
+                                        <i class="bi bi-save"></i> Synchronize Updates
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -202,7 +230,7 @@
                 @endif
 
                 {{-- Communication Directories --}}
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                <!-- <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
                     <div class="dash-card">
                         <div class="card-head" style="padding:14px 18px; border-bottom:1px solid var(--b1);">
                             <div class="card-title" style="font-size:11px; text-transform:uppercase; color:var(--accent);">Email Directory</div>
@@ -237,7 +265,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
             </div>
         </div>
