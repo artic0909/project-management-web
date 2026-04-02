@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <form action="{{ route($routePrefix . '.orders.store') }}" method="POST">
+        <form action="{{ route($routePrefix . '.orders.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             @if($lead)
                 <input type="hidden" name="lead_id" value="{{ $lead->id }}">
@@ -74,10 +74,6 @@
                                     <input type="number" name="order_value" class="form-inp" placeholder="₹ Amount" required>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Advance Payment</label>
-                                    <input type="number" name="advance_payment" class="form-inp" value="0" placeholder="₹ Advance Received">
-                                </div>
-                                <div class="form-row">
                                     <label class="form-lbl">Payment Terms</label>
                                     <select name="payment_terms_id" class="form-inp">
                                         <option value="">— Select Terms —</option>
@@ -89,6 +85,49 @@
                                 <div class="form-row">
                                     <label class="form-lbl">Delivery Date</label>
                                     <input type="date" name="delivery_date" class="form-inp">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Address --}}
+                    <div class="dash-card" style="margin-bottom:16px;">
+                        <div class="card-head">
+                            <div class="card-title"><i class="bi bi-plus-circle-dotted" style="color:var(--accent);margin-right:6px;"></i>Add New Payment Entry</div>
+                            <div class="card-sub">Record an installment or final payment (Optional)</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-grid">
+                                <div class="form-row">
+                                    <label class="form-lbl">Payment Date <span style="color:#ef4444; display:none;" id="payDateReq">*</span></label>
+                                    <input type="date" name="transaction_date" id="payDate" class="form-inp" value="{{ date('Y-m-d') }}">
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Amount Received (₹) <span style="color:#ef4444; display:none;" id="payAmountReq">*</span></label>
+                                    <input type="number" name="amount" id="payAmount" class="form-inp" placeholder="e.g. 50000" step="0.01" oninput="togglePaymentRequirements()">
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Payment Mode</label>
+                                    <select name="payment_method" class="form-inp">
+                                        <option value="Bank Transfer">Bank Transfer</option>
+                                        <option value="UPI">UPI / GPay / PhonePe</option>
+                                        <option value="Cheque">Cheque</option>
+                                        <option value="Cash">Cash</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Reference / UTR ID</label>
+                                    <input type="text" name="transaction_id" class="form-inp" placeholder="Transaction ref code">
+                                </div>
+                                <div class="form-row" style="grid-column:1/-1">
+                                    <label class="form-lbl">Payment Proof / Screenshot</label>
+                                    <input type="file" name="screenshot" class="form-inp" accept="image/*,application/pdf">
+                                    <p style="font-size:11px; color:var(--t3); margin-top:4px;">Upload PNG, JPG, or PDF (Max 5MB)</p>
+                                </div>
+                                <div class="form-row" style="grid-column:1/-1">
+                                    <label class="form-lbl">Internal Notes</label>
+                                    <textarea name="notes" class="form-inp" rows="3" placeholder="Mention installment details or bank info..."></textarea>
                                 </div>
                             </div>
                         </div>
@@ -307,6 +346,23 @@
             addPhoneRow('order-phone-list');
         }
     });
+
+    function togglePaymentRequirements() {
+        const amt = document.getElementById('payAmount').value;
+        const dateInput = document.getElementById('payDate');
+        const dateReq = document.getElementById('payDateReq');
+        const amtReq = document.getElementById('payAmountReq');
+        
+        if(amt > 0) {
+            dateInput.required = true;
+            dateReq.style.display = 'inline';
+            amtReq.style.display = 'inline';
+        } else {
+            dateInput.required = false;
+            dateReq.style.display = 'none';
+            amtReq.style.display = 'none';
+        }
+    }
 </script>
 
 @endsection

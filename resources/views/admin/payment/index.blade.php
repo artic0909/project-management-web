@@ -67,7 +67,7 @@
                             <div class="card-sub">Total {{ $payments->count() }} transaction entries</div>
                         </div>
                         <div class="card-actions mb-2">
-                            <form action="{{ route($routePrefix . '.payment.index') }}" method="GET"
+                            <form action="{{ route($routePrefix . '.payments.index') }}" method="GET"
                                 class="card-actions mb-0">
                                 <div class="global-search">
                                     <i class="bi bi-search"></i>
