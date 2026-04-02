@@ -5,6 +5,9 @@
 @section('content')
 
 <style>
+    .modal-header .btn-close { filter: none; }
+    [data-theme="dark"] .modal-header .btn-close { filter: invert(1); }
+
     /* ── 6-column uniform grid ── */
     .stat-grid-wrap {
         display: grid;
@@ -589,6 +592,52 @@
         padding-top: 12px;
         border-top: 1px solid var(--b1);
     }
+
+    /* ── Contact Icons UI ── */
+    .contact-actions {
+        display: flex;
+        gap: 6px;
+        margin-top: 4px;
+    }
+    .contact-btn {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        cursor: pointer;
+        transition: var(--transition);
+        border: 1px solid var(--b1);
+        background: var(--bg2);
+        color: var(--t3);
+        text-decoration: none;
+    }
+    .contact-btn:hover {
+        background: var(--accent-bg);
+        color: var(--accent);
+        border-color: var(--accent);
+        transform: translateY(-1px);
+    }
+    .contact-btn.phone:hover {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        border-color: #10b981;
+    }
+
+    @media (max-width: 768px) {
+        .row-actions {
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+    }
+
+    .ra-btn.phone:hover {
+        background: rgba(16, 185, 129, 0.1) !important;
+        color: #10b981 !important;
+        border-color: #10b981 !important;
+    }
 </style>
 
 
@@ -851,6 +900,9 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @php
+                                $codes = [0=>'+93',1=>'+355',2=>'+213',3=>'+376',4=>'+244',5=>'+54',6=>'+61',7=>'+43',8=>'+880',9=>'+32',10=>'+55',11=>'+1',12=>'+86',13=>'+57',14=>'+45',15=>'+20',16=>'+33',17=>'+49',18=>'+233',19=>'+30',20=>'+91',21=>'+62',22=>'+98',23=>'+964',24=>'+353',25=>'+972',26=>'+39',27=>'+81',28=>'+962',29=>'+254',30=>'+965',31=>'+961',32=>'+60',33=>'+52',34=>'+212',35=>'+977',36=>'+31',37=>'+64',38=>'+234',39=>'+47',40=>'+968',41=>'+92',42=>'+63',43=>'+48',44=>'+351',45=>'+974',46=>'+7',47=>'+966',48=>'+65',49=>'+27',50=>'+34',51=>'+94',52=>'+46',53=>'+41',54=>'+886',55=>'+66',56=>'+90',57=>'+971',58=>'+44',59=>'+1',60=>'+84',61=>'+260',62=>'+263'];
+                            @endphp
                             @forelse($leads as $index => $lead)
                             <tr>
                                 <td>{{ $leads->firstItem() + $index }}</td>
@@ -863,7 +915,9 @@
                                         @endphp
                                         <div class="mini-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">{{ $initials }}</div>
                                         <div>
-                                            <div class="ln">{{ $lead->company }}</div>
+                                            <div class="ln">
+                                                {{ $lead->company }}
+                                            </div>
                                             <div class="ls">{{ $emails }}</div>
                                         </div>
                                     </div>
@@ -873,9 +927,6 @@
                                 <td>
                                     @foreach($lead->phones as $p)
                                         <strong style="color:var(--t2)">
-                                            @php
-                                                $codes = [0=>'+93',1=>'+355',2=>'+213',3=>'+376',4=>'+244',5=>'+54',6=>'+61',7=>'+43',8=>'+880',9=>'+32',10=>'+55',11=>'+1',12=>'+86',13=>'+57',14=>'+45',15=>'+20',16=>'+33',17=>'+49',18=>'+233',19=>'+30',20=>'+91',21=>'+62',22=>'+98',23=>'+964',24=>'+353',25=>'+972',26=>'+39',27=>'+81',28=>'+962',29=>'+254',30=>'+965',31=>'+961',32=>'+60',33=>'+52',34=>'+212',35=>'+977',36=>'+31',37=>'+64',38=>'+234',39=>'+47',40=>'+968',41=>'+92',42=>'+63',43=>'+48',44=>'+351',45=>'+974',46=>'+7',47=>'+966',48=>'+65',49=>'+27',50=>'+34',51=>'+94',52=>'+46',53=>'+41',54=>'+886',55=>'+66',56=>'+90',57=>'+971',58=>'+44',59=>'+1',60=>'+84',61=>'+260',62=>'+263'];
-                                            @endphp
                                             {{ ($codes[$p['code_idx']] ?? '') . $p['number'] }}
                                         </strong><br>
                                     @endforeach
@@ -912,9 +963,24 @@
                                 </td>
                                 <td>
                                     <div class="row-actions">
+                                        @php
+                                            $phoneList = is_array($lead->phones) ? $lead->phones : [];
+                                            $emailList = is_array($lead->emails) ? $lead->emails : [];
+                                            $fullPhones = [];
+                                            foreach($phoneList as $p) {
+                                                $fullPhones[] = ($codes[$p['code_idx']] ?? '') . $p['number'];
+                                            }
+                                        @endphp
+                                        <a href="javascript:void(0)" class="ra-btn phone" 
+                                           onclick="handleContactClick(event, 'tel', {{ json_encode($fullPhones) }})" title="Call Lead">
+                                            <i class="bi bi-telephone-fill"></i>
+                                        </a>
+                                        <a href="javascript:void(0)" class="ra-btn email" 
+                                           onclick="handleContactClick(event, 'mailto', {{ json_encode($emailList) }})" title="Email Lead">
+                                            <i class="bi bi-envelope-fill"></i>
+                                        </a>
+
                                         <a href="{{ route('admin.leads.show', $lead->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                        <!-- <button class="ra-btn" title="Call"><i class="bi bi-telephone-fill"></i></button>
-                                        <button class="ra-btn" title="Email"><i class="bi bi-envelope-fill"></i></button> -->
                                         <a href="{{route('admin.leads.followup', $lead->id)}}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
                                         <a class="ra-btn" title="Edit" href="{{route('admin.leads.edit', $lead->id)}}"><i class="bi bi-pencil-fill"></i></a>
                                         <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route('admin.leads.destroy', $lead->id) }}')"><i class="bi bi-trash-fill"></i></button>
@@ -970,148 +1036,6 @@
     </div>
 
     <!-- LEAD DETAIL MODAL -->
-    <!-- LEAD DETAIL MODAL -->
-    <div class="modal-backdrop" id="leadDetailModal" onclick="closeModal('leadDetailModal')">
-        <div class="modal-box" onclick="event.stopPropagation()">
-            <div class="modal-hd">
-                <div style="display:flex;flex-direction:column;gap:2px;">
-                    <span>TechCorp Solutions</span>
-                    <span style="font-size:11px;font-weight:500;color:var(--t3);">Lead Detail</span>
-                </div>
-                <button class="modal-close" onclick="closeModal('leadDetailModal')"><i class="bi bi-x-lg"></i></button>
-            </div>
-
-            <div class="modal-bd">
-
-                {{-- ── KPI Strip ── --}}
-                <div class="detail-kpis" style="margin-bottom:20px;">
-                    <div class="dk-item">
-                        <div class="dk-val">12-02-2026</div>
-                        <div class="dk-lbl">Created Date</div>
-                    </div>
-                    <div class="dk-item">
-                        <div class="dk-val" style="color:#ef4444;">Hot 🔥</div>
-                        <div class="dk-lbl">Priority</div>
-                    </div>
-                    <div class="dk-item">
-                        <div class="dk-val">Website</div>
-                        <div class="dk-lbl">Service Need</div>
-                    </div>
-                    <div class="dk-item">
-                        <div class="dk-val">LinkedIn</div>
-                        <div class="dk-lbl">Lead Source</div>
-                    </div>
-                </div>
-
-                {{-- ── Read-only info block ── --}}
-                <div style="background:var(--bg3);border:1px solid var(--b1);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-
-                    <div style="display:flex;flex-direction:column;gap:2px;">
-                        <span style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);">Company</span>
-                        <span style="font-size:13px;font-weight:600;color:var(--t1);">TechCorp Solutions</span>
-                    </div>
-
-                    <div style="display:flex;flex-direction:column;gap:2px;">
-                        <span style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);">Contact Person</span>
-                        <span style="font-size:13px;font-weight:600;color:var(--t1);">Vikram Bhatia</span>
-                    </div>
-
-                    <div style="display:flex;flex-direction:column;gap:2px;">
-                        <span style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);">Business Type</span>
-                        <span style="font-size:13px;font-weight:600;color:var(--t1);">Technology</span>
-                    </div>
-
-                    <div style="display:flex;flex-direction:column;gap:2px;">
-                        <span style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);">Assigned To</span>
-                        <div style="display:flex;align-items:center;gap:6px;margin-top:2px;">
-                            <div style="width:20px;height:20px;border-radius:5px;background:linear-gradient(135deg,#6366f1,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;">RK</div>
-                            <span style="font-size:13px;font-weight:600;color:var(--t1);">Rahul Kumar</span>
-                        </div>
-                    </div>
-
-                    <div style="display:flex;flex-direction:column;gap:2px;">
-                        <span style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);">Email</span>
-                        <span style="font-size:13px;color:var(--t2);">vikram@techcorp.com</span>
-                    </div>
-
-                    <div style="display:flex;flex-direction:column;gap:2px;">
-                        <span style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);">Phone</span>
-                        <span style="font-size:13px;color:var(--t2);">+91 98765 43210</span>
-                    </div>
-
-                    <div style="display:flex;flex-direction:column;gap:2px;grid-column:1/-1;">
-                        <span style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);">Address</span>
-                        <span style="font-size:13px;color:var(--t2);">204, Orbit Tower, Andheri East, Mumbai — 400069</span>
-                    </div>
-
-                </div>
-
-                {{-- ── Editable fields (Priority + Status only) ── --}}
-                <div style="background:var(--accent-bg);border:1px solid rgba(99,102,241,.2);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;">
-                    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:6px;">
-                        <i class="bi bi-pencil-fill"></i> Quick Update
-                    </div>
-                    <div class="form-grid">
-                        <div class="form-row" style="margin-bottom:0;">
-                            <label class="form-lbl">Change Priority</label>
-                            <select class="form-inp">
-                                <option selected>Hot 🔥</option>
-                                <option>Warm</option>
-                                <option>Cold</option>
-                                <option>Lost</option>
-                            </select>
-                        </div>
-                        <div class="form-row" style="margin-bottom:0;">
-                            <label class="form-lbl">Change Lead Status</label>
-                            <select class="form-inp">
-                                <option>Not Responding</option>
-                                <option>Not Interested</option>
-                                <option>Not Required</option>
-                                <option>Location Issue</option>
-                                <option>Job</option>
-                                <option>Not Inquired</option>
-                                <option selected>Respond</option>
-                                <option>Interested</option>
-                                <option>Language Barrier</option>
-                                <option>Booked</option>
-                                <option>Budget Issue</option>
-                            </select>
-                        </div>
-                        <div class="form-row" style="grid-column:1/-1;margin-bottom:0;">
-                            <label class="form-lbl">Add Remark / Note</label>
-                            <textarea class="form-inp" rows="2" placeholder="Add internal note…"></textarea>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            {{-- ── Footer — 3 actions ── --}}
-            <div class="modal-ft" style="justify-content:space-between;">
-
-                {{-- Left: Close --}}
-                <button class="btn-ghost" onclick="closeModal('leadDetailModal')">
-                    <i class="bi bi-x-lg"></i> Close
-                </button>
-
-                {{-- Right: Convert + Update --}}
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <a href="{{route('admin.orders.create')}}" class="btn-ghost"
-                        style="border-color:#10b981;color:#10b981;"
-                        onmouseover="this.style.background='rgba(16,185,129,.1)'"
-                        onmouseout="this.style.background='transparent'"
-                        onclick="closeModal('leadDetailModal');">
-                        <i class="bi bi-arrow-right-circle-fill"></i> Convert to Order
-                    </a>
-                    <button class="btn-primary-solid"
-                        onclick="closeModal('leadDetailModal');showToast('success','Lead updated!','bi-person-check-fill')">
-                        <i class="bi bi-check2-circle"></i> Update Lead
-                    </button>
-                </div>
-
-            </div>
-        </div>
-    </div>
 
 </main>
 
@@ -2400,4 +2324,69 @@
     });
 </script>
 
+    <!-- ── Contact Selection Modal (Bootstrap) ── -->
+    <div class="modal fade" id="contactSelectionModal" tabindex="-1" aria-labelledby="contactSelectionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: var(--bg2); border-color: var(--b2); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+                <div class="modal-header" style="border-bottom-color: var(--b1);">
+                    <h5 class="modal-title" id="contactSelectionModalLabel" style="color: #ef4444; font-weight: 700;">Select Option</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--close-filter);"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="list-group list-group-flush" id="contactSelectionOptions">
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top-color: var(--b1);">
+                    <button type="button" class="btn btn-secondary sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function handleContactClick(e, protocol, options) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (!options || options.length === 0) {
+                alert('No contact details available');
+                return;
+            }
+
+            if (options.length === 1) {
+                window.location.href = protocol + ':' + options[0];
+                return;
+            }
+
+            const modalEl = document.getElementById('contactSelectionModal');
+            const optionsGroup = document.getElementById('contactSelectionOptions');
+            const titleEl = document.getElementById('contactSelectionModalLabel');
+
+            titleEl.textContent = 'Select ' + (protocol === 'tel' ? 'Phone Number' : 'Email Address');
+            optionsGroup.innerHTML = '';
+
+            options.forEach(opt => {
+                const item = document.createElement('a');
+                item.className = 'list-group-item list-group-item-action d-flex align-items-center gap-3 py-3 border-bottom-0';
+                item.style.cssText = 'background: transparent; color: var(--t2); border-bottom: 1px solid var(--b1) !important;';
+                item.href = protocol + ':' + opt;
+                item.innerHTML = `
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(99,102,241,0.1); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-${protocol === 'tel' ? 'telephone-fill' : 'envelope-fill'}" style="color: var(--accent);"></i>
+                    </div>
+                    <span style="font-weight: 600; font-size: 15px;">${opt}</span>
+                `;
+                item.onmouseover = () => { item.style.background = 'var(--bg3)'; item.style.color = 'var(--accent)'; };
+                item.onmouseout = () => { item.style.background = 'transparent'; item.style.color = 'var(--t2)'; };
+                item.onclick = (e) => {
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                };
+                optionsGroup.appendChild(item);
+            });
+
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+        }
+    </script>
 @endsection
