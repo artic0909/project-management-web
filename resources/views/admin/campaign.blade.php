@@ -779,7 +779,7 @@
                 <button class="modal-close" onclick="closeModal('addModal')"><i class="bi bi-x-lg"></i></button>
             </div>
 
-            <form action="{{ route('admin.campaign.store') }}" method="POST">
+            <form action="{{ route($routePrefix . '.campaign.store') }}" method="POST">
                 @csrf
                 <div class="modal-bd">
                     <div class="form-row">
@@ -897,14 +897,14 @@
 <script>
     // ── Edit Modal ──
     function openEditModal(id, name) {
-        document.getElementById('editForm').action = `/admin/campaigns/${id}`;
+        document.getElementById('editForm').action = `{{ url($routePrefix . '/campaigns') }}/${id}`;
         document.getElementById('editNameInput').value = name;
         openModal('editModal');
     }
 
     // ── Delete Modal ──
     function openDeleteModal(id, name) {
-        document.getElementById('deleteForm').action = `/admin/campaigns/${id}`;
+        document.getElementById('deleteForm').action = `{{ url($routePrefix . '/campaigns') }}/${id}`;
         document.getElementById('deleteCampaignName').textContent = name;
         openModal('deleteModal');
     }

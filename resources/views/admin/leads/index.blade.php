@@ -1,6 +1,6 @@
 @extends('admin.layout.app')
 
-@section('title', 'All Leads')
+@section('title', 'All ad Leads')
 
 @section('content')
 
@@ -652,13 +652,15 @@
                 <h1 class="page-title">Your All Leads</h1>
             </div>
             <div class="d-flex gap-2">
+                @if($routePrefix == 'admin')
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
-                <a class="btn-primary-solid sm" href="{{route('admin.leads.create')}}">
+                @endif
+                <a class="btn-primary-solid sm" href="{{ route($routePrefix . '.leads.create') }}">
                     <i class="bi bi-plus-lg"></i> Add Lead
                 </a>
             </div>
@@ -821,7 +823,7 @@
                         <div class="card-title">Lead Pipeline</div>
                         <div class="card-sub" id="drpActiveSub">Last 7 Days · 147 total · 38 hot leads</div>
                     </div>
-                    <form action="{{ route('admin.leads.index') }}" method="GET" class="card-actions mb-2">
+                    <form action="{{ route($routePrefix . '.leads.index') }}" method="GET" class="card-actions mb-2">
                         <div class="global-search">
                             <i class="bi bi-search"></i>
                             <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search..." autocomplete="off">
@@ -870,12 +872,14 @@
                                 <option value="{{ $status->id }}" {{ request('status_id') == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
                             @endforeach
                         </select>
+                        @if($routePrefix == 'admin')
                         <select name="assigned_to" class="filter-select" onchange="updateFilters()">
                             <option value="">Sales Person</option>
                             @foreach($sales as $sale)
                                 <option value="{{ $sale->id }}" {{ request('assigned_to') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
                             @endforeach
                         </select>
+                        @endif
                     </form>
                 </div>
 
@@ -980,10 +984,12 @@
                                             <i class="bi bi-envelope-fill"></i>
                                         </a>
 
-                                        <a href="{{ route('admin.leads.show', $lead->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                        <a href="{{route('admin.leads.followup', $lead->id)}}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
-                                        <a class="ra-btn" title="Edit" href="{{route('admin.leads.edit', $lead->id)}}"><i class="bi bi-pencil-fill"></i></a>
-                                        <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route('admin.leads.destroy', $lead->id) }}')"><i class="bi bi-trash-fill"></i></button>
+                                        <a href="{{ route($routePrefix . '.leads.show', $lead->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
+                                        <a href="{{ route($routePrefix . '.leads.followup', $lead->id) }}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
+                                        <a class="ra-btn" title="Edit" href="{{ route($routePrefix . '.leads.edit', $lead->id) }}"><i class="bi bi-pencil-fill"></i></a>
+                                        @if($routePrefix == 'admin')
+                                        <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route($routePrefix . '.leads.destroy', $lead->id) }}')"><i class="bi bi-trash-fill"></i></button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

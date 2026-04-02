@@ -30,10 +30,10 @@
                     <p class="page-desc">{{ $project->company_name ?? 'Client: ' . $project->client_name }}</p>
                 </div>
                 <div class="header-actions">
-                    <a href="{{ route('admin.projects.edit', $project->id) }}" class="btn-primary-solid sm">
+                    <a href="{{ route($routePrefix . '.projects.edit', $project->id) }}" class="btn-primary-solid sm">
                         <i class="bi bi-pencil-square"></i> Edit Project
                     </a>
-                    <form action="{{ route('admin.projects.destroy', $project->id) }}" method="POST"
+                    <form action="{{ route($routePrefix . '.projects.destroy', $project->id) }}" method="POST"
                         onsubmit="return confirm('Are you sure?')" style="display:inline;">
                         @csrf
                         @method('DELETE')
@@ -41,7 +41,7 @@
                             <i class="bi bi-trash3"></i> Delete
                         </button>
                     </form>
-                    <a href="{{ route('admin.projects.index') }}" class="btn-ghost sm">
+                    <a href="{{ route($routePrefix . '.projects.index') }}" class="btn-ghost sm">
                         <i class="bi bi-arrow-left"></i> Back to List
                     </a>
                 </div>
@@ -267,7 +267,7 @@
                             <div class="card-title"><i class="bi bi-lightning-charge-fill" style="color:var(--accent);margin-right:6px;"></i>Quick Update</div>
                         </div>
                         <div class="card-body" style="padding:15px;">
-                            <form action="{{ route('admin.projects.quickUpdate', $project->id) }}" method="POST">
+                            <form action="{{ route($routePrefix . '.projects.quickUpdate', $project->id) }}" method="POST">
                                 @csrf
                                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
                                     <div class="form-row" style="margin-bottom:0;">

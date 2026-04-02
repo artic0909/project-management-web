@@ -10,7 +10,7 @@
         <div class="page-header">
             <div>
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                    <a href="{{ route('admin.orders.index') }}"
+                    <a href="{{ route($routePrefix . '.orders.index') }}"
                         style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--t3);text-decoration:none;transition:var(--transition);"
                         onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--t3)'">
                         <i class="bi bi-arrow-left"></i> All Orders
@@ -20,10 +20,10 @@
                 <p class="page-desc">Viewing details for <strong>{{ $order->company_name }}</strong></p>
             </div>
             <div style="display:flex;gap:10px;">
-                <a href="{{ route('admin.payments.create', $order->id) }}" class="btn-primary-solid sm">
+                <a href="{{ route($routePrefix . '.payments.create', $order->id) }}" class="btn-primary-solid sm">
                     <i class="bi bi-wallet2"></i> Add Payment
                 </a>
-                <a href="{{ route('admin.orders.edit', $order->id) }}" class="btn-primary-solid sm">
+                <a href="{{ route($routePrefix . '.orders.edit', $order->id) }}" class="btn-primary-solid sm">
                     <i class="bi bi-pencil-fill"></i> Edit Order
                 </a>
             </div>
@@ -178,7 +178,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
+                        <form action="{{ route($routePrefix . '.orders.updateStatus', $order->id) }}" method="POST">
                             @csrf
                             @method('PATCH')
                             <div class="form-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">

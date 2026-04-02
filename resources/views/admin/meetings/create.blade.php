@@ -15,7 +15,7 @@
         <div class="page-header" style="margin-bottom:24px;">
             <div>
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-                    <a href="{{ route('admin.meetings.index') }}" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--t3);text-decoration:none;">
+                    <a href="{{ route($routePrefix . '.meetings.index') }}" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--t3);text-decoration:none;">
                         <i class="bi bi-arrow-left"></i> Back to Schedule
                     </a>
                 </div>
@@ -31,7 +31,7 @@
                         <div class="card-title">Meeting Details</div>
                     </div>
                     <div class="card-body" style="padding:24px;">
-                        <form action="{{ route('admin.meetings.store') }}" method="POST">
+                        <form action="{{ route($routePrefix . '.meetings.store') }}" method="POST">
                             @csrf
                             
                             <div class="form-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
@@ -109,7 +109,7 @@
 
                             <div style="margin-top:30px; display:flex; gap:10px;">
                                 <button type="submit" class="btn-primary-solid">Create Schedule</button>
-                                <a href="{{ route('admin.meetings.index') }}" class="btn-primary-ghost">Cancel</a>
+                                <a href="{{ route($routePrefix . '.meetings.index') }}" class="btn-primary-ghost">Cancel</a>
                             </div>
                     </div>
                 </div>
@@ -136,6 +136,7 @@
                             </div>
                         </div>
 
+                        @if($routePrefix == 'admin')
                         <div id="devSection" style="display:none;">
                             <div class="form-row" style="margin-top:20px;">
                                 <label class="form-lbl">Developers (Internal)</label>
@@ -152,6 +153,7 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
                     </div>
                 </div>
                 </form>

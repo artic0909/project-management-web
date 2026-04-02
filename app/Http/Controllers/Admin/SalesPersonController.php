@@ -13,8 +13,9 @@ class SalesPersonController extends Controller
 {
     public function index()
     {
+        $routePrefix = 'admin';
         $salesPeople = Sale::latest()->paginate(14)->withQueryString();
-        return view('admin.sales-person', compact('salesPeople'));
+        return view('admin.sales-person', compact('salesPeople', 'routePrefix'));
     }
 
     public function store(Request $request)

@@ -144,9 +144,11 @@ class LeadController extends Controller
 
         $sales = Sale::all(); // Still show all sales for assignment? User said "as admin make all things", so yes.
 
-        return view('sale.leads.index', compact(
+        $routePrefix = 'sale';
+        return view('admin.leads.index', compact(
             'leads', 'totalLeads', 'convertedLeads', 'statuses', 
-            'sources', 'services', 'campaigns', 'priorityCounts', 'sales', 'totalCallingFollowupsFiltered', 'totalMessageFollowupsFiltered'
+            'sources', 'services', 'campaigns', 'priorityCounts', 'sales', 'totalCallingFollowupsFiltered', 'totalMessageFollowupsFiltered',
+            'routePrefix'
         ));
     }
 
@@ -162,7 +164,8 @@ class LeadController extends Controller
         $createdBy = $user->id;
         $createdByType = get_class($user);
 
-        return view('sale.leads.create', compact('statuses', 'sales', 'sources', 'services', 'createdBy', 'createdByType', 'campaigns'));
+        $routePrefix = 'sale';
+        return view('admin.leads.create', compact('statuses', 'sales', 'sources', 'services', 'createdBy', 'createdByType', 'campaigns', 'routePrefix'));
     }
 
     public function store(Request $request)
@@ -243,7 +246,8 @@ class LeadController extends Controller
     {
         $lead = $this->getFilteredLeads()->with(['status', 'source', 'service', 'campaign', 'createdBy', 'assignments.sale', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         $statuses = Status::where('type', 'lead')->get();
-        return view('sale.leads.show', compact('lead', 'statuses'));
+        $routePrefix = 'sale';
+        return view('admin.leads.show', compact('lead', 'statuses', 'routePrefix'));
     }
 
     public function edit($id)
@@ -255,7 +259,8 @@ class LeadController extends Controller
         $campaigns = Campaign::all();
         $sales = Sale::all();
         
-        return view('sale.leads.edit', compact('lead', 'sources', 'services', 'statuses', 'campaigns', 'sales'));
+        $routePrefix = 'sale';
+        return view('admin.leads.edit', compact('lead', 'sources', 'services', 'statuses', 'campaigns', 'sales', 'routePrefix'));
     }
 
     public function update(Request $request, $id)
@@ -366,7 +371,8 @@ class LeadController extends Controller
         $services = Service::all();
         $sales = Sale::all();
 
-        return view('sale.losted-leads', compact('leads', 'totalLostLeads', 'sources', 'services', 'sales'));
+        $routePrefix = 'sale';
+        return view('admin.losted-leads', compact('leads', 'totalLostLeads', 'sources', 'services', 'sales', 'routePrefix'));
     }
 
     public function updateStatus(Request $request, $id)

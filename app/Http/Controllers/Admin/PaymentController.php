@@ -40,8 +40,9 @@ class PaymentController extends Controller
 
         $allStatuses = Status::where('type', 'payment')->get(); // Filter by payment status now
 
+        $routePrefix = 'admin';
         return view('admin.payment.index', compact(
-            'payments', 'totalCollected', 'totalOrderValue', 'totalOutstanding', 'allStatuses'
+            'payments', 'totalCollected', 'totalOrderValue', 'totalOutstanding', 'allStatuses', 'routePrefix'
         ));
     }
 
@@ -49,7 +50,8 @@ class PaymentController extends Controller
     {
         $order = Order::with(['status', 'service', 'assignments.sale', 'payments', 'paymentTerms', 'createdBy'])->findOrFail($order_id);
         $paymentStatuses = Status::where('type', 'payment')->get();
-        return view('admin.payment.create', compact('order', 'paymentStatuses'));
+        $routePrefix = 'admin';
+        return view('admin.payment.create', compact('order', 'paymentStatuses', 'routePrefix'));
     }
 
     public function store(Request $request)
@@ -82,8 +84,8 @@ class PaymentController extends Controller
         }
 
         Payment::create($data);
-
-        return redirect()->back()->with('success', 'Payment recorded successfully.');
+        $routePrefix = 'admin';
+        return redirect()->route($routePrefix . '.payment.index')->with('success', 'Payment recorded successfully.');
     }
 
     public function destroy($id)

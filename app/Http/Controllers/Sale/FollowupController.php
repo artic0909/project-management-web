@@ -37,13 +37,14 @@ class FollowupController extends Controller
 
     public function index($id)
     {
-        $isOrder = Route::is('sale.orders.*');
+        $routePrefix = 'sale';
+        $isOrder = Route::is($routePrefix . '.orders.*');
         
         if ($isOrder) {
             $model = Order::with(['status', 'service', 'assignments.sale', 'followups.creator', 'paymentTerms', 'mktPaymentStatus'])->findOrFail($id);
             $this->checkAccess($model);
             $typeLabel = 'Order';
-            $backRoute = route('sale.orders.index');
+            $backRoute = route($routePrefix . '.orders.index');
             $orderStatuses = Status::where('type', 'order')->get();
             $paymentStatuses = Status::where('type', 'payment')->get();
             $statuses = [];
@@ -51,7 +52,7 @@ class FollowupController extends Controller
             $model = Lead::with(['status', 'source', 'service', 'assignments.sale', 'followups.creator'])->findOrFail($id);
             $this->checkAccess($model);
             $typeLabel = 'Lead';
-            $backRoute = route('sale.leads.index');
+            $backRoute = route($routePrefix . '.leads.index');
             $statuses = Status::where('type', 'lead')->get();
             $orderStatuses = [];
             $paymentStatuses = [];
@@ -60,11 +61,12 @@ class FollowupController extends Controller
         $totalFollowups = $model->followups->count();
         $lastFollowup = $model->followups->first();
         
-        return view('sale.followup', compact('model', 'totalFollowups', 'lastFollowup', 'isOrder', 'typeLabel', 'backRoute', 'orderStatuses', 'paymentStatuses', 'statuses'));
+        return view('admin.followup', compact('model', 'totalFollowups', 'lastFollowup', 'isOrder', 'typeLabel', 'backRoute', 'orderStatuses', 'paymentStatuses', 'statuses', 'routePrefix'));
     }
 
     public function store(Request $request, $id)
     {
+        $routePrefix = 'sale';
         $request->validate([
             'followup_date' => 'required|date',
             'followup_type' => 'required|string|in:Calling,Message,Both',
@@ -75,7 +77,7 @@ class FollowupController extends Controller
             'message_note.required_if' => 'The message note is required when interaction involves messaging.',
         ]);
 
-        $isOrder = Route::is('sale.orders.*');
+        $isOrder = Route::is($routePrefix . '.orders.*');
         $model = $isOrder ? Order::findOrFail($id) : Lead::findOrFail($id);
         $this->checkAccess($model);
 

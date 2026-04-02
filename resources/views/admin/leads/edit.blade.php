@@ -11,7 +11,7 @@
         <div class="page-header">
             <div>
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                    <a href="{{ route('admin.leads.index') }}"
+                    <a href="{{ route($routePrefix . '.leads.index') }}"
                         style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--t3);text-decoration:none;transition:var(--transition);"
                         onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--t3)'">
                         <i class="bi bi-arrow-left"></i> All Leads
@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <form action="{{ route('admin.leads.update', $lead->id) }}" method="POST">
+        <form action="{{ route($routePrefix . '.leads.update', $lead->id) }}" method="POST">
             @csrf
             @method('PUT')
             
@@ -211,7 +211,7 @@
                                 <button type="submit" class="btn-primary-solid" style="width:100%;justify-content:center;padding:12px;">
                                     <i class="bi bi-save"></i> Update Profile
                                 </button>
-                                <a href="{{ route('admin.leads.index') }}" class="btn-ghost" style="width:100%;justify-content:center;padding:10px;">
+                                <a href="{{ route($routePrefix . '.leads.index') }}" class="btn-ghost" style="width:100%;justify-content:center;padding:10px;">
                                     Back to Pipeline
                                 </a>
                             </div>

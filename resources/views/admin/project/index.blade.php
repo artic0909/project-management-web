@@ -20,7 +20,7 @@
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
-                <a href="{{ route('admin.projects.create') }}" class="btn-primary-solid">
+                <a href="{{ route($routePrefix . '.projects.create') }}" class="btn-primary-solid">
                     <i class="bi bi-plus-lg"></i> Add Project
                 </a>
             </div>
@@ -30,7 +30,7 @@
         <div id="statsWrap" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;">
 
             <div class="dash-card {{ !request()->has('q') && !request()->has('project_status_id') && !request()->has('start_date') ? 'active' : '' }}" 
-                style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route('admin.projects.index') }}'">
+                style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route($routePrefix . '.projects.index') }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(99,102,241,.13);display:flex;align-items:center;justify-content:center;">
                         <i class="bi bi-kanban-fill" style="font-size:17px;color:#6366f1;"></i>
@@ -48,7 +48,7 @@
                 $activeStatus = $statuses['project_statuses']->where('name', 'development')->first(); 
             @endphp
             <div class="dash-card {{ request('project_status_id') == ($activeStatus->id ?? 'xxx') ? 'active' : '' }}" 
-                style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route('admin.projects.index', ['project_status_id' => ($activeStatus->id ?? '')]) }}'">
+                style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route($routePrefix . '.projects.index', ['project_status_id' => ($activeStatus->id ?? '')]) }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(6,182,212,.13);display:flex;align-items:center;justify-content:center;">
                         <i class="bi bi-play-circle-fill" style="font-size:17px;color:#06b6d4;"></i>
@@ -66,7 +66,7 @@
                 $doneStatus = $statuses['project_statuses']->where('name', 'complete')->first(); 
             @endphp
             <div class="dash-card {{ request('project_status_id') == ($doneStatus->id ?? 'xxx') ? 'active' : '' }}" 
-                style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route('admin.projects.index', ['project_status_id' => ($doneStatus->id ?? '')]) }}'">
+                style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route($routePrefix . '.projects.index', ['project_status_id' => ($doneStatus->id ?? '')]) }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(16,185,129,.13);display:flex;align-items:center;justify-content:center;">
                         <i class="bi bi-check-circle-fill" style="font-size:17px;color:#10b981;"></i>
@@ -84,7 +84,7 @@
                 $holdStatus = $statuses['project_statuses']->where('name', 'on hold')->first(); 
             @endphp
             <div class="dash-card {{ request('project_status_id') == ($holdStatus->id ?? 'xxx') ? 'active' : '' }}" 
-                style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route('admin.projects.index', ['project_status_id' => ($holdStatus->id ?? '')]) }}'">
+                style="padding:16px 18px;cursor:pointer;" onclick="window.location.href='{{ route($routePrefix . '.projects.index', ['project_status_id' => ($holdStatus->id ?? '')]) }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(245,158,11,.13);display:flex;align-items:center;justify-content:center;">
                         <i class="bi bi-pause-circle-fill" style="font-size:17px;color:#f59e0b;"></i>
@@ -109,7 +109,7 @@
                         <div class="card-sub" id="projectTableSub">{{ $projects->total() }} total projects</div>
                     </div>
                     <div class="card-actions mb-2">
-                        <form action="{{ route('admin.projects.index') }}" method="GET" class="card-actions mb-0">
+                        <form action="{{ route($routePrefix . '.projects.index') }}" method="GET" class="card-actions mb-0">
                             <div class="global-search">
                                 <i class="bi bi-search"></i>
                                 <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search projects...">
@@ -284,10 +284,10 @@
                                 </td>
                                 <td>
                                     <div class="row-actions">
-                                        <a href="{{ route('admin.projects.tasks', $project->id) }}" class="ra-btn" title="Tasks" style="color:#6366f1;background:rgba(99,102,241,0.1);"><i class="bi bi-list-task"></i></a>
-                                        <a href="{{ route('admin.projects.show', $project->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                        <a href="{{ route('admin.projects.edit', $project->id) }}" class="ra-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
-                                        <form action="{{ route('admin.projects.destroy', $project->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this project?')">
+                                        <a href="{{ route($routePrefix . '.projects.tasks', $project->id) }}" class="ra-btn" title="Tasks" style="color:#6366f1;background:rgba(99,102,241,0.1);"><i class="bi bi-list-task"></i></a>
+                                        <a href="{{ route($routePrefix . '.projects.show', $project->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
+                                        <a href="{{ route($routePrefix . '.projects.edit', $project->id) }}" class="ra-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
+                                        <form action="{{ route($routePrefix . '.projects.destroy', $project->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this project?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="ra-btn danger" title="Delete"><i class="bi bi-trash-fill"></i></button>

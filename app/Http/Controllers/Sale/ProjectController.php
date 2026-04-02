@@ -85,14 +85,16 @@ class ProjectController extends Controller
         $statuses = $this->getStatusOptions();
         $allDevelopers = Developer::all();
 
-        return view('sale.project.index', compact(
+        $routePrefix = 'sale';
+        return view('admin.project.index', compact(
             'projects', 
             'totalProjects', 
             'activeProjects', 
             'completedProjects', 
             'onHoldProjects',
             'statuses',
-            'allDevelopers'
+            'allDevelopers',
+            'routePrefix'
         ));
     }
 
@@ -119,7 +121,8 @@ class ProjectController extends Controller
         $developers = Developer::latest()->get();
         $salesPersons = \App\Models\Sale::latest()->get();
         $statuses = $this->getStatusOptions();
-        return view('sale.project.create', compact('orders', 'developers', 'salesPersons', 'statuses'));
+        $routePrefix = 'sale';
+        return view('admin.project.create', compact('orders', 'developers', 'salesPersons', 'statuses', 'routePrefix'));
     }
 
     public function store(Request $request)
@@ -150,7 +153,8 @@ class ProjectController extends Controller
     {
         $project = $this->getFilteredProjects()->with(['projectStatus', 'paymentStatus', 'developers', 'feedbacks', 'order'])->findOrFail($id);
         $statuses = $this->getStatusOptions();
-        return view('sale.project.show', compact('project', 'statuses'));
+        $routePrefix = 'sale';
+        return view('admin.project.show', compact('project', 'statuses', 'routePrefix'));
     }
 
     public function edit($id)
@@ -169,7 +173,8 @@ class ProjectController extends Controller
         $developers = Developer::all();
         $salesPersons = \App\Models\Sale::all();
         $statuses = $this->getStatusOptions();
-        return view('sale.project.edit', compact('project', 'orders', 'developers', 'salesPersons', 'statuses'));
+        $routePrefix = 'sale';
+        return view('admin.project.edit', compact('project', 'orders', 'developers', 'salesPersons', 'statuses', 'routePrefix'));
     }
 
     public function update(Request $request, $id)

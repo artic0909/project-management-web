@@ -9,6 +9,7 @@ class AccountSettingController extends Controller
 {
     public function index()
     {
-        return view('sale.account-settings');
+        $routePrefix = 'sale';
+        return view('admin.account-settings', compact('routePrefix'));
     }
 }

@@ -28,15 +28,15 @@
                             <div class="card-title">Security</div>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('admin.account-settings.update') }}" method="POST">
+                            <form action="{{ route($routePrefix . '.account-settings.update') }}" method="POST">
                                 @csrf
                                 <div class="form-row">
                                     <label class="form-lbl">Full Name</label>
-                                    <input type="text" name="name" class="form-inp" value="{{ old('name', auth()->guard('admin')->user()->name) }}">
+                                    <input type="text" name="name" class="form-inp" value="{{ old('name', auth()->guard($routePrefix)->user()->name) }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Email</label>
-                                    <input type="email" name="email" class="form-inp" value="{{ old('email', auth()->guard('admin')->user()->email) }}">
+                                    <input type="email" name="email" class="form-inp" value="{{ old('email', auth()->guard($routePrefix)->user()->email) }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Current Password</label>

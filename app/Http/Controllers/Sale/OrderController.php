@@ -98,7 +98,8 @@ class OrderController extends Controller
         $allServices = Service::all();
         $allSales = Sale::all();
 
-        return view('sale.orders.index', compact(
+        $routePrefix = 'sale';
+        return view('admin.orders.index', compact(
             'orders',
             'totalOrders',
             'marketingOrders',
@@ -110,7 +111,8 @@ class OrderController extends Controller
             'allServices',
             'allSales',
             'totalCallingUserFollowups',
-            'totalMessageUserFollowups'
+            'totalMessageUserFollowups',
+            'routePrefix'
         ));
     }
 
@@ -130,7 +132,8 @@ class OrderController extends Controller
         $orderStatuses = Status::where('type', 'order')->get();
         $paymentStatuses = Status::where('type', 'payment')->get();
 
-        return view('sale.orders.create', compact('lead', 'services', 'sales', 'orderStatuses', 'paymentStatuses'));
+        $routePrefix = 'sale';
+        return view('admin.orders.create', compact('lead', 'services', 'sales', 'orderStatuses', 'paymentStatuses', 'routePrefix'));
     }
 
     public function store(Request $request)
@@ -232,7 +235,8 @@ class OrderController extends Controller
         $orderStatuses = Status::where('type', 'order')->get();
         $paymentStatuses = Status::where('type', 'payment')->get();
 
-        return view('sale.orders.show', compact('order', 'orderStatuses', 'paymentStatuses'));
+        $routePrefix = 'sale';
+        return view('admin.orders.show', compact('order', 'orderStatuses', 'paymentStatuses', 'routePrefix'));
     }
 
     public function edit($id)
@@ -243,7 +247,8 @@ class OrderController extends Controller
         $orderStatuses = Status::where('type', 'order')->get();
         $paymentStatuses = Status::where('type', 'payment')->get();
 
-        return view('sale.orders.edit', compact('order', 'services', 'sales', 'orderStatuses', 'paymentStatuses'));
+        $routePrefix = 'sale';
+        return view('admin.orders.edit', compact('order', 'services', 'sales', 'orderStatuses', 'paymentStatuses', 'routePrefix'));
     }
 
     public function update(Request $request, $id)

@@ -779,7 +779,7 @@
                 <button class="modal-close" onclick="closeModal('addModal')"><i class="bi bi-x-lg"></i></button>
             </div>
 
-            <form action="{{ route('admin.services.store') }}" method="POST">
+            <form action="{{ route($routePrefix . '.services.store') }}" method="POST">
                 @csrf
                 <div class="modal-bd">
                     <div class="form-row">
@@ -896,15 +896,16 @@
 
 <script>
     // ── Edit Modal ──
-    function openEditModal(id, name) {
-        document.getElementById('editForm').action = `/admin/add-services/${id}`;
+    function openEditModal(id, name, created_by) {
+        document.getElementById('editForm').action = `{{ url($routePrefix . '/add-services') }}/${id}`;
         document.getElementById('editNameInput').value = name;
+        document.getElementById('edit_created_by').value = created_by;
         openModal('editModal');
     }
 
     // ── Delete Modal ──
     function openDeleteModal(id, name) {
-        document.getElementById('deleteForm').action = `/admin/add-services/${id}`;
+        document.getElementById('deleteForm').action = `{{ url($routePrefix . '/add-services') }}/${id}`;
         document.getElementById('deleteServiceName').textContent = name;
         openModal('deleteModal');
     }

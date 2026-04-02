@@ -11,19 +11,16 @@
         <div class="page-header" style="margin-bottom:24px;">
             <div>
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-                    @php
-                        $guard = auth()->guard('admin')->check() ? 'admin' : (auth()->guard('sale')->check() ? 'sale' : 'developer');
-                    @endphp
-                    <a href="{{ route($guard . '.meetings.index') }}" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--t3);text-decoration:none;">
+                    <a href="{{ route($routePrefix . '.meetings.index') }}" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--t3);text-decoration:none;">
                         <i class="bi bi-arrow-left"></i> Back to Schedule
                     </a>
                 </div>
                 <h1 class="page-title">{{ $meeting->meeting_title }}</h1>
                 <p class="page-desc">Detailed meeting briefing and participants.</p>
             </div>
-            @if($guard !== 'developer')
+            @if($routePrefix !== 'developer')
             <div style="display:flex; gap:10px;">
-                <a href="{{ route($guard . '.meetings.edit', $meeting->id) }}" class="btn-primary-ghost">
+                <a href="{{ route($routePrefix . '.meetings.edit', $meeting->id) }}" class="btn-primary-ghost">
                     <i class="bi bi-pencil"></i> Edit Details
                 </a>
             </div>
@@ -76,7 +73,7 @@
                                         <div class="t-name">{{ $meeting->lead->company }}</div>
                                         <div class="t-sub">Contact: {{ $meeting->lead->contact_person }} | {{ $meeting->lead->source->name ?? 'Direct' }}</div>
                                     </div>
-                                    <a href="{{ route($guard . '.leads.show', $meeting->lead_id) }}" class="t-btn">View Lead Profile</a>
+                                    <a href="{{ route($routePrefix . '.leads.show', $meeting->lead_id) }}" class="t-btn">View Lead Profile</a>
                                 </div>
                             @elseif($meeting->meeting_type == 'order' && $meeting->order)
                                 <div class="target-card order">
@@ -85,7 +82,7 @@
                                         <div class="t-name">Order #{{ $meeting->order->id }}</div>
                                         <div class="t-sub">{{ $meeting->order->lead->company ?? 'Unknown' }} | {{ $meeting->order->status->name ?? 'Pending' }}</div>
                                     </div>
-                                    <a href="{{ route($guard . '.orders.index') }}" class="t-btn">View Order</a>
+                                    <a href="{{ route($routePrefix . '.orders.index') }}" class="t-btn">View Order</a>
                                 </div>
                             @elseif($meeting->meeting_type == 'project' && $meeting->project)
                                 <div class="target-card project">
@@ -94,7 +91,7 @@
                                         <div class="t-name">{{ $meeting->project->name }}</div>
                                         <div class="t-sub">Timeline: {{ $meeting->project->start_date }} - {{ $meeting->project->deadline }}</div>
                                     </div>
-                                    <a href="{{ route($guard . '.projects.show', $meeting->project_id) }}" class="t-btn">View Project Details</a>
+                                    <a href="{{ route($routePrefix . '.projects.show', $meeting->project_id) }}" class="t-btn">View Project Details</a>
                                 </div>
                             @endif
                         </div>

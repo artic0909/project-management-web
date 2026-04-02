@@ -14,13 +14,13 @@
                 <p class="page-desc">Fill in the details below to create a new project</p>
             </div>
             <div class="header-actions">
-                <a href="{{ route('admin.projects.index') }}" class="btn-ghost">
+                <a href="{{ route($routePrefix . '.projects.index') }}" class="btn-ghost">
                     <i class="bi bi-arrow-left"></i> Back to Projects
                 </a>
             </div>
         </div>
 
-        <form action="{{ route('admin.projects.store') }}" method="POST">
+        <form action="{{ route($routePrefix . '.projects.store') }}" method="POST">
             @csrf
 
             @if(session('success'))
@@ -387,7 +387,7 @@
                         <button type="submit" class="btn-primary-solid" style="justify-content:center;width:100%;padding:11px;">
                             <i class="bi bi-plus-lg"></i> Create Project
                         </button>
-                        <a href="{{ route('admin.projects.index') }}" class="btn-ghost" style="justify-content:center;width:100%;padding:10px;">
+                        <a href="{{ route($routePrefix . '.projects.index') }}" class="btn-ghost" style="justify-content:center;width:100%;padding:10px;">
                             Cancel
                         </a>
                     </div>

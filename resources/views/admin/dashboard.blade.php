@@ -27,13 +27,13 @@
             <!-- Page Header -->
             <div class="page-header">
                 <div>
-                    <h1 class="page-title">Admin Dashboard</h1>
+                    <h1 class="page-title">{{ $routePrefix == 'admin' ? 'Admin' : 'Sales' }} Dashboard</h1>
                     <p class="page-desc">Live overview · <span id="liveDate"></span></p>
                 </div>
 
                 <!-- Filters -->
                 <div class="page-actions">
-                    <form action="{{ route('admin.dashboard') }}" method="GET" class="filter-form" id="filterForm">
+                    <form action="{{ route($routePrefix . '.dashboard') }}" method="GET" class="filter-form" id="filterForm">
                         <div class="filter-group">
                             <select name="month" class="filter-select" onchange="this.form.submit()">
                                 @foreach (range(1, 12) as $m)
@@ -227,6 +227,7 @@
                     </div>
                 </div>
 
+                @if($routePrefix == 'admin')
                 <div class="kpi-card" style="--kpi-accent:#ef4444">
                     <div class="kpi-top">
                         <div class="kpi-icon" style="background:rgba(239,68,68,.15);color:#ef4444"><i
@@ -302,6 +303,7 @@
                         <div class="spark-bar active" style="height:94%;--kpi-accent:#06b6d4"></div>
                     </div>
                 </div>
+                @endif
             </div>
 
             <!-- MAIN GRID -->

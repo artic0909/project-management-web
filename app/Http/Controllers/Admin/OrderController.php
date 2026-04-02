@@ -17,6 +17,7 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
+        $routePrefix = 'admin';
         $query = Order::with(['status', 'service', 'assignments.sale', 'createdBy'])->withCount('followups');
 
         // Search Filter
@@ -94,24 +95,28 @@ class OrderController extends Controller
         $allServices = Service::all();
         $allSales = Sale::all();
 
+        $routePrefix = 'admin';
         return view('admin.orders.index', compact(
-            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue', 'totalReceived', 'allStatuses', 'allServices', 'allSales', 'totalCallingFollowupsFiltered', 'totalMessageFollowupsFiltered'
+            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue', 'totalReceived', 'allStatuses', 'allServices', 'allSales', 'totalCallingFollowupsFiltered', 'totalMessageFollowupsFiltered', 'routePrefix'
         ));
     }
 
     public function create($lead_id = null)
     {
+        $routePrefix = 'admin';
         $lead = $lead_id ? Lead::with(['status', 'source', 'service', 'assignments'])->find($lead_id) : null;
         $services = Service::all();
         $sales = Sale::all();
         $orderStatuses = Status::where('type', 'order')->get();
         $paymentStatuses = Status::where('type', 'payment')->get();
         
-        return view('admin.orders.create', compact('lead', 'services', 'sales', 'orderStatuses', 'paymentStatuses'));
+        $routePrefix = 'admin';
+        return view('admin.orders.create', compact('lead', 'services', 'sales', 'orderStatuses', 'paymentStatuses', 'routePrefix'));
     }
 
     public function store(Request $request)
     {
+        $routePrefix = 'admin';
         $request->validate([
             'company_name' => 'required|string|max:255',
             'client_name' => 'required|string|max:255',
@@ -198,16 +203,19 @@ class OrderController extends Controller
 
     public function show($id)
     {
+        $routePrefix = 'admin';
         $order = Order::with(['status', 'service', 'assignments.sale', 'createdBy', 'paymentTerms', 'mktPaymentStatus', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         
         $orderStatuses = Status::where('type', 'order')->get();
         $paymentStatuses = Status::where('type', 'payment')->get();
 
-        return view('admin.orders.show', compact('order', 'orderStatuses', 'paymentStatuses'));
+        $routePrefix = 'admin';
+        return view('admin.orders.show', compact('order', 'orderStatuses', 'paymentStatuses', 'routePrefix'));
     }
 
     public function updateStatus(Request $request, $id)
     {
+        $routePrefix = 'admin';
         $order = Order::findOrFail($id);
         
         $data = $request->only(['status_id', 'payment_terms_id', 'mkt_payment_status_id']);
@@ -218,17 +226,20 @@ class OrderController extends Controller
 
     public function edit($id)
     {
+        $routePrefix = 'admin';
         $order = Order::with(['assignments', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         $services = Service::all();
         $sales = Sale::all();
         $orderStatuses = Status::where('type', 'order')->get();
         $paymentStatuses = Status::where('type', 'payment')->get();
         
-        return view('admin.orders.edit', compact('order', 'services', 'sales', 'orderStatuses', 'paymentStatuses'));
+        $routePrefix = 'admin';
+        return view('admin.orders.edit', compact('order', 'services', 'sales', 'orderStatuses', 'paymentStatuses', 'routePrefix'));
     }
 
     public function update(Request $request, $id)
     {
+        $routePrefix = 'admin';
         $request->validate([
             'company_name' => 'required|string|max:255',
             'client_name' => 'required|string|max:255',
@@ -289,7 +300,7 @@ class OrderController extends Controller
             $order->sales()->detach();
         }
 
-        return redirect()->route('admin.orders.show', $order->id)->with('success', 'Order updated successfully.');
+        return redirect()->route($routePrefix . '.orders.show', $order->id)->with('success', 'Order updated successfully.');
     }
 
     public function destroy($id)

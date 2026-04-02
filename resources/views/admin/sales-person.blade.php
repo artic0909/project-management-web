@@ -775,7 +775,7 @@
     <div class="modal-backdrop" id="addSalesPersonModal">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-hd"><span>Add Sales Person</span><button class="modal-close" onclick="closeModal('addSalesPersonModal')"><i class="bi bi-x-lg"></i></button></div>
-            <form action="{{ route('admin.sales-person.store') }}" method="POST">
+            <form action="{{ route($routePrefix . '.sales-person.store') }}" method="POST">
                 @csrf
                 <div class="modal-bd">
                     <div class="form-grid">
@@ -874,7 +874,7 @@
 
     <script>
         function editSalesPerson(person) {
-            document.getElementById('editSalesPersonForm').action = `{{ url('admin/add-sales-person') }}/${person.id}`;
+            document.getElementById('editSalesPersonForm').action = `{{ url($routePrefix . '/add-sales-person') }}/${person.id}`;
             document.getElementById('edit_name').value = person.name;
             document.getElementById('edit_email').value = person.email;
             // Clear password fields on open
@@ -884,7 +884,7 @@
         }
 
         function deleteSalesPerson(id) {
-            document.getElementById('deleteSalesPersonForm').action = `{{ url('admin/add-sales-person') }}/${id}`;
+            document.getElementById('deleteSalesPersonForm').action = `{{ url($routePrefix . '/add-sales-person') }}/${id}`;
             openModal('deleteSalesPersonModal');
         }
     </script>

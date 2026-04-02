@@ -14,7 +14,7 @@
                 <p class="page-desc">Track and manage upcoming discussions with clients and teams.</p>
             </div>
             <div>
-                <a href="{{ route('admin.meetings.create') }}" class="btn-primary-solid">
+                <a href="{{ route($routePrefix . '.meetings.create') }}" class="btn-primary-solid">
                     <i class="bi bi-plus-lg"></i> Schedule Meeting
                 </a>
             </div>
@@ -68,7 +68,7 @@
 
         <!-- ── FILTER BAR ── -->
         <div class="dash-card" style="margin-bottom:24px;">
-            <form action="{{ route('admin.meetings.index') }}" method="GET" id="filterForm">
+            <form action="{{ route($routePrefix . '.meetings.index') }}" method="GET" id="filterForm">
                 <div class="card-body" style="padding:16px 20px; display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
                     <div style="flex:1; min-width:200px;">
                         <div class="search-inp-wrap">
@@ -96,7 +96,7 @@
                         </select>
                     </div>
                     @if(request()->anyFilled(['search', 'date', 'sale_id', 'dev_id']))
-                        <a href="{{ route('admin.meetings.index') }}" class="btn-primary-ghost" style="padding:8px 12px; border-radius:8px; font-size:13px;"><i class="bi bi-x-lg"></i> Clear</a>
+                        <a href="{{ route($routePrefix . '.meetings.index') }}" class="btn-primary-ghost" style="padding:8px 12px; border-radius:8px; font-size:13px;"><i class="bi bi-x-lg"></i> Clear</a>
                     @endif
                 </div>
             </form>
@@ -137,11 +137,11 @@
                                     <td>
                                         <span class="m-type-tag {{ strtolower($meeting->meeting_type) }}" style="display:inline-block; margin-bottom:4px;">{{ strtoupper($meeting->meeting_type) }}</span>
                                         @if($meeting->meeting_type == 'lead' && $meeting->lead)
-                                            <a href="{{ route('admin.leads.show', $meeting->lead_id) }}" class="m-link active" style="font-size:12px;"><i class="bi bi-person-circle"></i> {{ $meeting->lead->company }}</a>
+                                            <a href="{{ route($routePrefix . '.leads.show', $meeting->lead_id) }}" class="m-link active" style="font-size:12px;"><i class="bi bi-person-circle"></i> {{ $meeting->lead->company }}</a>
                                         @elseif($meeting->meeting_type == 'order' && $meeting->order)
-                                            <a href="{{ route('admin.orders.index') }}" class="m-link active" style="font-size:12px;"><i class="bi bi-bag-check"></i> Order #{{ $meeting->order->id }}</a>
+                                            <a href="{{ route($routePrefix . '.orders.index') }}" class="m-link active" style="font-size:12px;"><i class="bi bi-bag-check"></i> Order #{{ $meeting->order->id }}</a>
                                         @elseif($meeting->meeting_type == 'project' && $meeting->project)
-                                            <a href="{{ route('admin.projects.show', $meeting->project_id) }}" class="m-link active" style="font-size:12px;"><i class="bi bi-kanban"></i> {{ $meeting->project->name }}</a>
+                                            <a href="{{ route($routePrefix . '.projects.show', $meeting->project_id) }}" class="m-link active" style="font-size:12px;"><i class="bi bi-kanban"></i> {{ $meeting->project->name }}</a>
                                         @endif
                                     </td>
                                     <td>
@@ -188,12 +188,14 @@
                                             @if($meeting->meeting_link)
                                                 <a href="{{ $meeting->meeting_link }}" target="_blank" class="act-btn primary" title="Join Link"><i class="bi bi-camera-video"></i></a>
                                             @endif
-                                            <a href="{{ route('admin.meetings.show', $meeting->id) }}" class="act-btn" title="View Details"><i class="bi bi-eye"></i></a>
-                                            <a href="{{ route('admin.meetings.edit', $meeting->id) }}" class="act-btn" title="Edit Meeting"><i class="bi bi-pencil"></i></a>
-                                            <form action="{{ route('admin.meetings.destroy', $meeting->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Archive this meeting?')">
+                                            <a href="{{ route($routePrefix . '.meetings.show', $meeting->id) }}" class="act-btn" title="View Details"><i class="bi bi-eye"></i></a>
+                                            <a href="{{ route($routePrefix . '.meetings.edit', $meeting->id) }}" class="act-btn" title="Edit Meeting"><i class="bi bi-pencil"></i></a>
+                                            @if($routePrefix == 'admin')
+                                            <form action="{{ route($routePrefix . '.meetings.destroy', $meeting->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Archive this meeting?')">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="act-btn danger" title="Delete"><i class="bi bi-trash"></i></button>
                                             </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

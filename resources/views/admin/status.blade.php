@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded',()=>{
                 <span>Add New Status</span>
                 <button class="modal-close" onclick="closeModal('addStatusModal')"><i class="bi bi-x-lg"></i></button>
             </div>
-            <form action="{{ route('admin.status.store') }}" method="POST">
+            <form action="{{ route($routePrefix . '.status.store') }}" method="POST">
                 @csrf
                 <div class="modal-bd">
                     <div class="form-row">
@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
         // ── Edit Modal ──
         function openEditModal(id, name, type) {
-            document.getElementById('editStatusForm').action = `/admin/add-status/${id}`;
+            document.getElementById('editStatusForm').action = `{{ url($routePrefix . '/add-status') }}/${id}`;
             document.getElementById('editStatusName').value  = name;
             document.getElementById('editStatusType').value  = type;
             openModal('editStatusModal');
@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
         // ── Delete Modal ──
         function openDeleteModal(id, name) {
-            document.getElementById('deleteStatusForm').action  = `/admin/add-status/${id}`;
+            document.getElementById('deleteStatusForm').action  = `{{ url($routePrefix . '/add-status') }}/${id}`;
             document.getElementById('deleteStatusName').textContent = name;
             openModal('deleteStatusModal');
         }

@@ -13,7 +13,7 @@
                 <p class="page-desc">Order <span class="mono">#ORD-{{ 1000 + $order->id }}</span> — {{ $order->company_name }}</p>
             </div>
             <div class="header-actions">
-                <a href="{{ route('admin.payments.index') }}" class="btn-ghost"><i class="bi bi-arrow-left"></i> Back to Payments</a>
+                <a href="{{ route($routePrefix . '.payments.index') }}" class="btn-ghost"><i class="bi bi-arrow-left"></i> Back to Payments</a>
             </div>
         </div>
 
@@ -101,7 +101,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('admin.payments.store') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route($routePrefix . '.payments.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <input type="hidden" name="order_id" value="{{ $order->id }}">
                             <div class="form-grid">
@@ -168,11 +168,13 @@
                                         <div style="font-size:14px;font-weight:800;color:var(--t1)">₹{{ number_format($pay->amount, 0) }}</div>
                                         <div style="font-size:11px;color:var(--t3);margin-top:2px">{{ $pay->transaction_date->format('d M Y') }}</div>
                                     </div>
-                                    <form action="{{ route('admin.payments.destroy', $pay->id) }}" method="POST" onsubmit="return confirm('Delete this payment entry?')">
+                                    @if($routePrefix == 'admin')
+                                    <form action="{{ route($routePrefix . '.payments.destroy', $pay->id) }}" method="POST" onsubmit="return confirm('Delete this payment entry?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="ra-btn danger sm" title="Delete"><i class="bi bi-trash-fill"></i></button>
                                     </form>
+                                    @endif
                                 </div>
                                 <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:11.5px;color:var(--t2)">
                                     <span><i class="bi bi-credit-card" style="margin-right:2px"></i> {{ $pay->payment_method ?? 'N/A' }}</span>

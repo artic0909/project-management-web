@@ -661,12 +661,14 @@
                 <h1 class="page-title">Your All Developers</h1>
             </div>
             <div class="d-flex gap-2">
+                @if($routePrefix == 'admin')
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
+                @endif
                 <button class="btn-primary-solid sm" onclick="openModal('addModal')"><i class="bi bi-plus-lg"></i> Add Developer</button>
             </div>
         </div>
@@ -750,10 +752,12 @@
                                 <td>
                                     <!-- Modal Btns -->
                                     <div class="row-actions">
-                                        <button class="ra-btn"><i class="bi bi-power"></i></button>
-                                        <button class="ra-btn" onclick="editDeveloper({{ json_encode($developer) }})"><i class="bi bi-pencil-fill"></i></button>
-                                        <button class="ra-btn"><i class="bi bi-envelope-fill"></i></button>
-                                        <button class="ra-btn danger" onclick="deleteDeveloper({{ $developer->id }})"><i class="bi bi-trash-fill"></i></button>
+                                        <button class="ra-btn" title="Toggle Power"><i class="bi bi-power"></i></button>
+                                        <button class="ra-btn" title="Edit" onclick="editDeveloper({{ json_encode($developer) }})"><i class="bi bi-pencil-fill"></i></button>
+                                        <button class="ra-btn" title="Send Email"><i class="bi bi-envelope-fill"></i></button>
+                                        @if($routePrefix == 'admin')
+                                        <button class="ra-btn danger" title="Delete" onclick="deleteDeveloper({{ $developer->id }})"><i class="bi bi-trash-fill"></i></button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -777,7 +781,7 @@
     <div class="modal-backdrop" id="addModal">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-hd"><span>Add Developer</span><button class="modal-close" onclick="closeModal('addModal')"><i class="bi bi-x-lg"></i></button></div>
-            <form action="{{ route('admin.developer.store') }}" method="POST">
+            <form action="{{ route($routePrefix . '.developer.store') }}" method="POST">
                 @csrf
                 <div class="modal-bd">
                     <div class="form-grid">
@@ -884,7 +888,7 @@
 
     <script>
         function editDeveloper(developer) {
-            document.getElementById('editForm').action = `{{ url('admin/add-developer') }}/${developer.id}`;
+            document.getElementById('editForm').action = `{{ url($routePrefix . '/add-developer') }}/${developer.id}`;
             document.getElementById('edit_name').value = developer.name;
             document.getElementById('edit_email').value = developer.email;
             document.getElementById('edit_designation').value = developer.designation;
@@ -895,7 +899,7 @@
         }
 
         function deleteDeveloper(id) {
-            document.getElementById('deleteForm').action = `{{ url('admin/add-developer') }}/${id}`;
+            document.getElementById('deleteForm').action = `{{ url($routePrefix . '/add-developer') }}/${id}`;
             openModal('deleteModal');
         }
     </script>

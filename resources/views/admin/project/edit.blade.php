@@ -14,7 +14,7 @@
                 <p class="page-desc">Modify details for <span style="color:var(--accent);font-weight:600;">{{ $project->project_name }}</span></p>
             </div>
             <div class="header-actions">
-                <a href="{{ route('admin.projects.index') }}" class="btn-ghost">
+                <a href="{{ route($routePrefix . '.projects.index') }}" class="btn-ghost">
                     <i class="bi bi-arrow-left"></i> Back to List
                 </a>
             </div>
@@ -33,7 +33,7 @@
             </div>
         @endif
 
-        <form action="{{ route('admin.projects.update', $project->id) }}" method="POST">
+        <form action="{{ route($routePrefix . '.projects.update', $project->id) }}" method="POST">
             @csrf
             @method('PUT')
             <div class="dash-grid">
@@ -429,7 +429,7 @@
                         <button type="submit" class="btn-primary-solid" style="justify-content:center;width:100%;padding:11px;">
                             <i class="bi bi-floppy-fill"></i> Update Project
                         </button>
-                        <a href="{{ route('admin.projects.index') }}" class="btn-ghost" style="justify-content:center;width:100%;padding:10px;">
+                        <a href="{{ route($routePrefix . '.projects.index') }}" class="btn-ghost" style="justify-content:center;width:100%;padding:10px;">
                             Cancel
                         </a>
                     </div>

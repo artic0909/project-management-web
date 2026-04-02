@@ -779,7 +779,7 @@
                 <button class="modal-close" onclick="closeModal('addModal')"><i class="bi bi-x-lg"></i></button>
             </div>
 
-            <form action="{{ route('admin.sources.store') }}" method="POST">
+            <form action="{{ route($routePrefix . '.sources.store') }}" method="POST">
                 @csrf
                 <div class="modal-bd">
                     <div class="form-row">
@@ -896,15 +896,16 @@
 
 <script>
     // ── Edit Modal ──
-    function openEditModal(id, name) {
-        document.getElementById('editForm').action = `/admin/sources/${id}`;
+    function openEditModal(id, name, created_by) {
+        document.getElementById('editForm').action = `{{ url($routePrefix . '/sources') }}/${id}`;
         document.getElementById('editNameInput').value = name;
+        document.getElementById('edit_created_by').value = created_by;
         openModal('editModal');
     }
 
     // ── Delete Modal ──
     function openDeleteModal(id, name) {
-        document.getElementById('deleteForm').action = `/admin/sources/${id}`;
+        document.getElementById('deleteForm').action = `{{ url($routePrefix . '/sources') }}/${id}`;
         document.getElementById('deleteSourceName').textContent = name;
         openModal('deleteModal');
     }

@@ -17,9 +17,11 @@ class StatusController extends Controller
         $paymentStatusCount = $statuses->where('type', 'payment')->count();
         $projectStatusCount = $statuses->where('type', 'project')->count();
 
+        $routePrefix = 'admin';
         return view('admin.status', compact(
             'statuses', 'statusCount',
-            'leadStatusCount', 'orderStatusCount', 'paymentStatusCount', 'projectStatusCount'
+            'leadStatusCount', 'orderStatusCount', 'paymentStatusCount', 'projectStatusCount',
+            'routePrefix'
         ));
     }
 

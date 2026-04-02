@@ -180,7 +180,7 @@
                             </div>
                         </div>
                         <div class="card-body" style="padding:14px 18px 20px;">
-                            <form action="{{ route('admin.leads.updateStatus', $model->id) }}" method="POST">
+                            <form action="{{ route($routePrefix . '.leads.updateStatus', $model->id) }}" method="POST">
                                 @csrf
                                 @method('PATCH')
                                 <div class="form-grid">
@@ -219,7 +219,7 @@
                             </div>
                         </div>
                         <div class="card-body" style="padding:14px 18px 20px;">
-                            <form action="{{ route('admin.orders.updateStatus', $model->id) }}" method="POST">
+                            <form action="{{ route($routePrefix . '.orders.updateStatus', $model->id) }}" method="POST">
                                 @csrf
                                 @method('PATCH')
                                 <div class="form-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
@@ -271,7 +271,7 @@
                         </div>
                     </div>
                     <div class="card-body" style="padding:14px 18px 20px;">
-                        <form action="{{ $isOrder ? route('admin.orders.followup.store', $model->id) : route('admin.leads.followup.store', $model->id) }}" method="POST">
+                        <form action="{{ $isOrder ? route($routePrefix . '.orders.followup.store', $model->id) : route($routePrefix . '.leads.followup.store', $model->id) }}" method="POST">
                             @csrf
                             <div class="form-grid">
                                 <div class="form-row">

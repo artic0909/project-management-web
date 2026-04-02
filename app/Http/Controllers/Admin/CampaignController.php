@@ -10,9 +10,10 @@ class CampaignController extends Controller
 {
     public function index()
     {
+        $routePrefix = 'admin';
         $campaigns = Campaign::latest()->get();
         $campaignCount = $campaigns->count();
-        return view('admin.campaign', compact('campaigns', 'campaignCount'));
+        return view('admin.campaign', compact('campaigns', 'campaignCount', 'routePrefix'));
     }
 
     public function store(Request $request)

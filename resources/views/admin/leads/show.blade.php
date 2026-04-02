@@ -11,7 +11,7 @@
         <div class="page-header" style="margin-bottom:20px;">
             <div>
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-                    <a href="{{ route('admin.leads.index') }}"
+                    <a href="{{ route($routePrefix . '.leads.index') }}"
                         style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--t3);transition:var(--transition);text-decoration:none;"
                         onmouseover="this.style.color='var(--accent)'"
                         onmouseout="this.style.color='var(--t3)'">
@@ -39,7 +39,7 @@
                         </a>
                     </div> -->
                     <div style="display:flex; gap:10px; margin-bottom:5px;">
-                        <a href="{{ route('admin.orders.create', ['lead_id' => $lead->id]) }}" class="btn-primary-solid">
+                        <a href="{{ route($routePrefix . '.orders.create', ['lead_id' => $lead->id]) }}" class="btn-primary-solid">
                             <i class="bi bi-box-arrow-in-right"></i> Convert To Order
                         </a>
                     </div>
@@ -198,7 +198,7 @@
                         </div>
                     </div>
                     <div class="card-body" style="padding:14px 18px 20px;">
-                        <form action="{{ route('admin.leads.updateStatus', $lead->id) }}" method="POST" id="quickUpdateForm">
+                        <form action="{{ route($routePrefix . '.leads.updateStatus', $lead->id) }}" method="POST" id="quickUpdateForm">
                             @csrf
                             @method('PATCH')
                             

@@ -13,7 +13,7 @@
             </div>
 
             <div class="d-flex gap-2">
-
+                @if($routePrefix == 'admin')
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
@@ -21,11 +21,11 @@
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
+                @endif
 
-                <a href="{{route('admin.orders.create')}}" class="btn-primary-solid sm">
+                <a href="{{ route($routePrefix . '.orders.create') }}" class="btn-primary-solid sm">
                     <i class="bi bi-plus-lg"></i> Add Order
                 </a>
-
             </div>
 
         </div>
@@ -85,7 +85,7 @@
             @endif
 
             <div class="dash-card {{ request()->has('q') || request()->has('status_id') || request()->has('service_id') || request()->has('is_marketing') ? '' : 'active' }}" 
-                style="padding:16px 18px; cursor:pointer;" onclick="window.location.href='{{ route('admin.orders.index') }}'">
+                style="padding:16px 18px; cursor:pointer;" onclick="window.location.href='{{ route($routePrefix . '.orders.index') }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(16,185,129,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                         <i class="bi bi-bag-check-fill" style="font-size:17px;color:#10b981;"></i>
@@ -100,7 +100,7 @@
             </div>
 
             <div class="dash-card {{ request('is_marketing') == '1' ? 'active' : '' }}" 
-                style="padding:16px 18px; cursor:pointer;" onclick="window.location.href='{{ route('admin.orders.index', ['is_marketing' => 1]) }}'">
+                style="padding:16px 18px; cursor:pointer;" onclick="window.location.href='{{ route($routePrefix . '.orders.index', ['is_marketing' => 1]) }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(139,92,246,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                         <i class="bi bi-megaphone-fill" style="font-size:17px;color:#8b5cf6;"></i>
@@ -160,7 +160,7 @@
                 $cancelStatus = $allStatuses->where('name', 'cancel')->first();
             @endphp
             <div class="dash-card {{ request('status_id') == ($cancelStatus->id ?? 'xxx') ? 'active' : '' }}" 
-                style="padding:16px 18px; cursor:pointer;" onclick="window.location.href='{{ route('admin.orders.index', ['status_id' => ($cancelStatus->id ?? '')]) }}'">
+                style="padding:16px 18px; cursor:pointer;" onclick="window.location.href='{{ route($routePrefix . '.orders.index', ['status_id' => ($cancelStatus->id ?? '')]) }}'">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:rgba(239,68,68,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                         <i class="bi bi-x-circle-fill" style="font-size:17px;color:#ef4444;"></i>
@@ -186,7 +186,7 @@
                     </div>
                     <div class="card-actions mb-2">
 
-                        <form action="{{ route('admin.orders.index') }}" method="GET" class="card-actions mb-0">
+                        <form action="{{ route($routePrefix . '.orders.index') }}" method="GET" class="card-actions mb-0">
                             <div class="global-search">
                                 <i class="bi bi-search"></i>
                                 <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search...">
@@ -224,12 +224,14 @@
                                 @endforeach
                             </select>
 
+                            @if($routePrefix == 'admin')
                             <select name="assigned_to" class="filter-select" onchange="updateFilters()">
                                 <option value="">Sales Person</option>
                                 @foreach($allSales as $sale)
                                     <option value="{{ $sale->id }}" {{ request('assigned_to') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
                                 @endforeach
                             </select>
+                            @endif
                         </form>
 
                         <!-- {{-- Date Range Picker (replaces simple select) --}} -->
@@ -288,7 +290,7 @@
                                     <div class="ln">{{ $order->client_name }}</div>
                                     <div class="ls">{{ $order->phones[0]['number'] ?? 'N/A' }}</div>
                                 </td>
-                                <td><span class="src-tag">{{ $order->service->name ?? 'N/A' }}</span></td>
+                                                                <td><span class="src-tag">{{ $order->service->name ?? 'N/A' }}</span></td>
                                 <td><span class="src-tag">₹{{ number_format($order->order_value, 0) }}</span></td>
                                 <td><span class="src-tag" style="background:#10b98120; color:#10b981;">₹{{ number_format($order->advance_payment, 0) }}</span></td>
                                 <td>
@@ -344,11 +346,13 @@
                                             <i class="bi bi-envelope-fill"></i>
                                         </a>
 
-                                        <a href="{{ route('admin.orders.show', $order->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                        <a href="{{ route('admin.orders.edit', $order->id) }}" class="ra-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
-                                        <a href="{{ route('admin.orders.followup', $order->id) }}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
-                                        <a href="{{route('admin.payments.create', $order->id)}}" class="ra-btn" title="Payments"><i class="bi bi-wallet2"></i></a>
-                                        <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route('admin.orders.destroy', $order->id) }}')"><i class="bi bi-trash-fill"></i></button>
+                                        <a href="{{ route($routePrefix . '.orders.show', $order->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
+                                        <a href="{{ route($routePrefix . '.orders.edit', $order->id) }}" class="ra-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
+                                        <a href="{{ route($routePrefix . '.orders.followup', $order->id) }}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
+                                        <a href="{{ route($routePrefix . '.payments.create', $order->id) }}" class="ra-btn" title="Payments"><i class="bi bi-wallet2"></i></a>
+                                        @if($routePrefix == 'admin')
+                                        <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route($routePrefix . '.orders.destroy', $order->id) }}')"><i class="bi bi-trash-fill"></i></button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -401,7 +405,7 @@
                     <span style="font-size:11px;font-weight:500;color:var(--t3);">TechCorp Pvt Ltd</span>
                 </div>
                 <div style="display:flex;align-items:center;gap:6px;">
-                    <a href="{{ route('admin.orders.edit', 1) }}"
+                    <a href="{{ route($routePrefix . '.orders.edit', 1) }}"
                         class="btn-ghost" style="padding:5px 11px;font-size:12px;">
                         <i class="bi bi-pencil-fill"></i> Edit
                     </a>
@@ -550,7 +554,7 @@
                         onmouseout="this.style.background='transparent'">
                         <i class="bi bi-wallet2"></i> Add Payment
                     </a>
-                    <a href="{{ route('admin.orders.edit', 1) }}" class="btn-primary-solid">
+                    <a href="{{ route($routePrefix . '.orders.edit', 1) }}" class="btn-primary-solid">
                         <i class="bi bi-pencil-fill"></i> Edit Order
                     </a>
                 </div>

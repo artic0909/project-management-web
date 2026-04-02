@@ -11,7 +11,7 @@
         <div class="page-header" style="margin-bottom:24px;">
             <div>
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-                    <a href="{{ route('admin.meetings.index') }}" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--t3);text-decoration:none;">
+                    <a href="{{ route($routePrefix . '.meetings.index') }}" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--t3);text-decoration:none;">
                         <i class="bi bi-arrow-left"></i> Back to Schedule
                     </a>
                 </div>
@@ -27,7 +27,7 @@
                         <div class="card-title">Meeting Details</div>
                     </div>
                     <div class="card-body" style="padding:24px;">
-                        <form action="{{ route('admin.meetings.update', $meeting->id) }}" method="POST">
+                        <form action="{{ route($routePrefix . '.meetings.update', $meeting->id) }}" method="POST">
                             @csrf
                             @method('PUT')
                             
@@ -114,7 +114,7 @@
 
                             <div style="margin-top:30px; display:flex; gap:10px;">
                                 <button type="submit" class="btn-primary-solid">Update Schedule</button>
-                                <a href="{{ route('admin.meetings.index') }}" class="btn-primary-ghost">Cancel</a>
+                                <a href="{{ route($routePrefix . '.meetings.index') }}" class="btn-primary-ghost">Cancel</a>
                             </div>
                     </div>
                 </div>
@@ -141,13 +141,14 @@
                             </div>
                         </div>
 
+                        @if($routePrefix == 'admin')
                         <div id="devSection" style="display:none;">
                             <div class="form-row" style="margin-top:20px;">
                                 <label class="form-lbl">Developers</label>
                                 <div class="multi-select-wrap">
                                     @foreach($developers as $dev)
                                         <label class="check-item">
-                                            <input type="checkbox" name="assigndev_ids[]" value="{{ $dev->id }}" {{ in_array($dev->id, $meeting->assigndev_ids ?? []) ? 'checked' : '' }}>
+                                            <input type="checkbox" name="assigndev_ids[]" value="{{ $dev->id }}" {{ in_array($dev->id, (array)$meeting->assigndev_ids ?? []) ? 'checked' : '' }}>
                                             <div style="display:flex; flex-direction:column; line-height:1.2;">
                                                 <span>{{ $dev->name }}</span>
                                                 <small style="font-size:10px; color:var(--t4); font-weight:500;">{{ $dev->email }}</small>
@@ -157,6 +158,7 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
                     </div>
                 </div>
                 </form>

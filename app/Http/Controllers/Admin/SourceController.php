@@ -10,9 +10,10 @@ class SourceController extends Controller
 {
     public function index()
     {
+        $routePrefix = 'admin';
         $sources = Source::latest()->get();
         $sourceCount = $sources->count();
-        return view('admin.sources', compact('sources', 'sourceCount'));
+        return view('admin.sources', compact('sources', 'sourceCount', 'routePrefix'));
     }
 
     public function store(Request $request)

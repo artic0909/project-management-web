@@ -18,38 +18,84 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        $routePrefix = auth()->guard('admin')->check() ? 'admin' : 'sale';
+        $user = auth()->guard($routePrefix)->user();
+        $saleId = ($routePrefix == 'sale') ? $user->id : null;
+        $saleType = \App\Models\Sale::class;
+
         $selectedMonth = $request->input('month', Carbon::now()->month);
         $selectedYear = $request->input('year', Carbon::now()->year);
 
         $startDate = Carbon::create($selectedYear, $selectedMonth, 1)->startOfMonth();
         $endDate = $startDate->copy()->endOfMonth();
 
+        // Base Query Scoping
+        $paymentQuery = Payment::whereBetween('transaction_date', [$startDate, $endDate]);
+        $orderQuery = Order::whereBetween('created_at', [$startDate, $endDate]);
+        $leadQuery = Lead::whereBetween('created_at', [$startDate, $endDate]);
+        $projectQuery = Project::query();
+
+        if ($routePrefix == 'sale') {
+            $paymentQuery->whereHas('order', function($master) use ($saleId, $saleType) {
+                $master->where(function($q) use ($saleId, $saleType) {
+                    $q->where('created_by', $saleId)->where('created_by_type', $saleType);
+                })->orWhereHas('assignments', function($sq) use ($saleId) {
+                    $sq->where('assigned_to', $saleId);
+                });
+            });
+
+            $orderQuery->where(function($master) use ($saleId, $saleType) {
+                $master->where(function($q) use ($saleId, $saleType) {
+                    $q->where('created_by', $saleId)->where('created_by_type', $saleType);
+                })->orWhereHas('assignments', function($sq) use ($saleId) {
+                    $sq->where('assigned_to', $saleId);
+                });
+            });
+
+            $leadQuery->where(function($master) use ($saleId, $saleType) {
+                $master->where(function($q) use ($saleId, $saleType) {
+                    $q->where('created_by', $saleId)->where('created_by_type', $saleType);
+                })->orWhereHas('assignments', function($sq) use ($saleId) {
+                    $sq->where('assigned_to', $saleId);
+                });
+            });
+
+            $projectQuery->where(function($master) use ($saleId, $saleType) {
+                $master->where(function($q) use ($saleId, $saleType) {
+                    $q->where('created_by', $saleId)->where('created_by_type', $saleType);
+                })->orWhereHas('salesPersons', function($sq) use ($saleId) {
+                    $sq->where('sale_id', $saleId);
+                })->orWhereHas('order', function($sq) use ($saleId, $saleType) {
+                    $sq->where(function($ssq) use ($saleId, $saleType) {
+                        $ssq->where('created_by', $saleId)->where('created_by_type', $saleType);
+                    })->orWhereHas('assignments', function($ssq) use ($saleId) {
+                        $ssq->where('assigned_to', $saleId);
+                    });
+                });
+            });
+        }
+
         // KPI Metrics (Filtered)
-        $totalReceivedAmount = Payment::whereBetween('transaction_date', [$startDate, $endDate])->sum('amount');
-        
-        // Total Order Value for the selected month
-        $totalOrderValue = Order::whereBetween('created_at', [$startDate, $endDate])->sum('order_value');
-        
-        // Total Pending (This is tricky - usually dashboard pending is "Current Balance Due" for that month or overall)
-        // I'll keep it as (Total Order Value in month - Total Received in month) for that period.
+        $totalReceivedAmount = $paymentQuery->sum('amount');
+        $totalOrderValue = $orderQuery->sum('order_value');
         $totalPending = max(0, $totalOrderValue - $totalReceivedAmount);
         
-        $totalLeads = Lead::whereBetween('created_at', [$startDate, $endDate])->count();
-        $totalOrders = Order::whereBetween('created_at', [$startDate, $endDate])->count();
+        $totalLeads = $leadQuery->count();
+        $totalOrders = $orderQuery->count();
         
-        // Active Projects Logic (Exclude: complete, completed, canceled, cancelled)
-        $activeProjects = Project::whereHas('projectStatus', function($q) {
+        // Active Projects Logic
+        $activeProjects = (clone $projectQuery)->whereHas('projectStatus', function($q) {
             $q->whereNotIn('name', ['complete', 'completed', 'canceled', 'cancelled']);
         })->count();
         
-        $completedProjects = Project::whereHas('projectStatus', function($q) {
+        $completedProjects = (clone $projectQuery)->whereHas('projectStatus', function($q) {
             $q->whereIn('name', ['complete', 'completed']);
         })->count();
 
         $totalSalesPerson = Sale::count();
         $totalDevelopers = Developer::count();
 
-        // Monthly Data (Last 8 Months ending at the selected date)
+        // CHART DATA (Keeping it for both since it's nice, but scoped)
         $months = [];
         $monthlyOrderValues = [];
         $monthlyReceivedAmounts = [];
@@ -58,52 +104,51 @@ class DashboardController extends Controller
             $date = $startDate->copy()->subMonths($i);
             $monthName = $date->format('M');
             $yearMonth = $date->format('Y-m');
-            
             $months[] = $monthName;
             
-            $orderValue = Order::where(DB::raw("DATE_FORMAT(created_at, '%Y-%m')"), $yearMonth)->sum('order_value');
-            $receivedAmount = Payment::where(DB::raw("DATE_FORMAT(transaction_date, '%Y-%m')"), $yearMonth)->sum('amount');
-            
-            $monthlyOrderValues[] = $orderValue;
-            $monthlyReceivedAmounts[] = $receivedAmount;
-        }
+            $mo_orderQuery = Order::query()->where(DB::raw("DATE_FORMAT(created_at, '%Y-%m')"), $yearMonth);
+            $mo_paymentQuery = Payment::query()->where(DB::raw("DATE_FORMAT(transaction_date, '%Y-%m')"), $yearMonth);
 
-        // Project Pipeline Data (Donut Chart)
-        $projectPipeline = Status::where('type', 'order')
-            ->get()
-            ->map(function($status) {
-                return [
-                    'name' => $status->name,
-                    'count' => Project::where('project_status_id', $status->id)->count(),
-                    'color' => $status->color ?? '#6366f1'
-                ];
-            })->filter(fn($item) => $item['count'] > 0)->values();
-
-        // Fallback for Pipeline if empty
-        if ($projectPipeline->isEmpty()) {
-            $projectPipeline = Project::select('project_status_id', DB::raw('count(*) as count'))
-                ->groupBy('project_status_id')
-                ->with('projectStatus')
-                ->get()
-                ->map(function($p) {
-                    return [
-                        'name' => $p->projectStatus->name ?? 'Unknown',
-                        'count' => $p->count,
-                        'color' => $p->projectStatus->color ?? '#6366f1'
-                    ];
+            if ($routePrefix == 'sale') {
+                $mo_orderQuery->where(function($master) use ($saleId, $saleType) {
+                    $master->where(function($q) use ($saleId, $saleType) {
+                        $q->where('created_by', $saleId)->where('created_by_type', $saleType);
+                    })->orWhereHas('assignments', function($sq) use ($saleId) {
+                        $sq->where('assigned_to', $saleId);
+                    });
                 });
+
+                $mo_paymentQuery->whereHas('order', function($master) use ($saleId, $saleType) {
+                    $master->where(function($q) use ($saleId, $saleType) {
+                        $q->where('created_by', $saleId)->where('created_by_type', $saleType);
+                    })->orWhereHas('assignments', function($sq) use ($saleId) {
+                        $sq->where('assigned_to', $saleId);
+                    });
+                });
+            }
+
+            $monthlyOrderValues[] = $mo_orderQuery->sum('order_value');
+            $monthlyReceivedAmounts[] = $mo_paymentQuery->sum('amount');
         }
 
-        $totalProjects = Project::count();
-        
-        // Data for dropdowns
+        // Project Pipeline Data
+        $projectPipeline = Status::where('type', 'order')->get()->map(function($status) use ($projectQuery) {
+            return [
+                'name' => $status->name,
+                'count' => (clone $projectQuery)->where('project_status_id', $status->id)->count(),
+                'color' => $status->color ?? '#6366f1'
+            ];
+        })->filter(fn($item) => $item['count'] > 0)->values();
+
+        $totalProjects = (clone $projectQuery)->count();
+        $marketingOrders = (clone $orderQuery)->where('is_marketing', true)->count();
         $availableYears = range(Carbon::now()->year - 2, Carbon::now()->year + 1);
 
         return view('admin.dashboard', compact(
             'totalReceivedAmount', 'totalOrderValue', 'totalPending', 'totalLeads', 'totalOrders',
             'activeProjects', 'completedProjects', 'totalSalesPerson', 'totalDevelopers',
-            'months', 'monthlyOrderValues', 'monthlyReceivedAmounts',
-            'projectPipeline', 'totalProjects', 'selectedMonth', 'selectedYear', 'availableYears'
+            'months', 'monthlyOrderValues', 'monthlyReceivedAmounts', 'marketingOrders',
+            'projectPipeline', 'totalProjects', 'selectedMonth', 'selectedYear', 'availableYears', 'routePrefix'
         ));
     }
 

@@ -691,7 +691,7 @@
                         <div class="card-title">Losted Lead Pipeline</div>
                         <div class="card-sub">{{ $leads->count() }} total leads identified as lost</div>
                     </div>
-                        <form action="{{ route('admin.losted-leads') }}" method="GET" class="card-actions mb-2">
+                        <form action="{{ route($routePrefix . '.losted-leads') }}" method="GET" class="card-actions mb-2">
                              <div class="global-search">
                                  <i class="bi bi-search"></i>
                                  <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search...">
@@ -799,10 +799,12 @@
                                 </td>
                                 <td>
                                     <div class="row-actions">
-                                        <a href="{{ route('admin.leads.show', $lead->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                        <a href="{{route('admin.leads.followup', $lead->id)}}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
-                                        <a class="ra-btn" title="Edit" href="{{route('admin.leads.edit', $lead->id)}}"><i class="bi bi-pencil-fill"></i></a>
-                                        <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route('admin.leads.destroy', $lead->id) }}')"><i class="bi bi-trash-fill"></i></button>
+                                        <a href="{{ route($routePrefix . '.leads.show', $lead->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
+                                        <a href="{{ route($routePrefix . '.leads.followup', $lead->id) }}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
+                                        <a class="ra-btn" title="Edit" href="{{ route($routePrefix . '.leads.edit', $lead->id) }}"><i class="bi bi-pencil-fill"></i></a>
+                                        @if($routePrefix == 'admin')
+                                        <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route($routePrefix . '.leads.destroy', $lead->id) }}')"><i class="bi bi-trash-fill"></i></button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

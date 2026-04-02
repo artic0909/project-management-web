@@ -10,9 +10,10 @@ class ServiceController extends Controller
 {
     public function index()
     {
+        $routePrefix = 'admin';
         $services = Service::latest()->get();
         $serviceCount = $services->count();
-        return view('admin.services', compact('services', 'serviceCount'));
+        return view('admin.services', compact('services', 'serviceCount', 'routePrefix'));
     }
 
     public function store(Request $request)

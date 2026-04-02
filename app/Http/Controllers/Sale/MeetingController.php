@@ -60,7 +60,8 @@ class MeetingController extends Controller
         $sales = Sale::all();
         $developers = Developer::all();
             
-        return view('sale.meetings.index', compact('meetings', 'counts', 'sales', 'developers'));
+        $routePrefix = 'sale';
+        return view('admin.meetings.index', compact('meetings', 'counts', 'sales', 'developers', 'routePrefix'));
     }
 
     public function create()
@@ -94,7 +95,8 @@ class MeetingController extends Controller
         $developers = Developer::all();
         $sales = Sale::all();
         
-        return view('sale.meetings.create', compact('leads', 'orders', 'projects', 'developers', 'sales'));
+        $routePrefix = 'sale';
+        return view('admin.meetings.create', compact('leads', 'orders', 'projects', 'developers', 'sales', 'routePrefix'));
     }
 
     public function store(Request $request)
@@ -121,7 +123,8 @@ class MeetingController extends Controller
         
         $meeting->save();
 
-        return redirect()->route('sale.meetings.index')->with('success', 'Meeting scheduled successfully.');
+        $routePrefix = 'sale';
+        return redirect()->route($routePrefix . '.meetings.index')->with('success', 'Meeting scheduled successfully.');
     }
 
     public function show(Meeting $meeting)
@@ -132,7 +135,8 @@ class MeetingController extends Controller
         }
         
         $meeting->load(['lead', 'order', 'project', 'createdBy']);
-        return view('sale.meetings.show', compact('meeting'));
+        $routePrefix = 'sale';
+        return view('admin.meetings.show', compact('meeting', 'routePrefix'));
     }
 
     public function edit(Meeting $meeting)
@@ -169,7 +173,8 @@ class MeetingController extends Controller
         $developers = Developer::all();
         $sales = Sale::all();
         
-        return view('sale.meetings.edit', compact('meeting', 'leads', 'orders', 'projects', 'developers', 'sales'));
+        $routePrefix = 'sale';
+        return view('admin.meetings.edit', compact('meeting', 'leads', 'orders', 'projects', 'developers', 'sales', 'routePrefix'));
     }
 
     public function update(Request $request, Meeting $meeting)
@@ -198,7 +203,8 @@ class MeetingController extends Controller
         
         $meeting->save();
 
-        return redirect()->route('sale.meetings.index')->with('success', 'Meeting updated successfully.');
+        $routePrefix = 'sale';
+        return redirect()->route($routePrefix . '.meetings.index')->with('success', 'Meeting updated successfully.');
     }
 
     public function destroy(Meeting $meeting)
@@ -209,6 +215,7 @@ class MeetingController extends Controller
         }
         
         $meeting->delete();
-        return redirect()->route('sale.meetings.index')->with('success', 'Meeting deleted successfully.');
+        $routePrefix = 'sale';
+        return redirect()->route($routePrefix . '.meetings.index')->with('success', 'Meeting deleted successfully.');
     }
 }
