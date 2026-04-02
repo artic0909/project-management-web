@@ -5,6 +5,9 @@
 @section('content')
 
 <style>
+    .modal-header .btn-close { filter: none; }
+    [data-theme="dark"] .modal-header .btn-close { filter: invert(1); }
+
     /* ── 6-column uniform grid ── */
     .stat-grid-wrap {
         display: grid;
@@ -646,12 +649,21 @@
                     </div>
                 </div>
 
-                <div class="stat-box" style="--sb-color:#8b5cf6; border: 2px solid #8b5cf6;">
-                    <div class="sb-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+                <div class="stat-box" style="--sb-color:#0ea5e9; border: 2px solid #0ea5e9;">
+                    <div class="sb-icon"><i class="bi bi-telephone-fill"></i></div>
                     <div class="sb-content">
-                        <div class="sb-cat" style="--cat-color:#8b5cf6;">Total Followup</div>
-                        <div class="sb-val">{{ $totalFollowupsFiltered }}</div>
-                        <div class="sb-lbl">Assigned Followups</div>
+                        <div class="sb-cat" style="--cat-color:#0ea5e9;">Total Calling</div>
+                        <div class="sb-val">{{ $totalCallingFollowupsFiltered }}</div>
+                        <div class="sb-lbl">Assigned Calling</div>
+                    </div>
+                </div>
+
+                <div class="stat-box" style="--sb-color:#f43f5e; border: 2px solid #f43f5e;">
+                    <div class="sb-icon"><i class="bi bi-chat-dots-fill"></i></div>
+                    <div class="sb-content">
+                        <div class="sb-cat" style="--cat-color:#f43f5e;">Total Message</div>
+                        <div class="sb-val">{{ $totalMessageFollowupsFiltered }}</div>
+                        <div class="sb-lbl">Assigned Message</div>
                     </div>
                 </div>
                 @endif
@@ -826,9 +838,10 @@
                                 <tr>
                                     <th>SL</th>
                                     <th>Date</th>
-                                    <th>Lead</th>
-                                    <th>Source</th>
+                                    <th>Lead Info</th>
+                                    <th>Campaign</th>
                                     <th>Contact Person</th>
+                                    <th>Phones</th>
                                     <th>Service Need</th>
                                     <th>Priority</th>
                                     <th>Status</th>
@@ -847,17 +860,33 @@
                                         <div class="lead-cell">
                                             @php
                                                 $initials = strtoupper(substr($lead->company, 0, 1) . substr($lead->contact_person, 0, 1));
-                                                $emails = is_array($lead->emails) ? $lead->emails[0] : (json_decode($lead->emails)[0] ?? 'N/A');
+                                                $emails_raw = is_array($lead->emails) ? $lead->emails : (json_decode($lead->emails, true) ?? []);
+                                                $primary_email = $emails_raw[0] ?? 'N/A';
                                             @endphp
                                             <div class="mini-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">{{ $initials }}</div>
                                             <div>
                                                 <div class="ln">{{ $lead->company }}</div>
-                                                <div class="ls">{{ $emails }}</div>
+                                                <div class="ls">{{ $primary_email }}</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td><span class="src-tag">{{ $lead->source->name ?? 'N/A' }}</span></td>
+                                    <td><span class="src-tag">{{ $lead->campaign->name ?? 'N/A' }}</span></td>
                                     <td><strong style="color:var(--t2)">{{ $lead->contact_person }}</strong></td>
+                                    <td>
+                                        @php
+                                            $codes = [0=>'+93',1=>'+355',2=>'+213',3=>'+376',4=>'+244',5=>'+54',6=>'+61',7=>'+43',8=>'+880',9=>'+32',10=>'+55',11=>'+1',12=>'+86',13=>'+57',14=>'+45',15=>'+20',16=>'+33',17=>'+49',18=>'+233',19=>'+30',20=>'+91',21=>'+62',22=>'+98',23=>'+964',24=>'+353',25=>'+972',26=>'+39',27=>'+81',28=>'+962',29=>'+254',30=>'+965',31=>'+961',32=>'+60',33=>'+52',34=>'+212',35=>'+977',36=>'+31',37=>'+64',38=>'+234',39=>'+47',40=>'+968',41=>'+92',42=>'+63',43=>'+48',44=>'+351',45=>'+974',46=>'+7',47=>'+966',48=>'+65',49=>'+27',50=>'+34',51=>'+94',52=>'+46',53=>'+41',54=>'+886',55=>'+66',56=>'+90',57=>'+971',58=>'+44',59=>'+1',60=>'+84',61=>'+260',62=>'+263'];
+                                            $phoneList = is_array($lead->phones) ? $lead->phones : (json_decode($lead->phones, true) ?? []);
+                                            $fullPhones = [];
+                                            foreach($phoneList as $p) {
+                                                $fullPhones[] = ($codes[$p['code_idx'] ?? ''] ?? '') . ($p['number'] ?? '');
+                                            }
+                                        @endphp
+                                        <div style="display:flex; flex-direction:column; gap:2px;">
+                                            @foreach($fullPhones as $fp)
+                                                <strong style="color:var(--t2); font-size:12px;">{{ $fp }}</strong>
+                                            @endforeach
+                                        </div>
+                                    </td>
                                     <td><strong style="color:var(--t2)">{{ $lead->service->name ?? 'N/A' }}</strong></td>
                                     <td>
                                         @php
@@ -876,8 +905,8 @@
                                     </td>
                                     <td>
                                         @foreach($lead->assignments as $assign)
-                                            <div class="ln">{{ $assign->sale->name ?? 'N/A' }} - {{ $assign->sale->email ?? 'N/A' }}</div>
-                                            
+                                            <div class="ln">{{ $assign->sale->name ?? 'N/A' }}</div>
+                                            <div class="ls" style="font-size:10px">{{ $assign->sale->email ?? 'N/A' }}</div>
                                         @endforeach
                                         @if($lead->assignments->isEmpty())
                                             <span style="color:var(--t4)">Unassigned</span>
@@ -890,9 +919,23 @@
                                     </td>
                                     <td>
                                         <div class="row-actions">
+                                            <style>
+                                                .ra-btn.phone:hover {
+                                                    background: rgba(16, 185, 129, 0.1) !important;
+                                                    color: #10b981 !important;
+                                                    border-color: #10b981 !important;
+                                                }
+                                            </style>
+                                            <a href="javascript:void(0)" class="ra-btn phone" 
+                                               onclick="handleContactClick(event, 'tel', {{ json_encode($fullPhones) }})" title="Call Lead">
+                                                <i class="bi bi-telephone-fill"></i>
+                                            </a>
+                                            <a href="javascript:void(0)" class="ra-btn email" 
+                                               onclick="handleContactClick(event, 'mailto', {{ json_encode($emails_raw) }})" title="Email Lead">
+                                                <i class="bi bi-envelope-fill"></i>
+                                            </a>
+
                                             <a href="{{ route('sale.leads.show', $lead->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                            <!-- <button class="ra-btn" title="Call"><i class="bi bi-telephone-fill"></i></button>
-                                            <button class="ra-btn" title="Email"><i class="bi bi-envelope-fill"></i></button> -->
                                             <a href="{{route('sale.leads.followup', $lead->id)}}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
                                             <a class="ra-btn" title="Edit" href="{{route('sale.leads.edit', $lead->id)}}"><i class="bi bi-pencil-fill"></i></a>
                                             <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route('sale.leads.destroy', $lead->id) }}')"><i class="bi bi-trash-fill"></i></button>
@@ -2383,4 +2426,69 @@
     document.addEventListener('DOMContentLoaded', interceptPagination);
 </script>
 
+    <!-- ── Contact Selection Modal (Bootstrap) ── -->
+    <div class="modal fade" id="contactSelectionModal" tabindex="-1" aria-labelledby="contactSelectionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: var(--bg2); border-color: var(--b2); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+                <div class="modal-header" style="border-bottom-color: var(--b1);">
+                    <h5 class="modal-title" id="contactSelectionModalLabel" style="color: #ef4444; font-weight: 700;">Select Option</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--close-filter);"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="list-group list-group-flush" id="contactSelectionOptions">
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top-color: var(--b1);">
+                    <button type="button" class="btn btn-secondary sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function handleContactClick(e, protocol, options) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (!options || options.length === 0) {
+                alert('No contact details available');
+                return;
+            }
+
+            if (options.length === 1) {
+                window.location.href = protocol + ':' + options[0];
+                return;
+            }
+
+            const modalEl = document.getElementById('contactSelectionModal');
+            const optionsGroup = document.getElementById('contactSelectionOptions');
+            const titleEl = document.getElementById('contactSelectionModalLabel');
+
+            titleEl.textContent = 'Select ' + (protocol === 'tel' ? 'Phone Number' : 'Email Address');
+            optionsGroup.innerHTML = '';
+
+            options.forEach(opt => {
+                const item = document.createElement('a');
+                item.className = 'list-group-item list-group-item-action d-flex align-items-center gap-3 py-3 border-bottom-0';
+                item.style.cssText = 'background: transparent; color: var(--t2); border-bottom: 1px solid var(--b1) !important;';
+                item.href = protocol + ':' + opt;
+                item.innerHTML = `
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(99,102,241,0.1); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-${protocol === 'tel' ? 'telephone-fill' : 'envelope-fill'}" style="color: var(--accent);"></i>
+                    </div>
+                    <span style="font-weight: 600; font-size: 15px;">${opt}</span>
+                `;
+                item.onmouseover = () => { item.style.background = 'var(--bg3)'; item.style.color = 'var(--accent)'; };
+                item.onmouseout = () => { item.style.background = 'transparent'; item.style.color = 'var(--t2)'; };
+                item.onclick = (e) => {
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                };
+                optionsGroup.appendChild(item);
+            });
+
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+        }
+    </script>
 @endsection

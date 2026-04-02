@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Models\OrderAssign;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -66,11 +67,16 @@ class OrderController extends Controller
 
         $orders = $query->latest()->paginate(20)->withQueryString();
 
-        // Total Followups for the logged-in salesperson's assigned orders
+        // Total Calling & Message Followups for the logged-in salesperson's assigned orders
         $orderIds = $this->getFilteredOrders()->pluck('id');
-        $totalUserFollowups = \App\Models\Followup::whereIn('followable_id', $orderIds)
+        $followupCounts = \App\Models\Followup::whereIn('followable_id', $orderIds)
             ->where('followable_type', \App\Models\Order::class)
-            ->count();
+            ->select('followup_type', DB::raw('count(*) as count'))
+            ->groupBy('followup_type')
+            ->pluck('count', 'followup_type');
+
+        $totalCallingUserFollowups = ($followupCounts['Calling'] ?? 0) + ($followupCounts['Both'] ?? 0);
+        $totalMessageUserFollowups = ($followupCounts['Message'] ?? 0) + ($followupCounts['Both'] ?? 0);
 
         // Counts (Only for their orders)
         $totalOrders = $this->getFilteredOrders()->count();
@@ -101,7 +107,8 @@ class OrderController extends Controller
             'allStatuses',
             'allServices',
             'allSales',
-            'totalUserFollowups'
+            'totalCallingUserFollowups',
+            'totalMessageUserFollowups'
         ));
     }
 
