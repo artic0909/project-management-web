@@ -241,14 +241,18 @@
                         </div>
                     </div>
 
-                    {{-- Order Notes History Card --}}
-                    @include('admin.orders._notes_history')
+                    
 
                 </div>
 
             </div>
         </form>
-
+        <div class="dash-grid" style="margin-top: 16px;">
+            <div class="span-8">
+                {{-- Order Notes History Card --}}
+                @include('admin.orders._notes_history')
+            </div>
+        </div>
     </div>
 </main>
 

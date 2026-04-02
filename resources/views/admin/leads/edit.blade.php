@@ -145,8 +145,7 @@
                         </div>
                     </div>
 
-                    {{-- Lead Notes History Card --}}
-                    @include('admin.leads._notes_history')
+                    
 
                 </div>
 
@@ -224,7 +223,12 @@
 
             </div>
         </form>
-
+        <div class="dash-grid" style="margin-top: 16px;">
+            <div class="span-8">
+{{-- Lead Notes History Card --}}
+                    @include('admin.leads._notes_history')
+            </div>
+        </div>
     </div>
 </main>
 
