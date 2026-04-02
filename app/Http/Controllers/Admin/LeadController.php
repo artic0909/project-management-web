@@ -18,7 +18,7 @@ class LeadController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Lead::with(['status', 'service', 'source', 'campaign', 'assignments', 'createdBy'])->withCount('followups')
+        $query = Lead::with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])->withCount('followups')
             ->whereHas('status', function($sq) {
                 $sq->where('name', '!=', 'lost');
             });
@@ -41,10 +41,14 @@ class LeadController extends Controller
 
         // Dropdown filters
         if ($request->has('source_id') && !empty($request->source_id)) {
-            $query->where('source_id', $request->source_id);
+            $query->whereHas('sources', function($q) use ($request) {
+                $q->where('sources.id', $request->source_id);
+            });
         }
         if ($request->has('service_id') && !empty($request->service_id)) {
-            $query->where('service_id', $request->service_id);
+            $query->whereHas('services', function($q) use ($request) {
+                $q->where('services.id', $request->service_id);
+            });
         }
         if ($request->has('priority') && !empty($request->priority)) {
             $query->where('priority', $request->priority);
@@ -133,14 +137,22 @@ class LeadController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'company' => 'required|string|max:255',
             'contact_person' => 'required|string|max:255',
+            'email' => 'required|array|min:1',
+            'email.*' => 'required|email|max:255',
+            'phone' => 'required|array|min:1',
+            'phone.*' => 'required|numeric|digits_between:7,15',
+            'state' => 'required|string|max:100',
+            'zip_code' => 'required|numeric|digits:6',
+            'service_ids' => 'required|array|min:1',
+            'service_ids.*' => 'exists:services,id',
+            'source_ids' => 'required|array|min:1',
+            'source_ids.*' => 'exists:sources,id',
+            'priority' => 'required|string',
+            'status_id' => 'required|exists:statuses,id',
         ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
 
         // Process phones
         $phones = [];
@@ -167,8 +179,8 @@ class LeadController extends Controller
             'emails' => array_values($emails),
             'phones' => $phones,
             'address' => $request->address,
-            'service_id' => $request->service_id,
-            'source_id' => $request->source_id,
+            'state' => $request->state,
+            'zip_code' => $request->zip_code,
             'campaign_id' => $request->campaign_id,
             'priority' => $request->priority,
             'status_id' => $request->status_id,
@@ -176,6 +188,9 @@ class LeadController extends Controller
             'created_by' => auth()->id(),
             'created_by_type' => get_class(auth()->user()),
         ]);
+
+        $lead->services()->sync($request->service_ids);
+        $lead->sources()->sync($request->source_ids);
 
         // Add initial note to history if present
         if (!empty($request->notes)) {
@@ -204,7 +219,7 @@ class LeadController extends Controller
 
     public function show($id)
     {
-        $lead = Lead::with(['status', 'source', 'service', 'campaign', 'createdBy', 'assignments.sale', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
+        $lead = Lead::with(['status', 'sources', 'services', 'campaign', 'createdBy', 'assignments.sale', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         $statuses = Status::where('type', 'lead')->get();
         $routePrefix = 'admin';
         return view('admin.leads.show', compact('lead', 'statuses', 'routePrefix'));
@@ -237,15 +252,20 @@ class LeadController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'company' => 'required|string',
-            'contact_person' => 'required|string',
+            'company' => 'required|string|max:255',
+            'contact_person' => 'required|string|max:255',
             'business_type' => 'required|string',
-            'email' => 'nullable|array',
-            'phone' => 'nullable|array',
-            'country_code' => 'nullable|array',
+            'email' => 'required|array|min:1',
+            'email.*' => 'required|email|max:255',
+            'phone' => 'required|array|min:1',
+            'phone.*' => 'required|numeric|digits_between:7,15',
             'address' => 'nullable|string',
-            'service_id' => 'required|exists:services,id',
-            'source_id' => 'required|exists:sources,id',
+            'state' => 'required|string|max:100',
+            'zip_code' => 'required|numeric|digits:6',
+            'service_ids' => 'required|array|min:1',
+            'service_ids.*' => 'exists:services,id',
+            'source_ids' => 'required|array|min:1',
+            'source_ids.*' => 'exists:sources,id',
             'status_id' => 'required|exists:statuses,id',
             'campaign_id' => 'required|exists:campaigns,id',
             'priority' => 'required|string',
@@ -279,13 +299,16 @@ class LeadController extends Controller
             'emails' => array_values($emails),
             'phones' => $phones,
             'address' => $request->address,
-            'service_id' => $request->service_id,
-            'source_id' => $request->source_id,
+            'state' => $request->state,
+            'zip_code' => $request->zip_code,
             'status_id' => $request->status_id,
             'campaign_id' => $request->campaign_id,
             'priority' => $request->priority,
             'notes' => $request->notes,
         ]);
+
+        $lead->services()->sync($request->service_ids);
+        $lead->sources()->sync($request->source_ids);
 
         // Update assignments
         LeadAssign::where('lead_id', $id)->delete();
@@ -303,7 +326,7 @@ class LeadController extends Controller
 
     public function lostedLeads(Request $request)
     {
-        $query = Lead::with(['status', 'service', 'source', 'campaign', 'assignments', 'createdBy'])
+        $query = Lead::with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])
             ->whereHas('status', function($sq) {
                 $sq->where('name', 'lost');
             });

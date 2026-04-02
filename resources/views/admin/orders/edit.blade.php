@@ -59,13 +59,68 @@
                                     <input type="text" name="domain_name" class="form-inp" value="{{ old('domain_name', $order->domain_name) }}" placeholder="example.com">
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Service / Product</label>
-                                    <select name="service_id" id="serviceSelect" class="form-inp" onchange="checkServiceType()">
-                                        <option value="">— Select Service —</option>
-                                        @foreach($services as $service)
-                                            <option value="{{ $service->id }}" {{ old('service_id', $order->service_id) == $service->id ? 'selected' : '' }}>{{ $service->name }}</option>
-                                        @endforeach
-                                    </select>
+                                    <label class="form-lbl">Service / Product <span style="color:#ef4444">*</span></label>
+                                    @php $selectedServiceIds = $order->services->pluck('id')->toArray(); @endphp
+                                    <div class="ms-wrap" id="serviceWrap">
+                                        <div class="ms-trigger" onclick="toggleMs('serviceWrap')">
+                                            <div class="ms-pills" id="servicePills">
+                                                <span class="ms-placeholder">Select services…</span>
+                                            </div>
+                                            <i class="bi bi-chevron-down ms-arrow"></i>
+                                        </div>
+                                        <div class="ms-dropdown" id="serviceDropdown">
+                                            <div class="ms-search-wrap">
+                                                <i class="bi bi-search"></i>
+                                                <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'serviceDropdown')">
+                                                <span class="ms-all-btn" onclick="toggleAllMs('serviceWrap','serviceDropdown')">Select All</span>
+                                            </div>
+                                            <div class="ms-opts">
+                                                @foreach($services as $service)
+                                                    <label class="ms-opt">
+                                                        <input type="checkbox" name="service_ids[]" value="{{ $service->id }}" 
+                                                            data-name="{{ $service->name }}"
+                                                            onchange="updateMs('serviceWrap'); checkServiceType();"
+                                                            {{ in_array($service->id, $selectedServiceIds) ? 'checked' : '' }}>
+                                                        <div style="display:flex;flex-direction:column;">
+                                                            <span style="font-weight:500;color:var(--t1);">{{ $service->name }}</span>
+                                                        </div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Lead Sources <span style="color:#ef4444">*</span></label>
+                                    @php $selectedSourceIds = $order->sources->pluck('id')->toArray(); @endphp
+                                    <div class="ms-wrap" id="sourceWrap">
+                                        <div class="ms-trigger" onclick="toggleMs('sourceWrap')">
+                                            <div class="ms-pills" id="sourcePills">
+                                                <span class="ms-placeholder">Select sources…</span>
+                                            </div>
+                                            <i class="bi bi-chevron-down ms-arrow"></i>
+                                        </div>
+                                        <div class="ms-dropdown" id="sourceDropdown">
+                                            <div class="ms-search-wrap">
+                                                <i class="bi bi-search"></i>
+                                                <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'sourceDropdown')">
+                                                <span class="ms-all-btn" onclick="toggleAllMs('sourceWrap','sourceDropdown')">Select All</span>
+                                            </div>
+                                            <div class="ms-opts">
+                                                @foreach($sources as $source)
+                                                    <label class="ms-opt">
+                                                        <input type="checkbox" name="source_ids[]" value="{{ $source->id }}" 
+                                                            data-name="{{ $source->name }}"
+                                                            onchange="updateMs('sourceWrap')"
+                                                            {{ in_array($source->id, $selectedSourceIds) ? 'checked' : '' }}>
+                                                        <div style="display:flex;flex-direction:column;">
+                                                            <span style="font-weight:500;color:var(--t1);">{{ $source->name }}</span>
+                                                        </div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Order Value <span style="color:#ef4444">*</span></label>
@@ -109,8 +164,8 @@
                                     <input type="text" name="state" class="form-inp" value="{{ old('state', $order->state) }}" placeholder="State or Province">
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Zip Code</label>
-                                    <input type="text" name="zip_code" class="form-inp" value="{{ old('zip_code', $order->zip_code) }}" placeholder="Zip / PIN">
+                                    <label class="form-lbl">Zip Code <span style="color:#ef4444">*</span></label>
+                                    <input type="text" name="zip_code" class="form-inp" value="{{ old('zip_code', $order->zip_code) }}" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits" required>
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Full Address</label>
@@ -268,18 +323,22 @@
     }
 
     function checkServiceType() {
-        const sel = document.getElementById('serviceSelect');
-        const text = sel.options[sel.selectedIndex].text.toLowerCase();
+        const wrap = document.getElementById('serviceWrap');
+        const checkedNames = [...wrap.querySelectorAll('input[name="service_ids[]"]:checked')].map(cb => cb.dataset.name.toLowerCase());
         
         const mktCheck = document.getElementById('mktToggle');
-        if(text.includes('marketing')) {
+        if(checkedNames.some(name => name.includes('marketing'))) {
             mktCheck.checked = true;
             toggleMktSection();
         }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        if(typeof updateMs === 'function') updateMs('salesWrap');
+        if(typeof updateMs === 'function') {
+            updateMs('salesWrap');
+            updateMs('serviceWrap');
+            updateMs('sourceWrap');
+        }
         // Initial state for marketing if pre-checked
         toggleMktSection();
 

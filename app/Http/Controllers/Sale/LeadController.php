@@ -33,7 +33,7 @@ class LeadController extends Controller
 
     public function index(Request $request)
     {
-        $query = $this->getFilteredLeads()->with(['status', 'service', 'source', 'campaign', 'assignments', 'createdBy'])->withCount('followups')
+        $query = $this->getFilteredLeads()->with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])->withCount('followups')
             ->whereHas('status', function($sq) {
                 $sq->where('name', '!=', 'lost');
             });
@@ -56,10 +56,14 @@ class LeadController extends Controller
 
         // Dropdown filters
         if ($request->has('source_id') && !empty($request->source_id)) {
-            $query->where('source_id', $request->source_id);
+            $query->whereHas('sources', function($q) use ($request) {
+                $q->where('sources.id', $request->source_id);
+            });
         }
         if ($request->has('service_id') && !empty($request->service_id)) {
-            $query->where('service_id', $request->service_id);
+            $query->whereHas('services', function($q) use ($request) {
+                $q->where('services.id', $request->service_id);
+            });
         }
         if ($request->has('priority') && !empty($request->priority)) {
             $query->where('priority', $request->priority);
@@ -204,14 +208,19 @@ class LeadController extends Controller
             'emails' => array_values($emails),
             'phones' => $phones,
             'address' => $request->address,
-            'service_id' => $request->service_id,
-            'source_id' => $request->source_id,
             'campaign_id' => $request->campaign_id,
             'priority' => $request->priority,
             'status_id' => $request->status_id,
             'created_by' => auth()->guard('sale')->id(),
-            'created_by_type' => get_class(auth()->guard('sale')->user()),
+            'created_ByType' => get_class(auth()->guard('sale')->user()),
         ]);
+
+        if ($request->has('service_id')) {
+            $lead->services()->sync($request->service_id);
+        }
+        if ($request->has('source_id')) {
+            $lead->sources()->sync($request->source_id);
+        }
 
         // Process assignments
         if ($request->has('assign_to')) {
@@ -244,7 +253,7 @@ class LeadController extends Controller
 
     public function show($id)
     {
-        $lead = $this->getFilteredLeads()->with(['status', 'source', 'service', 'campaign', 'createdBy', 'assignments.sale', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
+        $lead = $this->getFilteredLeads()->with(['status', 'sources', 'services', 'campaign', 'createdBy', 'assignments.sale', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         $statuses = Status::where('type', 'lead')->get();
         $routePrefix = 'sale';
         return view('admin.leads.show', compact('lead', 'statuses', 'routePrefix'));
@@ -308,13 +317,17 @@ class LeadController extends Controller
             'emails' => array_values($emails),
             'phones' => $phones,
             'address' => $request->address,
-            'service_id' => $request->service_id,
-            'source_id' => $request->source_id,
-            'status_id' => $request->status_id,
             'campaign_id' => $request->campaign_id,
+            'status_id' => $request->status_id,
             'priority' => $request->priority,
-            'notes' => $request->notes,
         ]);
+
+        if ($request->has('service_id')) {
+            $lead->services()->sync($request->service_id);
+        }
+        if ($request->has('source_id')) {
+            $lead->sources()->sync($request->source_id);
+        }
 
         // Update assignments
         if ($request->has('assign_to')) {
@@ -332,7 +345,7 @@ class LeadController extends Controller
 
     public function lostedLeads(Request $request)
     {
-        $query = $this->getFilteredLeads()->with(['status', 'service', 'source', 'campaign', 'assignments', 'createdBy'])
+        $query = $this->getFilteredLeads()->with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])
             ->whereHas('status', function($sq) {
                 $sq->where('name', 'lost');
             });
@@ -355,10 +368,14 @@ class LeadController extends Controller
 
         // Dropdown filters
         if ($request->has('source_id') && !empty($request->source_id)) {
-            $query->where('source_id', $request->source_id);
+            $query->whereHas('sources', function($q) use ($request) {
+                $q->where('sources.id', $request->source_id);
+            });
         }
         if ($request->has('service_id') && !empty($request->service_id)) {
-            $query->where('service_id', $request->service_id);
+            $query->whereHas('services', function($q) use ($request) {
+                $q->where('services.id', $request->service_id);
+            });
         }
         if ($request->has('priority') && !empty($request->priority)) {
             $query->where('priority', $request->priority);

@@ -13,7 +13,7 @@ class PaymentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Payment::with(['order.status', 'order.service', 'order.assignments.sale', 'status', 'createdBy']);
+        $query = Payment::with(['order.status', 'order.services', 'order.sources', 'order.assignments.sale', 'status', 'createdBy']);
 
         // Search Filter
         if ($request->filled('q')) {
@@ -48,7 +48,7 @@ class PaymentController extends Controller
 
     public function create($order_id)
     {
-        $order = Order::with(['status', 'service', 'assignments.sale', 'payments', 'paymentTerms', 'createdBy'])->findOrFail($order_id);
+        $order = Order::with(['status', 'services', 'sources', 'assignments.sale', 'payments', 'paymentTerms', 'createdBy'])->findOrFail($order_id);
         $paymentStatuses = Status::where('type', 'payment')->get();
         $routePrefix = 'admin';
         return view('admin.payment.create', compact('order', 'paymentStatuses', 'routePrefix'));

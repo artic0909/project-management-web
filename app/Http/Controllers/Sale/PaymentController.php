@@ -27,7 +27,7 @@ class PaymentController extends Controller
 
     public function index(Request $request)
     {
-        $query = $this->getFilteredPayments()->with(['order.status', 'order.service', 'order.assignments.sale', 'status', 'createdBy']);
+        $query = $this->getFilteredPayments()->with(['order.status', 'order.services', 'order.sources', 'order.assignments.sale', 'status', 'createdBy']);
 
         // Search Filter
         if ($request->filled('q')) {
@@ -80,7 +80,7 @@ class PaymentController extends Controller
               ->orWhereHas('assignments', function($sq) use ($saleId) {
                   $sq->where('assigned_to', $saleId);
               });
-        })->with(['status', 'service', 'assignments.sale', 'payments', 'paymentTerms', 'createdBy'])->findOrFail($order_id);
+        })->with(['status', 'services', 'sources', 'assignments.sale', 'payments', 'paymentTerms', 'createdBy'])->findOrFail($order_id);
 
         $paymentStatuses = Status::where('type', 'payment')->get();
         $routePrefix = 'sale';

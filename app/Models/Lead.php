@@ -8,7 +8,7 @@ class Lead extends Model
 {
     protected $fillable = [
         'company', 'contact_person', 'business_type', 'emails', 'phones',
-        'address', 'service_id', 'source_id', 'status_id', 'campaign_id',
+        'address', 'state', 'zip_code', 'service_id', 'source_id', 'status_id', 'campaign_id',
         'priority', 'created_by', 'created_by_type', 'notes',
     ];
 
@@ -27,14 +27,14 @@ class Lead extends Model
         return $this->morphTo(null, 'created_by_type', 'created_by');
     }
 
-    public function service()
+    public function services()
     {
-        return $this->belongsTo(Service::class);
+        return $this->belongsToMany(Service::class, 'lead_service');
     }
 
-    public function source()
+    public function sources()
     {
-        return $this->belongsTo(Source::class);
+        return $this->belongsToMany(Source::class, 'lead_source');
     }
 
     public function campaign()

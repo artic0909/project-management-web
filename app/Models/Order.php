@@ -38,9 +38,14 @@ class Order extends Model
         return $this->morphTo(null, 'created_by_type', 'created_by');
     }
 
-    public function service()
+    public function services()
     {
-        return $this->belongsTo(Service::class);
+        return $this->belongsToMany(Service::class, 'order_service');
+    }
+
+    public function sources()
+    {
+        return $this->belongsToMany(Source::class, 'order_source');
     }
 
     public function status()

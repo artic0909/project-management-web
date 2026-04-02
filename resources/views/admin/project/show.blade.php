@@ -27,7 +27,15 @@
                         @endif
                     </div>
                     <h1 class="page-title">{{ $project->project_name }}</h1>
-                    <p class="page-desc">{{ $project->company_name ?? 'Client: ' . $project->client_name }}</p>
+                    <p class="page-desc" style="margin-bottom:12px;">{{ $project->company_name ?? 'Client: ' . $project->client_name }}</p>
+                    <div style="display:flex;gap:6px; flex-wrap:wrap;">
+                        @foreach($project->services as $service)
+                            <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(99,102,241,0.1);color:var(--accent);border:1px solid rgba(99,102,241,0.2);">{{ $service->name }}</span>
+                        @endforeach
+                        @foreach($project->sources as $source)
+                            <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);">{{ $source->name }}</span>
+                        @endforeach
+                    </div>
                 </div>
                 <div class="header-actions">
                     <a href="{{ route($routePrefix . '.projects.edit', $project->id) }}" class="btn-primary-solid sm">

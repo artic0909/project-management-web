@@ -89,8 +89,16 @@
                                 </div>
 
                                 <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Office Address</label>
-                                    <textarea name="address" class="form-inp" rows="3" placeholder="Full address…">{{ old('address', $lead->address) }}</textarea>
+                                    <label class="form-lbl">Full Address <span style="color:#ef4444">*</span></label>
+                                    <textarea name="address" class="form-inp" rows="2" placeholder="Full address…" required>{{ old('address', $lead->address) }}</textarea>
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">State <span style="color:#ef4444">*</span></label>
+                                    <input type="text" name="state" class="form-inp" value="{{ old('state', $lead->state) }}" placeholder="State" required>
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Zip Code <span style="color:#ef4444">*</span></label>
+                                    <input type="text" name="zip_code" class="form-inp" value="{{ old('zip_code', $lead->zip_code) }}" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits" required>
                                 </div>
                             </div>
                         </div>
@@ -105,22 +113,68 @@
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Service Need</label>
-                                    <select name="service_id" class="form-inp">
-                                        <option value="">— Select Service —</option>
-                                        @foreach($services as $service)
-                                            <option value="{{ $service->id }}" {{ old('service_id', $lead->service_id) == $service->id ? 'selected' : '' }}>{{ $service->name }}</option>
-                                        @endforeach
-                                    </select>
+                                    <label class="form-lbl">Service Need <span style="color:#ef4444">*</span></label>
+                                    @php $selectedServiceIds = $lead->services->pluck('id')->toArray(); @endphp
+                                    <div class="ms-wrap" id="serviceWrap">
+                                        <div class="ms-trigger" onclick="toggleMs('serviceWrap')">
+                                            <div class="ms-pills" id="servicePills">
+                                                <span class="ms-placeholder">Select services…</span>
+                                            </div>
+                                            <i class="bi bi-chevron-down ms-arrow"></i>
+                                        </div>
+                                        <div class="ms-dropdown" id="serviceDropdown">
+                                            <div class="ms-search-wrap">
+                                                <i class="bi bi-search"></i>
+                                                <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'serviceDropdown')">
+                                                <span class="ms-all-btn" onclick="toggleAllMs('serviceWrap','serviceDropdown')">Select All</span>
+                                            </div>
+                                            <div class="ms-opts">
+                                                @foreach($services as $service)
+                                                    <label class="ms-opt">
+                                                        <input type="checkbox" name="service_ids[]" value="{{ $service->id }}" 
+                                                            data-name="{{ $service->name }}"
+                                                            onchange="updateMs('serviceWrap')"
+                                                            {{ in_array($service->id, $selectedServiceIds) ? 'checked' : '' }}>
+                                                        <div style="display:flex;flex-direction:column;">
+                                                            <span style="font-weight:500;color:var(--t1);">{{ $service->name }}</span>
+                                                        </div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Lead Source</label>
-                                    <select name="source_id" class="form-inp">
-                                        <option value="">— Select Source —</option>
-                                        @foreach($sources as $source)
-                                            <option value="{{ $source->id }}" {{ old('source_id', $lead->source_id) == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
-                                        @endforeach
-                                    </select>
+                                    <label class="form-lbl">Lead Sources <span style="color:#ef4444">*</span></label>
+                                    @php $selectedSourceIds = $lead->sources->pluck('id')->toArray(); @endphp
+                                    <div class="ms-wrap" id="sourceWrap">
+                                        <div class="ms-trigger" onclick="toggleMs('sourceWrap')">
+                                            <div class="ms-pills" id="sourcePills">
+                                                <span class="ms-placeholder">Select sources…</span>
+                                            </div>
+                                            <i class="bi bi-chevron-down ms-arrow"></i>
+                                        </div>
+                                        <div class="ms-dropdown" id="sourceDropdown">
+                                            <div class="ms-search-wrap">
+                                                <i class="bi bi-search"></i>
+                                                <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'sourceDropdown')">
+                                                <span class="ms-all-btn" onclick="toggleAllMs('sourceWrap','sourceDropdown')">Select All</span>
+                                            </div>
+                                            <div class="ms-opts">
+                                                @foreach($sources as $source)
+                                                    <label class="ms-opt">
+                                                        <input type="checkbox" name="source_ids[]" value="{{ $source->id }}" 
+                                                            data-name="{{ $source->name }}"
+                                                            onchange="updateMs('sourceWrap')"
+                                                            {{ in_array($source->id, $selectedSourceIds) ? 'checked' : '' }}>
+                                                        <div style="display:flex;flex-direction:column;">
+                                                            <span style="font-weight:500;color:var(--t1);">{{ $source->name }}</span>
+                                                        </div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Lead Priority</label>
@@ -249,7 +303,11 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Hydrate MS pills
-        if(typeof updateMs === 'function') updateMs('editAssignWrap');
+        if(typeof updateMs === 'function') {
+            updateMs('editAssignWrap');
+            updateMs('serviceWrap');
+            updateMs('sourceWrap');
+        }
 
         // Hydrate multi-row Emails
         const existingEmails = @json($lead->emails ?? []);

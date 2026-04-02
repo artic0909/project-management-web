@@ -62,12 +62,67 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Service / Product <span style="color:#ef4444">*</span></label>
-                                    <select name="service_id" id="serviceSelect" class="form-inp" onchange="checkServiceType()" required>
-                                        <option value="">— Select Service —</option>
-                                        @foreach($services as $service)
-                                            <option value="{{ $service->id }}" {{ (isset($lead) && $lead->service_id == $service->id) ? 'selected' : '' }}>{{ $service->name }}</option>
-                                        @endforeach
-                                    </select>
+                                    @php $leadServiceIds = isset($lead) ? $lead->services->pluck('id')->toArray() : []; @endphp
+                                    <div class="ms-wrap" id="serviceWrap">
+                                        <div class="ms-trigger" onclick="toggleMs('serviceWrap')">
+                                            <div class="ms-pills" id="servicePills">
+                                                <span class="ms-placeholder">Select services…</span>
+                                            </div>
+                                            <i class="bi bi-chevron-down ms-arrow"></i>
+                                        </div>
+                                        <div class="ms-dropdown" id="serviceDropdown">
+                                            <div class="ms-search-wrap">
+                                                <i class="bi bi-search"></i>
+                                                <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'serviceDropdown')">
+                                                <span class="ms-all-btn" onclick="toggleAllMs('serviceWrap','serviceDropdown')">Select All</span>
+                                            </div>
+                                            <div class="ms-opts">
+                                                @foreach($services as $service)
+                                                    <label class="ms-opt">
+                                                        <input type="checkbox" name="service_ids[]" value="{{ $service->id }}" 
+                                                            data-name="{{ $service->name }}"
+                                                            onchange="updateMs('serviceWrap'); checkServiceType();"
+                                                            {{ in_array($service->id, $leadServiceIds) ? 'checked' : '' }}>
+                                                        <div style="display:flex;flex-direction:column;">
+                                                            <span style="font-weight:500;color:var(--t1);">{{ $service->name }}</span>
+                                                        </div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Lead Sources <span style="color:#ef4444">*</span></label>
+                                    @php $leadSourceIds = isset($lead) ? $lead->sources->pluck('id')->toArray() : []; @endphp
+                                    <div class="ms-wrap" id="sourceWrap">
+                                        <div class="ms-trigger" onclick="toggleMs('sourceWrap')">
+                                            <div class="ms-pills" id="sourcePills">
+                                                <span class="ms-placeholder">Select sources…</span>
+                                            </div>
+                                            <i class="bi bi-chevron-down ms-arrow"></i>
+                                        </div>
+                                        <div class="ms-dropdown" id="sourceDropdown">
+                                            <div class="ms-search-wrap">
+                                                <i class="bi bi-search"></i>
+                                                <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'sourceDropdown')">
+                                                <span class="ms-all-btn" onclick="toggleAllMs('sourceWrap','sourceDropdown')">Select All</span>
+                                            </div>
+                                            <div class="ms-opts">
+                                                @foreach($sources as $source)
+                                                    <label class="ms-opt">
+                                                        <input type="checkbox" name="source_ids[]" value="{{ $source->id }}" 
+                                                            data-name="{{ $source->name }}"
+                                                            onchange="updateMs('sourceWrap')"
+                                                            {{ in_array($source->id, $leadSourceIds) ? 'checked' : '' }}>
+                                                        <div style="display:flex;flex-direction:column;">
+                                                            <span style="font-weight:500;color:var(--t1);">{{ $source->name }}</span>
+                                                        </div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Order Value <span style="color:#ef4444">*</span></label>
@@ -151,7 +206,7 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Zip Code <span style="color:#ef4444">*</span></label>
-                                    <input type="text" name="zip_code" class="form-inp" placeholder="Zip / PIN" required>
+                                    <input type="text" name="zip_code" class="form-inp" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits" required>
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Full Address <span style="color:#ef4444">*</span></label>
@@ -316,18 +371,25 @@
     }
 
     function checkServiceType() {
-        const sel = document.getElementById('serviceSelect');
-        const text = sel.options[sel.selectedIndex].text.toLowerCase();
+        const wrap = document.getElementById('serviceWrap');
+        const checkedLabels = [...wrap.querySelectorAll('.ms-optHas input:checked')].map(cb => cb.closest('.ms-opt').textContent.toLowerCase());
         
+        // Alternative: get via data names
+        const checkedNames = [...wrap.querySelectorAll('input[name="service_ids[]"]:checked')].map(cb => cb.dataset.name.toLowerCase());
+
         const mktCheck = document.getElementById('mktToggle');
-        if(text.includes('marketing')) {
+        if(checkedNames.some(name => name.includes('marketing'))) {
             mktCheck.checked = true;
             toggleMktSection();
         }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        if(typeof updateMs === 'function') updateMs('salesWrap');
+        if(typeof updateMs === 'function') {
+            updateMs('salesWrap');
+            updateMs('serviceWrap');
+            updateMs('sourceWrap');
+        }
         checkServiceType(); // Check initially
 
         // Hydrate Emails/Phones

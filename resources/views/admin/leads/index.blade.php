@@ -891,10 +891,10 @@
                                 <th>SL</th>
                                 <th>Date</th>
                                 <th>Lead</th>
-                                <th>Campaign</th>
+                                <th>Campaign / Source</th>
                                 <th>Contact Person</th>
                                 <th>Phone</th>
-                                <th>Service Need</th>
+                                <th>Services</th>
                                 <th>Priority</th>
                                 <th>Status</th>
                                 <th>Created By</th>
@@ -926,7 +926,14 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td><span class="src-tag">{{ $lead->campaign->name ?? 'N/A' }}</span></td>
+                                <td>
+                                    <span class="src-tag">{{ $lead->campaign->name ?? 'N/A' }}</span>
+                                    <div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:4px;">
+                                        @foreach($lead->sources as $src)
+                                            <span style="font-size:10px; background:var(--bg3); border:1px solid var(--b1); padding:2px 6px; border-radius:4px; color:var(--t3);">{{ $src->name }}</span>
+                                        @endforeach
+                                    </div>
+                                </td>
                                 <td><strong style="color:var(--t2)">{{ $lead->contact_person }}</strong></td>
                                 <td>
                                     @foreach($lead->phones as $p)
@@ -935,7 +942,16 @@
                                         </strong><br>
                                     @endforeach
                                 </td>
-                                <td><strong style="color:var(--t2)">{{ $lead->service->name ?? 'N/A' }}</strong></td>
+                                <td>
+                                    <div style="display:flex; flex-wrap:wrap; gap:4px;">
+                                        @foreach($lead->services as $srv)
+                                            <strong style="color:var(--t2); font-size:12px; background:rgba(99, 102, 241, 0.05); padding:2px 6px; border-radius:4px;">{{ $srv->name }}</strong>
+                                        @endforeach
+                                        @if($lead->services->isEmpty())
+                                            <span style="color:var(--t4)">N/A</span>
+                                        @endif
+                                    </div>
+                                </td>
                                 <td>
                                     @php
                                         $pCls = strtolower(str_replace([' ', '🔥'], '', $lead->priority));

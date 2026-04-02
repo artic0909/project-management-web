@@ -18,7 +18,7 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $routePrefix = 'admin';
-        $query = Order::with(['status', 'service', 'assignments.sale', 'createdBy'])->withCount('followups');
+        $query = Order::with(['status', 'services', 'sources', 'assignments.sale', 'createdBy'])->withCount('followups');
 
         // Search Filter
         if ($request->filled('q')) {
@@ -34,7 +34,16 @@ class OrderController extends Controller
 
         // Service Filter
         if ($request->filled('service_id')) {
-            $query->where('service_id', $request->service_id);
+            $query->whereHas('services', function($q) use ($request) {
+                $q->where('services.id', $request->service_id);
+            });
+        }
+
+        // Source Filter
+        if ($request->filled('source_id')) {
+            $query->whereHas('sources', function($q) use ($request) {
+                $q->where('sources.id', $request->source_id);
+            });
         }
 
         // Status Filter
@@ -93,25 +102,27 @@ class OrderController extends Controller
 
         $allStatuses = Status::where('type', 'order')->get();
         $allServices = Service::all();
+        $allSources = \App\Models\Source::all();
         $allSales = Sale::all();
 
         $routePrefix = 'admin';
         return view('admin.orders.index', compact(
-            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue', 'totalReceived', 'allStatuses', 'allServices', 'allSales', 'totalCallingFollowupsFiltered', 'totalMessageFollowupsFiltered', 'routePrefix'
+            'orders', 'totalOrders', 'marketingOrders', 'totalValue', 'cancelledOrders', 'pendingValue', 'totalReceived', 'allStatuses', 'allServices', 'allSources', 'allSales', 'totalCallingFollowupsFiltered', 'totalMessageFollowupsFiltered', 'routePrefix'
         ));
     }
 
     public function create($lead_id = null)
     {
         $routePrefix = 'admin';
-        $lead = $lead_id ? Lead::with(['status', 'source', 'service', 'assignments'])->find($lead_id) : null;
+        $lead = $lead_id ? Lead::with(['status', 'sources', 'services', 'assignments'])->find($lead_id) : null;
         $services = Service::all();
+        $sources = \App\Models\Source::all();
         $sales = Sale::all();
         $orderStatuses = Status::where('type', 'order')->get();
         $paymentStatuses = Status::where('type', 'payment')->get();
         
         $routePrefix = 'admin';
-        return view('admin.orders.create', compact('lead', 'services', 'sales', 'orderStatuses', 'paymentStatuses', 'routePrefix'));
+        return view('admin.orders.create', compact('lead', 'services', 'sources', 'sales', 'orderStatuses', 'paymentStatuses', 'routePrefix'));
     }
 
     public function store(Request $request)
@@ -121,17 +132,20 @@ class OrderController extends Controller
             'company_name' => 'required|string|max:255',
             'client_name' => 'required|string|max:255',
             'email' => 'required|array|min:1',
-            'email.*' => 'required|email',
+            'email.*' => 'required|email|max:255',
             'phone' => 'required|array|min:1',
-            'phone.*' => 'required',
+            'phone.*' => 'required|numeric|digits_between:7,15',
             'domain_name' => 'required|string|max:255',
-            'service_id' => 'required|exists:services,id',
+            'service_ids' => 'required|array|min:1',
+            'service_ids.*' => 'exists:services,id',
+            'source_ids' => 'required|array|min:1',
+            'source_ids.*' => 'exists:sources,id',
             'order_value' => 'required|numeric',
             'payment_terms_id' => 'required|exists:statuses,id',
             'delivery_date' => 'required|date',
             'city' => 'required|string|max:100',
             'state' => 'required|string|max:100',
-            'zip_code' => 'required|string|max:20',
+            'zip_code' => 'required|numeric|digits:6',
             'full_address' => 'required|string',
             'status_id' => 'required|exists:statuses,id',
             'sales_person' => 'required|array|min:1',
@@ -159,7 +173,7 @@ class OrderController extends Controller
         }
 
         $orderData = $request->only([
-            'lead_id', 'company_name', 'client_name', 'domain_name', 'service_id',
+            'lead_id', 'company_name', 'client_name', 'domain_name',
             'order_value', 'payment_terms_id', 'delivery_date', 'city', 'state',
             'zip_code', 'full_address', 'status_id', 'plan_name',
             'mkt_payment_status_id', 'mkt_starting_date', 'mkt_username', 'mkt_password'
@@ -176,6 +190,9 @@ class OrderController extends Controller
         $orderData['created_by_type'] = get_class(Auth::user());
 
         $order = Order::create($orderData);
+
+        $order->services()->sync($request->service_ids);
+        $order->sources()->sync($request->source_ids);
 
         // Detailed Payment record for Order Creation
         if ($request->input('amount') > 0) {
@@ -231,7 +248,7 @@ class OrderController extends Controller
     public function show($id)
     {
         $routePrefix = 'admin';
-        $order = Order::with(['status', 'service', 'assignments.sale', 'createdBy', 'paymentTerms', 'mktPaymentStatus', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
+        $order = Order::with(['status', 'services', 'sources', 'assignments.sale', 'createdBy', 'paymentTerms', 'mktPaymentStatus', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         
         $orderStatuses = Status::where('type', 'order')->get();
         $paymentStatuses = Status::where('type', 'payment')->get();
@@ -254,14 +271,15 @@ class OrderController extends Controller
     public function edit($id)
     {
         $routePrefix = 'admin';
-        $order = Order::with(['assignments', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
+        $order = Order::with(['assignments', 'services', 'sources', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         $services = Service::all();
+        $sources = \App\Models\Source::all();
         $sales = Sale::all();
         $orderStatuses = Status::where('type', 'order')->get();
         $paymentStatuses = Status::where('type', 'payment')->get();
         
         $routePrefix = 'admin';
-        return view('admin.orders.edit', compact('order', 'services', 'sales', 'orderStatuses', 'paymentStatuses', 'routePrefix'));
+        return view('admin.orders.edit', compact('order', 'services', 'sources', 'sales', 'orderStatuses', 'paymentStatuses', 'routePrefix'));
     }
 
     public function update(Request $request, $id)
@@ -270,9 +288,17 @@ class OrderController extends Controller
         $request->validate([
             'company_name' => 'required|string|max:255',
             'client_name' => 'required|string|max:255',
+            'email' => 'required|array|min:1',
+            'email.*' => 'required|email|max:255',
+            'phone' => 'required|array|min:1',
+            'phone.*' => 'required|numeric|digits_between:7,15',
             'order_value' => 'required|numeric',
+            'zip_code' => 'required|numeric|digits:6',
             'status_id' => 'required|exists:statuses,id',
-            'service_id' => 'required|exists:services,id',
+            'service_ids' => 'required|array|min:1',
+            'service_ids.*' => 'exists:services,id',
+            'source_ids' => 'required|array|min:1',
+            'source_ids.*' => 'exists:sources,id',
         ]);
 
         $order = Order::findOrFail($id);
@@ -294,7 +320,7 @@ class OrderController extends Controller
         }
 
         $orderData = $request->only([
-            'company_name', 'client_name', 'domain_name', 'service_id',
+            'company_name', 'client_name', 'domain_name',
             'order_value', 'advance_payment', 'payment_terms_id', 'delivery_date', 'city', 'state',
             'zip_code', 'full_address', 'status_id', 'plan_name',
             'mkt_payment_status_id', 'mkt_starting_date', 'mkt_username', 'mkt_password'
@@ -305,6 +331,9 @@ class OrderController extends Controller
         $orderData['is_marketing'] = $request->has('is_marketing'); 
 
         $order->update($orderData);
+
+        $order->services()->sync($request->service_ids);
+        $order->sources()->sync($request->source_ids);
 
         // Update Advance Payment Record if none exists
         if ($order->advance_payment > 0 && !$order->payments()->where('payment_method', 'Advance')->exists()) {

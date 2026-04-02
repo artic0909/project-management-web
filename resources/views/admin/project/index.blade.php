@@ -172,6 +172,8 @@
                                 <th>CMS</th>
                                 <th>Start Date</th>
                                 <th>Delivery</th>
+                                <th>Services</th>
+                                <th>Sources</th>
                                 <th>Assigned To</th>
                                 <th>Sales Person</th>
                                 <th>Project Status</th>
@@ -231,6 +233,28 @@
                                     @else
                                         <span style="color:var(--t4);font-size:11px;">N/A</span>
                                     @endif
+                                </td>
+                                <td>
+                                    <div style="display:flex;flex-wrap:wrap;gap:4px;max-width:200px;">
+                                        @forelse($project->services as $service)
+                                            <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;background:rgba(99,102,241,0.1);color:#6366f1;border:1px solid rgba(99,102,241,0.2);white-space:nowrap;">
+                                                {{ $service->name }}
+                                            </span>
+                                        @empty
+                                            <span style="color:var(--t4);font-size:11px;">—</span>
+                                        @endforelse
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="display:flex;flex-wrap:wrap;gap:4px;max-width:180px;">
+                                        @forelse($project->sources as $source)
+                                            <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);white-space:nowrap;">
+                                                {{ $source->name }}
+                                            </span>
+                                        @empty
+                                            <span style="color:var(--t4);font-size:11px;">—</span>
+                                        @endforelse
+                                    </div>
                                 </td>
                                 <td>
                                     <div style="display:flex; flex-direction:column; gap:4px;">

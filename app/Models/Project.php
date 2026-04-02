@@ -10,11 +10,11 @@ class Project extends Model
         'order_id', 'project_name', 'client_name', 'emails', 'phones',
         'company_name', 'starting_date', 'plan_name', 'payment_status', 'payment_status_id',
         'username', 'password', 'no_of_mail_ids', 'mail_password',
-        'domain_server_book', 'full_address', 'domain_name', 'hosting_provider',
+        'domain_server_book', 'full_address', 'city', 'state', 'zip_code', 'domain_name', 'hosting_provider',
         'cms_platform', 'no_of_pages', 'cms_custom', 'required_features',
         'reference_websites', 'website_payment_status', 'project_status', 'project_status_id',
         'project_start_date', 'expected_delivery_date', 'actual_delivery_date',
-        'financial_payment_status', 'invoice_number', 'order_id', 'created_by', 'created_by_type'
+        'financial_payment_status', 'invoice_number', 'created_by', 'created_by_type'
     ];
 
     protected $casts = [
@@ -47,6 +47,16 @@ class Project extends Model
     public function salesPersons()
     {
         return $this->belongsToMany(Sale::class, 'project_sale_assigns', 'project_id', 'sale_id');
+    }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'project_service');
+    }
+
+    public function sources()
+    {
+        return $this->belongsToMany(Source::class, 'project_source');
     }
 
     public function feedbacks()

@@ -9,6 +9,8 @@ use App\Models\Developer;
 use App\Models\ProjectAssign;
 use App\Models\ClientFeedback;
 use App\Models\Status;
+use App\Models\Service;
+use App\Models\Source;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -102,17 +104,30 @@ class ProjectController extends Controller
         $orders = Order::latest()->get();
         $developers = Developer::latest()->get();
         $salesPersons = \App\Models\Sale::latest()->get();
+        $services = Service::all();
+        $sources = \App\Models\Source::all();
         $statuses = $this->getStatusOptions();
+        
         $routePrefix = 'admin';
-        return view('admin.project.create', compact('orders', 'developers', 'salesPersons', 'statuses', 'routePrefix'));
+        return view('admin.project.create', compact('orders', 'developers', 'salesPersons', 'services', 'sources', 'statuses', 'routePrefix'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'project_name' => 'required',
-            'client_name' => 'required',
+            'project_name' => 'required|string|max:255',
+            'client_name' => 'required|string|max:255',
+            'company_name' => 'required|string|max:255',
+            'email' => 'required|array|min:1',
+            'email.*' => 'required|email|max:255',
+            'phone' => 'required|array|min:1',
+            'phone.*' => 'required|numeric|digits_between:7,15',
+            'zip_code' => 'required|numeric|digits:6',
             'project_price' => 'required|numeric',
+            'service_ids' => 'required|array|min:1',
+            'service_ids.*' => 'exists:services,id',
+            'source_ids' => 'required|array|min:1',
+            'source_ids.*' => 'exists:sources,id',
         ]);
 
         $data = $request->all();
@@ -146,6 +161,9 @@ class ProjectController extends Controller
         }
 
         $project = Project::create($data);
+
+        $project->services()->sync($request->service_ids);
+        $project->sources()->sync($request->source_ids);
 
         // Historical Logging (if any fields provided)
         if ($request->anyFilled(['last_update_date', 'client_feedback_summary', 'internal_notes'])) {
@@ -207,9 +225,11 @@ class ProjectController extends Controller
         $orders = Order::latest()->get();
         $developers = Developer::latest()->get();
         $salesPersons = \App\Models\Sale::latest()->get();
+        $services = Service::all();
+        $sources = \App\Models\Source::all();
         $statuses = $this->getStatusOptions();
         $routePrefix = 'admin';
-        return view('admin.project.edit', compact('project', 'orders', 'developers', 'salesPersons', 'statuses', 'routePrefix'));
+        return view('admin.project.edit', compact('project', 'orders', 'developers', 'salesPersons', 'services', 'sources', 'statuses', 'routePrefix'));
     }
 
     public function update(Request $request, $id)
@@ -217,9 +237,18 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
         
         $request->validate([
-            'project_name' => 'required',
-            'client_name' => 'required',
+            'project_name' => 'required|string|max:255',
+            'client_name' => 'required|string|max:255',
+            'email' => 'required|array|min:1',
+            'email.*' => 'required|email|max:255',
+            'phone' => 'required|array|min:1',
+            'phone.*' => 'required|numeric|digits_between:7,15',
+            'zip_code' => 'required|numeric|digits:6',
             'project_price' => 'required|numeric',
+            'service_ids' => 'required|array|min:1',
+            'service_ids.*' => 'exists:services,id',
+            'source_ids' => 'required|array|min:1',
+            'source_ids.*' => 'exists:sources,id',
         ]);
 
         $data = $request->all();
@@ -250,6 +279,9 @@ class ProjectController extends Controller
         }
         
         $project->update($data);
+
+        $project->services()->sync($request->service_ids);
+        $project->sources()->sync($request->source_ids);
 
         // Historical Logging
         if ($request->anyFilled(['last_update_date', 'client_feedback_summary', 'internal_notes'])) {

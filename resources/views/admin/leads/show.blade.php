@@ -79,7 +79,14 @@
                 </div>
                 <div>
                     <div style="font-size:11px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Source</div>
-                    <div style="font-size:16px;font-weight:800;color:var(--t1);margin-top:2px;">{{ $lead->source->name ?? 'Direct' }}</div>
+                    <div style="font-size:13px;font-weight:700;color:var(--t1);margin-top:2px; display:flex; flex-wrap:wrap; gap:4px;">
+                        @foreach($lead->sources as $src)
+                            <span class="src-tag {{ strtolower($src->name) }}" style="padding:2px 6px; font-size:11px;">{{ $src->name }}</span>
+                        @endforeach
+                        @if($lead->sources->isEmpty())
+                            Direct
+                        @endif
+                    </div>
                 </div>
             </div>
 
@@ -116,8 +123,12 @@
                             <div style="font-size:19px;font-weight:800;color:var(--t1);letter-spacing:-.4px;">{{ $lead->company }}</div>
                             <div style="font-size:13px;color:var(--t3);margin-top:4px;">{{ $emails[0] ?? 'No primary email' }}</div>
                             <div style="margin-top:12px;display:flex;gap:6px; flex-wrap:wrap; justify-content:center;">
-                                <span class="src-tag {{ strtolower($lead->source->name ?? 'none') }}">{{ $lead->source->name ?? 'N/A' }}</span>
-                                <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(99,102,241,.1);color:var(--accent);">{{ $lead->service->name ?? 'N/A' }}</span>
+                                @foreach($lead->sources as $src)
+                                    <span class="src-tag {{ strtolower($src->name) }}">{{ $src->name }}</span>
+                                @endforeach
+                                @foreach($lead->services as $srv)
+                                    <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(99,102,241,.1);color:var(--accent);">{{ $srv->name }}</span>
+                                @endforeach
                             </div>
                         </div>
                         <div style="display:flex;flex-direction:column;gap:4px;margin-top:16px;">

@@ -47,9 +47,16 @@
                         <div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#6366f1,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;margin-bottom:14px;box-shadow:0 8px 30px rgba(99,102,241,.3);">{{ $initials }}</div>
                         <div style="font-size:19px;font-weight:800;color:var(--t1);letter-spacing:-.4px;">{{ $order->company_name }}</div>
                         <div style="font-size:13px;color:var(--t3);margin-top:4px;">{{ $emails[0] ?? 'No primary email' }}</div>
-                        <div style="margin-top:12px;display:flex;gap:6px; flex-wrap:wrap; justify-content:center;">
+                        <div style="margin-top:12px;display:flex;gap:6px; flex-wrap:wrap; justify-content:center; max-width:280px; margin-left:auto; margin-right:auto;">
                             <span class="src-tag website-type" style="padding:3px 10px; border-radius:6px; font-size:10.5px; font-weight:700;">{{ $order->is_marketing ? 'Marketing' : 'Website' }}</span>
-                            <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(99,102,241,.1);color:var(--accent);">{{ $order->service->name ?? 'N/A' }}</span>
+                            @foreach($order->services as $service)
+                                <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(99,102,241,0.1);color:var(--accent);border:1px solid rgba(99,102,241,0.2);">{{ $service->name }}</span>
+                            @endforeach
+                        </div>
+                        <div style="margin-top:8px;display:flex;gap:6px; flex-wrap:wrap; justify-content:center; max-width:280px; margin-left:auto; margin-right:auto;">
+                            @foreach($order->sources as $source)
+                                <span style="font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);">{{ $source->name }}</span>
+                            @endforeach
                         </div>
                     </div>
 

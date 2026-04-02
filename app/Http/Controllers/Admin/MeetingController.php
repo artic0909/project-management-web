@@ -75,8 +75,10 @@ class MeetingController extends Controller
             'meeting_type' => 'required|in:lead,order,project',
             'meeting_title' => 'required|string|max:255',
             'meeting_date' => 'required|date',
-            'meeting_time' => 'required',
-            'status' => 'required|string',
+            'meeting_time' => 'required|string',
+            'status' => 'required|string|in:pending,rescheduled,completed,canceled',
+            'meeting_description' => 'nullable|string',
+            'meeting_link' => 'nullable|url',
         ]);
 
         $meeting = new Meeting($request->all());
@@ -115,8 +117,10 @@ class MeetingController extends Controller
             'meeting_type' => 'required|in:lead,order,project',
             'meeting_title' => 'required|string|max:255',
             'meeting_date' => 'required|date',
-            'meeting_time' => 'required',
-            'status' => 'required|string',
+            'meeting_time' => 'required|string',
+            'status' => 'required|string|in:pending,rescheduled,completed,canceled',
+            'meeting_description' => 'nullable|string',
+            'meeting_link' => 'nullable|url',
         ]);
 
         $meeting->fill($request->all());

@@ -41,7 +41,7 @@ class FollowupController extends Controller
         $isOrder = Route::is($routePrefix . '.orders.*');
         
         if ($isOrder) {
-            $model = Order::with(['status', 'service', 'assignments.sale', 'followups.creator', 'paymentTerms', 'mktPaymentStatus'])->findOrFail($id);
+            $model = Order::with(['status', 'services', 'sources', 'assignments.sale', 'followups.creator', 'paymentTerms', 'mktPaymentStatus'])->findOrFail($id);
             $this->checkAccess($model);
             $typeLabel = 'Order';
             $backRoute = route($routePrefix . '.orders.index');
@@ -49,7 +49,7 @@ class FollowupController extends Controller
             $paymentStatuses = Status::where('type', 'payment')->get();
             $statuses = [];
         } else {
-            $model = Lead::with(['status', 'source', 'service', 'assignments.sale', 'followups.creator'])->findOrFail($id);
+            $model = Lead::with(['status', 'sources', 'services', 'assignments.sale', 'followups.creator'])->findOrFail($id);
             $this->checkAccess($model);
             $typeLabel = 'Lead';
             $backRoute = route($routePrefix . '.leads.index');

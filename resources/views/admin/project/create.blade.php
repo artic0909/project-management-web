@@ -155,12 +155,76 @@
                                     <input type="text" name="mail_password" class="form-inp" placeholder="Mail password" value="{{ old('mail_password') }}">
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
+                                    <label class="form-lbl">Services <span style="color:#ef4444">*</span></label>
+                                    <div class="ms-wrap" id="serviceWrap">
+                                        <div class="ms-trigger" onclick="toggleMs('serviceWrap')">
+                                            <div class="ms-pills" id="servicePills">
+                                                <span class="ms-placeholder">Select services…</span>
+                                            </div>
+                                            <i class="bi bi-chevron-down ms-arrow"></i>
+                                        </div>
+                                        <div class="ms-dropdown" id="serviceDropdown">
+                                            <div class="ms-search-wrap">
+                                                <i class="bi bi-search"></i>
+                                                <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'serviceDropdown')">
+                                                <span class="ms-all-btn" onclick="toggleAllMs('serviceWrap','serviceDropdown')">Select All</span>
+                                            </div>
+                                            <div class="ms-opts">
+                                                @foreach($services as $service)
+                                                    <label class="ms-opt">
+                                                        <input type="checkbox" name="service_ids[]" value="{{ $service->id }}" 
+                                                            data-name="{{ $service->name }}"
+                                                            onchange="updateMs('serviceWrap')">
+                                                        <div style="display:flex;flex-direction:column;">
+                                                            <span style="font-weight:500;color:var(--t1);">{{ $service->name }}</span>
+                                                        </div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row" style="grid-column:1/-1">
+                                    <label class="form-lbl">Lead Sources <span style="color:#ef4444">*</span></label>
+                                    <div class="ms-wrap" id="sourceWrap">
+                                        <div class="ms-trigger" onclick="toggleMs('sourceWrap')">
+                                            <div class="ms-pills" id="sourcePills">
+                                                <span class="ms-placeholder">Select sources…</span>
+                                            </div>
+                                            <i class="bi bi-chevron-down ms-arrow"></i>
+                                        </div>
+                                        <div class="ms-dropdown" id="sourceDropdown">
+                                            <div class="ms-search-wrap">
+                                                <i class="bi bi-search"></i>
+                                                <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'sourceDropdown')">
+                                                <span class="ms-all-btn" onclick="toggleAllMs('sourceWrap','sourceDropdown')">Select All</span>
+                                            </div>
+                                            <div class="ms-opts">
+                                                @foreach($sources as $source)
+                                                    <label class="ms-opt">
+                                                        <input type="checkbox" name="source_ids[]" value="{{ $source->id }}" 
+                                                            data-name="{{ $source->name }}"
+                                                            onchange="updateMs('sourceWrap')">
+                                                        <div style="display:flex;flex-direction:column;">
+                                                            <span style="font-weight:500;color:var(--t1);">{{ $source->name }}</span>
+                                                        </div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Domain, Server Book</label>
                                     <input type="text" name="domain_server_book" class="form-inp" placeholder="Domain registrar, server details, control panel…" value="{{ old('domain_server_book') }}">
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Full Address</label>
-                                    <textarea name="full_address" class="form-inp" rows="2" placeholder="Street address, city, state, PIN…">{{ old('full_address') }}</textarea>
+                                    <label class="form-lbl">Full Address <span style="color:#ef4444">*</span></label>
+                                    <textarea name="full_address" class="form-inp" rows="2" placeholder="Street address, city, state, PIN…" required>{{ old('full_address') }}</textarea>
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Zip Code <span style="color:#ef4444">*</span></label>
+                                    <input type="text" name="zip_code" class="form-inp" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits" required value="{{ old('zip_code') }}">
                                 </div>
                             </div>
                         </div>
@@ -424,6 +488,8 @@
         // Trigger multi-select update
         updateMs('addAssignWrap');
         updateMs('addSaleAssignWrap');
+        updateMs('serviceWrap');
+        updateMs('sourceWrap');
     });
 </script>
 

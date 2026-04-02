@@ -158,12 +158,80 @@
                                     <input type="text" name="mail_password" class="form-inp" placeholder="Mail password" value="{{ old('mail_password', $project->mail_password) }}">
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
+                                    <label class="form-lbl">Services <span style="color:#ef4444">*</span></label>
+                                    @php $selectedServiceIds = $project->services->pluck('id')->toArray(); @endphp
+                                    <div class="ms-wrap" id="serviceWrap">
+                                        <div class="ms-trigger" onclick="toggleMs('serviceWrap')">
+                                            <div class="ms-pills" id="servicePills">
+                                                <span class="ms-placeholder">Select services…</span>
+                                            </div>
+                                            <i class="bi bi-chevron-down ms-arrow"></i>
+                                        </div>
+                                        <div class="ms-dropdown" id="serviceDropdown">
+                                            <div class="ms-search-wrap">
+                                                <i class="bi bi-search"></i>
+                                                <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'serviceDropdown')">
+                                                <span class="ms-all-btn" onclick="toggleAllMs('serviceWrap','serviceDropdown')">Select All</span>
+                                            </div>
+                                            <div class="ms-opts">
+                                                @foreach($services as $service)
+                                                    <label class="ms-opt">
+                                                        <input type="checkbox" name="service_ids[]" value="{{ $service->id }}" 
+                                                            data-name="{{ $service->name }}"
+                                                            onchange="updateMs('serviceWrap')"
+                                                            {{ in_array($service->id, $selectedServiceIds) ? 'checked' : '' }}>
+                                                        <div style="display:flex;flex-direction:column;">
+                                                            <span style="font-weight:500;color:var(--t1);">{{ $service->name }}</span>
+                                                        </div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row" style="grid-column:1/-1">
+                                    <label class="form-lbl">Lead Sources <span style="color:#ef4444">*</span></label>
+                                    @php $selectedSourceIds = $project->sources->pluck('id')->toArray(); @endphp
+                                    <div class="ms-wrap" id="sourceWrap">
+                                        <div class="ms-trigger" onclick="toggleMs('sourceWrap')">
+                                            <div class="ms-pills" id="sourcePills">
+                                                <span class="ms-placeholder">Select sources…</span>
+                                            </div>
+                                            <i class="bi bi-chevron-down ms-arrow"></i>
+                                        </div>
+                                        <div class="ms-dropdown" id="sourceDropdown">
+                                            <div class="ms-search-wrap">
+                                                <i class="bi bi-search"></i>
+                                                <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'sourceDropdown')">
+                                                <span class="ms-all-btn" onclick="toggleAllMs('sourceWrap','sourceDropdown')">Select All</span>
+                                            </div>
+                                            <div class="ms-opts">
+                                                @foreach($sources as $source)
+                                                    <label class="ms-opt">
+                                                        <input type="checkbox" name="source_ids[]" value="{{ $source->id }}" 
+                                                            data-name="{{ $source->name }}"
+                                                            onchange="updateMs('sourceWrap')"
+                                                            {{ in_array($source->id, $selectedSourceIds) ? 'checked' : '' }}>
+                                                        <div style="display:flex;flex-direction:column;">
+                                                            <span style="font-weight:500;color:var(--t1);">{{ $source->name }}</span>
+                                                        </div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Domain, Server Book</label>
                                     <input type="text" name="domain_server_book" class="form-inp" placeholder="Domain & server info" value="{{ old('domain_server_book', $project->domain_server_book) }}">
                                 </div>
-                                <div class="form-row" style="grid-column:1/-1;margin-bottom:0;">
-                                    <label class="form-lbl">Full Address</label>
-                                    <textarea name="full_address" class="form-inp" rows="2" placeholder="Full address…">{{ old('full_address', $project->full_address) }}</textarea>
+                                <div class="form-row" style="grid-column:1/-1">
+                                    <label class="form-lbl">Full Address <span style="color:#ef4444">*</span></label>
+                                    <textarea name="full_address" class="form-inp" rows="2" placeholder="Full address…" required>{{ old('full_address', $project->full_address) }}</textarea>
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Zip Code <span style="color:#ef4444">*</span></label>
+                                    <input type="text" name="zip_code" class="form-inp" value="{{ old('zip_code', $project->zip_code) }}" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits" required>
                                 </div>
                             </div>
                         </div>
@@ -466,6 +534,8 @@
         calcRemaining();
         updateMs('editAssignWrap');
         updateMs('editSaleAssignWrap');
+        updateMs('serviceWrap');
+        updateMs('sourceWrap');
 
         // Seed Existing Emails
         @if($project->emails && is_array($project->emails))

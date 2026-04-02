@@ -19,14 +19,14 @@ class FollowupController extends Controller
         $isOrder = Route::is($routePrefix . '.orders.*');
         
         if ($isOrder) {
-            $model = Order::with(['status', 'service', 'assignments.sale', 'followups.creator', 'paymentTerms', 'mktPaymentStatus'])->findOrFail($id);
+            $model = Order::with(['status', 'services', 'sources', 'assignments.sale', 'followups.creator', 'paymentTerms', 'mktPaymentStatus'])->findOrFail($id);
             $typeLabel = 'Order';
             $backRoute = route($routePrefix . '.orders.index');
             $orderStatuses = Status::where('type', 'order')->get();
             $paymentStatuses = Status::where('type', 'payment')->get();
             $statuses = [];
         } else {
-            $model = Lead::with(['status', 'source', 'service', 'assignments.sale', 'followups.creator', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
+            $model = Lead::with(['status', 'sources', 'services', 'assignments.sale', 'followups.creator', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
             $typeLabel = 'Lead';
             $backRoute = route($routePrefix . '.leads.index');
             $statuses = Status::where('type', 'lead')->get();

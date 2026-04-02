@@ -122,40 +122,68 @@
                     </div>
                     <div class="card-body" style="padding:20px;">
                         <div class="form-row">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                                <label class="form-lbl" style="margin:0;">Sales Team (Internal)</label>
-                                <a href="javascript:void(0)" onclick="toggleAllList(this, 'assignsale_ids[]')" style="font-size:11px; font-weight:700; color:var(--accent); text-decoration:none;">Select All</a>
-                            </div>
-                            <div class="multi-select-wrap">
-                                @foreach($sales as $sale)
-                                    <label class="check-item">
-                                        <input type="checkbox" name="assignsale_ids[]" value="{{ $sale->id }}">
-                                        <div style="display:flex; flex-direction:column; line-height:1.2;">
-                                            <span>{{ $sale->name }}</span>
-                                            <small style="font-size:10px; color:var(--t4); font-weight:500;">{{ $sale->email }}</small>
-                                        </div>
-                                    </label>
-                                @endforeach
+                            <label class="form-lbl">Sales Team (Internal)</label>
+                            <div class="ms-wrap" id="assignSaleWrap">
+                                <div class="ms-trigger" onclick="toggleMs('assignSaleWrap')">
+                                    <div class="ms-pills" id="assignSalePills">
+                                        <span class="ms-placeholder">Select sales team…</span>
+                                    </div>
+                                    <i class="bi bi-chevron-down ms-arrow"></i>
+                                </div>
+                                <div class="ms-dropdown" id="assignSaleDropdown">
+                                    <div class="ms-search-wrap">
+                                        <i class="bi bi-search"></i>
+                                        <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'assignSaleDropdown')">
+                                        <span class="ms-all-btn" onclick="toggleAllMs('assignSaleWrap','assignSaleDropdown')">Select All</span>
+                                    </div>
+                                    <div class="ms-opts">
+                                        @foreach($sales as $sale)
+                                            <label class="ms-opt">
+                                                <input type="checkbox" name="assignsale_ids[]" value="{{ $sale->id }}" 
+                                                    data-name="{{ $sale->name }}"
+                                                    onchange="updateMs('assignSaleWrap')">
+                                                <div style="display:flex;flex-direction:column;">
+                                                    <span style="font-weight:700;color:var(--t1);font-size:13px;">{{ $sale->name }}</span>
+                                                    <span style="font-size:11px;color:var(--t3);">{{ $sale->email }}</span>
+                                                </div>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         @if($routePrefix == 'admin')
                         <div id="devSection" style="display:none;">
                             <div class="form-row" style="margin-top:20px;">
-                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                                    <label class="form-lbl" style="margin:0;">Developers (Internal)</label>
-                                    <a href="javascript:void(0)" onclick="toggleAllList(this, 'assigndev_ids[]')" style="font-size:11px; font-weight:700; color:var(--accent); text-decoration:none;">Select All</a>
-                                </div>
-                                <div class="multi-select-wrap">
-                                    @foreach($developers as $dev)
-                                        <label class="check-item">
-                                            <input type="checkbox" name="assigndev_ids[]" value="{{ $dev->id }}">
-                                            <div style="display:flex; flex-direction:column; line-height:1.2;">
-                                                <span>{{ $dev->name }}</span>
-                                                <small style="font-size:10px; color:var(--t4); font-weight:500;">{{ $dev->email }}</small>
-                                            </div>
-                                        </label>
-                                    @endforeach
+                                <label class="form-lbl">Developers (Internal)</label>
+                                <div class="ms-wrap" id="assignDevWrap">
+                                    <div class="ms-trigger" onclick="toggleMs('assignDevWrap')">
+                                        <div class="ms-pills" id="assignDevPills">
+                                            <span class="ms-placeholder">Select developers…</span>
+                                        </div>
+                                        <i class="bi bi-chevron-down ms-arrow"></i>
+                                    </div>
+                                    <div class="ms-dropdown" id="assignDevDropdown">
+                                        <div class="ms-search-wrap">
+                                            <i class="bi bi-search"></i>
+                                            <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'assignDevDropdown')">
+                                            <span class="ms-all-btn" onclick="toggleAllMs('assignDevWrap','assignDevDropdown')">Select All</span>
+                                        </div>
+                                        <div class="ms-opts">
+                                            @foreach($developers as $dev)
+                                                <label class="ms-opt">
+                                                    <input type="checkbox" name="assigndev_ids[]" value="{{ $dev->id }}" 
+                                                        data-name="{{ $dev->name }}"
+                                                        onchange="updateMs('assignDevWrap')">
+                                                    <div style="display:flex;flex-direction:column;">
+                                                        <span style="font-weight:700;color:var(--t1);font-size:13px;">{{ $dev->name }}</span>
+                                                        <span style="font-size:11px;color:var(--t3);">{{ $dev->email }}</span>
+                                                    </div>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -179,17 +207,12 @@
 </style>
 
 <script>
-    function toggleAllList(btn, name) {
-        const checkboxes = document.querySelectorAll(`input[name="${name}"]`);
-        const allChecked = [...checkboxes].every(cb => cb.checked);
-        
-        checkboxes.forEach(cb => {
-            cb.checked = !allChecked;
-        });
-        
-        btn.textContent = !allChecked ? 'Deselect All' : 'Select All';
-    }
+    document.addEventListener('DOMContentLoaded', function() {
+        updateMs('assignSaleWrap');
+        updateMs('assignDevWrap');
+    });
 </script>
 
+@include('admin.leads._multiselect_assets')
 @include('admin.meetings._target_select_assets')
 @endsection

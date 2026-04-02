@@ -33,7 +33,7 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
-        $query = $this->getFilteredOrders()->with(['status', 'service', 'assignments.sale', 'createdBy'])->withCount('followups');
+        $query = $this->getFilteredOrders()->with(['status', 'services', 'sources', 'assignments.sale', 'createdBy'])->withCount('followups');
 
         // Search Filter
         if ($request->filled('q')) {
@@ -49,7 +49,16 @@ class OrderController extends Controller
 
         // Service Filter
         if ($request->filled('service_id')) {
-            $query->where('service_id', $request->service_id);
+            $query->whereHas('services', function($q) use ($request) {
+                $q->where('services.id', $request->service_id);
+            });
+        }
+
+        // Source Filter
+        if ($request->filled('source_id')) {
+            $query->whereHas('sources', function($q) use ($request) {
+                $q->where('sources.id', $request->source_id);
+            });
         }
 
         // Status Filter
@@ -125,7 +134,7 @@ class OrderController extends Controller
             $q->where('created_by', $saleId)->where('created_by_type', $saleType);
         })->orWhereHas('assignments', function ($q) use ($saleId) {
             $q->where('assigned_to', $saleId);
-        })->with(['status', 'source', 'service', 'assignments'])->find($lead_id) : null;
+        })->with(['status', 'sources', 'services', 'assignments'])->find($lead_id) : null;
 
         $services = Service::all();
         $sales = Sale::all();
@@ -169,7 +178,6 @@ class OrderController extends Controller
             'order_value' => $request->order_value,
             'advance_payment' => $request->advance_payment ?? 0,
             'status_id' => $request->status_id,
-            'service_id' => $request->service_id,
             'emails' => array_values($emails),
             'phones' => $phones,
             'domain_name' => $request->domain_name,
@@ -187,6 +195,13 @@ class OrderController extends Controller
             'created_by' => auth()->guard('sale')->id(),
             'created_by_type' => \App\Models\Sale::class,
         ]);
+
+        if ($request->has('service_id')) {
+            $order->services()->sync($request->service_id);
+        }
+        if ($request->has('source_id')) {
+            $order->sources()->sync($request->source_id);
+        }
 
         // Automatic Payment record for Advance Payment
         if ($order->advance_payment > 0) {
@@ -231,7 +246,7 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = $this->getFilteredOrders()->with(['status', 'service', 'assignments.sale', 'createdBy', 'lead', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
+        $order = $this->getFilteredOrders()->with(['status', 'services', 'sources', 'assignments.sale', 'createdBy', 'lead', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         $orderStatuses = Status::where('type', 'order')->get();
         $paymentStatuses = Status::where('type', 'payment')->get();
 
@@ -285,7 +300,6 @@ class OrderController extends Controller
             'order_value' => $request->order_value,
             'advance_payment' => $request->advance_payment ?? 0,
             'status_id' => $request->status_id,
-            'service_id' => $request->service_id,
             'emails' => array_values($emails),
             'phones' => $phones,
             'domain_name' => $request->domain_name,
@@ -301,6 +315,13 @@ class OrderController extends Controller
             'mkt_username' => $request->mkt_username,
             'mkt_password' => $request->mkt_password,
         ]);
+
+        if ($request->has('service_id')) {
+            $order->services()->sync($request->service_id);
+        }
+        if ($request->has('source_id')) {
+            $order->sources()->sync($request->source_id);
+        }
 
         // Update Advance Payment Record if none exists
         if ($order->advance_payment > 0 && !$order->payments()->where('payment_method', 'Advance')->exists()) {
