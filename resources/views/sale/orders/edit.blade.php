@@ -201,15 +201,22 @@
                     </div>
 
                 </div>
-
             </div>
         </form>
+
+        {{-- Order Notes History Card (Outside main form to prevent nesting) --}}
+        <div class="dash-grid" style="margin-top: 16px;">
+            <div class="span-8">
+                @include('admin.orders._notes_history', ['order' => $order, 'routePrefix' => 'sale'])
+            </div>
+        </div>
 
     </div>
 </main>
 
 @include('sale.orders.multiselect-assets')
 @include('sale.leads._phone_email_assets')
+@include('admin.orders._notes_assets', ['routePrefix' => 'sale'])
 
 <script>
     function toggleMktSection() {

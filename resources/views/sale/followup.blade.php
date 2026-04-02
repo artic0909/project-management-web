@@ -146,6 +146,13 @@
 
                     </div>
                 </div>
+
+                {{-- INTERNAL NOTES HISTORY --}}
+                @if(!$isOrder)
+                    @include('admin.leads._notes_history', ['lead' => $model, 'routePrefix' => 'sale'])
+@else
+                    @include('admin.orders._notes_history', ['order' => $model, 'routePrefix' => 'sale'])
+@endif
             </div>
 
             <!-- RIGHT: Followup History + Add Form -->
@@ -443,5 +450,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+@if(!$isOrder)
+    @include('admin.leads._notes_assets', ['routePrefix' => 'sale'])
+@else
+    @include('admin.orders._notes_assets', ['routePrefix' => 'sale'])
+@endif
 
 @endsection

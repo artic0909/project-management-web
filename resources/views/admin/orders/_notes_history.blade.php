@@ -1,10 +1,11 @@
+@php $routePrefix = $routePrefix ?? 'admin'; @endphp
 {{-- Order Notes History Card --}}
 <div class="dash-card">
     <div class="card-head" style="padding:16px 18px; border-bottom:1px solid var(--b1);">
         <div class="card-title">Order Notes History</div>
     </div>
     <div class="card-body" style="padding:18px;">
-        <form action="{{ route('admin.order-notes.store', $order->id) }}" method="POST" style="margin-bottom:20px;">
+        <form action="{{ route($routePrefix . '.order-notes.store', $order->id) }}" method="POST" style="margin-bottom:20px;">
             @csrf
             <div style="position:relative;">
                 <textarea name="notes" class="form-inp" rows="3" placeholder="Add internal order note..." style="padding-right:45px; border-radius:12px; font-size:13px; min-height:80px;"></textarea>
@@ -27,7 +28,7 @@
                         </div>
                         <div class="note-actions">
                             <button type="button" class="not-btn" onclick="openEditOrderNoteModal({{ $note->id }}, '{{ addslashes($note->notes) }}')"><i class="bi bi-pencil"></i></button>
-                            <form action="{{ route('admin.order-notes.destroy', $note->id) }}" method="POST" style="display:inline;">
+                            <form action="{{ route($routePrefix . '.order-notes.destroy', $note->id) }}" method="POST" style="display:inline;">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="not-btn danger" onclick="return confirm('Delete note?')"><i class="bi bi-trash"></i></button>
                             </form>

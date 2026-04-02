@@ -218,9 +218,15 @@
                     </div>
 
                 </div>
-
             </div>
         </form>
+
+        {{-- Lead Notes History Card (Outside main form to prevent nesting) --}}
+        <div class="dash-grid" style="margin-top: 16px;">
+            <div class="span-8">
+                @include('admin.leads._notes_history', ['lead' => $lead, 'routePrefix' => 'sale'])
+            </div>
+        </div>
 
     </div>
 </main>
@@ -228,6 +234,7 @@
 
 @include('sale.leads._multiselect_assets')
 @include('sale.leads._phone_email_assets')
+@include('admin.leads._notes_assets', ['routePrefix' => 'sale'])
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

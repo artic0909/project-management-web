@@ -21,11 +21,13 @@ class OrderController extends Controller
         $saleId = auth()->guard('sale')->id();
         $saleType = \App\Models\Sale::class;
 
-        return Order::where(function ($q) use ($saleId, $saleType) {
-            $q->where('created_by', $saleId)
-                ->where('created_by_type', $saleType);
-        })->orWhereHas('assignments', function ($q) use ($saleId) {
-            $q->where('assigned_to', $saleId);
+        return Order::where(function($master) use ($saleId, $saleType) {
+            $master->where(function ($q) use ($saleId, $saleType) {
+                $q->where('created_by', $saleId)
+                    ->where('created_by_type', $saleType);
+            })->orWhereHas('assignments', function ($q) use ($saleId) {
+                $q->where('assigned_to', $saleId);
+            });
         });
     }
 
@@ -211,12 +213,22 @@ class OrderController extends Controller
             ]);
         }
 
+        // Add initial note to history if present
+        if (!empty($request->notes)) {
+            \App\Models\OrderNote::create([
+                'order_id' => $order->id,
+                'notes' => $request->notes,
+                'created_by' => auth()->guard('sale')->id(),
+                'created_by_type' => \App\Models\Sale::class,
+            ]);
+        }
+
         return redirect()->route('sale.orders.index')->with('success', 'Order created successfully!');
     }
 
     public function show($id)
     {
-        $order = $this->getFilteredOrders()->with(['status', 'service', 'assignments.sale', 'createdBy', 'lead'])->findOrFail($id);
+        $order = $this->getFilteredOrders()->with(['status', 'service', 'assignments.sale', 'createdBy', 'lead', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         $orderStatuses = Status::where('type', 'order')->get();
         $paymentStatuses = Status::where('type', 'payment')->get();
 
@@ -225,7 +237,7 @@ class OrderController extends Controller
 
     public function edit($id)
     {
-        $order = $this->getFilteredOrders()->with('assignments')->findOrFail($id);
+        $order = $this->getFilteredOrders()->with(['assignments', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         $services = Service::all();
         $sales = Sale::all();
         $orderStatuses = Status::where('type', 'order')->get();

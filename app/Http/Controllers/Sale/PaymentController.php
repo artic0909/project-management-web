@@ -16,11 +16,12 @@ class PaymentController extends Controller
         $saleId = auth()->guard('sale')->id();
         $saleType = \App\Models\Sale::class;
 
-        return Payment::whereHas('order', function($q) use ($saleId, $saleType) {
-            $q->where('created_by', $saleId)->where('created_by_type', $saleType)
-              ->orWhereHas('assignments', function($sq) use ($saleId) {
-                  $sq->where('assigned_to', $saleId);
-              });
+        return Payment::whereHas('order', function($master) use ($saleId, $saleType) {
+            $master->where(function($q) use ($saleId, $saleType) {
+                $q->where('created_by', $saleId)->where('created_by_type', $saleType);
+            })->orWhereHas('assignments', function($sq) use ($saleId) {
+                $sq->where('assigned_to', $saleId);
+            });
         });
     }
 
@@ -49,11 +50,12 @@ class PaymentController extends Controller
         // Summaries (Only for their records)
         $saleId = auth()->guard('sale')->id();
         $saleType = \App\Models\Sale::class;
-        $filteredOrders = Order::where(function($q) use ($saleId, $saleType) {
-            $q->where('created_by', $saleId)->where('created_by_type', $saleType)
-              ->orWhereHas('assignments', function($sq) use ($saleId) {
-                  $sq->where('assigned_to', $saleId);
-              });
+        $filteredOrders = Order::where(function($master) use ($saleId, $saleType) {
+            $master->where(function($q) use ($saleId, $saleType) {
+                $q->where('created_by', $saleId)->where('created_by_type', $saleType);
+            })->orWhereHas('assignments', function($sq) use ($saleId) {
+                $sq->where('assigned_to', $saleId);
+            });
         });
 
         $totalCollected = $this->getFilteredPayments()->sum('amount');

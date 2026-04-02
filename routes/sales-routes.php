@@ -48,6 +48,11 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     Route::delete('/delete-order/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::get('/order-followup/{id}', [FollowupController::class, 'index'])->name('orders.followup');
     Route::post('/order-followup/{id}', [FollowupController::class, 'store'])->name('orders.followup.store');
+    
+    // Order Notes
+    Route::post('/order-notes/{order}', [\App\Http\Controllers\OrderNoteController::class, 'store'])->name('order-notes.store');
+    Route::put('/order-notes/{note}', [\App\Http\Controllers\OrderNoteController::class, 'update'])->name('order-notes.update');
+    Route::delete('/order-notes/{note}', [\App\Http\Controllers\OrderNoteController::class, 'destroy'])->name('order-notes.destroy');
 
     // Marketing Orders
     Route::get('/add-marketing-orders', [MarketingOrderController::class, 'index'])->name('marketing-orders');

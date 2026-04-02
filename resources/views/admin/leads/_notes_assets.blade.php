@@ -24,9 +24,10 @@
         const modal = document.getElementById('editNoteModal');
         const form = document.getElementById('editNoteForm');
         const textarea = form.querySelector('textarea');
+        const prefix = '{{ $routePrefix ?? "admin" }}';
         
         textarea.value = notes;
-        form.action = `/admin/lead-notes/${id}`;
+        form.action = `/${prefix}/lead-notes/${id}`;
         modal.style.display = 'flex';
     }
 </script>

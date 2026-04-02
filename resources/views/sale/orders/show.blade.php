@@ -91,8 +91,10 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
                 </div>
+
+                {{-- Order Notes History Card --}}
+                @include('admin.orders._notes_history', ['order' => $order, 'routePrefix' => 'sale'])
             </div>
 
             {{-- Right Column: Actions & Details (span-8) --}}
@@ -332,6 +334,8 @@
         document.getElementById('mktPwIcon').className  = mktPwVisible ? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill';
     }
 </script>
+
+@include('admin.orders._notes_assets', ['routePrefix' => 'sale'])
 
 
 {{-- Email Choice Modal --}}

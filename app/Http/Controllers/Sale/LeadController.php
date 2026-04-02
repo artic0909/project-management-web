@@ -21,11 +21,13 @@ class LeadController extends Controller
         $saleId = auth()->guard('sale')->id();
         $saleType = get_class(auth()->guard('sale')->user());
 
-        return Lead::where(function($q) use ($saleId, $saleType) {
-            $q->where('created_by', $saleId)
-              ->where('created_by_type', $saleType);
-        })->orWhereHas('assignments', function($q) use ($saleId) {
-            $q->where('assigned_to', $saleId);
+        return Lead::where(function($master) use ($saleId, $saleType) {
+            $master->where(function($q) use ($saleId, $saleType) {
+                $q->where('created_by', $saleId)
+                  ->where('created_by_type', $saleType);
+            })->orWhereHas('assignments', function($q) use ($saleId) {
+                $q->where('assigned_to', $saleId);
+            });
         });
     }
 
@@ -224,6 +226,16 @@ class LeadController extends Controller
             ]);
         }
 
+        // Add initial note to history if present
+        if (!empty($request->notes)) {
+            \App\Models\LeadNote::create([
+                'lead_id' => $lead->id,
+                'notes' => $request->notes,
+                'created_by' => auth()->guard('sale')->id(),
+                'created_by_type' => get_class(auth()->guard('sale')->user()),
+            ]);
+        }
+
         return redirect()->route('sale.leads.index')->with('success', 'Lead created successfully!');
     }
 
@@ -236,7 +248,7 @@ class LeadController extends Controller
 
     public function edit($id)
     {
-        $lead = $this->getFilteredLeads()->with('assignments')->findOrFail($id);
+        $lead = $this->getFilteredLeads()->with(['assignments', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         $sources = Source::all();
         $services = Service::all();
         $statuses = Status::where('type', 'lead')->get();
