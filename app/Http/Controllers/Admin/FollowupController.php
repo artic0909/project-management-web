@@ -37,8 +37,11 @@ class FollowupController extends Controller
         $request->validate([
             'followup_date' => 'required|date',
             'followup_type' => 'required|string|in:Calling,Message,Both',
-            'calling_note' => 'nullable|string',
-            'message_note' => 'nullable|string',
+            'calling_note' => 'required_if:followup_type,Calling,Both|nullable|string',
+            'message_note' => 'required_if:followup_type,Message,Both|nullable|string',
+        ], [
+            'calling_note.required_if' => 'The calling note is required when interaction involves calling.',
+            'message_note.required_if' => 'The message note is required when interaction involves messaging.',
         ]);
 
         $isOrder = Route::is('admin.orders.*');
