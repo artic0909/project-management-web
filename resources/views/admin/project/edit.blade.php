@@ -11,7 +11,7 @@
         <div class="page-header">
             <div>
                 <h1 class="page-title">Edit Project</h1>
-                <p class="page-desc">Modify details for <span style="color:var(--accent);font-weight:600;">{{ $project->project_name }}</span></p>
+                <p class="page-desc">Modify details for <span style="color:var(--accent);font-weight:600;">{{ $project->project_code }}</span></p>
             </div>
             <div class="header-actions">
                 <a href="{{ route($routePrefix . '.projects.index') }}" class="btn-ghost">
@@ -20,308 +20,242 @@
             </div>
         </div>
 
-        @if ($errors->any())
-            <div class="dash-card" style="border-left:4px solid #ef4444;margin-bottom:20px;padding:12px 18px;">
-                <div style="color:#ef4444;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px;">
-                    <i class="bi bi-exclamation-triangle-fill"></i> Please fix the following errors:
-                </div>
-                <ul style="margin:0;padding-left:20px;color:var(--t3);font-size:13px;">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
         <form action="{{ route($routePrefix . '.projects.update', $project->id) }}" method="POST">
             @csrf
             @method('PUT')
+
+            @if(session('success'))
+                <div class="alert alert-success" style="padding:12px;background:#dcfce7;color:#166534;border-radius:8px;margin-bottom:16px;">
+                    <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
+                </div>
+            @endif
+
+
+
             <div class="dash-grid">
 
                 {{-- ══ LEFT COL — 8 spans ══ --}}
                 <div class="span-8" style="display:flex;flex-direction:column;gap:16px;">
-                    
-                    {{-- ── LINK TO ORDER (Optional) ── --}}
-                    <div class="dash-card" style="overflow:visible;border:1px solid var(--accent);box-shadow:0 0 20px rgba(99,102,241,0.08);">
-                        <div class="card-head" style="border-bottom:1px solid var(--b1);background:rgba(99,102,241,0.03);">
-                             <div class="card-title"><i class="bi bi-cart-fill" style="color:var(--accent);margin-right:6px;"></i>Link to Order</div>
-                             <div class="card-sub">Select an order to refresh details</div>
-                        </div>
-                        <div class="card-body" style="padding:15px 20px;">
-                            <div class="order-select-wrap">
-                                <input type="hidden" name="order_id" id="selectedOrderId" value="{{ old('order_id', $project->order_id) }}">
-                                <div class="os-trigger" onclick="toggleOs()">
-                                    <div class="os-selected-text">
-                                        @if($project->order)
-                                            {{ $project->order->company_name ?? 'No Company' }} <span style="color:var(--t4);font-weight:400;margin-left:8px;">({{ $project->order->domain_name ?? 'N/A' }})</span>
-                                        @else
-                                            <span class="os-placeholder">— Select Order (Optional) —</span>
-                                        @endif
-                                    </div>
-                                    <i class="bi bi-chevron-down ms-arrow"></i>
-                                </div>
-                                <div class="os-dropdown shadow-lg">
-                                    <div class="os-search-box">
-                                        <i class="bi bi-search"></i>
-                                        <input type="text" class="os-search-inp" placeholder="Search orders..." onkeyup="filterOs(this.value)">
-                                    </div>
-                                    <div class="os-options">
-                                        <div class="os-opt {{ !$project->order_id ? 'active' : '' }}" onclick="selectOrder('')">
-                                            <div class="os-opt-main" style="color:var(--t4)">None / Manual Entry</div>
-                                        </div>
-                                        @foreach($orders as $o)
-                                            <div class="os-opt {{ $project->order_id == $o->id ? 'active' : '' }}" data-id="{{ $o->id }}" onclick="selectOrder('{{ $o->id }}')">
-                                                <div class="os-opt-main">
-                                                    <span>{{ $o->company_name ?? 'No Company' }}</span>
-                                                    <span class="os-date">{{ $o->created_at->format('d M Y') }}</span>
-                                                </div>
-                                                <div class="os-opt-sub">
-                                                    <span><i class="bi bi-globe" style="margin-right:3px"></i>{{ $o->domain_name ?? 'N/A' }}</span>
-                                                    <span><i class="bi bi-person" style="margin-right:3px"></i>{{ $o->client_name }}</span>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    {{-- Basic Information --}}
+                    {{-- Section 1: Identity & Contact --}}
                     <div class="dash-card">
                         <div class="card-head">
-                            <div>
-                                <div class="card-title"><i class="bi bi-info-circle" style="color:#6366f1;margin-right:6px;"></i>Basic Information</div>
-                                <div class="card-sub">Core project and client details</div>
-                            </div>
+                            <div class="card-title"><i class="bi bi-person-vcard-fill" style="color:var(--accent);margin-right:6px;"></i>Project Identity & Contact</div>
                         </div>
                         <div class="card-body">
                             <div class="form-grid">
+                                {{-- IDs Row --}}
                                 <div class="form-row">
-                                    <label class="form-lbl">Project Name / Domain *</label>
-                                    <input type="text" name="project_name" class="form-inp" placeholder="e.g. novatech.io" required value="{{ old('project_name', $project->project_name) }}">
+                                    <label class="form-lbl">Order ID <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <div class="order-select-wrap">
+                                        <input type="hidden" name="order_id" id="selectedOrderId" value="{{ old('order_id', $project->order_id) }}">
+                                        <div class="os-trigger" onclick="toggleOs()">
+                                            <div class="os-selected-text">
+                                                @if($project->order)
+                                                    {{ $project->order->id }} - {{ $project->order->company_name }}
+                                                @else
+                                                    <span class="os-placeholder">— Select Order —</span>
+                                                @endif
+                                            </div>
+                                            <i class="bi bi-chevron-down ms-arrow"></i>
+                                        </div>
+                                        <div class="os-dropdown shadow-lg">
+                                            <div class="os-search-box">
+                                                <i class="bi bi-search"></i>
+                                                <input type="text" class="os-search-inp" placeholder="Search orders..." onkeyup="filterOs(this.value)">
+                                            </div>
+                                            <div class="os-options">
+                                                @foreach($orders as $o)
+                                                    <div class="os-opt {{ $project->order_id == $o->id ? 'active' : '' }}" data-id="{{ $o->id }}" onclick="selectOrder('{{ $o->id }}')">
+                                                        <div class="os-opt-main">
+                                                            <span>#{{ $o->id }} - {{ $o->company_name ?? 'No Company' }}</span>
+                                                            <span class="os-date">{{ $o->created_at->format('d M Y') }}</span>
+                                                        </div>
+                                                        <div class="os-opt-sub">
+                                                            <span><i class="bi bi-globe" style="margin-right:3px"></i>{{ $o->domain_name ?? 'N/A' }}</span>
+                                                            <span><i class="bi bi-person" style="margin-right:3px"></i>{{ $o->client_name }}</span>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Client Name *</label>
-                                    <input type="text" name="client_name" class="form-inp" placeholder="Full name" required value="{{ old('client_name', $project->client_name) }}">
+                                    <label class="form-lbl">Project ID <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <input type="text" class="form-inp" value="{{ $project->project_code }}" readonly style="background:var(--bg3);color:var(--accent);font-weight:700;">
                                 </div>
 
+                                {{-- Name Row --}}
+                                <div class="form-row">
+                                    <label class="form-lbl">First Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <input type="text" name="first_name" class="form-inp" placeholder="First name" value="{{ old('first_name', $project->first_name) }}">
+                                    @error('first_name')<span class="field-error">{{ $message }}</span>@enderror
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Last Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <input type="text" name="last_name" class="form-inp" placeholder="Last name" value="{{ old('last_name', $project->last_name) }}">
+                                    @error('last_name')<span class="field-error">{{ $message }}</span>@enderror
+                                </div>
+
+                                {{-- Contact Info --}}
                                 <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Email ID(s)</label>
+                                    <label class="form-lbl">Email ID(s) <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <div id="edit-email-list">
                                         {{-- Multi-email rows injected by JS --}}
                                     </div>
+                                    @error('email.*')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
-
                                 <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Phone Number(s)</label>
+                                    <label class="form-lbl">Phone Number(s) <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <div id="edit-phone-list">
                                         {{-- Multi-phone rows injected by JS --}}
                                     </div>
+                                    @error('phone.*')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
 
-                                <div class="form-row">
-                                    <label class="form-lbl">Company Name</label>
-                                    <input type="text" name="company_name" class="form-inp" placeholder="Company name" value="{{ old('company_name', $project->company_name) }}">
-                                </div>
-                                <div class="form-row">
-                                    <label class="form-lbl">Starting Date</label>
-                                    <input type="date" name="starting_date" class="form-inp" value="{{ old('starting_date', $project->starting_date ? $project->starting_date->format('Y-m-d') : '') }}">
-                                </div>
-                                <div class="form-row">
-                                    <label class="form-lbl">Plan Name</label>
-                                    <input type="text" name="plan_name" class="form-inp" placeholder="e.g. Dynamic" value="{{ old('plan_name', $project->plan_name) }}">
-                                </div>
-                                <div class="form-row">
-                                    <label class="form-lbl">Payment Status</label>
-                                    <select name="payment_status_id" class="form-inp">
-                                        <option value="">— Select —</option>
-                                        @foreach($statuses['payment_statuses'] as $ps)
-                                            <option value="{{ $ps->id }}" {{ old('payment_status_id', $project->payment_status_id) == $ps->id ? 'selected' : '' }}>{{ $ps->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="form-row">
-                                    <label class="form-lbl">Username</label>
-                                    <input type="text" name="username" class="form-inp" placeholder="Account username" value="{{ old('username', $project->username) }}">
-                                </div>
-                                <div class="form-row">
-                                    <label class="form-lbl">Password</label>
-                                    <input type="text" name="password" class="form-inp" placeholder="Account password" value="{{ old('password', $project->password) }}">
-                                </div>
-                                <div class="form-row">
-                                    <label class="form-lbl">No. of Mail IDs</label>
-                                    <input type="number" name="no_of_mail_ids" class="form-inp" placeholder="e.g. 5" value="{{ old('no_of_mail_ids', $project->no_of_mail_ids) }}">
-                                </div>
-                                <div class="form-row">
-                                    <label class="form-lbl">Mail Password</label>
-                                    <input type="text" name="mail_password" class="form-inp" placeholder="Mail password" value="{{ old('mail_password', $project->mail_password) }}">
-                                </div>
                                 <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Services <span style="color:#ef4444">*</span></label>
-                                    @php $selectedServiceIds = $project->services->pluck('id')->toArray(); @endphp
-                                    <div class="ms-wrap" id="serviceWrap">
-                                        <div class="ms-trigger" onclick="toggleMs('serviceWrap')">
-                                            <div class="ms-pills" id="servicePills">
-                                                <span class="ms-placeholder">Select services…</span>
-                                            </div>
-                                            <i class="bi bi-chevron-down ms-arrow"></i>
-                                        </div>
-                                        <div class="ms-dropdown" id="serviceDropdown">
-                                            <div class="ms-search-wrap">
-                                                <i class="bi bi-search"></i>
-                                                <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'serviceDropdown')">
-                                                <span class="ms-all-btn" onclick="toggleAllMs('serviceWrap','serviceDropdown')">Select All</span>
-                                            </div>
-                                            <div class="ms-opts">
-                                                @foreach($services as $service)
-                                                    <label class="ms-opt">
-                                                        <input type="checkbox" name="service_ids[]" value="{{ $service->id }}" 
-                                                            data-name="{{ $service->name }}"
-                                                            onchange="updateMs('serviceWrap')"
-                                                            {{ in_array($service->id, $selectedServiceIds) ? 'checked' : '' }}>
-                                                        <div style="display:flex;flex-direction:column;">
-                                                            <span style="font-weight:500;color:var(--t1);">{{ $service->name }}</span>
-                                                        </div>
-                                                    </label>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Lead Sources <span style="color:#ef4444">*</span></label>
-                                    @php $selectedSourceIds = $project->sources->pluck('id')->toArray(); @endphp
-                                    <div class="ms-wrap" id="sourceWrap">
-                                        <div class="ms-trigger" onclick="toggleMs('sourceWrap')">
-                                            <div class="ms-pills" id="sourcePills">
-                                                <span class="ms-placeholder">Select sources…</span>
-                                            </div>
-                                            <i class="bi bi-chevron-down ms-arrow"></i>
-                                        </div>
-                                        <div class="ms-dropdown" id="sourceDropdown">
-                                            <div class="ms-search-wrap">
-                                                <i class="bi bi-search"></i>
-                                                <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'sourceDropdown')">
-                                                <span class="ms-all-btn" onclick="toggleAllMs('sourceWrap','sourceDropdown')">Select All</span>
-                                            </div>
-                                            <div class="ms-opts">
-                                                @foreach($sources as $source)
-                                                    <label class="ms-opt">
-                                                        <input type="checkbox" name="source_ids[]" value="{{ $source->id }}" 
-                                                            data-name="{{ $source->name }}"
-                                                            onchange="updateMs('sourceWrap')"
-                                                            {{ in_array($source->id, $selectedSourceIds) ? 'checked' : '' }}>
-                                                        <div style="display:flex;flex-direction:column;">
-                                                            <span style="font-weight:500;color:var(--t1);">{{ $source->name }}</span>
-                                                        </div>
-                                                    </label>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Domain, Server Book</label>
-                                    <input type="text" name="domain_server_book" class="form-inp" placeholder="Domain & server info" value="{{ old('domain_server_book', $project->domain_server_book) }}">
-                                </div>
-                                <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Full Address <span style="color:#ef4444">*</span></label>
-                                    <textarea name="full_address" class="form-inp" rows="2" placeholder="Full address…" required>{{ old('full_address', $project->full_address) }}</textarea>
-                                </div>
-                                <div class="form-row">
-                                    <label class="form-lbl">Zip Code <span style="color:#ef4444">*</span></label>
-                                    <input type="text" name="zip_code" class="form-inp" value="{{ old('zip_code', $project->zip_code) }}" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits" required>
+                                    <label class="form-lbl">Company Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <input type="text" name="company_name" class="form-inp" placeholder="Enter company name" value="{{ old('company_name', $project->company_name) }}">
+                                    @error('company_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Website Details --}}
+                    {{-- Section 2: Address Details --}}
                     <div class="dash-card">
                         <div class="card-head">
-                            <div>
-                                <div class="card-title"><i class="bi bi-globe2" style="color:#06b6d4;margin-right:6px;"></i>Website Project Details</div>
-                                <div class="card-sub">Technical specifications</div>
-                            </div>
+                            <div class="card-title"><i class="bi bi-geo-alt-fill" style="color:#ef4444;margin-right:6px;"></i>Address Details</div>
                         </div>
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row">
-                                    <label class="form-lbl">Domain Name</label>
+                                    <label class="form-lbl">State / Region / Province <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <input type="text" name="state" class="form-inp" placeholder="State" value="{{ old('state', $project->state) }}">
+                                    @error('state')<span class="field-error">{{ $message }}</span>@enderror
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">City <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <input type="text" name="city" class="form-inp" placeholder="City" value="{{ old('city', $project->city) }}">
+                                    @error('city')<span class="field-error">{{ $message }}</span>@enderror
+                                </div>
+                                <div class="form-row" style="grid-column:1/-1">
+                                    <label class="form-lbl">Full Address <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <textarea name="full_address" class="form-inp" rows="2" placeholder="Street, landmark, etc.">{{ old('full_address', $project->full_address) }}</textarea>
+                                    @error('full_address')<span class="field-error">{{ $message }}</span>@enderror
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Zip Code <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <input type="number" name="zip_code" class="form-inp" placeholder="6-digit ZIP" pattern="\d{6}" value="{{ old('zip_code', $project->zip_code) }}">
+                                    @error('zip_code')<span class="field-error">{{ $message }}</span>@enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Section 3: Website & Platform --}}
+                    <div class="dash-card">
+                        <div class="card-head">
+                            <div class="card-title"><i class="bi bi-globe2" style="color:#06b6d4;margin-right:6px;"></i>Website & Platform</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-grid">
+                                <div class="form-row">
+                                    <label class="form-lbl">Domain Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="text" name="domain_name" class="form-inp" placeholder="example.com" value="{{ old('domain_name', $project->domain_name) }}">
+                                    @error('domain_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Hosting Provider</label>
-                                    <input type="text" name="hosting_provider" class="form-inp" placeholder="Hostinger, GoDaddy…" value="{{ old('hosting_provider', $project->hosting_provider) }}">
+                                    <label class="form-lbl">Plan Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    @php $assignedPlanIds = $project->plans->pluck('id')->toArray(); @endphp
+                                    <div class="ms-wrap" id="planWrap">
+                                        <div class="ms-trigger" onclick="toggleMs('planWrap')">
+                                            <div class="ms-pills" id="planPills">
+                                                <span class="ms-placeholder">Select plans…</span>
+                                            </div>
+                                            <i class="bi bi-chevron-down ms-arrow"></i>
+                                        </div>
+                                        <div class="ms-dropdown" id="planDropdown">
+                                            <div class="ms-search-wrap">
+                                                <i class="bi bi-search"></i>
+                                                <input type="text" class="ms-search" placeholder="Search plans…" oninput="filterMs(this,'planDropdown')">
+                                                <span class="ms-all-btn" onclick="toggleAllMs('planWrap','planDropdown')">Select All</span>
+                                            </div>
+                                            <div class="ms-opts">
+                                                @foreach($plans as $plan)
+                                                    <label class="ms-opt">
+                                                        <input type="checkbox" name="plan_ids[]" value="{{ $plan->id }}" 
+                                                            data-name="{{ $plan->name }}"
+                                                            onchange="updateMs('planWrap')"
+                                                            {{ in_array($plan->id, old('plan_ids', $assignedPlanIds)) ? 'checked' : '' }}>
+                                                        <span style="font-weight:500;color:var(--t1);">{{ $plan->name }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @error('plan_ids')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">CMS / Platform</label>
-                                    <select name="cms_platform" id="cmsSelect" class="form-inp" onchange="toggleCustomCms()">
-                                        <option value="">— Select —</option>
-                                        <option value="WordPress" {{ old('cms_platform', $project->cms_platform) == 'WordPress' ? 'selected' : '' }}>WordPress</option>
-                                        <option value="Shopify" {{ old('cms_platform', $project->cms_platform) == 'Shopify' ? 'selected' : '' }}>Shopify</option>
-                                        <option value="Custom" {{ old('cms_platform', $project->cms_platform) == 'Custom' ? 'selected' : '' }}>Custom</option>
-                                        <option value="other" {{ old('cms_platform', $project->cms_platform) == 'other' ? 'selected' : '' }}>Other</option>
-                                    </select>
+                                    <label class="form-lbl">Website Username <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <input type="text" name="username" class="form-inp" placeholder="Username" value="{{ old('username', $project->username) }}">
+                                    @error('username')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Number of Pages</label>
-                                    <input type="number" name="no_of_pages" class="form-inp" placeholder="e.g. 10" value="{{ old('no_of_pages', $project->no_of_pages) }}">
-                                </div>
-                                <div class="form-row" id="customCmsRow" style="display:{{ old('cms_platform', $project->cms_platform) == 'other' ? 'flex' : 'none' }};grid-column:1/-1;">
-                                    <label class="form-lbl">Specify CMS *</label>
-                                    <input type="text" name="cms_custom" class="form-inp" placeholder="Specify other platform" value="{{ old('cms_custom', $project->cms_custom) }}">
+                                    <label class="form-lbl">Website Password <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <input type="text" name="password" class="form-inp" placeholder="Password" value="{{ old('password', $project->password) }}">
+                                    @error('password')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Required Features</label>
-                                    <textarea name="required_features" class="form-inp" rows="2" placeholder="Login, payment gateway, blog…">{{ old('required_features', $project->required_features) }}</textarea>
-                                </div>
-                                <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Reference Websites</label>
-                                    <input type="text" name="reference_websites" class="form-inp" placeholder="https://…" value="{{ old('reference_websites', $project->reference_websites) }}">
-                                </div>
-                                <div class="form-row" style="margin-bottom:0;">
-                                    <label class="form-lbl">Website Payment Status</label>
-                                    <select name="website_payment_status" class="form-inp">
-                                        <option value="">— Select —</option>
-                                        <option value="Paid" {{ old('website_payment_status', $project->website_payment_status) == 'Paid' ? 'selected' : '' }}>Paid</option>
-                                        <option value="Partial" {{ old('website_payment_status', $project->website_payment_status) == 'Partial' ? 'selected' : '' }}>Partial</option>
-                                        <option value="Pending" {{ old('website_payment_status', $project->website_payment_status) == 'Pending' ? 'selected' : '' }}>Pending</option>
-                                    </select>
+                                    <label class="form-lbl">CMS / Platform <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <div style="display:flex;gap:12px;">
+                                        <select name="cms_platform" class="form-inp" style="flex:1" id="cmsSelect" onchange="toggleCustomCms()">
+                                            <option value="">— Select —</option>
+                                            <option value="WordPress" {{ old('cms_platform', $project->cms_platform) == 'WordPress' ? 'selected' : '' }}>WordPress</option>
+                                            <option value="Shopify" {{ old('cms_platform', $project->cms_platform) == 'Shopify' ? 'selected' : '' }}>Shopify</option>
+                                            <option value="Custom" {{ old('cms_platform', $project->cms_platform) == 'Custom' ? 'selected' : '' }}>Custom</option>
+                                            <option value="Others" {{ old('cms_platform', $project->cms_platform) == 'Others' ? 'selected' : '' }}>Others</option>
+                                        </select>
+                                        <input type="text" name="cms_custom" id="cmsCustomInput" class="form-inp" style="flex:1; display: {{ old('cms_platform', $project->cms_platform) == 'Others' ? 'block' : 'none' }};" placeholder="Specify platform..." value="{{ old('cms_custom', $project->cms_custom) }}">
+                                    </div>
+                                    @error('cms_platform')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Communication & Tracking --}}
-                    @php $latestFb = $project->feedbacks()->latest()->first(); @endphp
+                    {{-- Section 4: Hosting & Domain Provider --}}
                     <div class="dash-card">
                         <div class="card-head">
-                            <div>
-                                <div class="card-title"><i class="bi bi-chat-dots" style="color:#ec4899;margin-right:6px;"></i>Communication & Tracking</div>
-                                <div class="card-sub" style="color:var(--accent);">
-                                    @if($latestFb)
-                                        <i class="bi bi-clock-history"></i> Latest: "{{ $latestFb->feedback_summary }}" ({{ $latestFb->last_update_date ? $latestFb->last_update_date->format('d M') : $latestFb->created_at->format('d M') }})
-                                    @else
-                                        Notes and status logging (Creates a new history entry)
-                                    @endif
-                                </div>
-                            </div>
+                            <div class="card-title"><i class="bi bi-server" style="color:#8b5cf6;margin-right:6px;"></i>Hosting & Domain Provider</div>
                         </div>
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row">
-                                    <label class="form-lbl">Update Date</label>
-                                    <input type="date" name="last_update_date" class="form-inp" value="{{ old('last_update_date', date('Y-m-d')) }}">
+                                    <label class="form-lbl">Domain Provider Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <input type="text" name="domain_provider_name" class="form-inp" placeholder="e.g. GoDaddy" value="{{ old('domain_provider_name', $project->domain_provider_name) }}">
+                                    @error('domain_provider_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Client Feedback Summary</label>
-                                    <input type="text" name="client_feedback_summary" class="form-inp" placeholder="Add new feedback summary" value="{{ old('client_feedback_summary') }}">
+                                    <label class="form-lbl">Domain Renewal Price <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <input type="number" name="domain_renewal_price" class="form-inp" placeholder="₹ Amount" value="{{ old('domain_renewal_price', $project->domain_renewal_price) }}">
+                                    @error('domain_renewal_price')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
-                                <div class="form-row" style="grid-column:1/-1;margin-bottom:0;">
-                                    <label class="form-lbl">Internal Notes</label>
-                                    <textarea name="internal_notes" class="form-inp" rows="3" placeholder="Add new internal notes for this update…">{{ old('internal_notes') }}</textarea>
+                                <div class="form-row">
+                                    <label class="form-lbl">Hosting Provider Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <input type="text" name="hosting_provider_name" class="form-inp" placeholder="e.g. Hostinger" value="{{ old('hosting_provider_name', $project->hosting_provider_name) }}">
+                                    @error('hosting_provider_name')<span class="field-error">{{ $message }}</span>@enderror
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Hosting Renewal Price <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <input type="number" name="hosting_renewal_price" class="form-inp" placeholder="₹ Amount" value="{{ old('hosting_renewal_price', $project->hosting_renewal_price) }}">
+                                    @error('hosting_renewal_price')<span class="field-error">{{ $message }}</span>@enderror
+                                </div>
+                                <div class="form-row" style="grid-column:1/-1">
+                                    <label class="form-lbl">Primary Domain Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <input type="text" name="primary_domain_name" class="form-inp" placeholder="Primary domain" value="{{ old('primary_domain_name', $project->primary_domain_name) }}">
+                                    @error('primary_domain_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                             </div>
                         </div>
@@ -329,179 +263,167 @@
 
                 </div>
 
-                {{-- Right Column: Timeline, Assign, Financial --}}
+                {{-- ══ RIGHT COL — 4 spans ══ --}}
                 <div class="span-4" style="display:flex;flex-direction:column;gap:16px;">
-                    
+
                     {{-- Timeline & Status --}}
                     <div class="dash-card">
                         <div class="card-head">
-                            <div>
-                                <div class="card-title"><i class="bi bi-calendar3" style="color:#f59e0b;margin-right:6px;"></i>Project Timeline</div>
-                                <div class="card-sub">Schedule & progress</div>
-                            </div>
+                            <div class="card-title"><i class="bi bi-calendar3" style="color:#f59e0b;margin-right:6px;"></i>Timeline & Status</div>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
                             <div class="form-row">
-                                <label class="form-lbl">Project Status *</label>
-                                <select name="project_status_id" class="form-inp" required>
+                                <label class="form-lbl">Project Status <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                <select name="project_status_id" class="form-inp">
                                     @foreach($statuses['project_statuses'] as $ps)
                                         <option value="{{ $ps->id }}" {{ old('project_status_id', $project->project_status_id) == $ps->id ? 'selected' : '' }}>{{ $ps->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="form-row">
+                                <label class="form-lbl">Order Date Create <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                <input type="date" name="order_date_create" class="form-inp" value="{{ old('order_date_create', $project->order_date_create ? $project->order_date_create->format('Y-m-d') : ($project->order ? $project->order->created_at->format('Y-m-d') : date('Y-m-d'))) }}">
+                            </div>
+                            <div class="form-row">
                                 <label class="form-lbl">Project Start Date</label>
                                 <input type="date" name="project_start_date" class="form-inp" value="{{ old('project_start_date', $project->project_start_date ? $project->project_start_date->format('Y-m-d') : '') }}">
                             </div>
                             <div class="form-row">
-                                <label class="form-lbl">Expected Delivery Date</label>
-                                <input type="date" name="expected_delivery_date" class="form-inp" value="{{ old('expected_delivery_date', $project->expected_delivery_date ? $project->expected_delivery_date->format('Y-m-d') : '') }}">
-                            </div>
-                            <div class="form-row" style="margin-bottom:0;">
-                                <label class="form-lbl">Actual Delivery Date</label>
+                                <label class="form-lbl">Complete Date (Actual)</label>
                                 <input type="date" name="actual_delivery_date" class="form-inp" value="{{ old('actual_delivery_date', $project->actual_delivery_date ? $project->actual_delivery_date->format('Y-m-d') : '') }}">
                             </div>
                         </div>
                     </div>
 
-                    {{-- Dynamic Developer Assignment --}}
+                    {{-- Project Specifics --}}
+                    <div class="dash-card">
+                        <div class="card-head">
+                            <div class="card-title"><i class="bi bi-tools" style="color:#10b981;margin-right:6px;"></i>Project Specifics</div>
+                        </div>
+                        <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
+                            <div class="form-row">
+                                <label class="form-lbl">Reference Websites</label>
+                                <input type="text" name="reference_websites" class="form-inp" placeholder="Comma separated URLs" value="{{ old('reference_websites', $project->reference_websites) }}">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-lbl">No. of Mail IDs</label>
+                                <input type="number" name="no_of_mail_ids" class="form-inp" min="0" value="{{ old('no_of_mail_ids', $project->no_of_mail_ids) }}">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-lbl">Mail Password</label>
+                                <input type="text" name="mail_password" class="form-inp" value="{{ old('mail_password', $project->mail_password) }}">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-lbl">Number of Pages</label>
+                                <input type="number" name="no_of_pages" class="form-inp" min="1" value="{{ old('no_of_pages', $project->no_of_pages) }}">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-lbl">Extra Features</label>
+                                <textarea name="extra_features" class="form-inp" rows="3" placeholder="Enter additional feature details...">{{ old('extra_features', $project->extra_features) }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Assignments --}}
                     <div class="dash-card" style="overflow:visible;">
                         <div class="card-head">
-                            <div class="card-title"><i class="bi bi-people-fill" style="color:#10b981;margin-right:6px;"></i>Assign To (Developers)</div>
-                            <div class="card-sub">Select one or more team members</div>
+                            <div class="card-title"><i class="bi bi-people-fill" style="color:#6366f1;margin-right:6px;"></i>Assignments</div>
                         </div>
-                        <div class="card-body">
-                            <div class="ms-wrap" id="editAssignWrap">
-                                <div class="ms-trigger" onclick="toggleMs('editAssignWrap')">
-                                    <div class="ms-pills" id="editAssignPills">
-                                        <span class="ms-placeholder">Select developers…</span>
+                        <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
+                            <div class="form-row">
+                                <label class="form-lbl">Assign to Sales</label>
+                                @php $assignedSaleIds = $project->salesPersons->pluck('id')->toArray(); @endphp
+                                <div class="ms-wrap" id="saleAssignWrap">
+                                    <div class="ms-trigger" onclick="toggleMs('saleAssignWrap')">
+                                        <div class="ms-pills" id="saleAssignPills">
+                                            <span class="ms-placeholder">Select Sales Personnel…</span>
+                                        </div>
+                                        <i class="bi bi-chevron-down ms-arrow"></i>
                                     </div>
-                                    <i class="bi bi-chevron-down ms-arrow"></i>
+                                    <div class="ms-dropdown" id="saleAssignDropdown">
+                                        <div class="ms-search-wrap">
+                                            <i class="bi bi-search"></i>
+                                            <input type="text" class="ms-search" placeholder="Search..." oninput="filterMs(this,'saleAssignDropdown')">
+                                            <span class="ms-all-btn" onclick="toggleAllMs('saleAssignWrap','saleAssignDropdown')">Select All</span>
+                                        </div>
+                                        <div class="ms-opts">
+                                            @foreach($salesPersons as $sale)
+                                                @php 
+                                                    $initials = strtoupper(substr($sale->name, 0, 2)); 
+                                                    $colors = ['#6366f1','#ec4899','#10b981','#f59e0b','#ef4444','#8b5cf6'];
+                                                    $bg = $colors[$sale->id % count($colors)];
+                                                @endphp
+                                                <label class="ms-opt">
+                                                    <input type="checkbox" name="sales_person_ids[]" value="{{ $sale->id }}" 
+                                                        data-name="{{ $sale->name }}" data-initials="{{ $initials }}"
+                                                        onchange="updateMs('saleAssignWrap')"
+                                                        {{ in_array($sale->id, old('sales_person_ids', $assignedSaleIds)) ? 'checked' : '' }}>
+                                                    <span class="ms-ava" style="background:{{ $bg }}">{{ $initials }}</span>
+                                                    <div>
+                                                        <div style="font-size:12.5px;font-weight:600;color:var(--t1);">{{ $sale->name }}</div>
+                                                        <div style="font-size:10.5px;color:var(--t3);">{{ $sale->email }}</div>
+                                                    </div>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="ms-dropdown" id="editAssignDropdown">
-                                    <div class="ms-search-wrap">
-                                        <i class="bi bi-search"></i>
-                                        <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'editAssignDropdown')">
-                                        <span class="ms-all-btn" onclick="toggleAllMs('editAssignWrap','editAssignDropdown')">Select All</span>
+                            </div>
+                            <div class="form-row">
+                                <label class="form-lbl">Assign to Developers</label>
+                                @php $assignedDevIds = $project->developers->pluck('id')->toArray(); @endphp
+                                <div class="ms-wrap" id="devAssignWrap">
+                                    <div class="ms-trigger" onclick="toggleMs('devAssignWrap')">
+                                        <div class="ms-pills" id="devAssignPills">
+                                            <span class="ms-placeholder">Select Developers…</span>
+                                        </div>
+                                        <i class="bi bi-chevron-down ms-arrow"></i>
                                     </div>
-                                    <div class="ms-opts">
-                                        @php
-                                            $assignedIds = $project->developers->pluck('id')->toArray();
-                                        @endphp
-                                        @foreach($developers as $index => $dev)
-                                            @php
-                                                $words = explode(' ', $dev->name);
-                                                $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
-                                            @endphp
-                                            <label class="ms-opt">
-                                                <input type="checkbox" name="assign_to[]" value="{{ $dev->id }}" 
-                                                    data-name="{{ $dev->name }}" data-initials="{{ $initials }}"
-                                                    onchange="updateMs('editAssignWrap')"
-                                                    {{ in_array($dev->id, old('assign_to', $assignedIds)) ? 'checked' : '' }}>
-                                                <span class="ms-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">{{ $initials }}</span>
-                                                <div style="display:flex;flex-direction:column;">
-                                                    <span style="font-weight:500;color:var(--t1);">{{ $dev->name }}</span>
-                                                    <span style="font-size:11px;color:var(--t3);">{{ $dev->designation }}</span>
-                                                </div>
-                                            </label>
-                                        @endforeach
+                                    <div class="ms-dropdown" id="devAssignDropdown">
+                                        <div class="ms-search-wrap">
+                                            <i class="bi bi-search"></i>
+                                            <input type="text" class="ms-search" placeholder="Search..." oninput="filterMs(this,'devAssignDropdown')">
+                                            <span class="ms-all-btn" onclick="toggleAllMs('devAssignWrap','devAssignDropdown')">Select All</span>
+                                        </div>
+                                        <div class="ms-opts">
+                                            @foreach($developers as $dev)
+                                                @php 
+                                                    $initials = strtoupper(substr($dev->name, 0, 2)); 
+                                                    $colors = ['#10b981','#6366f1','#f59e0b','#ec4899','#ef4444','#06b6d4'];
+                                                    $bg = $colors[$dev->id % count($colors)];
+                                                @endphp
+                                                <label class="ms-opt">
+                                                    <input type="checkbox" name="assign_to[]" value="{{ $dev->id }}" 
+                                                        data-name="{{ $dev->name }}" data-initials="{{ $initials }}"
+                                                        onchange="updateMs('devAssignWrap')"
+                                                        {{ in_array($dev->id, old('assign_to', $assignedDevIds)) ? 'checked' : '' }}>
+                                                    <span class="ms-ava" style="background:{{ $bg }}">{{ $initials }}</span>
+                                                    <div>
+                                                        <div style="font-size:12.5px;font-weight:600;color:var(--t1);">{{ $dev->name }}</div>
+                                                        <div style="font-size:10.5px;color:var(--t3);">{{ $dev->email }}</div>
+                                                    </div>
+                                                </label>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Assign To — Multiple Sales Persons --}}
-                    <div class="dash-card" style="overflow:visible;">
-                        <div class="card-head">
-                            <div class="card-title"><i class="bi bi-person-badge-fill" style="color:var(--accent);margin-right:6px;"></i>Assign To (Sales)</div>
-                            <div class="card-sub">Select one or more sales personnel</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="ms-wrap" id="editSaleAssignWrap">
-                                <div class="ms-trigger" onclick="toggleMs('editSaleAssignWrap')">
-                                    <div class="ms-pills" id="editSaleAssignPills">
-                                        <span class="ms-placeholder">Select sales staff…</span>
-                                    </div>
-                                    <i class="bi bi-chevron-down ms-arrow"></i>
-                                </div>
-                                <div class="ms-dropdown" id="editSaleAssignDropdown">
-                                    <div class="ms-search-wrap">
-                                        <i class="bi bi-search"></i>
-                                        <input type="text" class="ms-search" placeholder="Search…" oninput="filterMs(this,'editSaleAssignDropdown')">
-                                        <span class="ms-all-btn" onclick="toggleAllMs('editSaleAssignWrap','editSaleAssignDropdown')">Select All</span>
-                                    </div>
-                                    <div class="ms-opts">
-                                        @php
-                                            $assignedSaleIds = $project->salesPersons->pluck('id')->toArray();
-                                        @endphp
-                                        @foreach($salesPersons as $index => $sale)
-                                            @php
-                                                $words = explode(' ', $sale->name);
-                                                $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
-                                            @endphp
-                                            <label class="ms-opt">
-                                                <input type="checkbox" name="sales_person_ids[]" value="{{ $sale->id }}" 
-                                                    data-name="{{ $sale->name }}" data-initials="{{ $initials }}"
-                                                    onchange="updateMs('editSaleAssignWrap')"
-                                                    {{ in_array($sale->id, old('sales_person_ids', $assignedSaleIds)) ? 'checked' : '' }}>
-                                                <span class="ms-ava" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">{{ $initials }}</span>
-                                                <div style="display:flex;flex-direction:column;">
-                                                    <span style="font-weight:500;color:var(--t1);">{{ $sale->name }}</span>
-                                                    <span style="font-size:11px;color:var(--t3);">{{ $sale->email }}</span>
-                                                </div>
-                                            </label>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {{-- Actions --}}
+                    <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
+                        <input type="hidden" name="project_name" id="projectNameFull">
+                        
+                        {{-- Hidden placeholders if needed --}}
+                        <input type="hidden" name="project_price" value="{{ old('project_price', $project->project_price) }}">
+                        @if($project->services->isEmpty()) <input type="hidden" name="service_ids[]" value="1"> @endif
+                        @if($project->sources->isEmpty()) <input type="hidden" name="source_ids[]" value="1"> @endif
 
-                    {{-- Financial Fields --}}
-                    <!-- <div class="dash-card">
-                        <div class="card-head">
-                            <div class="card-title"><i class="bi bi-currency-rupee" style="color:#8b5cf6;margin-right:6px;"></i>Financial Fields</div>
-                            <div class="card-sub">Pricing & payment info</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-row">
-                                <label class="form-lbl">Project Price *</label>
-                                <input type="number" name="project_price" id="projectPrice" class="form-inp" placeholder="₹ Amount" oninput="calcRemaining()" required value="{{ old('project_price', $project->project_price) }}">
-                            </div>
-                            <div class="form-row">
-                                <label class="form-lbl">Advance Payment</label>
-                                <input type="number" name="advance_payment" id="advancePayment" class="form-inp" placeholder="₹ Amount" oninput="calcRemaining()" value="{{ old('advance_payment', $project->advance_payment) }}">
-                            </div>
-                            <div class="form-row">
-                                <label class="form-lbl">Remaining Amount</label>
-                                <div style="padding:9px 12px;background:var(--bg4);border:1px solid var(--b1);border-radius:var(--r-sm);font-size:13px;font-weight:700;color:#ef4444;font-family:var(--mono);" id="remainingDisplay">₹ {{ number_format(old('remaining_amount', $project->remaining_amount), 2) }}</div>
-                                <input type="hidden" name="remaining_amount" id="remainingHidden" value="{{ old('remaining_amount', $project->remaining_amount) }}">
-                            </div>
-                            <div class="form-row">
-                                <label class="form-lbl">Financial Payment Status</label>
-                                <select name="financial_payment_status" class="form-inp">
-                                    <option value="">— Select —</option>
-                                    <option value="Pending" {{ old('financial_payment_status', $project->financial_payment_status) == 'Pending' ? 'selected' : '' }}>Pending</option>
-                                    <option value="Partial" {{ old('financial_payment_status', $project->financial_payment_status) == 'Partial' ? 'selected' : '' }}>Partial</option>
-                                    <option value="Paid" {{ old('financial_payment_status', $project->financial_payment_status) == 'Paid' ? 'selected' : '' }}>Paid</option>
-                                </select>
-                            </div>
-                            <div class="form-row" style="margin-bottom:0;">
-                                <label class="form-lbl">Invoice Number</label>
-                                <input type="text" name="invoice_number" class="form-inp" placeholder="INV-XXXX" value="{{ old('invoice_number', $project->invoice_number) }}">
-                            </div>
-                        </div>
-                    </div> -->
-
-                    {{-- Submit --}}
-                    <div style="display:flex;flex-direction:column;gap:8px;">
-                        <button type="submit" class="btn-primary-solid" style="justify-content:center;width:100%;padding:11px;">
-                            <i class="bi bi-floppy-fill"></i> Update Project
+                        <button type="submit" class="btn-primary-solid" style="padding:12px;justify-content:center;" onclick="document.getElementById('projectNameFull').value = document.querySelector('input[name=\'domain_name\']').value">
+                            <i class="bi bi-floppy-fill"></i> Save Changes
                         </button>
-                        <a href="{{ route($routePrefix . '.projects.index') }}" class="btn-ghost" style="justify-content:center;width:100%;padding:10px;">
-                            Cancel
-                        </a>
+                        <a href="{{ route($routePrefix . '.projects.index') }}" class="btn-ghost" style="padding:12px;justify-content:center;">Cancel</a>
                     </div>
 
                 </div>
@@ -513,29 +435,24 @@
 </main>
 
 <script>
-    function calcRemaining() {
-        const price = parseFloat(document.getElementById('projectPrice').value) || 0;
-        const advance = parseFloat(document.getElementById('advancePayment').value) || 0;
-        const rem = Math.max(0, price - advance);
-        document.getElementById('remainingDisplay').textContent = '₹ ' + rem.toLocaleString('en-IN');
-        document.getElementById('remainingHidden').value = rem;
-    }
-
     function toggleCustomCms() {
         const val = document.getElementById('cmsSelect').value;
-        const customRow = document.getElementById('customCmsRow');
-        if (customRow) {
-            customRow.style.display = val === 'other' ? 'flex' : 'none';
+        const input = document.getElementById('cmsCustomInput');
+        if (input) {
+            input.style.display = (val === 'Others') ? 'block' : 'none';
         }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
         toggleCustomCms();
-        calcRemaining();
-        updateMs('editAssignWrap');
-        updateMs('editSaleAssignWrap');
-        updateMs('serviceWrap');
-        updateMs('sourceWrap');
+        // Initialize multi-selects
+        if(typeof updateMs === 'function') {
+            updateMs('saleAssignWrap');
+            updateMs('devAssignWrap');
+            updateMs('planWrap');
+            updateMs('serviceWrap');
+            updateMs('sourceWrap');
+        }
 
         // Seed Existing Emails
         @if($project->emails && is_array($project->emails))
@@ -554,11 +471,18 @@
                 @endif
             @endforeach
         @endif
+        
+        // Final button update for phone/email rows
+        if(typeof updateButtons === 'function') {
+            updateButtons('edit-email-list');
+            updateButtons('edit-phone-list');
+        }
     });
 </script>
 
 @include('admin.project._multiselect_assets')
 @include('admin.project._order_select_assets')
 @include('admin.project._phone_email_assets')
+@include('admin.project._validation_assets')
 
 @endsection

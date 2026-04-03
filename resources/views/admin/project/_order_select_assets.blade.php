@@ -8,12 +8,20 @@
             'phones' => $o->phones,
             'domain_name' => $o->domain_name,
             'plan_name' => $o->plan_name,
+            'plan_ids' => $o->plans->pluck('id')->toArray(),
             'order_value' => $o->order_value,
             'mkt_username' => $o->mkt_username,
             'mkt_password' => $o->mkt_password,
             'mkt_starting_date' => $o->mkt_starting_date ? $o->mkt_starting_date->format('Y-m-d') : null,
+            'created_at_val' => $o->created_at->format('Y-m-d'),
             'delivery_date' => $o->delivery_date ? $o->delivery_date->format('Y-m-d') : null,
+            'state' => $o->state,
+            'city' => $o->city,
+            'zip_code' => $o->zip_code,
             'full_address' => $o->full_address,
+            'sales_person_ids' => $o->sales->pluck('id')->toArray(),
+            'service_ids' => $o->services->pluck('id')->toArray(),
+            'source_ids' => $o->sources->pluck('id')->toArray(),
             'created_at_fmt' => $o->created_at->format('d M Y')
         ];
     });
@@ -112,26 +120,79 @@
     function autoFillFromOrder(order) {
         // Basic Info
         setVal('input[name="project_name"]', order.domain_name);
-        setVal('input[name="client_name"]', order.client_name);
+        
+        // Split client name into first/last
+        if (order.client_name) {
+            const parts = order.client_name.trim().split(/\s+/);
+            const first = parts[0] || '';
+            const last = parts.length > 1 ? parts.slice(1).join(' ') : (first ? '–' : '');
+            setVal('input[name="first_name"]', first);
+            setVal('input[name="last_name"]', last);
+        }
+
         setVal('input[name="company_name"]', order.company_name);
         setVal('input[name="domain_name"]', order.domain_name);
+        setVal('input[name="primary_domain_name"]', order.domain_name);
         setVal('input[name="plan_name"]', order.plan_name);
         setVal('input[name="username"]', order.mkt_username);
         setVal('input[name="password"]', order.mkt_password);
-        setVal('input[name="starting_date"]', order.mkt_starting_date);
+        setVal('input[name="order_date_create"]', order.created_at_val || order.mkt_starting_date);
+        setVal('input[name="state"]', order.state);
+        setVal('input[name="city"]', order.city);
+        setVal('input[name="zip_code"]', order.zip_code);
         setVal('textarea[name="full_address"]', order.full_address);
+        
+        // Handle Multi-Select Plans
+        if (order.plan_ids && order.plan_ids.length > 0) {
+            const planWrap = document.getElementById('planWrap');
+            if (planWrap) {
+                planWrap.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    cb.checked = order.plan_ids.includes(parseInt(cb.value));
+                });
+                if (typeof updateMs === 'function') updateMs('planWrap');
+            }
+        }
         
         // Dates
         setVal('input[name="project_start_date"]', order.mkt_starting_date);
         setVal('input[name="expected_delivery_date"]', order.delivery_date);
         
-        // Financials
+        // Financials (if hidden or visible)
         setVal('input[name="project_price"]', order.order_value);
         if (typeof calcRemaining === 'function') calcRemaining();
 
+        // Handle Sales Assignments
+        if (order.sales_person_ids && order.sales_person_ids.length > 0) {
+            const saleWrap = document.getElementById('saleAssignWrap');
+            if (saleWrap) {
+                saleWrap.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    cb.checked = order.sales_person_ids.includes(parseInt(cb.value));
+                });
+                if (typeof updateMs === 'function') updateMs('saleAssignWrap');
+            }
+        }
+
+        // Handle Hidden Services/Sources (if they exist)
+        ['hiddenServiceWrap', 'hiddenSourceWrap'].forEach(id => {
+            const wrap = document.getElementById(id);
+            if (wrap) {
+                wrap.innerHTML = '';
+                const type = id.includes('Service') ? 'service_ids' : 'source_ids';
+                if (order[type] && Array.isArray(order[type])) {
+                    order[type].filter(val => val > 0).forEach(val => {
+                        const inp = document.createElement('input');
+                        inp.type = 'hidden';
+                        inp.name = type + '[]';
+                        inp.value = val;
+                        wrap.appendChild(inp);
+                    });
+                }
+            }
+        });
+
         // Emails & Phones (Special handle for multi-add)
-        fillMultiContact('email-list', order.emails, 'email');
-        fillMultiContact('phone-list', order.phones, 'phone');
+        fillMultiContact('add-email-list', order.emails, 'email');
+        fillMultiContact('add-phone-list', order.phones, 'phone');
     }
 
     function setVal(selector, val) {
@@ -155,8 +216,8 @@
                     // Improved Phone handling
                     let num = '', code = null;
                     if (typeof item === 'object' && item !== null) {
-                        num = item.num || item.phone || item.number || '';
-                        code = item.code || item.country_code || item.index || null;
+                        num = item.number || item.num || item.phone || '';
+                        code = item.code_idx !== undefined ? item.code_idx : (item.code || item.country_code || null);
                     } else {
                         num = item || '';
                     }

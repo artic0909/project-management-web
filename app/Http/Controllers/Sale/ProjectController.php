@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Sale;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Order;
+use App\Models\Status;
+use App\Models\Service;
+use App\Models\Source;
 use App\Models\Developer;
+use App\Models\Sale;
 use App\Models\ProjectAssign;
 use App\Models\ClientFeedback;
-use App\Models\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -123,8 +126,9 @@ class ProjectController extends Controller
         ];
     }
 
-    public function create()
+    public function create($order_id = null)
     {
+        $order = $order_id ? Order::find($order_id) : null;
         $saleId = auth()->guard('sale')->id();
         $saleType = \App\Models\Sale::class;
 
@@ -136,26 +140,90 @@ class ProjectController extends Controller
         })->latest()->get();
 
         $developers = Developer::latest()->get();
-        $salesPersons = \App\Models\Sale::latest()->get();
+        $salesPersons = Sale::latest()->get();
         $statuses = $this->getStatusOptions();
-        $services = \App\Models\Service::all();
-        $sources = \App\Models\Source::all();
+        $plans = \App\Models\Plan::all();
+        $services = Service::all();
+        $sources = Source::all();
         $routePrefix = 'sale';
-        return view('admin.project.create', compact('orders', 'developers', 'salesPersons', 'statuses', 'services', 'sources', 'routePrefix'));
+        return view('admin.project.create', compact('order', 'orders', 'developers', 'salesPersons', 'statuses', 'services', 'sources', 'plans', 'routePrefix'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'order_id' => 'required|exists:orders,id',
-            'project_name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'company_name' => 'required|string|max:255',
+            'email' => 'required|array|min:1',
+            'email.*' => 'required|email|max:255',
+            'phone' => 'required|array|min:1',
+            'phone.*' => 'required|string|max:20',
+            'state' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'full_address' => 'required|string',
+            'zip_code' => 'required|string|max:10',
+            'domain_name' => 'required|string|max:255',
+            'plan_ids' => 'required|array|min:1',
+            'username' => 'required|string|max:255',
+            'password' => 'required|string|max:255',
+            'domain_provider_name' => 'required|string|max:255',
+            'domain_renewal_price' => 'required|numeric|min:0',
+            'hosting_provider_name' => 'required|string|max:255',
+            'hosting_renewal_price' => 'required|numeric|min:0',
+            'primary_domain_name' => 'required|string|max:255',
+            'cms_platform' => 'required|string|max:255',
+            'order_date_create' => 'required|date',
+            'project_price' => 'nullable|numeric',
             'project_status_id' => 'required|exists:statuses,id',
         ]);
 
-        $project = Project::create($request->all() + [
-            'created_by' => auth()->guard('sale')->id(),
-            'created_by_type' => \App\Models\Sale::class,
-        ]);
+        $data = $request->all();
+        $data['emails'] = $request->email ?? [];
+        
+        $phones = [];
+        if ($request->has('phone')) {
+            foreach ($request->phone as $idx => $num) {
+                if ($num) {
+                    $phones[] = [
+                        'code' => $request->country_code[$idx] ?? null,
+                        'num' => $num
+                    ];
+                }
+            }
+        }
+        $data['phones'] = $phones;
+
+        $data['created_by'] = Auth::id() ?? auth()->guard('sale')->id();
+        $data['created_by_type'] = auth()->guard('sale')->check() ? \App\Models\Sale::class : get_class(auth()->user());
+        
+        // Ensure project_name and client_name are set
+        $data['project_name'] = $request->domain_name;
+        $data['client_name'] = trim($request->first_name . ' ' . $request->last_name);
+
+        // Map statuses to names
+        $status = Status::find($request->project_status_id);
+        $data['project_status'] = $status ? $status->name : 'Development';
+
+        if ($request->cms_platform === 'Others' && $request->cms_custom) {
+            $data['cms_platform'] = $request->cms_custom;
+        }
+
+        $project = Project::create($data);
+
+        if ($request->has('service_ids')) {
+            $validServiceIds = \App\Models\Service::whereIn('id', (array)$request->service_ids)->pluck('id')->toArray();
+            $project->services()->sync($validServiceIds);
+        }
+        if ($request->has('plan_ids')) {
+            $validPlanIds = \App\Models\Plan::whereIn('id', (array)$request->plan_ids)->pluck('id')->toArray();
+            $project->plans()->sync($validPlanIds);
+        }
+        if ($request->has('source_ids')) {
+            $validSourceIds = \App\Models\Source::whereIn('id', (array)$request->source_ids)->pluck('id')->toArray();
+            $project->sources()->sync($validSourceIds);
+        }
 
         if ($request->has('assign_to')) {
             $project->developers()->sync($request->assign_to);
@@ -192,16 +260,87 @@ class ProjectController extends Controller
         $developers = Developer::all();
         $salesPersons = \App\Models\Sale::all();
         $statuses = $this->getStatusOptions();
+        $plans = \App\Models\Plan::all();
         $services = \App\Models\Service::all();
         $sources = \App\Models\Source::all();
         $routePrefix = 'sale';
-        return view('admin.project.edit', compact('project', 'orders', 'developers', 'salesPersons', 'statuses', 'services', 'sources', 'routePrefix'));
+        return view('admin.project.edit', compact('project', 'orders', 'developers', 'salesPersons', 'statuses', 'services', 'sources', 'plans', 'routePrefix'));
     }
 
     public function update(Request $request, $id)
     {
         $project = $this->getFilteredProjects()->findOrFail($id);
-        $project->update($request->all());
+        
+        $request->validate([
+            'order_id' => 'required|exists:orders,id',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'company_name' => 'required|string|max:255',
+            'email' => 'required|array|min:1',
+            'email.*' => 'required|email|max:255',
+            'phone' => 'required|array|min:1',
+            'phone.*' => 'required|string|max:20',
+            'state' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'full_address' => 'required|string',
+            'zip_code' => 'required|string|max:10',
+            'domain_name' => 'required|string|max:255',
+            'plan_ids' => 'required|array|min:1',
+            'username' => 'required|string|max:255',
+            'password' => 'required|string|max:255',
+            'domain_provider_name' => 'required|string|max:255',
+            'domain_renewal_price' => 'required|numeric|min:0',
+            'hosting_provider_name' => 'required|string|max:255',
+            'hosting_renewal_price' => 'required|numeric|min:0',
+            'primary_domain_name' => 'required|string|max:255',
+            'cms_platform' => 'required|string|max:255',
+            'order_date_create' => 'required|date',
+            'project_price' => 'nullable|numeric',
+            'project_status_id' => 'required|exists:statuses,id',
+        ]);
+
+        $data = $request->all();
+        $data['emails'] = $request->email ?? [];
+        
+        $phones = [];
+        if ($request->has('phone')) {
+            foreach ($request->phone as $idx => $num) {
+                if ($num) {
+                    $phones[] = [
+                        'code' => $request->country_code[$idx] ?? null,
+                        'num' => $num
+                    ];
+                }
+            }
+        }
+        $data['phones'] = $phones;
+
+        // Ensure project_name and client_name are updated
+        $data['project_name'] = $request->domain_name;
+        $data['client_name'] = trim($request->first_name . ' ' . $request->last_name);
+
+        // Map statuses to names
+        $status = Status::find($request->project_status_id);
+        $data['project_status'] = $status ? $status->name : $project->project_status;
+
+        if ($request->cms_platform === 'Others' && $request->cms_custom) {
+            $data['cms_platform'] = $request->cms_custom;
+        }
+        
+        $project->update($data);
+
+        if ($request->has('service_ids')) {
+            $validServiceIds = \App\Models\Service::whereIn('id', (array)$request->service_ids)->pluck('id')->toArray();
+            $project->services()->sync($validServiceIds);
+        }
+        if ($request->has('plan_ids')) {
+            $validPlanIds = \App\Models\Plan::whereIn('id', (array)$request->plan_ids)->pluck('id')->toArray();
+            $project->plans()->sync($validPlanIds);
+        }
+        if ($request->has('source_ids')) {
+            $validSourceIds = \App\Models\Source::whereIn('id', (array)$request->source_ids)->pluck('id')->toArray();
+            $project->sources()->sync($validSourceIds);
+        }
 
         if ($request->has('assign_to')) {
             $project->developers()->sync($request->assign_to);

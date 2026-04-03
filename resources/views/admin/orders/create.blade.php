@@ -41,34 +41,34 @@
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row">
-                                    <label class="form-lbl">Company Name <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Company Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="text" name="company_name" class="form-inp @error('company_name') is-invalid @enderror" value="{{ old('company_name', $lead->company ?? '') }}" placeholder="Company name">
                                     @error('company_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Client Name <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Client Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="text" name="client_name" class="form-inp @error('client_name') is-invalid @enderror" value="{{ old('client_name', $lead->contact_person ?? '') }}" placeholder="Full name">
                                     @error('client_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Contact Emails <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Contact Emails <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <div id="order-email-list"></div>
                                     @error('email')<span class="field-error">{{ $message }}</span>@enderror
-                                    @error('email.*')<span class="field-error">{{ $message }}</span>@enderror
+                                    @error('email. <span style="color:#ef4444">*</span>')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Contact Phones <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Contact Phones <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <div id="order-phone-list"></div>
                                     @error('phone')<span class="field-error">{{ $message }}</span>@enderror
-                                    @error('phone.*')<span class="field-error">{{ $message }}</span>@enderror
+                                    @error('phone. <span style="color:#ef4444">*</span>')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Domain Name <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Domain Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="text" name="domain_name" class="form-inp @error('domain_name') is-invalid @enderror" value="{{ old('domain_name') }}" placeholder="example.com">
                                     @error('domain_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Service / Product <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Service / Product <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     @php $leadServiceIds = isset($lead) ? $lead->services->pluck('id')->toArray() : []; @endphp
                                     <div class="ms-wrap" id="serviceWrap">
                                         <div class="ms-trigger" onclick="toggleMs('serviceWrap')">
@@ -101,7 +101,7 @@
                                     @error('service_ids')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Lead Sources <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Lead Sources <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     @php $leadSourceIds = isset($lead) ? $lead->sources->pluck('id')->toArray() : []; @endphp
                                     <div class="ms-wrap" id="sourceWrap">
                                         <div class="ms-trigger" onclick="toggleMs('sourceWrap')">
@@ -134,7 +134,7 @@
                                     @error('source_ids')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Order Value <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Order Value <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="number" name="order_value" class="form-inp @error('order_value') is-invalid @enderror" value="{{ old('order_value') }}" placeholder="₹ Amount">
                                     @error('order_value')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
@@ -144,7 +144,7 @@
                                     @error('discount')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Payment Terms <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Payment Terms <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <select name="payment_terms_id" class="form-inp @error('payment_terms_id') is-invalid @enderror">
                                         <option value="">— Select Terms —</option>
                                         @foreach($paymentStatuses as $ps)
@@ -154,7 +154,7 @@
                                     @error('payment_terms_id')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Delivery Date <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Delivery Date <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="date" name="delivery_date" class="form-inp @error('delivery_date') is-invalid @enderror" value="{{ old('delivery_date') }}">
                                     @error('delivery_date')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
@@ -171,17 +171,17 @@
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row">
-                                    <label class="form-lbl">Payment Date <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Payment Date <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="date" name="transaction_date" id="payDate" class="form-inp @error('transaction_date') is-invalid @enderror" value="{{ old('transaction_date', date('Y-m-d')) }}">
                                     @error('transaction_date')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Amount Received (₹) <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Amount Received (₹) <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="number" name="amount" id="payAmount" class="form-inp @error('amount') is-invalid @enderror" value="{{ old('amount') }}" placeholder="e.g. 50000" step="0.01">
                                     @error('amount')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Payment Mode <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Payment Mode <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <select name="payment_method" class="form-inp @error('payment_method') is-invalid @enderror">
                                         <option value="Bank Transfer" {{ old('payment_method') == 'Bank Transfer' ? 'selected' : '' }}>Bank Transfer</option>
                                         <option value="UPI" {{ old('payment_method') == 'UPI' ? 'selected' : '' }}>UPI / GPay / PhonePe</option>
@@ -198,7 +198,7 @@
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Payment Proof / Screenshot</label>
-                                    <input type="file" name="screenshot" class="form-inp" accept="image/*,application/pdf">
+                                    <input type="file" name="screenshot" class="form-inp" accept="image/,application/pdf">
                                     <p style="font-size:11px; color:var(--t3); margin-top:4px;">Upload PNG, JPG, or PDF (Max 5MB)</p>
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
@@ -218,22 +218,22 @@
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row">
-                                    <label class="form-lbl">City <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">City <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="text" name="city" class="form-inp @error('city') is-invalid @enderror" value="{{ old('city') }}" placeholder="City">
                                     @error('city')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Region / State <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Region / State <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="text" name="state" class="form-inp @error('state') is-invalid @enderror" value="{{ old('state') }}" placeholder="State or Province">
                                     @error('state')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Zip Code <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Zip Code <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="number" name="zip_code" class="form-inp @error('zip_code') is-invalid @enderror" value="{{ old('zip_code') }}" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits">
                                     @error('zip_code')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Full Address <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Full Address <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <textarea name="full_address" class="form-inp @error('full_address') is-invalid @enderror" rows="2" placeholder="Street address…">{{ old('full_address', $lead->address ?? '') }}</textarea>
                                     @error('full_address')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
@@ -332,7 +332,7 @@
 
                             {{-- Order Status --}}
                             <div class="form-row" style="margin-bottom:16px;">
-                                <label class="form-lbl">Order Status <span style="color:#ef4444">*</span></label>
+                                <label class="form-lbl">Order Status <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                 <select name="status_id" class="form-inp @error('status_id') is-invalid @enderror">
                                     <option value="">— Select Status —</option>
                                     @foreach($orderStatuses as $st)
@@ -398,7 +398,7 @@
                     </div>
 
                     {{-- Internal Notes --}}
-                    <div class="dash-card">
+                    <div class="dash-card" style="z-index:-1;">
                         <div class="card-head" style="padding:16px 18px; border-bottom:1px solid var(--b1);">
                             <div class="card-title">Order Notes History</div>
                         </div>

@@ -113,35 +113,49 @@ class ProjectController extends Controller
         ];
     }
 
-    public function create()
+    public function create($order_id = null)
     {
+        $order = $order_id ? Order::find($order_id) : null;
         $orders = Order::latest()->get();
         $developers = Developer::latest()->get();
         $salesPersons = \App\Models\Sale::latest()->get();
-        $services = Service::all();
-        $sources = \App\Models\Source::all();
         $statuses = $this->getStatusOptions();
+        $plans = \App\Models\Plan::all();
+        $services = Service::all();
+        $sources = Source::all();
         
         $routePrefix = 'admin';
-        return view('admin.project.create', compact('orders', 'developers', 'salesPersons', 'services', 'sources', 'statuses', 'routePrefix'));
+        return view('admin.project.create', compact('order', 'orders', 'developers', 'salesPersons', 'services', 'sources', 'statuses', 'plans', 'routePrefix'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'project_name' => 'required|string|max:255',
-            'client_name' => 'required|string|max:255',
+            'order_id' => 'required|exists:orders,id',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
             'company_name' => 'required|string|max:255',
             'email' => 'required|array|min:1',
             'email.*' => 'required|email|max:255',
             'phone' => 'required|array|min:1',
-            'phone.*' => 'required|numeric|digits_between:7,15',
-            'zip_code' => 'required|numeric|digits:6',
-            'project_price' => 'required|numeric',
-            'service_ids' => 'required|array|min:1',
-            'service_ids.*' => 'exists:services,id',
-            'source_ids' => 'required|array|min:1',
-            'source_ids.*' => 'exists:sources,id',
+            'phone.*' => 'required|string|max:20',
+            'state' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'full_address' => 'required|string',
+            'zip_code' => 'required|string|max:10',
+            'domain_name' => 'required|string|max:255',
+            'plan_ids' => 'required|array|min:1',
+            'username' => 'required|string|max:255',
+            'password' => 'required|string|max:255',
+            'domain_provider_name' => 'required|string|max:255',
+            'domain_renewal_price' => 'required|numeric|min:0',
+            'hosting_provider_name' => 'required|string|max:255',
+            'hosting_renewal_price' => 'required|numeric|min:0',
+            'primary_domain_name' => 'required|string|max:255',
+            'cms_platform' => 'required|string|max:255',
+            'order_date_create' => 'required|date',
+            'project_price' => 'nullable|numeric',
+            'project_status_id' => 'required|exists:statuses,id',
         ]);
 
         $data = $request->all();
@@ -165,19 +179,33 @@ class ProjectController extends Controller
 
         $data['created_by'] = Auth::id();
         $data['created_by_type'] = get_class(Auth::user());
+        
+        // Ensure project_name and client_name are set
+        $data['project_name'] = $request->domain_name;
+        $data['client_name'] = trim($request->first_name . ' ' . $request->last_name);
 
-        // Map statuses to IDs if provided
-        if ($request->project_status_id) {
-            $data['project_status'] = Status::find($request->project_status_id)?->name;
-        }
-        if ($request->payment_status_id) {
-            $data['payment_status'] = Status::find($request->payment_status_id)?->name;
+        // Map statuses to names for legacy fields if needed
+        $status = Status::find($request->project_status_id);
+        $data['project_status'] = $status ? $status->name : 'Development';
+
+        if ($request->cms_platform === 'Others' && $request->cms_custom) {
+            $data['cms_platform'] = $request->cms_custom;
         }
 
         $project = Project::create($data);
 
-        $project->services()->sync($request->service_ids);
-        $project->sources()->sync($request->source_ids);
+        if ($request->has('service_ids')) {
+            $validServiceIds = \App\Models\Service::whereIn('id', (array)$request->service_ids)->pluck('id')->toArray();
+            $project->services()->sync($validServiceIds);
+        }
+        if ($request->has('plan_ids')) {
+            $validPlanIds = \App\Models\Plan::whereIn('id', (array)$request->plan_ids)->pluck('id')->toArray();
+            $project->plans()->sync($validPlanIds);
+        }
+        if ($request->has('source_ids')) {
+            $validSourceIds = \App\Models\Source::whereIn('id', (array)$request->source_ids)->pluck('id')->toArray();
+            $project->sources()->sync($validSourceIds);
+        }
 
         // Historical Logging (if any fields provided)
         if ($request->anyFilled(['last_update_date', 'client_feedback_summary', 'internal_notes'])) {
@@ -239,11 +267,13 @@ class ProjectController extends Controller
         $orders = Order::latest()->get();
         $developers = Developer::latest()->get();
         $salesPersons = \App\Models\Sale::latest()->get();
-        $services = Service::all();
-        $sources = \App\Models\Source::all();
         $statuses = $this->getStatusOptions();
+        $plans = \App\Models\Plan::all();
+        $services = Service::all();
+        $sources = Source::all();
+        
         $routePrefix = 'admin';
-        return view('admin.project.edit', compact('project', 'orders', 'developers', 'salesPersons', 'services', 'sources', 'statuses', 'routePrefix'));
+        return view('admin.project.edit', compact('project', 'orders', 'developers', 'salesPersons', 'services', 'sources', 'statuses', 'plans', 'routePrefix'));
     }
 
     public function update(Request $request, $id)
@@ -251,18 +281,31 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
         
         $request->validate([
-            'project_name' => 'required|string|max:255',
-            'client_name' => 'required|string|max:255',
+            'order_id' => 'required|exists:orders,id',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'company_name' => 'required|string|max:255',
             'email' => 'required|array|min:1',
             'email.*' => 'required|email|max:255',
             'phone' => 'required|array|min:1',
-            'phone.*' => 'required|numeric|digits_between:7,15',
-            'zip_code' => 'required|numeric|digits:6',
-            'project_price' => 'required|numeric',
-            'service_ids' => 'required|array|min:1',
-            'service_ids.*' => 'exists:services,id',
-            'source_ids' => 'required|array|min:1',
-            'source_ids.*' => 'exists:sources,id',
+            'phone.*' => 'required|string|max:20',
+            'state' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'full_address' => 'required|string',
+            'zip_code' => 'required|string|max:10',
+            'domain_name' => 'required|string|max:255',
+            'plan_ids' => 'required|array|min:1',
+            'username' => 'required|string|max:255',
+            'password' => 'required|string|max:255',
+            'domain_provider_name' => 'required|string|max:255',
+            'domain_renewal_price' => 'required|numeric|min:0',
+            'hosting_provider_name' => 'required|string|max:255',
+            'hosting_renewal_price' => 'required|numeric|min:0',
+            'primary_domain_name' => 'required|string|max:255',
+            'cms_platform' => 'required|string|max:255',
+            'order_date_create' => 'required|date',
+            'project_price' => 'nullable|numeric',
+            'project_status_id' => 'required|exists:statuses,id',
         ]);
 
         $data = $request->all();
@@ -284,18 +327,32 @@ class ProjectController extends Controller
         }
         $data['phones'] = $phones;
 
-        // Map statuses to IDs if provided
-        if ($request->project_status_id) {
-            $data['project_status'] = Status::find($request->project_status_id)?->name;
-        }
-        if ($request->payment_status_id) {
-            $data['payment_status'] = Status::find($request->payment_status_id)?->name;
+        // Ensure project_name and client_name are updated
+        $data['project_name'] = $request->domain_name;
+        $data['client_name'] = trim($request->first_name . ' ' . $request->last_name);
+
+        // Map statuses to names
+        $status = Status::find($request->project_status_id);
+        $data['project_status'] = $status ? $status->name : $project->project_status;
+
+        if ($request->cms_platform === 'Others' && $request->cms_custom) {
+            $data['cms_platform'] = $request->cms_custom;
         }
         
         $project->update($data);
 
-        $project->services()->sync($request->service_ids);
-        $project->sources()->sync($request->source_ids);
+        if ($request->has('service_ids')) {
+            $validServiceIds = \App\Models\Service::whereIn('id', (array)$request->service_ids)->pluck('id')->toArray();
+            $project->services()->sync($validServiceIds);
+        }
+        if ($request->has('plan_ids')) {
+            $validPlanIds = \App\Models\Plan::whereIn('id', (array)$request->plan_ids)->pluck('id')->toArray();
+            $project->plans()->sync($validPlanIds);
+        }
+        if ($request->has('source_ids')) {
+            $validSourceIds = \App\Models\Source::whereIn('id', (array)$request->source_ids)->pluck('id')->toArray();
+            $project->sources()->sync($validSourceIds);
+        }
 
         // Historical Logging
         if ($request->anyFilled(['last_update_date', 'client_feedback_summary', 'internal_notes'])) {

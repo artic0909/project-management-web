@@ -19,6 +19,11 @@
                 <h1 class="page-title">Edit Order</h1>
                 <p class="page-desc">Modify details for {{ $order->company_name }}</p>
             </div>
+            <div class="header-actions">
+                <a href="{{ route($routePrefix . '.projects.create', $order->id) }}" class="btn-primary-solid sm" style="background:#8b5cf6;border-color:#8b5cf6;">
+                    <i class="bi bi-plus-square-fill"></i> Convert to Project
+                </a>
+            </div>
         </div>
 
         <form action="{{ route($routePrefix . '.orders.update', $order->id) }}" method="POST">
@@ -39,12 +44,12 @@
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row">
-                                    <label class="form-lbl">Company Name <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Company Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="text" name="company_name" class="form-inp @error('company_name') is-invalid @enderror" value="{{ old('company_name', $order->company_name) }}" placeholder="Company name">
                                     @error('company_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Client Name <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Client Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="text" name="client_name" class="form-inp @error('client_name') is-invalid @enderror" value="{{ old('client_name', $order->client_name) }}" placeholder="Full name">
                                     @error('client_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
@@ -62,7 +67,7 @@
                                     @error('domain_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Service / Product <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Service / Product <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     @php $selectedServiceIds = $order->services->pluck('id')->toArray(); @endphp
                                     <div class="ms-wrap" id="serviceWrap">
                                         <div class="ms-trigger" onclick="toggleMs('serviceWrap')">
@@ -95,7 +100,7 @@
                                     @error('service_ids')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Lead Sources <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Lead Sources <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     @php $selectedSourceIds = $order->sources->pluck('id')->toArray(); @endphp
                                     <div class="ms-wrap" id="sourceWrap">
                                         <div class="ms-trigger" onclick="toggleMs('sourceWrap')">
@@ -128,7 +133,7 @@
                                     @error('source_ids')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Order Value <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Order Value <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="number" name="order_value" class="form-inp @error('order_value') is-invalid @enderror" value="{{ old('order_value', $order->order_value) }}" placeholder="₹ Amount">
                                     @error('order_value')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
@@ -170,17 +175,17 @@
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row">
-                                    <label class="form-lbl">City <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">City <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="text" name="city" class="form-inp @error('city') is-invalid @enderror" value="{{ old('city', $order->city) }}" placeholder="City">
                                     @error('city')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Region / State <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Region / State <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="text" name="state" class="form-inp @error('state') is-invalid @enderror" value="{{ old('state', $order->state) }}" placeholder="State or Province">
                                     @error('state')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Zip Code <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Zip Code <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="number" name="zip_code" class="form-inp @error('zip_code') is-invalid @enderror" value="{{ old('zip_code', $order->zip_code) }}" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits">
                                     @error('zip_code')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
@@ -285,7 +290,7 @@
 
                             {{-- Order Status --}}
                             <div class="form-row" style="margin-bottom:16px;">
-                                <label class="form-lbl">Order Status <span style="color:#ef4444">*</span></label>
+                                <label class="form-lbl">Order Status <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                 <select name="status_id" class="form-inp @error('status_id') is-invalid @enderror">
                                     <option value="">— Select Status —</option>
                                     @foreach($orderStatuses as $st)
