@@ -346,12 +346,12 @@
                 </div>
             </form>
 
-            <div class="dash-grid" style="margin-top: 16px;">
-            <div class="span-8">
-{{-- Lead Notes History Card --}}
-                     @include('admin.orders._notes_history')
+            <div class="dash-grid" style="margin-top: 24px;">
+                <div class="span-8">
+                    {{-- Order Notes History Card --}}
+                    @include('admin.orders._notes_history')
+                </div>
             </div>
-        </div>
         </div>
     </div>
 </main>
@@ -388,20 +388,28 @@
         // Initial state for marketing if pre-checked
         toggleMktSection();
 
-        // Hydrate Emails/Phones
-        const leadEmails = @json($order->emails ?? []);
-        const leadPhones = @json($order->phones ?? []);
+        // Check for old input first, otherwise use model data
+        const oldEmails = @json(old('email'));
+        const leadEmails = (oldEmails && oldEmails.length > 0) ? [] : @json($order->emails ?? []);
+        const emailListId = 'order-email-list';
 
         if (leadEmails.length > 0) {
-            leadEmails.forEach(email => addEmailRow('order-email-list', email));
-        } else {
-            addEmailRow('order-email-list');
+            leadEmails.forEach(email => addEmailRow(emailListId, email));
+        } else if (!oldEmails || oldEmails.length === 0) {
+            // Only add if no old and no existing
+            addEmailRow(emailListId);
         }
 
+        // Check for old input first, otherwise use model data
+        const oldPhones = @json(old('phone'));
+        const leadPhones = (oldPhones && oldPhones.length > 0) ? [] : @json($order->phones ?? []);
+        const phoneListId = 'order-phone-list';
+
         if (leadPhones.length > 0) {
-            leadPhones.forEach(phone => addPhoneRow('order-phone-list', phone.number, phone.code_idx));
-        } else {
-            addPhoneRow('order-phone-list');
+            leadPhones.forEach(phone => addPhoneRow(phoneListId, phone.number, phone.code_idx));
+        } else if (!oldPhones || oldPhones.length === 0) {
+            // Only add if no old and no existing
+            addPhoneRow(phoneListId);
         }
     });
 </script>

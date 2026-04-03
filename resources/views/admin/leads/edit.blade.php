@@ -319,23 +319,29 @@
             updateMs('sourceWrap');
         }
 
-        // Hydrate multi-row Emails
-        const existingEmails = @json($lead->emails ?? []);
+        // Check for old input first, otherwise use model data
+        const oldEmails = @json(old('email'));
+        const existingEmails = (oldEmails && oldEmails.length > 0) ? [] : @json($lead->emails ?? []);
         const emailListId = 'edit-email-list';
+
         if (existingEmails.length > 0) {
             existingEmails.forEach(val => addEmailRow(emailListId, val));
-        } else {
+        } else if (!oldEmails || oldEmails.length === 0) {
+            // Only add if no old and no existing
             addEmailRow(emailListId);
         }
 
-        // Hydrate multi-row Phones
-        const existingPhones = @json($lead->phones ?? []);
+        // Check for old input first, otherwise use model data
+        const oldPhones = @json(old('phone'));
+        const existingPhones = (oldPhones && oldPhones.length > 0) ? [] : @json($lead->phones ?? []);
         const phoneListId = 'edit-phone-list';
+
         if (existingPhones.length > 0) {
             existingPhones.forEach(obj => {
                 addPhoneRow(phoneListId, obj.number || '', obj.code_idx || null);
             });
-        } else {
+        } else if (!oldPhones || oldPhones.length === 0) {
+            // Only add if no old and no existing
             addPhoneRow(phoneListId);
         }
     });

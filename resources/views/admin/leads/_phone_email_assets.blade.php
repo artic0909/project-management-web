@@ -464,7 +464,8 @@
                 if (el.children.length === 0) {
                     if (Array.isArray(oldEmails) && oldEmails.length > 0) {
                         oldEmails.forEach(email => addEmailRow(id, email));
-                    } else {
+                    } else if (id.startsWith('add-')) {
+                        // Only auto-seed an empty row for "add" pages
                         addEmailRow(id);
                     }
                 } else {
@@ -481,7 +482,8 @@
                         oldPhones.forEach((phone, idx) => {
                             addPhoneRow(id, phone, oldCodes?.[idx]);
                         });
-                    } else {
+                    } else if (id.startsWith('add-')) {
+                        // Only auto-seed an empty row for "add" pages
                         addPhoneRow(id);
                     }
                 } else {
