@@ -228,9 +228,11 @@
     }
 
     .drp-panel {
-        position: fixed;
-        z-index: 9999;
-        display: flex;
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        z-index: 1000;
+        display: none;
         background: var(--bg2);
         border: 1px solid var(--b2);
         border-radius: var(--r-lg);
@@ -238,6 +240,7 @@
         overflow: hidden;
         animation: drpIn .18s cubic-bezier(.34, 1.56, .64, 1);
         min-width: 760px;
+        max-height: calc(100vh - 100px);
     }
 
     @keyframes drpIn {
@@ -253,12 +256,12 @@
     }
 
     .drp-presets {
-        width: 188px;
+        width: 190px;
         flex-shrink: 0;
         border-right: 1px solid var(--b1);
         padding: 14px 10px;
         overflow-y: auto;
-        max-height: 480px;
+        max-height: 500px;
         scrollbar-width: thin;
         scrollbar-color: var(--b2) transparent;
     }
@@ -636,10 +639,11 @@
 
     .drp-footer {
         display: flex;
-        gap: 8px;
+        gap: 12px;
         justify-content: flex-end;
-        margin-top: 12px;
-        padding-top: 12px;
+        align-items: center;
+        margin-top: auto;
+        padding-top: 16px;
         border-top: 1px solid var(--b1);
     }
 </style>
@@ -649,20 +653,15 @@
 
     <!-- Left: Presets -->
     <div class="drp-presets">
-        <div class="drp-preset-group-label">Recently used</div>
+        <div class="drp-preset-group-label">Quick select</div>
         <label class="drp-preset" data-preset="today"><span class="drp-radio"></span> Today</label>
         <label class="drp-preset" data-preset="yesterday"><span class="drp-radio"></span> Yesterday</label>
-        <label class="drp-preset" data-preset="today_yesterday"><span class="drp-radio"></span> Today and yesterday</label>
+        <label class="drp-preset" data-preset="today_yesterday"><span class="drp-radio"></span> Today & Yesterday</label>
         <div class="drp-preset-group-label" style="margin-top:10px;">Ranges</div>
-        <label class="drp-preset active" data-preset="last7"><span class="drp-radio"></span> Last 7 days</label>
-        <label class="drp-preset" data-preset="last14"><span class="drp-radio"></span> Last 14 days</label>
-        <label class="drp-preset" data-preset="last28"><span class="drp-radio"></span> Last 28 days</label>
-        <label class="drp-preset" data-preset="last30"><span class="drp-radio"></span> Last 30 days</label>
-        <label class="drp-preset" data-preset="this_week"><span class="drp-radio"></span> This week</label>
-        <label class="drp-preset" data-preset="last_week"><span class="drp-radio"></span> Last week</label>
-        <label class="drp-preset" data-preset="this_month"><span class="drp-radio"></span> This month</label>
-        <label class="drp-preset" data-preset="last_month"><span class="drp-radio"></span> Last month</label>
-        <label class="drp-preset" data-preset="this_year"><span class="drp-radio"></span> This year</label>
+        <label class="drp-preset active" data-preset="last7"><span class="drp-radio"></span> 7 Days</label>
+        <label class="drp-preset" data-preset="last1month"><span class="drp-radio"></span> 1 Month</label>
+        <label class="drp-preset" data-preset="last6month"><span class="drp-radio"></span> 6 Month</label>
+        <label class="drp-preset" data-preset="last1year"><span class="drp-radio"></span> 1 Year</label>
         <label class="drp-preset" data-preset="custom"><span class="drp-radio"></span> Custom range</label>
     </div>
 
@@ -765,6 +764,14 @@
             return d ? d.getDate() + ' ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear() : '—';
         }
 
+        function fmtBackend(d) {
+            if (!d) return '';
+            let year = d.getFullYear();
+            let month = ('0' + (d.getMonth() + 1)).slice(-2);
+            let day = ('0' + d.getDate()).slice(-2);
+            return `${year}-${month}-${day}`;
+        }
+
         function sameDay(a, b) {
             return a && b && a.toDateString() === b.toDateString();
         }
@@ -797,36 +804,21 @@
                 a.setDate(a.getDate() - 6);
                 return [a, clone(today)];
             },
-            last14: () => {
+            last1month: () => {
                 const a = new Date(today);
-                a.setDate(a.getDate() - 13);
+                a.setMonth(a.getMonth() - 1);
                 return [a, clone(today)];
             },
-            last28: () => {
+            last6month: () => {
                 const a = new Date(today);
-                a.setDate(a.getDate() - 27);
+                a.setMonth(a.getMonth() - 6);
                 return [a, clone(today)];
             },
-            last30: () => {
+            last1year: () => {
                 const a = new Date(today);
-                a.setDate(a.getDate() - 29);
+                a.setFullYear(a.getFullYear() - 1);
                 return [a, clone(today)];
             },
-            this_week: () => {
-                const a = new Date(today);
-                a.setDate(a.getDate() - a.getDay());
-                return [a, clone(today)];
-            },
-            last_week: () => {
-                const a = new Date(today);
-                a.setDate(a.getDate() - a.getDay() - 7);
-                const b = new Date(a);
-                b.setDate(b.getDate() + 6);
-                return [a, b];
-            },
-            this_month: () => [new Date(today.getFullYear(), today.getMonth(), 1), clone(today)],
-            last_month: () => [new Date(today.getFullYear(), today.getMonth() - 1, 1), new Date(today.getFullYear(), today.getMonth(), 0)],
-            this_year: () => [new Date(today.getFullYear(), 0, 1), clone(today)],
             custom: () => [null, null],
         };
 
@@ -834,15 +826,10 @@
             today: 'Today',
             yesterday: 'Yesterday',
             today_yesterday: 'Today & Yesterday',
-            last7: 'Last 7 Days',
-            last14: 'Last 14 Days',
-            last28: 'Last 28 Days',
-            last30: 'Last 30 Days',
-            this_week: 'This Week',
-            last_week: 'Last Week',
-            this_month: 'This Month',
-            last_month: 'Last Month',
-            this_year: 'This Year',
+            last7: '7 Days',
+            last1month: '1 Month',
+            last6month: '6 Month',
+            last1year: '1 Year',
             custom: 'Custom Range',
         };
 
@@ -1044,21 +1031,12 @@
         window.toggleDatePicker = function() {
             const panel = document.getElementById('dateRangePanel');
             const trigger = document.getElementById('dateRangeTrigger');
-            if (panel.style.display !== 'none') {
+            if (panel.style.display === 'flex') {
                 closeDatePicker();
                 return;
             }
 
-            const rect = trigger.getBoundingClientRect();
-            panel.style.top = (rect.bottom + 6) + 'px';
-            panel.style.left = rect.left + 'px';
             panel.style.display = 'flex';
-
-            // Clamp to viewport
-            const pw = panel.offsetWidth;
-            if (rect.left + pw > window.innerWidth - 16)
-                panel.style.left = Math.max(8, window.innerWidth - pw - 16) + 'px';
-
             trigger.classList.add('open');
             render();
         };
@@ -1076,13 +1054,36 @@
             let display = presetLabels[activePreset] || 'Custom Range';
             if (activePreset === 'custom' && rangeStart && rangeEnd)
                 display = fmt(rangeStart) + ' — ' + fmt(rangeEnd);
-            document.getElementById('drpLabel').textContent = display;
+            
+            const lbl = document.getElementById('drpLabel');
+            if (lbl) lbl.textContent = display;
+
+            // Update hidden inputs if they exist (for the search form)
+            const startInp = document.getElementById('drpStartInput');
+            const endInp = document.getElementById('drpEndInput');
+            if (startInp && rangeStart) startInp.value = fmtBackend(rangeStart);
+            if (endInp && rangeEnd) endInp.value = fmtBackend(rangeEnd);
 
             // Update card subtitle
             const sub = document.getElementById('drpActiveSub');
-            if (sub) sub.textContent = display + ' · 147 total · 38 hot leads';
+            if (sub) {
+                // Keep the existing stats but update the date text
+                let currentText = sub.textContent;
+                let parts = currentText.split(' · ');
+                if (parts.length > 1) {
+                    sub.textContent = display + ' · ' + parts.slice(1).join(' · ');
+                } else {
+                    sub.textContent = display;
+                }
+            }
 
             closeDatePicker();
+            
+            // Trigger AJAX filter update if the function exists
+            if (typeof window.updateFilters === 'function') {
+                window.updateFilters();
+            }
+
             document.dispatchEvent(new CustomEvent('dateRangeApplied', {
                 detail: {
                     preset: activePreset,

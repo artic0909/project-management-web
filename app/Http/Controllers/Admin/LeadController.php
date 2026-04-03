@@ -30,7 +30,20 @@ class LeadController extends Controller
                 $fq->where('company', 'like', "%$q%")
                    ->orWhere('contact_person', 'like', "%$q%")
                    ->orWhere('emails', 'like', "%$q%")
-                   ->orWhere('phones', 'like', "%$q%");
+                   ->orWhere('phones', 'like', "%$q%")
+                   ->orWhere('priority', 'like', "%$q%")
+                   ->orWhereHas('campaign', function($cq) use ($q) { $cq->where('name', 'like', "%$q%"); })
+                   ->orWhereHas('sources', function($sq) use ($q) { $sq->where('name', 'like', "%$q%"); })
+                   ->orWhereHas('services', function($sq) use ($q) { $sq->where('name', 'like', "%$q%"); })
+                   ->orWhereHas('status', function($sq) use ($q) { $sq->where('name', 'like', "%$q%"); })
+                   ->orWhereHas('createdBy', function($sq) use ($q) { 
+                       $sq->where('name', 'like', "%$q%")
+                          ->orWhere('email', 'like', "%$q%"); 
+                   })
+                   ->orWhereHas('assignments.sale', function($sq) use ($q) { 
+                       $sq->where('name', 'like', "%$q%")
+                          ->orWhere('email', 'like', "%$q%"); 
+                   });
             });
         }
 
