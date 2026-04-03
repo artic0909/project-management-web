@@ -165,7 +165,7 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Zip Code <span style="color:#ef4444">*</span></label>
-                                    <input type="text" name="zip_code" class="form-inp" value="{{ old('zip_code', $order->zip_code) }}" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits" required>
+                                    <input type="number" name="zip_code" class="form-inp" value="{{ old('zip_code', $order->zip_code) }}" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits" required>
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Full Address</label>
