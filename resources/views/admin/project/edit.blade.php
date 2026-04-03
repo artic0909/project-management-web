@@ -4,6 +4,109 @@
 
 @section('content')
 
+<style>
+      /* Timeline Styling */
+        .feedback-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            position: relative;
+            margin-left: 10px;
+            padding-top: 10px;
+        }
+
+        .feedback-timeline::after {
+            content: '';
+            position: absolute;
+            left: 100px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--b1);
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 40px;
+        }
+
+        .timeline-meta {
+            width: 80px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .tm-date {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--t1);
+        }
+
+        .tm-time {
+            font-size: 10px;
+            color: var(--t4);
+            margin-top: 2px;
+        }
+
+        .timeline-content {
+            flex: 1;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .timeline-content::after {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 6px;
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        .ts-head {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--t1);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ts-head i {
+            color: var(--accent);
+            font-size: 12px;
+        }
+
+        .ts-notes {
+            font-size: 13px;
+            color: var(--t2);
+            padding: 12px;
+            background: var(--bg3);
+            border-radius: 8px;
+            border: 1px solid var(--b1);
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        .timeline-empty {
+            text-align: center;
+            padding: 40px;
+            color: var(--t4);
+        }
+
+        .timeline-empty i {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 10px;
+            opacity: 0.3;
+        }
+</style>
+
 <main class="page-area" id="pageArea">
     <div class="page" id="page-project-edit">
 
@@ -434,6 +537,79 @@
 
             </div>
         </form>
+
+<div class="dash-grid mt-4">
+
+                <div class="span-8" style="display:flex;flex-direction:column;gap:20px;">
+
+                    {{-- Quick Update Form --}}
+                    <div class="dash-card" style="border: 2px solid var(--accent);box-shadow: 0 10px 30px rgba(99,102,241,0.1);">
+                        <div class="card-head" style="background:rgba(99,102,241,0.05);border-bottom:1px solid var(--b1);">
+                            <div class="card-title"><i class="bi bi-lightning-charge-fill" style="color:var(--accent);margin-right:6px;"></i>Notes/Client Feedbacks</div>
+                        </div>
+                        <div class="card-body" style="padding:15px;">
+                            <form action="{{ route($routePrefix . '.projects.quickUpdate', $project->id) }}" method="POST">
+                                @csrf
+                                <div class="form-row" style="margin-bottom:12px;">
+                                    <label class="form-lbl" style="font-size:9px;">Latest Feedback / Notes</label>
+                                    <textarea name="internal_notes" class="form-inp" rows="2" style="font-size:12px;padding:8px;" placeholder="Add a quick note..."></textarea>
+                                </div>
+                                <button type="submit" class="btn-primary-solid" style="width:100%;justify-content:center;padding:8px;font-size:13px;">
+                                    Update Now
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                                    {{-- Communication History & Tracking --}}
+                    <div class="dash-card span-8">
+                        <div class="card-head">
+                            <div class="card-title"><i class="bi bi-chat-quote-fill"
+                                    style="color:#ec4899;margin-right:8px;"></i>Communication History</div>
+                            <div class="card-sub">{{ $project->feedbacks->count() }} updates recorded</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="feedback-timeline">
+                                @forelse($project->feedbacks()->latest()->get() as $fb)
+                                    <div class="timeline-item">
+                                        <div class="timeline-meta">
+                                            <div class="tm-date">
+                                                {{ $fb->last_update_date ? $fb->last_update_date->format('d M, Y') : $fb->created_at->format('d M, Y') }}
+                                            </div>
+                                            <div class="tm-time">{{ $fb->created_at->format('h:i A') }}</div>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <div class="timeline-summary">
+                                                @if($fb->status)
+                                                    <div style="margin-bottom:8px;">
+                                                        @php $sClass = strtolower(str_replace(' ', '-', $fb->status)); @endphp
+                                                        <span class="proj-status {{ $sClass }}"
+                                                            style="transform:scale(0.85);transform-origin:left;">{{ $fb->status }}</span>
+                                                    </div>
+                                                @endif
+                                                @if($fb->feedback_summary)
+                                                    <div class="ts-head">
+                                                        <i class="bi bi-chat-dots"></i>
+                                                        {{ $fb->feedback_summary }}
+                                                    </div>
+                                                @endif
+                                                @if($fb->internal_notes)
+                                                    <div class="ts-notes">{{ $fb->internal_notes }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="timeline-empty">
+                                        <i class="bi bi-chat-square-dots"></i>
+                                        No communication updates recorded for this project.
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+</div>
 
     </div>
 </main>

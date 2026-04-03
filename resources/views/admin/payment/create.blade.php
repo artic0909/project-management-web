@@ -86,8 +86,8 @@
                                     <div class="ls">{{ $order->phones[0]['number'] ?? '' }}</div>
                                 </div>
                             </div>
-                            <div class="form-row"><label class="form-lbl">Order Date</label><input class="form-inp" value="{{ $order->created_at->format('d M Y') }}" readonly></div>
-                            <div class="form-row"><label class="form-lbl">Service</label><input class="form-inp" value="{{ $order->service->name ?? 'N/A' }}" readonly></div>
+                            <div class="form-row" style="grid-column:1/-1"><label class="form-lbl">Order Date</label><input class="form-inp" value="{{ $order->created_at->format('d M Y') }}" readonly></div>
+                            <!-- <div class="form-row"><label class="form-lbl">Service</label><input class="form-inp" value="{{ $order->service->name ?? 'N/A' }}" readonly></div> -->
                         </div>
                     </div>
                 </div>

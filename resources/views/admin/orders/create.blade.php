@@ -198,7 +198,7 @@
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Payment Proof / Screenshot</label>
-                                    <input type="file" name="screenshot" class="form-inp" accept="image/,application/pdf">
+                                    <input type="file" name="screenshot" class="form-inp" accept="image/*,application/pdf">
                                     <p style="font-size:11px; color:var(--t3); margin-top:4px;">Upload PNG, JPG, or PDF (Max 5MB)</p>
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">

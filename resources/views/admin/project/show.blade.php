@@ -38,17 +38,23 @@
                     </div>
                 </div>
                 <div class="header-actions">
+                    
                     <a href="{{ route($routePrefix . '.projects.edit', $project->id) }}" class="btn-primary-solid sm">
                         <i class="bi bi-pencil-square"></i> Edit Project
                     </a>
-                    <form action="{{ route($routePrefix . '.projects.destroy', $project->id) }}" method="POST"
+                    @if($project->order_id)
+                        <a href="{{ route($routePrefix . '.payments.create', $project->order_id) }}" class="btn-primary-solid sm">
+                            <i class="bi bi-wallet2"></i> Add Payment
+                        </a>
+                    @endif
+                    <!-- <form action="{{ route($routePrefix . '.projects.destroy', $project->id) }}" method="POST"
                         onsubmit="return confirm('Are you sure?')" style="display:inline;">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn-ghost sm" style="color:#ef4444;">
                             <i class="bi bi-trash3"></i> Delete
                         </button>
-                    </form>
+                    </form> -->
                     <a href="{{ route($routePrefix . '.projects.index') }}" class="btn-ghost sm">
                         <i class="bi bi-arrow-left"></i> Back to List
                     </a>
