@@ -138,20 +138,22 @@ class LeadController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'company' => 'required|string|max:255',
+            'company' => 'nullable|string|max:255',
             'contact_person' => 'required|string|max:255',
+            'business_type' => 'required|string|max:255',
             'email' => 'required|array|min:1',
             'email.*' => 'required|email|max:255',
             'phone' => 'required|array|min:1',
             'phone.*' => 'required|numeric|digits_between:7,15',
-            'state' => 'required|string|max:100',
-            'zip_code' => 'required|numeric|digits:6',
+            'address' => 'required|string',
+            'state' => 'nullable|string|max:100',
+            'zip_code' => 'nullable|numeric|digits:6',
             'service_ids' => 'required|array|min:1',
             'service_ids.*' => 'exists:services,id',
-            'source_ids' => 'required|array|min:1',
+            'source_ids' => 'nullable|array',
             'source_ids.*' => 'exists:sources,id',
-            'priority' => 'required|string',
-            'status_id' => 'required|exists:statuses,id',
+            'priority' => 'nullable|string',
+            'status_id' => 'nullable|exists:statuses,id',
         ]);
 
         // Process phones
@@ -252,23 +254,23 @@ class LeadController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'company' => 'required|string|max:255',
+            'company' => 'nullable|string|max:255',
             'contact_person' => 'required|string|max:255',
-            'business_type' => 'required|string',
+            'business_type' => 'required|string|max:255',
             'email' => 'required|array|min:1',
             'email.*' => 'required|email|max:255',
             'phone' => 'required|array|min:1',
             'phone.*' => 'required|numeric|digits_between:7,15',
-            'address' => 'nullable|string',
-            'state' => 'required|string|max:100',
-            'zip_code' => 'required|numeric|digits:6',
+            'address' => 'required|string',
+            'state' => 'nullable|string|max:100',
+            'zip_code' => 'nullable|numeric|digits:6',
             'service_ids' => 'required|array|min:1',
             'service_ids.*' => 'exists:services,id',
-            'source_ids' => 'required|array|min:1',
+            'source_ids' => 'nullable|array',
             'source_ids.*' => 'exists:sources,id',
-            'status_id' => 'required|exists:statuses,id',
-            'campaign_id' => 'required|exists:campaigns,id',
-            'priority' => 'required|string',
+            'status_id' => 'nullable|exists:statuses,id',
+            'campaign_id' => 'nullable|exists:campaigns,id',
+            'priority' => 'nullable|string',
             'notes' => 'nullable|string',
         ]);
 

@@ -3420,13 +3420,7 @@
                 showToast('danger', "{{ session('error') }}", 'bi-exclamation-triangle-fill');
             });
         @endif
-        @if($errors->any())
-            document.addEventListener('DOMContentLoaded', function() {
-                @foreach($errors->all() as $error)
-                    showToast('danger', "{{ $error }}", 'bi-exclamation-circle');
-                @endforeach
-            });
-        @endif
+
     </script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

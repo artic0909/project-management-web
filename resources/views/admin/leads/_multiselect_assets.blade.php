@@ -117,7 +117,8 @@
         pillsEl.innerHTML = '';
 
         if (checkboxes.length === 0) {
-            pillsEl.innerHTML = '<span class="ms-placeholder">Select team members…</span>';
+            const placeholder = wrap.querySelector('.ms-trigger').dataset.placeholder || 'Select options…';
+            pillsEl.innerHTML = `<span class="ms-placeholder">${placeholder}</span>`;
             return;
         }
 

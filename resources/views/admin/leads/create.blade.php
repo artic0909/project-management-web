@@ -34,13 +34,7 @@
                 </div>
             @endif
 
-            @if($errors->any())
-                <div class="alert alert-danger" style="padding:12px;background:#fee2e2;color:#991b1b;border-radius:8px;margin-bottom:16px;">
-                    @foreach($errors->all() as $error)
-                        <p style="margin:0;"><i class="bi bi-exclamation-triangle-fill"></i> {{ $error }}</p>
-                    @endforeach
-                </div>
-            @endif
+
 
             <div class="dash-grid">
 
@@ -56,41 +50,51 @@
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row">
-                                    <label class="form-lbl">Company <span style="color:#ef4444">*</span></label>
-                                    <input type="text" name="company" class="form-inp" placeholder="Company name" required>
+                                    <label class="form-lbl">Company</label>
+                                    <input type="text" name="company" class="form-inp @error('company') is-invalid @enderror" value="{{ old('company') }}" placeholder="Company name">
+                                    @error('company')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Contact Person <span style="color:#ef4444">*</span></label>
-                                    <input type="text" name="contact_person" class="form-inp" placeholder="Full name" required>
+                                    <input type="text" name="contact_person" class="form-inp @error('contact_person') is-invalid @enderror" value="{{ old('contact_person') }}" placeholder="Full name">
+                                    @error('contact_person')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Business Type <span style="color:#ef4444">*</span></label>
-                                    <input type="text" name="business_type" class="form-inp" placeholder="e.g. E-commerce, Healthcare, Education…">
+                                    <input type="text" name="business_type" class="form-inp @error('business_type') is-invalid @enderror" value="{{ old('business_type') }}" placeholder="e.g. E-commerce, Healthcare, Education…">
+                                    @error('business_type')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
 
                                 {{-- Email — multiple --}}
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Email</label>
                                     <div id="add-email-list"></div>
+                                    @error('email')<span class="field-error">{{ $message }}</span>@enderror
+                                    @error('email.*')<span class="field-error">One or more emails are invalid.</span>@enderror
                                 </div>
 
                                 {{-- Phone — multiple + country code --}}
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Phone</label>
                                     <div id="add-phone-list"></div>
+                                    @error('phone')<span class="field-error">{{ $message }}</span>@enderror
+                                    @error('phone.*')<span class="field-error">One or more phone numbers are invalid.</span>@enderror
                                 </div>
 
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Full Address <span style="color:#ef4444">*</span></label>
-                                    <textarea name="address" class="form-inp" rows="2" placeholder="Full address…" required></textarea>
+                                    <textarea name="address" class="form-inp @error('address') is-invalid @enderror" rows="2" placeholder="Full address…">{{ old('address') }}</textarea>
+                                    @error('address')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">State <span style="color:#ef4444">*</span></label>
-                                    <input type="text" name="state" class="form-inp" placeholder="State" required>
+                                    <label class="form-lbl">State</label>
+                                    <input type="text" name="state" class="form-inp @error('state') is-invalid @enderror" value="{{ old('state') }}" placeholder="State">
+                                    @error('state')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Zip Code <span style="color:#ef4444">*</span></label>
-                                    <input type="text" name="zip_code" class="form-inp" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits" required>
+                                    <label class="form-lbl">Zip Code</label>
+                                    <input type="text" name="zip_code" class="form-inp @error('zip_code') is-invalid @enderror" value="{{ old('zip_code') }}" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits">
+                                    @error('zip_code')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                             </div>
                         </div>
@@ -107,12 +111,13 @@
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Service Need <span style="color:#ef4444">*</span></label>
                                     <div class="ms-wrap" id="serviceWrap">
-                                        <div class="ms-trigger" onclick="toggleMs('serviceWrap')">
+                                        <div class="ms-trigger @error('service_ids') is-invalid @enderror" onclick="toggleMs('serviceWrap')" data-placeholder="Select services…">
                                             <div class="ms-pills" id="servicePills">
                                                 <span class="ms-placeholder">Select services…</span>
                                             </div>
                                             <i class="bi bi-chevron-down ms-arrow"></i>
                                         </div>
+                                        @error('service_ids')<span class="field-error">{{ $message }}</span>@enderror
                                         <div class="ms-dropdown" id="serviceDropdown">
                                             <div class="ms-search-wrap">
                                                 <i class="bi bi-search"></i>
@@ -124,7 +129,8 @@
                                                     <label class="ms-opt">
                                                         <input type="checkbox" name="service_ids[]" value="{{ $service->id }}" 
                                                             data-name="{{ $service->name }}"
-                                                            onchange="updateMs('serviceWrap')">
+                                                            onchange="updateMs('serviceWrap')"
+                                                            {{ is_array(old('service_ids')) && in_array($service->id, old('service_ids')) ? 'checked' : '' }}>
                                                         <div style="display:flex;flex-direction:column;">
                                                             <span style="font-weight:500;color:var(--t1);">{{ $service->name }}</span>
                                                         </div>
@@ -135,14 +141,15 @@
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Lead Sources <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Lead Sources</label>
                                     <div class="ms-wrap" id="sourceWrap">
-                                        <div class="ms-trigger" onclick="toggleMs('sourceWrap')">
+                                        <div class="ms-trigger @error('source_ids') is-invalid @enderror" onclick="toggleMs('sourceWrap')" data-placeholder="Select sources…">
                                             <div class="ms-pills" id="sourcePills">
                                                 <span class="ms-placeholder">Select sources…</span>
                                             </div>
                                             <i class="bi bi-chevron-down ms-arrow"></i>
                                         </div>
+                                        @error('source_ids')<span class="field-error">{{ $message }}</span>@enderror
                                         <div class="ms-dropdown" id="sourceDropdown">
                                             <div class="ms-search-wrap">
                                                 <i class="bi bi-search"></i>
@@ -154,7 +161,8 @@
                                                     <label class="ms-opt">
                                                         <input type="checkbox" name="source_ids[]" value="{{ $source->id }}" 
                                                             data-name="{{ $source->name }}"
-                                                            onchange="updateMs('sourceWrap')">
+                                                            onchange="updateMs('sourceWrap')"
+                                                            {{ is_array(old('source_ids')) && in_array($source->id, old('source_ids')) ? 'checked' : '' }}>
                                                         <div style="display:flex;flex-direction:column;">
                                                             <span style="font-weight:500;color:var(--t1);">{{ $source->name }}</span>
                                                         </div>
@@ -166,30 +174,33 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Lead Priority</label>
-                                    <select name="priority" class="form-inp">
+                                    <select name="priority" class="form-inp @error('priority') is-invalid @enderror">
                                         <option value="">— Select Priority —</option>
-                                        <option>Cold</option>
-                                        <option>Warm</option>
-                                        <option>Hot 🔥</option>
+                                        <option {{ old('priority') == 'Cold' ? 'selected' : '' }}>Cold</option>
+                                        <option {{ old('priority') == 'Warm' ? 'selected' : '' }}>Warm</option>
+                                        <option {{ old('priority') == 'Hot 🔥' ? 'selected' : '' }}>Hot 🔥</option>
                                     </select>
+                                    @error('priority')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Lead Status</label>
-                                    <select name="status_id" class="form-inp">
+                                    <select name="status_id" class="form-inp @error('status_id') is-invalid @enderror">
                                         <option value="">— Select Status —</option>
                                         @foreach($statuses as $status)
-                                            <option value="{{ $status->id }}">{{ $status->name }}</option>
+                                            <option value="{{ $status->id }}" {{ old('status_id') == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
                                         @endforeach
                                     </select>
+                                    @error('status_id')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Campaign</label>
-                                    <select name="campaign_id" class="form-inp">
+                                    <select name="campaign_id" class="form-inp @error('campaign_id') is-invalid @enderror">
                                         <option value="">— Select Campaign —</option>
                                         @foreach($campaigns as $campaign)
-                                            <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
+                                            <option value="{{ $campaign->id }}" {{ old('campaign_id') == $campaign->id ? 'selected' : '' }}>{{ $campaign->name }}</option>
                                         @endforeach
                                     </select>
+                                    @error('campaign_id')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                             </div>
                         </div>
@@ -202,7 +213,7 @@
                         </div>
                         <div class="card-body" style="padding:18px;">
                             <div style="position:relative;">
-                                <textarea name="notes" class="form-inp" rows="5" placeholder="Add initial internal note..." style="border-radius:12px; font-size:13px; min-height:120px;"></textarea>
+                                <textarea name="notes" class="form-inp" rows="5" placeholder="Add initial internal note..." style="border-radius:12px; font-size:13px; min-height:120px;">{{ old('notes') }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -221,7 +232,7 @@
 
                             <!-- ASSIGN TO — multi-select -->
                             <div class="ms-wrap" id="addAssignWrap">
-                                <div class="ms-trigger" onclick="toggleMs('addAssignWrap')">
+                                <div class="ms-trigger" onclick="toggleMs('addAssignWrap')" data-placeholder="Select team members…">
                                     <div class="ms-pills" id="addAssignPills">
                                         <span class="ms-placeholder">Select team members…</span>
                                     </div>
@@ -252,7 +263,8 @@
                                             <label class="ms-opt">
                                                 <input type="checkbox" name="assign_to[]" value="{{ $sale->id }}" 
                                                     data-name="{{ $sale->name }}" data-initials="{{ $initials }}"
-                                                    onchange="updateMs('addAssignWrap')">
+                                                    onchange="updateMs('addAssignWrap')"
+                                                    {{ is_array(old('assign_to')) && in_array($sale->id, old('assign_to')) ? 'checked' : '' }}>
                                                 <span class="ms-ava" style="background:{{ $gradients[$index % count($gradients)] }}">{{ $initials }}</span>
                                                 <div style="display:flex;flex-direction:column;">
                                                     <span style="font-weight:500;color:var(--t1);">{{ $sale->name }}</span>
@@ -287,6 +299,7 @@
 
 @include('admin.leads._multiselect_assets')
 @include('admin.leads._phone_email_assets')
+@include('admin.leads._validation_assets')
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

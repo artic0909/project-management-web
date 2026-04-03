@@ -396,7 +396,6 @@
         inp.className = 'phone-num-inp';
         inp.placeholder = 'XXXXX XXXXX';
         inp.value = val;
-        inp.required = true;
         wrap.appendChild(inp);
         row.appendChild(wrap);
 
@@ -415,7 +414,6 @@
         inp.className = 'form-inp multi-email-inp';
         inp.placeholder = 'email@company.com';
         inp.value = val;
-        inp.required = true;
         row.appendChild(inp);
 
         list.appendChild(row);
@@ -455,18 +453,39 @@
 
     // Seed default rows on page load for whichever lists exist
     document.addEventListener('DOMContentLoaded', function() {
+        const oldEmails = @json(old('email'));
+        const oldPhones = @json(old('phone'));
+        const oldCodes  = @json(old('country_code'));
+
         ['add-email-list', 'edit-email-list'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
-                if (el.children.length === 0) addEmailRow(id);
-                else updateButtons(id);
+                if (el.children.length === 0) {
+                    if (Array.isArray(oldEmails) && oldEmails.length > 0) {
+                        oldEmails.forEach(email => addEmailRow(id, email));
+                    } else {
+                        addEmailRow(id);
+                    }
+                } else {
+                    updateButtons(id);
+                }
             }
         });
+
         ['add-phone-list', 'edit-phone-list'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
-                if (el.children.length === 0) addPhoneRow(id);
-                else updateButtons(id);
+                if (el.children.length === 0) {
+                    if (Array.isArray(oldPhones) && oldPhones.length > 0) {
+                        oldPhones.forEach((phone, idx) => {
+                            addPhoneRow(id, phone, oldCodes?.[idx]);
+                        });
+                    } else {
+                        addPhoneRow(id);
+                    }
+                } else {
+                    updateButtons(id);
+                }
             }
         });
     });
