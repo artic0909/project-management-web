@@ -44,7 +44,7 @@
                                 <div class="form-row">
                                     <label class="form-lbl">Related To (Target)</label>
                                     <select name="meeting_type" id="meetingType" class="form-inp" required onchange="toggleTargets()">
-                                        <option value="lead">Lead</option>
+                                        <option value="lead" {{ request('lead_id') ? 'selected' : '' }}>Lead</option>
                                         <option value="order">Order</option>
                                         <option value="project">Project</option>
                                     </select>
@@ -53,13 +53,23 @@
                                 <div class="form-row">
                                     <label class="form-lbl">Select Target</label>
                                     <div class="target-select-wrap">
-                                        <input type="hidden" name="lead_id" id="hidden_lead_id">
+                                        <input type="hidden" name="lead_id" id="hidden_lead_id" value="{{ request('lead_id') }}">
                                         <input type="hidden" name="order_id" id="hidden_order_id">
                                         <input type="hidden" name="project_id" id="hidden_project_id">
                                         
                                         <div class="ts-trigger" onclick="toggleTs()">
                                             <div class="ts-selected-text">
-                                                <span class="ts-placeholder">— Select Target —</span>
+                                                @if(request('lead_id') && $leads->where('id', request('lead_id'))->first())
+                                                    @php 
+                                                        $preLead = $leads->where('id', request('lead_id'))->first(); 
+                                                        $preEmails = is_array($preLead->emails) ? $preLead->emails : (json_decode($preLead->emails, true) ?? []);
+                                                        $preEmail = $preEmails[0] ?? '';
+                                                        $preSub = ($preLead->contact_person ? $preLead->contact_person : '') . ($preEmail ? ' • ' . $preEmail : '');
+                                                    @endphp
+                                                    {{ $preLead->company }} <span style="color:var(--t4);font-weight:500;margin-left:8px;font-size:11px;">({{ $preSub }})</span>
+                                                @else
+                                                    <span class="ts-placeholder">— Select Target —</span>
+                                                @endif
                                             </div>
                                             <i class="bi bi-chevron-down ts-arrow"></i>
                                         </div>

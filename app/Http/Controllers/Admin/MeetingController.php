@@ -57,7 +57,7 @@ class MeetingController extends Controller
         return view('admin.meetings.index', compact('meetings', 'counts', 'sales', 'developers', 'routePrefix'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $leads = Lead::all();
         $orders = Order::all();

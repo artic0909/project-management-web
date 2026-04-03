@@ -1000,12 +1000,14 @@
                                             <i class="bi bi-envelope-fill"></i>
                                         </a>
 
+                                        <a href="{{ route($routePrefix . '.meetings.create', ['lead_id' => $lead->id]) }}" class="ra-btn" title="Meeting"><i class="bi bi-camera-video-fill"></i></a>
+
                                         <a href="{{ route($routePrefix . '.leads.show', $lead->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
                                         <a href="{{ route($routePrefix . '.leads.followup', $lead->id) }}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
                                         <a class="ra-btn" title="Edit" href="{{ route($routePrefix . '.leads.edit', $lead->id) }}"><i class="bi bi-pencil-fill"></i></a>
-                                        @if($routePrefix == 'admin')
+                                      
                                         <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route($routePrefix . '.leads.destroy', $lead->id) }}')"><i class="bi bi-trash-fill"></i></button>
-                                        @endif
+                                       
                                     </div>
                                 </td>
                             </tr>
