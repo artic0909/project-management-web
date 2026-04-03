@@ -188,7 +188,7 @@
                                 <th>Start Date</th>
                                 <th>Delivery</th>
                                 <th>Services</th>
-                                <th>Sources</th>
+                                <!-- <th>Sources</th> -->
                                 <th>Assigned To</th>
                                 <th>Sales Person</th>
                                 <th>Project Status</th>
@@ -263,7 +263,7 @@
                                         @endforelse
                                     </div>
                                 </td>
-                                <td>
+                                <!-- <td>
                                     <div style="display:flex;flex-wrap:wrap;gap:4px;max-width:180px;">
                                         @forelse($project->sources as $source)
                                             <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);white-space:nowrap;">
@@ -273,7 +273,7 @@
                                             <span style="color:var(--t4);font-size:11px;">—</span>
                                         @endforelse
                                     </div>
-                                </td>
+                                </td> -->
                                 <td>
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         @forelse($project->developers as $dev)

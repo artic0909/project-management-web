@@ -1,5 +1,5 @@
 <!-- {{--
-    admin/leads/_phone_email_assets.blade.php
+    admin/project/_phone_email_assets.blade.php
     Include this at the bottom of create.blade.php and edit.blade.php
 --}} -->
 
@@ -397,6 +397,8 @@
         inp.className = 'phone-num-inp';
         inp.placeholder = 'XXXXX XXXXX';
         inp.value = val;
+        // Numeric only restriction
+        inp.setAttribute('oninput', "this.value = this.value.replace(/\\D/g, '')");
         wrap.appendChild(inp);
         row.appendChild(wrap);
 
@@ -454,18 +456,41 @@
 
     // Seed default rows on page load for whichever lists exist
     document.addEventListener('DOMContentLoaded', function () {
+        const oldEmails = {{ json_encode(old('email')) }};
+        const oldPhones = {{ json_encode(old('phone')) }};
+        const oldCodes  = {{ json_encode(old('country_code')) }};
+
         ['add-email-list', 'edit-email-list'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
-                if (el.children.length === 0) addEmailRow(id);
-                else updateButtons(id);
+                if (el.children.length === 0) {
+                   if (Array.isArray(oldEmails) && oldEmails.length > 0) {
+                        oldEmails.forEach(email => addEmailRow(id, email));
+                    } else if (id.startsWith('add-')) {
+                        // Only auto-seed an empty row for "add" pages
+                        addEmailRow(id);
+                    }
+                } else {
+                    updateButtons(id);
+                }
             }
         });
+
         ['add-phone-list', 'edit-phone-list'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
-                if (el.children.length === 0) addPhoneRow(id);
-                else updateButtons(id);
+                if (el.children.length === 0) {
+                    if (Array.isArray(oldPhones) && oldPhones.length > 0) {
+                        oldPhones.forEach((phone, idx) => {
+                            addPhoneRow(id, phone, oldCodes?.[idx]);
+                        });
+                    } else if (id.startsWith('add-')) {
+                        // Only auto-seed an empty row for "add" pages
+                        addPhoneRow(id);
+                    }
+                } else {
+                    updateButtons(id);
+                }
             }
         });
     });

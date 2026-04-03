@@ -467,29 +467,45 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const emailListId = 'edit-email-list';
+        const phoneListId = 'edit-phone-list';
+
         // Seed Existing Emails
-        @if($project->emails && is_array($project->emails))
-            @foreach($project->emails as $email)
-                if(typeof addEmailRow === 'function') addEmailRow('edit-email-list', '{{ $email }}');
+        @if($project->emails)
+            @php $emails = is_array($project->emails) ? $project->emails : [$project->emails]; @endphp
+            @foreach($emails as $email)
+                if(typeof addEmailRow === 'function') addEmailRow(emailListId, '{{ $email }}');
             @endforeach
         @endif
         
         // Seed Existing Phones
-        @if($project->phones && is_array($project->phones))
-            @foreach($project->phones as $phone)
+        @if($project->phones)
+            @php $phones = is_array($project->phones) ? $project->phones : [$project->phones]; @endphp
+            @foreach($phones as $phone)
                 @if(is_array($phone))
-                    if(typeof addPhoneRow === 'function') addPhoneRow('edit-phone-list', '{{ $phone['num'] ?? '' }}', '{{ $phone['code'] ?? '' }}');
+                    if(typeof addPhoneRow === 'function') addPhoneRow(phoneListId, '{{ $phone['num'] ?? '' }}', '{{ $phone['code'] ?? '' }}');
                 @else
-                    if(typeof addPhoneRow === 'function') addPhoneRow('edit-phone-list', '{{ $phone }}');
+                    if(typeof addPhoneRow === 'function') addPhoneRow(phoneListId, '{{ $phone }}');
                 @endif
             @endforeach
         @endif
+
+        // Ensure at least one row exists if none were seeded
+        if(typeof addEmailRow === 'function') {
+            const emailList = document.getElementById(emailListId);
+            if(emailList && emailList.children.length === 0) addEmailRow(emailListId);
+        }
+        if(typeof addPhoneRow === 'function') {
+            const phoneList = document.getElementById(phoneListId);
+            if(phoneList && phoneList.children.length === 0) addPhoneRow(phoneListId);
+        }
         
         // Final button update for phone/email rows
         if(typeof updateButtons === 'function') {
-            updateButtons('edit-email-list');
-            updateButtons('edit-phone-list');
+            updateButtons(emailListId);
+            updateButtons(phoneListId);
         }
     });
+</script>
 
 @endsection
