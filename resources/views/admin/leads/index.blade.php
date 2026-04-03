@@ -357,7 +357,17 @@
                 <div class="card-head">
                     <div>
                         <div class="card-title">Lead Pipeline</div>
-                        <div class="card-sub" id="drpActiveSub">Last 7 Days · 147 total · 38 hot leads</div>
+                        <div class="card-sub" id="drpActiveSub">
+                            @if(request('start_date') && request('end_date'))
+                                {{ \Carbon\Carbon::parse(request('start_date'))->format('M d') }} – {{ \Carbon\Carbon::parse(request('end_date'))->format('M d, Y') }}
+                            @elseif(request('q'))
+                                Search: "{{ request('q') }}"
+                            @else
+                                Overall Summary
+                            @endif
+                            · {{ $totalLeads }} total 
+                            · {{ $priorityCounts['Hot 🔥'] ?? 0 }} hot leads
+                        </div>
                     </div>
                     <form action="{{ route($routePrefix . '.leads.index') }}" method="GET" class="card-actions mb-2">
                         <div class="global-search">

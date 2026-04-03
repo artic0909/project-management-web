@@ -91,6 +91,11 @@ class LeadController extends Controller
             });
         }
 
+        // Clone base query for statistics calculation
+        $statsQuery = clone $query;
+        $totalLeads = $statsQuery->count();
+
+        // Paginated results
         $leads = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
 
         // Total Followups for filtered salesperson
@@ -113,54 +118,40 @@ class LeadController extends Controller
             $totalMessageFollowupsFiltered = ($followupCounts['Message'] ?? 0) + ($followupCounts['Both'] ?? 0);
         }
 
-        // Statistics (Only for those they can see)
-        $totalLeads = $this->getFilteredLeads()->whereHas('status', function($sq) {
-            $sq->where('name', '!=', 'lost');
-        })->count();
-
+        // Statistics (Only for those they can see and that match current filters)
         $statuses = Status::where('type', 'lead')->where('name', '!=', 'lost')->get();
-        // Since we need counts for only their leads, we build the counts manually or use withCount with a constraint
         foreach($statuses as $status) {
-            $status->leads_count = $this->getFilteredLeads()->where('status_id', $status->id)->count();
+            $status->leads_count = (clone $statsQuery)->where('status_id', $status->id)->count();
         }
 
         $convertedLeads = $statuses->where('name', 'Booked')->first()->leads_count ?? 0;
         
         $sources = Source::all();
         foreach($sources as $source) {
-            $source->leads_count = $this->getFilteredLeads()
-                ->where('source_id', $source->id)
-                ->whereHas('status', function($sq) { $sq->where('name', '!=', 'lost'); })
-                ->count();
+            $source->leads_count = (clone $statsQuery)->whereHas('sources', function($q) use ($source) {
+                $q->where('sources.id', $source->id);
+            })->count();
         }
 
         $services = Service::all();
         foreach($services as $service) {
-            $service->leads_count = $this->getFilteredLeads()
-                ->where('service_id', $service->id)
-                ->whereHas('status', function($sq) { $sq->where('name', '!=', 'lost'); })
-                ->count();
+            $service->leads_count = (clone $statsQuery)->whereHas('services', function($q) use ($service) {
+                $q->where('services.id', $service->id);
+            })->count();
         }
         
         $campaigns = Campaign::all();
         foreach($campaigns as $campaign) {
-            $campaign->leads_count = $this->getFilteredLeads()
-                ->where('campaign_id', $campaign->id)
-                ->whereHas('status', function($sq) { $sq->where('name', '!=', 'lost'); })
-                ->count();
+            $campaign->leads_count = (clone $statsQuery)->where('campaign_id', $campaign->id)->count();
         }
         
-        $priorityCounts = $this->getFilteredLeads()
-            ->whereHas('status', function($sq) {
-                $sq->where('name', '!=', 'lost');
-            })
+        $priorityCounts = (clone $statsQuery)
             ->groupBy('priority')
             ->select('priority', DB::raw('count(*) as total'))
             ->pluck('total', 'priority')
             ->toArray();
 
-        $sales = Sale::all(); // Still show all sales for assignment? User said "as admin make all things", so yes.
-
+        $sales = Sale::all();
         $routePrefix = 'sale';
         return view('admin.leads.index', compact(
             'leads', 'totalLeads', 'convertedLeads', 'statuses', 

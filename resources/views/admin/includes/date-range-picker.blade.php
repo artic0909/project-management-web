@@ -928,20 +928,33 @@
         }
 
         function onDayClick(e) {
-            const d = new Date(parseInt(e.currentTarget.dataset.ts));
-            if (!selecting || rangeEnd) {
-                rangeStart = d;
+            const ts = parseInt(e.currentTarget.dataset.ts);
+            const d = new Date(ts);
+            
+            // Normalize time to midnight to avoid timezone/hour offset bugs during comparison
+            d.setHours(0,0,0,0);
+
+            if (!selecting || rangeEnd !== null) {
+                // First click - start a new selection
+                rangeStart = clone(d);
                 rangeEnd = null;
                 selecting = true;
                 setCustomPreset();
             } else {
-                if (d < rangeStart) {
-                    rangeEnd = rangeStart;
-                    rangeStart = d;
+                // Second click
+                let sTime = rangeStart.getTime();
+                let dTime = d.getTime();
+                
+                if (dTime < sTime) {
+                    // Clicked before start
+                    rangeEnd = clone(rangeStart);
+                    rangeStart = clone(d);
                 } else {
-                    rangeEnd = d;
+                    // Clicked after or on same day
+                    rangeEnd = clone(d);
                 }
                 selecting = false;
+                hoverDate = null; // Clear hover state so it doesn't interfere
                 setCustomPreset();
             }
             render();
@@ -1096,17 +1109,72 @@
         document.addEventListener('click', function(e) {
             const panel = document.getElementById('dateRangePanel');
             const trigger = document.getElementById('dateRangeTrigger');
-            if (panel && panel.style.display !== 'none' &&
-                !panel.contains(e.target) && !trigger.contains(e.target))
-                closeDatePicker();
+            
+            // If dragging occurred or something else, we ignore
+            if (!panel || panel.style.display === 'none') return;
+            
+            // Allow clicks on trigger
+            if (e.target.closest('#dateRangeTrigger')) {
+                return;
+            }
+            
+            closeDatePicker();
+        });
+
+        // Prevent clicks inside the panel from propagating up to document
+        // This solves the issue where re-rendered DOM elements (like days) bubble up as detached nodes
+        document.getElementById('dateRangePanel').addEventListener('mousedown', function(e) {
+            e.stopPropagation();
+        });
+        document.getElementById('dateRangePanel').addEventListener('click', function(e) {
+            e.stopPropagation();
         });
 
         document.addEventListener('DOMContentLoaded', function() {
             populateSelects();
-            const [s, e] = presetMap['last7']();
-            rangeStart = s;
-            rangeEnd = e;
-            document.getElementById('drpLabel').textContent = 'Last 7 Days';
+            
+            // Check if there's already a date range applied (e.g. from page reload with URL params)
+            const startInp = document.getElementById('drpStartInput');
+            const endInp = document.getElementById('drpEndInput');
+            
+            if (startInp && startInp.value && endInp && endInp.value) {
+                // Parse existing values to prepopulate
+                rangeStart = new Date(startInp.value);
+                rangeEnd = new Date(endInp.value);
+                // Set the views correctly
+                view1 = new Date(rangeStart.getFullYear(), rangeStart.getMonth(), 1);
+                view2 = new Date(rangeStart.getFullYear(), rangeStart.getMonth() + 1, 1);
+                
+                // Identify preset if possible
+                let foundPreset = 'custom';
+                for (const p in presetMap) {
+                    const [s, e] = presetMap[p]();
+                    if (s && e && fmtBackend(s) === startInp.value && fmtBackend(e) === endInp.value) {
+                        foundPreset = p;
+                        break;
+                    }
+                }
+                
+                activePreset = foundPreset;
+                document.querySelectorAll('.drp-preset').forEach(p => p.classList.remove('active'));
+                const pEl = document.querySelector(`.drp-preset[data-preset="${foundPreset}"]`);
+                if (pEl) pEl.classList.add('active');
+                
+                // Set the correct label
+                let display = presetLabels[activePreset] || 'Custom Range';
+                if (activePreset === 'custom' && rangeStart && rangeEnd) {
+                    display = fmt(rangeStart) + ' — ' + fmt(rangeEnd);
+                }
+                document.getElementById('drpLabel').textContent = display;
+
+            } else {
+                // Default to last 7 days
+                const [s, e] = presetMap['last7']();
+                rangeStart = s;
+                rangeEnd = e;
+                document.getElementById('drpLabel').textContent = presetLabels['last7'] || 'Last 7 Days';
+            }
+            // we don't necessarily want to call render() if it's hidden, but it's safe.
         });
     })();
 </script>
