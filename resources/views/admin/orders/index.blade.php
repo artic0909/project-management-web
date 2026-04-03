@@ -265,7 +265,7 @@
                             <tr data-order-type="{{ $order->is_marketing ? 'marketing' : 'website' }}" 
                                 data-status="{{ strtolower($order->status->name ?? '') }}"
                                 data-service="{{ $order->service_id }}">
-                                <td><span class="mono">#ORD-{{ 1000 + $order->id }}</span></td>
+                                <td><span class="mono">#ORD-{{ $order->id }}</span></td>
                                 <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $order->created_at->format('d M Y') }}</div></td>
                                 <td>
                                     <span class="type-badge {{ $order->is_marketing ? 'marketing-type' : 'website-type' }}">
@@ -349,6 +349,9 @@
                                            onclick="handleContactClick(event, 'mailto', {{ json_encode($emailList) }})" title="Email Client">
                                             <i class="bi bi-envelope-fill"></i>
                                         </a>
+
+                                        <a href="{{ route($routePrefix . '.meetings.create', ['order_id' => $order->id]) }}" class="ra-btn" title="Meeting"><i class="bi bi-camera-video-fill"></i></a>
+
 
                                         <a href="{{ route($routePrefix . '.orders.show', $order->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
                                         <a href="{{ route($routePrefix . '.orders.edit', $order->id) }}" class="ra-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>

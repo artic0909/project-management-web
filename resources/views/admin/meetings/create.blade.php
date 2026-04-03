@@ -45,7 +45,7 @@
                                     <label class="form-lbl">Related To (Target)</label>
                                     <select name="meeting_type" id="meetingType" class="form-inp" required onchange="toggleTargets()">
                                         <option value="lead" {{ request('lead_id') ? 'selected' : '' }}>Lead</option>
-                                        <option value="order">Order</option>
+                                        <option value="order" {{ request('order_id') ? 'selected' : '' }}>Order</option>
                                         <option value="project">Project</option>
                                     </select>
                                 </div>
@@ -54,7 +54,7 @@
                                     <label class="form-lbl">Select Target</label>
                                     <div class="target-select-wrap">
                                         <input type="hidden" name="lead_id" id="hidden_lead_id" value="{{ request('lead_id') }}">
-                                        <input type="hidden" name="order_id" id="hidden_order_id">
+                                        <input type="hidden" name="order_id" id="hidden_order_id" value="{{ request('order_id') }}">
                                         <input type="hidden" name="project_id" id="hidden_project_id">
                                         
                                         <div class="ts-trigger" onclick="toggleTs()">
@@ -67,6 +67,13 @@
                                                         $preSub = ($preLead->contact_person ? $preLead->contact_person : '') . ($preEmail ? ' • ' . $preEmail : '');
                                                     @endphp
                                                     {{ $preLead->company }} <span style="color:var(--t4);font-weight:500;margin-left:8px;font-size:11px;">({{ $preSub }})</span>
+                                                @elseif(request('order_id') && $orders->where('id', request('order_id'))->first())
+                                                    @php 
+                                                        $preOrder = $orders->where('id', request('order_id'))->first(); 
+                                                        $preLead = $preOrder->lead;
+                                                        $preSub = $preLead ? (($preLead->company ?? 'No Company') . ($preLead->contact_person ? ' • ' . $preLead->contact_person : '')) : ($preOrder->company_name ?? 'No Lead Associated');
+                                                    @endphp
+                                                    Order #{{ $preOrder->id }} <span style="color:var(--t4);font-weight:500;margin-left:8px;font-size:11px;">({{ $preSub }})</span>
                                                 @else
                                                     <span class="ts-placeholder">— Select Target —</span>
                                                 @endif
