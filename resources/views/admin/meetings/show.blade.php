@@ -80,7 +80,7 @@
                                     <div class="t-icon"><i class="bi bi-bag-check"></i></div>
                                     <div class="t-info">
                                         <div class="t-name">Order #{{ $meeting->order->id }}</div>
-                                        <div class="t-sub">{{ $meeting->order->lead->company ?? 'Unknown' }} | {{ $meeting->order->status->name ?? 'Pending' }}</div>
+                                        <div class="t-sub">{{ $meeting->order->lead->company ?? $meeting->order->company_name ?? 'Unknown' }} | {{ $meeting->order->status->name ?? 'Pending' }}</div>
                                     </div>
                                     <a href="{{ route($routePrefix . '.orders.index') }}" class="t-btn">View Order</a>
                                 </div>

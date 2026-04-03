@@ -18,7 +18,7 @@
         return [
             'id' => $o->id,
             'name' => 'Order #' . $o->id,
-            'sub' => ($o->lead->company ?? 'No Company') . ($o->lead->contact_person ? ' • ' . $o->lead->contact_person : ''),
+            'sub' => $o->lead ? (($o->lead->company ?? 'No Company') . ($o->lead->contact_person ? ' • ' . $o->lead->contact_person : '')) : ($o->company_name ?? 'No Lead Associated'),
             'type' => 'order',
             'sale_ids' => array_values(array_unique($sIds)),
             'dev_ids' => []

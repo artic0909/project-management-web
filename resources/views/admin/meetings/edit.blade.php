@@ -59,7 +59,7 @@
                                                 @if($meeting->meeting_type == 'lead' && $meeting->lead)
                                                     {{ $meeting->lead->company }} <span style="color:var(--t4);font-weight:500;margin-left:8px;font-size:11px;">({{ $meeting->lead->domain ?? $meeting->lead->email }})</span>
                                                 @elseif($meeting->meeting_type == 'order' && $meeting->order)
-                                                    Order #{{ $meeting->order->id }} <span style="color:var(--t4);font-weight:500;margin-left:8px;font-size:11px;">({{ $meeting->order->lead->company ?? 'No Company' }})</span>
+                                                    Order #{{ $meeting->order->id }} <span style="color:var(--t4);font-weight:500;margin-left:8px;font-size:11px;">({{ $meeting->order->lead->company ?? $meeting->order->company_name ?? 'No Company' }})</span>
                                                 @elseif($meeting->meeting_type == 'project' && $meeting->project)
                                                     {{ $meeting->project->name }} <span style="color:var(--t4);font-weight:500;margin-left:8px;font-size:11px;">({{ $meeting->project->project_id }})</span>
                                                 @else
