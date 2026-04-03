@@ -651,37 +651,6 @@
 </style>
 
 <!-- ═══ PAGE CONTENT AREA ═══ -->
-<!-- Flash Messages -->
-@if(session('success'))
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        showToast('success', '{{ session('success') }}', 'bi-check-circle-fill');
-    });
-</script>
-@endif
-
-@if(session('error'))
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        showToast('error', '{{ session('error') }}', 'bi-x-circle-fill');
-    });
-</script>
-@endif
-
-<!-- Validation errors toast -->
-@if($errors->any())
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        showToast('error', '{{ $errors->first() }}', 'bi-exclamation-triangle-fill');
-
-        @if(session('open_modal'))
-            openModal('{{ session('open_modal') }}');
-        @endif
-    });
-</script>
-@endif
-
-<!-- ═══ PAGE CONTENT AREA ═══ -->
 <main class="page-area" id="pageArea">
 
     <div class="page" id="page-dashboard">

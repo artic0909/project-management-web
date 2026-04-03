@@ -1,6 +1,6 @@
 @extends('admin.layout.app')
 
-@section('title', 'Add Services')
+@section('title', 'Add Plans')
 
 @section('content')
 
@@ -658,10 +658,10 @@
         <!-- Page Header -->
         <div class="page-header">
             <div>
-                <h1 class="page-title">Your All Services</h1>
+                <h1 class="page-title">Your All Plans</h1>
             </div>
             <button class="btn-primary-solid sm" onclick="openModal('addModal')">
-                <i class="bi bi-plus-lg"></i> Add Service
+                <i class="bi bi-plus-lg"></i> Add Source
             </button>
         </div>
     </div>
@@ -671,8 +671,8 @@
         <div class="stat-box" style="--sb-color:#6366f1;">
             <div class="sb-icon"><i class="bi bi-link-45deg"></i></div>
             <div>
-                <div class="sb-val">{{ $serviceCount }}</div>
-                <div class="sb-lbl">Total Services</div>
+                <div class="sb-val">{{ $sourceCount }}</div>
+                <div class="sb-lbl">Total Plans</div>
             </div>
         </div>
     </div>
@@ -680,12 +680,12 @@
     <!-- MAIN GRID -->
     <div class="dash-grid">
 
-        <!-- Service Table -->
+        <!-- Source Table -->
         <div class="dash-card span-12">
             <div class="card-head">
                 <div>
-                    <div class="card-title">Services</div>
-                    <div class="card-sub">{{ $serviceCount }} total</div>
+                    <div class="card-title">Plans</div>
+                    <div class="card-sub">{{ $sourceCount }} total</div>
                 </div>
             </div>
             <div class="table-wrap">
@@ -693,13 +693,13 @@
                     <thead>
                         <tr>
                             <th>SL</th>
-                            <th>Service Name</th>
+                            <th>Source Name</th>
                             <th>Created By</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($services as $source)
+                        @forelse ($sources as $source)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td><span class="src-tag website">{{ $source->name }}</span></td>
@@ -719,7 +719,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="4" class="text-center">No Services found.</td>
+                            <td colspan="4" class="text-center">No sources found.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -728,7 +728,7 @@
 
             <!-- Pagination -->
             <div class="table-footer">
-                <span class="tf-info">Showing {{ $services->count() }} of {{ $serviceCount }} Services</span>
+                <span class="tf-info">Showing {{ $sources->count() }} of {{ $sourceCount }} Plans</span>
                 <div class="tf-pagination">
                     <button class="pg-btn"><i class="bi bi-chevron-left"></i></button>
                     <button class="pg-btn active">1</button>
@@ -744,20 +744,20 @@
     <div class="modal-backdrop" id="addModal" onclick="closeModal('addModal')">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-hd">
-                <span>Add Service</span>
+                <span>Add Source</span>
                 <button class="modal-close" onclick="closeModal('addModal')"><i class="bi bi-x-lg"></i></button>
             </div>
 
-            <form action="{{ route($routePrefix . '.services.store') }}" method="POST">
+            <form action="{{ route($routePrefix . '.sources.store') }}" method="POST">
                 @csrf
                 <div class="modal-bd">
                     <div class="form-row">
-                        <label class="form-lbl">Service Name *</label>
+                        <label class="form-lbl">Source Name *</label>
                         <input
                             type="text"
                             name="name"
                             class="form-inp @error('name') is-invalid @enderror"
-                            placeholder="Service name"
+                            placeholder="Source name"
                             value="{{ old('name') }}"
                             required
                         >
@@ -777,7 +777,7 @@
                 <div class="modal-ft">
                     <button type="button" class="btn-ghost" onclick="closeModal('addModal')">Cancel</button>
                     <button type="submit" class="btn-primary-solid">
-                        <i class="bi bi-plus-lg"></i> Add Service
+                        <i class="bi bi-plus-lg"></i> Add Source
                     </button>
                 </div>
             </form>
@@ -790,7 +790,7 @@
     <div class="modal-backdrop" id="editModal" onclick="closeModal('editModal')">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-hd">
-                <span>Update Service</span>
+                <span>Update Source</span>
                 <button class="modal-close" onclick="closeModal('editModal')"><i class="bi bi-x-lg"></i></button>
             </div>
 
@@ -799,13 +799,13 @@
                 @method('PUT')
                 <div class="modal-bd">
                     <div class="form-row">
-                        <label class="form-lbl">Service Name *</label>
+                        <label class="form-lbl">Source Name *</label>
                         <input
                             type="text"
                             name="name"
                             id="editNameInput"
                             class="form-inp"
-                            placeholder="Service name"
+                            placeholder="Source name"
                             required
                         >
                         <input
@@ -821,7 +821,7 @@
                 <div class="modal-ft">
                     <button type="button" class="btn-ghost" onclick="closeModal('editModal')">Cancel</button>
                     <button type="submit" class="btn-primary-solid">
-                        <i class="bi bi-pencil-fill"></i> Update Service
+                        <i class="bi bi-pencil-fill"></i> Update Source
                     </button>
                 </div>
             </form>
@@ -834,7 +834,7 @@
     <div class="modal-backdrop" id="deleteModal" onclick="closeModal('deleteModal')">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-hd" style="border-bottom:1px solid #fecaca;">
-                <span style="color:#dc2626;">Delete Service</span>
+                <span style="color:#dc2626;">Delete Source</span>
                 <button class="modal-close" onclick="closeModal('deleteModal')"><i class="bi bi-x-lg"></i></button>
             </div>
 
@@ -847,14 +847,14 @@
                     </div>
                     <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:#111827;">Are you sure?</h3>
                     <p style="margin:0;font-size:14px;color:#6b7280;line-height:1.6;">
-                        You are about to delete <strong id="deleteServiceName" style="color:#dc2626;"></strong>.<br>
+                        You are about to delete <strong id="deleteSourceName" style="color:#dc2626;"></strong>.<br>
                         This action <strong style="color:#dc2626;">cannot be undone.</strong>
                     </p>
                 </div>
                 <div class="modal-ft" style="border-top:1px solid #fecaca;">
                     <button type="button" class="btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
                     <button type="submit" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;">
-                        <i class="bi bi-trash3-fill"></i> Delete Service
+                        <i class="bi bi-trash3-fill"></i> Delete Source
                     </button>
                 </div>
             </form>
@@ -866,7 +866,7 @@
 <script>
     // ── Edit Modal ──
     function openEditModal(id, name, created_by) {
-        document.getElementById('editForm').action = `{{ url($routePrefix . '/add-services') }}/${id}`;
+        document.getElementById('editForm').action = `{{ url($routePrefix . '/sources') }}/${id}`;
         document.getElementById('editNameInput').value = name;
         document.getElementById('edit_created_by').value = created_by;
         openModal('editModal');
@@ -874,8 +874,8 @@
 
     // ── Delete Modal ──
     function openDeleteModal(id, name) {
-        document.getElementById('deleteForm').action = `{{ url($routePrefix . '/add-services') }}/${id}`;
-        document.getElementById('deleteServiceName').textContent = name;
+        document.getElementById('deleteForm').action = `{{ url($routePrefix . '/sources') }}/${id}`;
+        document.getElementById('deleteSourceName').textContent = name;
         openModal('deleteModal');
     }
 

@@ -4,22 +4,6 @@
 
 @section('content')
 
-{{-- Flash Toasts --}}
-@if(session('success'))
-<script>document.addEventListener('DOMContentLoaded',()=>showToast('success','{{ session('success') }}','bi-check-circle-fill'));</script>
-@endif
-@if(session('error'))
-<script>document.addEventListener('DOMContentLoaded',()=>showToast('error','{{ session('error') }}','bi-x-circle-fill'));</script>
-@endif
-@if($errors->any())
-<script>
-document.addEventListener('DOMContentLoaded',()=>{
-    showToast('error','{{ $errors->first() }}','bi-exclamation-triangle-fill');
-    @if(session('open_modal')) openModal('{{ session('open_modal') }}'); @endif
-});
-</script>
-@endif
-
 <main class="page-area" id="pageArea">
     <div class="page" id="page-status">
 
