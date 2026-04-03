@@ -707,7 +707,7 @@
                             <td>
                                 <div class="row-actions">
                                     {{-- Edit: pass id and name --}}
-                                    <button class="ra-btn" onclick="openEditModal({{ $plan->id }}, '{{ addslashes($plan->name) }}')">
+                                    <button class="ra-btn" onclick="openEditModal({{ $plan->id }}, '{{ addslashes($plan->name) }}', '{{ addslashes($plan->created_by) }}')">
                                         <i class="bi bi-pencil-fill"></i>
                                     </button>
                                     {{-- Delete: pass id and name --}}
@@ -811,6 +811,7 @@
                         <input
                             type="hidden"
                             name="created_by"
+                            id="edit_created_by"
                             class="form-inp @error('created_by') is-invalid @enderror"
                             placeholder="Created by"
                             value="admin"
