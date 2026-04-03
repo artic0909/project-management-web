@@ -47,6 +47,11 @@ class Order extends Model
     {
         return $this->belongsToMany(Source::class, 'order_source');
     }
+    
+    public function plans()
+    {
+        return $this->belongsToMany(Plan::class, 'order_plan');
+    }
 
     public function status()
     {

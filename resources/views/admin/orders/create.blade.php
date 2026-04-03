@@ -247,7 +247,33 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Plan Name</label>
-                                    <input type="text" name="plan_name" class="form-inp" value="{{ old('plan_name') }}" placeholder="Plan name">
+                                    <div class="ms-wrap" id="planWrap">
+                                        <div class="ms-trigger" onclick="toggleMs('planWrap')" data-placeholder="Select plans…">
+                                            <div class="ms-pills" id="planPills">
+                                                <span class="ms-placeholder">Select plans…</span>
+                                            </div>
+                                            <i class="bi bi-chevron-down ms-arrow"></i>
+                                        </div>
+                                        <div class="ms-dropdown" id="planDropdown">
+                                            <div class="ms-search-wrap">
+                                                <i class="bi bi-search"></i>
+                                                <input type="text" class="ms-search" placeholder="Search plans…" oninput="filterMs(this,'planDropdown')">
+                                                <span class="ms-all-btn" onclick="toggleAllMs('planWrap','planDropdown')">Select All</span>
+                                            </div>
+                                            <div class="ms-opts">
+                                                @foreach($plans as $plan)
+                                                    <label class="ms-opt">
+                                                        <input type="checkbox" name="plan_ids[]" value="{{ $plan->id }}" 
+                                                            data-name="{{ $plan->name }}"
+                                                            onchange="updateMs('planWrap')">
+                                                        <div style="display:flex;flex-direction:column;">
+                                                            <span style="font-weight:500;color:var(--t1);">{{ $plan->name }}</span>
+                                                        </div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Username</label>
@@ -389,6 +415,7 @@
             updateMs('salesWrap');
             updateMs('serviceWrap');
             updateMs('sourceWrap');
+            updateMs('planWrap');
         }
         checkServiceType(); // Check initially
 

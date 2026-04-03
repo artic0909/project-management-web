@@ -174,14 +174,24 @@ class LeadController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'company' => 'required|string|max:255',
+        $request->validate([
+            'company' => 'nullable|string|max:255',
             'contact_person' => 'required|string|max:255',
+            'business_type' => 'required|string|max:255',
+            'email' => 'required|array|min:1',
+            'email.*' => 'required|email|max:255',
+            'phone' => 'required|array|min:1',
+            'phone.*' => 'required|numeric|digits_between:7,15',
+            'address' => 'required|string',
+            'state' => 'nullable|string|max:100',
+            'zip_code' => 'nullable|numeric|digits:6',
+            'service_ids' => 'required|array|min:1',
+            'service_ids.*' => 'exists:services,id',
+            'source_ids' => 'nullable|array',
+            'source_ids.*' => 'exists:sources,id',
+            'priority' => 'nullable|string',
+            'status_id' => 'nullable|exists:statuses,id',
         ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
 
         // Process phones
         $phones = [];
@@ -208,19 +218,18 @@ class LeadController extends Controller
             'emails' => array_values($emails),
             'phones' => $phones,
             'address' => $request->address,
+            'state' => $request->state,
+            'zip_code' => $request->zip_code,
             'campaign_id' => $request->campaign_id,
             'priority' => $request->priority,
             'status_id' => $request->status_id,
+            'notes' => $request->notes,
             'created_by' => auth()->guard('sale')->id(),
-            'created_ByType' => get_class(auth()->guard('sale')->user()),
+            'created_by_type' => get_class(auth()->guard('sale')->user()),
         ]);
 
-        if ($request->has('service_id')) {
-            $lead->services()->sync($request->service_id);
-        }
-        if ($request->has('source_id')) {
-            $lead->sources()->sync($request->source_id);
-        }
+        $lead->services()->sync($request->service_ids);
+        $lead->sources()->sync($request->source_ids);
 
         // Process assignments
         if ($request->has('assign_to')) {
@@ -275,18 +284,23 @@ class LeadController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'company' => 'required|string',
-            'contact_person' => 'required|string',
-            'business_type' => 'required|string',
-            'email' => 'nullable|array',
-            'phone' => 'nullable|array',
-            'country_code' => 'nullable|array',
-            'address' => 'nullable|string',
-            'service_id' => 'required|exists:services,id',
-            'source_id' => 'required|exists:sources,id',
-            'status_id' => 'required|exists:statuses,id',
-            'campaign_id' => 'required|exists:campaigns,id',
-            'priority' => 'required|string',
+            'company' => 'nullable|string|max:255',
+            'contact_person' => 'required|string|max:255',
+            'business_type' => 'required|string|max:255',
+            'email' => 'required|array|min:1',
+            'email.*' => 'required|email|max:255',
+            'phone' => 'required|array|min:1',
+            'phone.*' => 'required|numeric|digits_between:7,15',
+            'address' => 'required|string',
+            'state' => 'nullable|string|max:100',
+            'zip_code' => 'nullable|numeric|digits:6',
+            'service_ids' => 'required|array|min:1',
+            'service_ids.*' => 'exists:services,id',
+            'source_ids' => 'nullable|array',
+            'source_ids.*' => 'exists:sources,id',
+            'status_id' => 'nullable|exists:statuses,id',
+            'campaign_id' => 'nullable|exists:campaigns,id',
+            'priority' => 'nullable|string',
             'notes' => 'nullable|string',
         ]);
 
@@ -317,17 +331,16 @@ class LeadController extends Controller
             'emails' => array_values($emails),
             'phones' => $phones,
             'address' => $request->address,
+            'state' => $request->state,
+            'zip_code' => $request->zip_code,
             'campaign_id' => $request->campaign_id,
             'status_id' => $request->status_id,
             'priority' => $request->priority,
+            'notes' => $request->notes,
         ]);
 
-        if ($request->has('service_id')) {
-            $lead->services()->sync($request->service_id);
-        }
-        if ($request->has('source_id')) {
-            $lead->sources()->sync($request->source_id);
-        }
+        $lead->services()->sync($request->service_ids);
+        $lead->sources()->sync($request->source_ids);
 
         // Update assignments
         if ($request->has('assign_to')) {

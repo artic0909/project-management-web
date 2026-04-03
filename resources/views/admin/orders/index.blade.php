@@ -290,7 +290,11 @@
                                     <div class="ln">{{ $order->client_name }}</div>
                                     <div class="ls">{{ $order->phones[0]['number'] ?? 'N/A' }}</div>
                                 </td>
-                                                                <td><span class="src-tag">{{ $order->service->name ?? 'N/A' }}</span></td>
+                                <td>
+                                    @foreach($order->services as $service)
+                                        <span class="src-tag">{{ $service->name }}</span>
+                                    @endforeach
+                                </td>
                                 <td><span class="src-tag">₹{{ number_format($order->order_value, 0) }}</span></td>
                                 <td><span class="src-tag" style="background:#10b98120; color:#10b981;">₹{{ number_format($order->advance_payment, 0) }}</span></td>
                                 <td>

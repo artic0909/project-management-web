@@ -48,7 +48,7 @@
                         <div style="font-size:19px;font-weight:800;color:var(--t1);letter-spacing:-.4px;">{{ $order->company_name }}</div>
                         <div style="font-size:13px;color:var(--t3);margin-top:4px;">{{ $emails[0] ?? 'No primary email' }}</div>
                         <div style="margin-top:12px;display:flex;gap:6px; flex-wrap:wrap; justify-content:center; max-width:280px; margin-left:auto; margin-right:auto;">
-                            <span class="src-tag website-type" style="padding:3px 10px; border-radius:6px; font-size:10.5px; font-weight:700;">{{ $order->is_marketing ? 'Marketing' : 'Website' }}</span>
+                            <!-- <span class="src-tag website-type" style="padding:3px 10px; border-radius:6px; font-size:10.5px; font-weight:700;">{{ $order->is_marketing ? 'Marketing' : 'Website' }}</span> -->
                             @foreach($order->services as $service)
                                 <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(99,102,241,0.1);color:var(--accent);border:1px solid rgba(99,102,241,0.2);">{{ $service->name }}</span>
                             @endforeach
@@ -234,9 +234,15 @@
                     </div>
                     <div class="card-body">
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                            <div class="od-row">
-                                <span class="od-lbl">Plan Name</span>
-                                <span class="od-val">{{ $order->plan_name ?? 'N/A' }}</span>
+                            <div class="od-row" style="grid-column:1/-1;">
+                                <span class="od-lbl">Plans</span>
+                                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
+                                    @forelse($order->plans as $plan)
+                                        <span style="font-size:12px;font-weight:700;padding:4px 10px;border-radius:6px;background:rgba(139,92,246,0.1);color:#8b5cf6;border:1px solid rgba(139,92,246,0.2);">{{ $plan->name }}</span>
+                                    @empty
+                                        <span style="font-size:12px;color:var(--t3);">N/A</span>
+                                    @endforelse
+                                </div>
                             </div>
                             <div class="od-row">
                                 <span class="od-lbl">Username</span>
