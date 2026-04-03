@@ -117,11 +117,7 @@
                             </div>
 
                             <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
-                            <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
-                                <i class="bi bi-calendar3"></i>
-                                <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'All Time' }}</span>
-                                <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
-                            </button>
+                            <!-- here -->
 
                             <!-- Hidden inputs for date range -->
                             <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
