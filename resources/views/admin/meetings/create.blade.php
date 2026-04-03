@@ -109,7 +109,7 @@
 
                             <div style="margin-top:30px; display:flex; gap:10px;">
                                 <button type="submit" class="btn-primary-solid">Create Schedule</button>
-                                <a href="{{ route($routePrefix . '.meetings.index') }}" class="btn-primary-ghost">Cancel</a>
+                                <!-- <a href="{{ route($routePrefix . '.meetings.index') }}" class="btn-primary-ghost">Cancel</a> -->
                             </div>
                     </div>
                 </div>
