@@ -1287,8 +1287,8 @@
             background: var(--bg2);
             border: 1px solid var(--b1);
             border-radius: var(--r-lg);
-            overflow: hidden;
             transition: var(--transition);
+            position: relative;
         }
 
         .dash-card:hover {

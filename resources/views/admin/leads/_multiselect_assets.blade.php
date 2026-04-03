@@ -4,7 +4,8 @@
 --}}
 
 <style>
-    .ms-wrap { position: relative; }
+    .ms-wrap { position: relative; z-index: 1; }
+    .ms-wrap.open { z-index: 9999; }
     .ms-trigger {
         display: flex;
         align-items: center;
@@ -58,7 +59,7 @@
         border: 1px solid var(--b2);
         border-radius: var(--r);
         box-shadow: 0 8px 32px rgba(0,0,0,.2);
-        z-index: 9999;
+        z-index: 10000;
         overflow: visible;
         animation: msDropIn .15s ease;
     }
