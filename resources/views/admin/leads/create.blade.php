@@ -93,7 +93,7 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Zip Code</label>
-                                    <input type="text" name="zip_code" class="form-inp @error('zip_code') is-invalid @enderror" value="{{ old('zip_code') }}" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits">
+                                    <input type="number" name="zip_code" class="form-inp @error('zip_code') is-invalid @enderror" value="{{ old('zip_code') }}" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits">
                                     @error('zip_code')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                             </div>
