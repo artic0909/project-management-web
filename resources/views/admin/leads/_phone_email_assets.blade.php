@@ -396,6 +396,7 @@
         inp.className = 'phone-num-inp';
         inp.placeholder = 'XXXXX XXXXX';
         inp.value = val;
+        inp.setAttribute('oninput', "this.value = this.value.replace(/\\D/g, '')");
         wrap.appendChild(inp);
         row.appendChild(wrap);
 

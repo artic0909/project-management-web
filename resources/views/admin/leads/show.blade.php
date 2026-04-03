@@ -8,43 +8,28 @@
     <div class="page" id="page-lead-detail">
 
         <!-- ── PAGE HEADER ── -->
-        <div class="page-header" style="margin-bottom:20px;">
+        <div class="page-header">
             <div>
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
                     <a href="{{ route($routePrefix . '.leads.index') }}"
-                        style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--t3);transition:var(--transition);text-decoration:none;"
-                        onmouseover="this.style.color='var(--accent)'"
-                        onmouseout="this.style.color='var(--t3)'">
+                        style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--t3);text-decoration:none;transition:var(--transition);"
+                        onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--t3)'">
                         <i class="bi bi-arrow-left"></i> All Leads
                     </a>
-                    <span style="color:var(--t4);font-size:12px;">›</span>
+                    <span style="color:var(--t4);font-size:11px;">›</span>
                     <span style="font-size:13px;font-weight:600;color:var(--t2);">{{ $lead->company }}</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:flex-end;">
-                    <div>
-                        <h1 class="page-title">{{ $lead->company }}</h1>
-                        <p class="page-desc">Comprehensive profile and lead intelligence</p>
-                    </div>
-                    <!-- <div style="display:flex; gap:10px; margin-bottom:5px;">
-                        <a href="{{ route('admin.leads.edit', ['id' => $lead->id]) }}" class="btn-primary-ghost sm">
-                            <i class="bi bi-pencil-square"></i> Edit Lead
-                        </a>
-                    </div> -->
-                </div>
+                <h1 class="page-title">{{ $lead->company }}</h1>
+                <p class="page-desc">Comprehensive profile and lead intelligence</p>
+            </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:flex-end;">
-                    <!-- <div style="display:flex; gap:10px; margin-bottom:5px;">
-                        <a href="{{ route('admin.leads.edit', ['id' => $lead->id]) }}" class="btn-primary-solid">
-                            <i class="bi bi-pencil-square"></i> Edit Lead
-                        </a>
-                    </div> -->
+            <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                     <div style="display:flex; gap:10px; margin-bottom:5px;">
                         <a href="{{ route($routePrefix . '.orders.create', ['lead_id' => $lead->id]) }}" class="btn-primary-solid">
                             <i class="bi bi-box-arrow-in-right"></i> Convert To Order
                         </a>
                     </div>
                 </div>
-            </div>
         </div>
 
         <!-- ── TOP QUICK STATS ── -->

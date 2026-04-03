@@ -8,8 +8,11 @@ $(document).ready(function() {
     const form = $('form[action*="leads"]');
 
     // Real-time numeric enforcement for phone fields
-    $(document).on('input', 'input[name="phone[]"]', function() {
-        this.value = this.value.replace(/\D/g, '');
+    $(document).on('input change keyup paste', 'input[name="phone[]"]', function() {
+        let val = this.value.replace(/\D/g, '');
+        if (this.value !== val) {
+            this.value = val;
+        }
     });
 
     form.on('submit', function(e) {
