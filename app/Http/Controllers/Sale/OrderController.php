@@ -137,13 +137,14 @@ class OrderController extends Controller
         })->with(['status', 'sources', 'services', 'assignments'])->find($lead_id) : null;
 
         $services = Service::all();
+        $sources = \App\Models\Source::all();
         $sales = Sale::all();
         $orderStatuses = Status::where('type', 'order')->get();
         $paymentStatuses = Status::where('type', 'payment')->get();
         $plans = \App\Models\Plan::all();
 
         $routePrefix = 'sale';
-        return view('admin.orders.create', compact('lead', 'services', 'sales', 'orderStatuses', 'paymentStatuses', 'plans', 'routePrefix'));
+        return view('admin.orders.create', compact('lead', 'services', 'sources', 'sales', 'orderStatuses', 'paymentStatuses', 'plans', 'routePrefix'));
     }
 
     public function store(Request $request)
@@ -272,13 +273,14 @@ class OrderController extends Controller
     {
         $order = $this->getFilteredOrders()->with(['assignments', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         $services = Service::all();
+        $sources = \App\Models\Source::all();
         $sales = Sale::all();
         $orderStatuses = Status::where('type', 'order')->get();
         $paymentStatuses = Status::where('type', 'payment')->get();
         $plans = \App\Models\Plan::all();
 
         $routePrefix = 'sale';
-        return view('admin.orders.edit', compact('order', 'services', 'sales', 'orderStatuses', 'paymentStatuses', 'plans', 'routePrefix'));
+        return view('admin.orders.edit', compact('order', 'services', 'sources', 'sales', 'orderStatuses', 'paymentStatuses', 'plans', 'routePrefix'));
     }
 
     public function update(Request $request, $id)
