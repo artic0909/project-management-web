@@ -148,8 +148,8 @@
                                         <div style="font-weight:800; color:var(--t1); line-height:1.4;">{{ $meeting->meeting_title }}</div>
                                     </td>
                                     <td>
-                                        <div class="m-desc-cell" title="{{ $meeting->meeting_description }}">
-                                            {{ Str::limit($meeting->meeting_description, 100) }}
+                                        <div class="m-desc-cell" title="{{ $meeting->meeting_description ?? 'No description' }}">
+                                            {{ \Illuminate\Support\Str::limit($meeting->meeting_description ?? 'No description', 100) }}
                                         </div>
                                     </td>
                                     <td>

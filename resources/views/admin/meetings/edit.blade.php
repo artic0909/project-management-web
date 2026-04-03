@@ -57,11 +57,27 @@
                                         <div class="ts-trigger" onclick="toggleTs()">
                                             <div class="ts-selected-text">
                                                 @if($meeting->meeting_type == 'lead' && $meeting->lead)
-                                                    {{ $meeting->lead->company }} <span style="color:var(--t4);font-weight:500;margin-left:8px;font-size:11px;">({{ $meeting->lead->domain ?? $meeting->lead->email }})</span>
+                                                    @php 
+                                                        $l = $meeting->lead;
+                                                        $preEmails = is_array($l->emails) ? $l->emails : (json_decode($l->emails, true) ?? []);
+                                                        $preEmail = $preEmails[0] ?? '';
+                                                        $preSub = ($l->contact_person ? $l->contact_person : '') . ($preEmail ? ' • ' . $preEmail : '') . ($l->status ? ' • ' . $l->status->name : '');
+                                                    @endphp
+                                                    {{ $l->company }} <span style="color:var(--t4);font-weight:500;margin-left:8px;font-size:11px;">({{ $preSub }})</span>
                                                 @elseif($meeting->meeting_type == 'order' && $meeting->order)
-                                                    Order #{{ $meeting->order->id }} <span style="color:var(--t4);font-weight:500;margin-left:8px;font-size:11px;">({{ $meeting->order->lead->company ?? $meeting->order->company_name ?? 'No Company' }})</span>
+                                                    @php 
+                                                        $o = $meeting->order;
+                                                        $leadPart = $o->lead ? (($o->lead->company ?? 'No Company') . ($o->lead->contact_person ? ' • ' . $o->lead->contact_person : '')) : ($o->company_name ?? 'No Lead');
+                                                        $preSub = $leadPart . ($o->status ? ' • ' . $o->status->name : '');
+                                                    @endphp
+                                                    Order #{{ $o->id }} <span style="color:var(--t4);font-weight:500;margin-left:8px;font-size:11px;">({{ $preSub }})</span>
                                                 @elseif($meeting->meeting_type == 'project' && $meeting->project)
-                                                    {{ $meeting->project->name }} <span style="color:var(--t4);font-weight:500;margin-left:8px;font-size:11px;">({{ $meeting->project->project_id }})</span>
+                                                    @php 
+                                                        $p = $meeting->project;
+                                                        $pStatus = $p->projectStatus ? $p->projectStatus->name : ($p->project_status ?? 'New');
+                                                        $preSub = $p->project_id . ($p->company_name ? ' • ' . $p->company_name : '') . ($p->client_name ? ' • Contact: ' . $p->client_name : '') . ' • ' . $pStatus . ($p->deadline ? ' • Deadline: ' . $p->deadline : '');
+                                                    @endphp
+                                                    {{ $p->name }} <span style="color:var(--t4);font-weight:500;margin-left:8px;font-size:11px;">({{ $preSub }})</span>
                                                 @else
                                                     <span class="ts-placeholder">— Select Target —</span>
                                                 @endif

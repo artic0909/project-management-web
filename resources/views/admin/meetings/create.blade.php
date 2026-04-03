@@ -46,7 +46,7 @@
                                     <select name="meeting_type" id="meetingType" class="form-inp" required onchange="toggleTargets()">
                                         <option value="lead" {{ request('lead_id') ? 'selected' : '' }}>Lead</option>
                                         <option value="order" {{ request('order_id') ? 'selected' : '' }}>Order</option>
-                                        <option value="project">Project</option>
+                                        <option value="project" {{ request('project_id') ? 'selected' : '' }}>Project</option>
                                     </select>
                                 </div>
 
@@ -55,7 +55,7 @@
                                     <div class="target-select-wrap">
                                         <input type="hidden" name="lead_id" id="hidden_lead_id" value="{{ request('lead_id') }}">
                                         <input type="hidden" name="order_id" id="hidden_order_id" value="{{ request('order_id') }}">
-                                        <input type="hidden" name="project_id" id="hidden_project_id">
+                                        <input type="hidden" name="project_id" id="hidden_project_id" value="{{ request('project_id') }}">
                                         
                                         <div class="ts-trigger" onclick="toggleTs()">
                                             <div class="ts-selected-text">
@@ -64,16 +64,24 @@
                                                         $preLead = $leads->where('id', request('lead_id'))->first(); 
                                                         $preEmails = is_array($preLead->emails) ? $preLead->emails : (json_decode($preLead->emails, true) ?? []);
                                                         $preEmail = $preEmails[0] ?? '';
-                                                        $preSub = ($preLead->contact_person ? $preLead->contact_person : '') . ($preEmail ? ' • ' . $preEmail : '');
+                                                        $preSub = ($preLead->contact_person ? $preLead->contact_person : '') . ($preEmail ? ' • ' . $preEmail : '') . ($preLead->status ? ' • ' . $preLead->status->name : '');
                                                     @endphp
                                                     {{ $preLead->company }} <span style="color:var(--t4);font-weight:500;margin-left:8px;font-size:11px;">({{ $preSub }})</span>
                                                 @elseif(request('order_id') && $orders->where('id', request('order_id'))->first())
                                                     @php 
                                                         $preOrder = $orders->where('id', request('order_id'))->first(); 
                                                         $preLead = $preOrder->lead;
-                                                        $preSub = $preLead ? (($preLead->company ?? 'No Company') . ($preLead->contact_person ? ' • ' . $preLead->contact_person : '')) : ($preOrder->company_name ?? 'No Lead Associated');
+                                                        $leadPart = $preLead ? (($preLead->company ?? 'No Company') . ($preLead->contact_person ? ' • ' . $preLead->contact_person : '')) : ($preOrder->company_name ?? 'No Lead');
+                                                        $preSub = $leadPart . ($preOrder->status ? ' • ' . $preOrder->status->name : '');
                                                     @endphp
                                                     Order #{{ $preOrder->id }} <span style="color:var(--t4);font-weight:500;margin-left:8px;font-size:11px;">({{ $preSub }})</span>
+                                                @elseif(request('project_id') && $projects->where('id', request('project_id'))->first())
+                                                    @php 
+                                                        $preProject = $projects->where('id', request('project_id'))->first(); 
+                                                        $preStatus = $preProject->projectStatus ? $preProject->projectStatus->name : ($preProject->project_status ?? 'New');
+                                                        $preSub = $preProject->project_id . ($preProject->company_name ? ' • ' . $preProject->company_name : '') . ($preProject->client_name ? ' • Contact: ' . $preProject->client_name : '') . ' • ' . $preStatus . ($preProject->deadline ? ' • Deadline: ' . $preProject->deadline : '');
+                                                    @endphp
+                                                    {{ $preProject->name }} <span style="color:var(--t4);font-weight:500;margin-left:8px;font-size:11px;">({{ $preSub }})</span>
                                                 @else
                                                     <span class="ts-placeholder">— Select Target —</span>
                                                 @endif

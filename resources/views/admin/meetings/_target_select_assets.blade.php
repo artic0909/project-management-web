@@ -2,10 +2,15 @@
     $leadsData = $leads->map(function($l) {
         $sIds = $l->assignments->pluck('assigned_to')->unique()->map(fn($id) => (int)$id)->toArray();
         if ($l->created_by_type === \App\Models\Sale::class) $sIds[] = (int)$l->created_by;
+        
+        $preEmails = is_array($l->emails) ? $l->emails : (json_decode($l->emails, true) ?? []);
+        $preEmail = $preEmails[0] ?? '';
+        $sub = ($l->contact_person ? $l->contact_person : '') . ($preEmail ? ' • ' . $preEmail : '') . ($l->status ? ' • ' . $l->status->name : '');
+        
         return [
             'id' => $l->id,
             'name' => $l->company ?? 'Unknown Company',
-            'sub' => ($l->contact_person ? $l->contact_person : '') . ($l->emails && count($l->emails) > 0 ? ' • ' . $l->emails[0] : ''),
+            'sub' => $sub,
             'type' => 'lead',
             'sale_ids' => array_values(array_unique($sIds)),
             'dev_ids' => []
@@ -15,10 +20,14 @@
     $ordersData = $orders->map(function($o) {
         $sIds = $o->sales->pluck('id')->unique()->map(fn($id) => (int)$id)->toArray();
         if ($o->created_by_type === \App\Models\Sale::class) $sIds[] = (int)$o->created_by;
+        
+        $leadPart = $o->lead ? (($o->lead->company ?? 'No Company') . ($o->lead->contact_person ? ' • ' . $o->lead->contact_person : '')) : ($o->company_name ?? 'No Lead');
+        $sub = $leadPart . ($o->status ? ' • ' . $o->status->name : '');
+        
         return [
             'id' => $o->id,
             'name' => 'Order #' . $o->id,
-            'sub' => $o->lead ? (($o->lead->company ?? 'No Company') . ($o->lead->contact_person ? ' • ' . $o->lead->contact_person : '')) : ($o->company_name ?? 'No Lead Associated'),
+            'sub' => $sub,
             'type' => 'order',
             'sale_ids' => array_values(array_unique($sIds)),
             'dev_ids' => []
@@ -28,10 +37,14 @@
     $projectsData = $projects->map(function($p) {
         $sIds = $p->salesPersons->pluck('id')->unique()->map(fn($id) => (int)$id)->toArray();
         if ($p->created_by_type === \App\Models\Sale::class) $sIds[] = (int)$p->created_by;
+        
+        $pStatus = $p->projectStatus ? $p->projectStatus->name : ($p->project_status ?? 'New');
+        $sub = $p->project_id . ($p->company_name ? ' • ' . $p->company_name : '') . ($p->client_name ? ' • Contact: ' . $p->client_name : '') . ' • ' . $pStatus . ($p->deadline ? ' • Deadline: ' . $p->deadline : '');
+        
         return [
             'id' => $p->id,
             'name' => $p->project_name ?? 'Unnamed Project',
-            'sub' => $p->project_id . ($p->company_name ? ' • ' . $p->company_name : ''),
+            'sub' => $sub,
             'type' => 'project',
             'sale_ids' => array_values(array_unique($sIds)),
             'dev_ids' => $p->developers->pluck('id')->unique()->map(fn($id) => (int)$id)->toArray()
