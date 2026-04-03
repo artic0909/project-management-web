@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\MarketingOrderController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\ProjectTaskController;
 use App\Http\Controllers\Admin\SalesPersonController;
@@ -34,10 +35,10 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::delete('/add-developer/{id}', [DeveloperController::class, 'delete'])->name('developer.destroy');
 
     // Sources
-    Route::get('/sources',           [SourceController::class, 'index'])->name('sources.index');
-    Route::post('/sources',          [SourceController::class, 'store'])->name('sources.store');
-    Route::put('/sources/{id}',      [SourceController::class, 'edit'])->name('sources.update');
-    Route::delete('/sources/{id}',   [SourceController::class, 'delete'])->name('sources.destroy');
+    Route::get('/sources', [SourceController::class, 'index'])->name('sources.index');
+    Route::post('/sources', [SourceController::class, 'store'])->name('sources.store');
+    Route::put('/sources/{id}', [SourceController::class, 'edit'])->name('sources.update');
+    Route::delete('/sources/{id}', [SourceController::class, 'delete'])->name('sources.destroy');
 
     // Services
     Route::get('/add-services', [ServiceController::class, 'index'])->name('services.index');
@@ -45,12 +46,18 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::put('/add-services/{id}', [ServiceController::class, 'edit'])->name('services.update');
     Route::delete('/add-services/{id}', [ServiceController::class, 'delete'])->name('services.destroy');
 
+    // Plans
+    Route::get('/add-plans', [PlanController::class, 'index'])->name('plans.index');
+    Route::post('/add-plans', [PlanController::class, 'store'])->name('plans.store');
+    Route::put('/add-plans/{id}', [PlanController::class, 'edit'])->name('plans.update');
+    Route::delete('/add-plans/{id}', [PlanController::class, 'delete'])->name('plans.destroy');
+
     // Campaign
-    Route::get('/campaigns',           [CampaignController::class, 'index'])->name('campaign.index');
-    Route::post('/campaigns',          [CampaignController::class, 'store'])->name('campaign.store');
-    Route::put('/campaigns/{id}',      [CampaignController::class, 'edit'])->name('campaign.update');
-    Route::delete('/campaigns/{id}',   [CampaignController::class, 'delete'])->name('campaign.destroy');
-    
+    Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaign.index');
+    Route::post('/campaigns', [CampaignController::class, 'store'])->name('campaign.store');
+    Route::put('/campaigns/{id}', [CampaignController::class, 'edit'])->name('campaign.update');
+    Route::delete('/campaigns/{id}', [CampaignController::class, 'delete'])->name('campaign.destroy');
+
     // Status
     Route::get('/add-status', [StatusController::class, 'index'])->name('status');
     Route::post('/add-status', [StatusController::class, 'store'])->name('status.store');
@@ -73,12 +80,12 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::post('/lead-notes/{lead}', [\App\Http\Controllers\LeadNoteController::class, 'store'])->name('lead-notes.store');
     Route::put('/lead-notes/{note}', [\App\Http\Controllers\LeadNoteController::class, 'update'])->name('lead-notes.update');
     Route::delete('/lead-notes/{note}', [\App\Http\Controllers\LeadNoteController::class, 'destroy'])->name('lead-notes.destroy');
-    
+
     // Order Notes
     Route::post('/order-notes/{order}', [\App\Http\Controllers\OrderNoteController::class, 'store'])->name('order-notes.store');
     Route::put('/order-notes/{note}', [\App\Http\Controllers\OrderNoteController::class, 'update'])->name('order-notes.update');
     Route::delete('/order-notes/{note}', [\App\Http\Controllers\OrderNoteController::class, 'destroy'])->name('order-notes.destroy');
-    
+
     // Losted Leads
     Route::get('/losted-leads', [LeadController::class, 'lostedLeads'])->name('losted-leads');
 
@@ -106,7 +113,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::delete('/project/delete/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
     Route::get('/project/{project}/tasks', [ProjectTaskController::class, 'index'])->name('projects.tasks');
     Route::post('/project/{project}/tasks', [ProjectTaskController::class, 'store'])->name('projects.tasks.store');
-    
+
     // Marketing Orders
     Route::get('/add-marketing-orders', [MarketingOrderController::class, 'index'])->name('marketing-orders');
 

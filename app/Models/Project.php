@@ -54,6 +54,11 @@ class Project extends Model
         return $this->belongsToMany(Service::class, 'project_service');
     }
 
+    public function plan()
+    {
+        return $this->belongsTo(Plan::class, 'plan_name');
+    }
+
     public function sources()
     {
         return $this->belongsToMany(Source::class, 'project_source');

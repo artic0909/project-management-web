@@ -44,6 +44,11 @@
           <i class="bi bi-diagram-3-fill"></i><span>Services</span>
           <span class="nav-count">{{ $serviceCount }}</span>
         </a>
+        <a class="nav-item {{ request()->routeIs('admin.plans*') ? 'active' : '' }}"
+          href="{{ route('admin.plans.index') }}">
+          <i class="bi bi-diagram-3-fill"></i><span>Plans</span>
+          <span class="nav-count">{{ $planCount }}</span>
+        </a>
         <a class="nav-item {{ request()->routeIs('admin.campaign*') ? 'active' : '' }}"
           href="{{ route('admin.campaign.index') }}">
           <i class="bi bi-diagram-3-fill"></i><span>Campaign</span>

@@ -42,6 +42,7 @@ class AppServiceProvider extends ServiceProvider
             $sourceCount = \App\Models\Source::count();
             $serviceCount = \App\Models\Service::count();
             $campaignCount = \App\Models\Campaign::count();
+            $planCount = \App\Models\Plan::count();
             $statusCount = \App\Models\Status::count();
             $developerCount = \App\Models\Developer::count();
             $salesPersonCount = \App\Models\Sale::count();
@@ -108,6 +109,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with([
                 'sourceCount'  => $sourceCount,
                 'serviceCount' => $serviceCount,
+                'planCount' => $planCount,
                 'campaignCount' => $campaignCount,
                 'statusCount' => $statusCount,
                 'developerCount' => $developerCount,
