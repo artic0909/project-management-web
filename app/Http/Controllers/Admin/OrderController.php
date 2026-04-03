@@ -151,11 +151,11 @@ class OrderController extends Controller
             'status_id' => 'required|exists:statuses,id',
             'plan_ids' => 'nullable|array',
             'plan_ids.*' => 'exists:plans,id',
-            'sales_person' => 'required|array|min:1',
+            'sales_person' => 'nullable|array',
             'transaction_date' => 'required|date',
             'amount' => 'required|numeric',
             'payment_method' => 'required|string',
-            'transaction_id' => 'required|string|max:255',
+            'transaction_id' => 'nullable|string|max:255',
             'screenshot' => 'nullable|image|max:5120',
         ]);
 
@@ -306,6 +306,7 @@ class OrderController extends Controller
             'source_ids.*' => 'exists:sources,id',
             'plan_ids' => 'nullable|array',
             'plan_ids.*' => 'exists:plans,id',
+            'sales_person' => 'nullable|array',
         ]);
 
         $order = Order::findOrFail($id);

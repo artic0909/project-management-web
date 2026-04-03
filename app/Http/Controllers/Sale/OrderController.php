@@ -155,8 +155,16 @@ class OrderController extends Controller
             'status_id' => 'required|exists:statuses,id',
             'service_ids' => 'required|array|min:1',
             'service_ids.*' => 'exists:services,id',
+            'source_ids' => 'required|array|min:1',
+            'source_ids.*' => 'exists:sources,id',
             'plan_ids' => 'nullable|array',
             'plan_ids.*' => 'exists:plans,id',
+            'domain_name' => 'required|string|max:255',
+            'delivery_date' => 'required|date',
+            'city' => 'required|string|max:100',
+            'state' => 'required|string|max:100',
+            'zip_code' => 'required|numeric|digits:6',
+            'full_address' => 'required|string',
         ]);
 
         $phones = [];
@@ -280,8 +288,16 @@ class OrderController extends Controller
             'status_id' => 'required|exists:statuses,id',
             'service_ids' => 'required|array|min:1',
             'service_ids.*' => 'exists:services,id',
+            'source_ids' => 'required|array|min:1',
+            'source_ids.*' => 'exists:sources,id',
             'plan_ids' => 'nullable|array',
             'plan_ids.*' => 'exists:plans,id',
+            'domain_name' => 'required|string|max:255',
+            'delivery_date' => 'required|date',
+            'city' => 'required|string|max:100',
+            'state' => 'required|string|max:100',
+            'zip_code' => 'required|numeric|digits:6',
+            'full_address' => 'required|string',
         ]);
 
         $order = $this->getFilteredOrders()->findOrFail($id);

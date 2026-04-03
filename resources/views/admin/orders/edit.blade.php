@@ -40,11 +40,13 @@
                             <div class="form-grid">
                                 <div class="form-row">
                                     <label class="form-lbl">Company Name <span style="color:#ef4444">*</span></label>
-                                    <input type="text" name="company_name" class="form-inp" value="{{ old('company_name', $order->company_name) }}" placeholder="Company name" required>
+                                    <input type="text" name="company_name" class="form-inp @error('company_name') is-invalid @enderror" value="{{ old('company_name', $order->company_name) }}" placeholder="Company name">
+                                    @error('company_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Client Name <span style="color:#ef4444">*</span></label>
-                                    <input type="text" name="client_name" class="form-inp" value="{{ old('client_name', $order->client_name) }}" placeholder="Full name" required>
+                                    <input type="text" name="client_name" class="form-inp @error('client_name') is-invalid @enderror" value="{{ old('client_name', $order->client_name) }}" placeholder="Full name">
+                                    @error('client_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Contact Emails</label>
@@ -56,7 +58,8 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Domain Name</label>
-                                    <input type="text" name="domain_name" class="form-inp" value="{{ old('domain_name', $order->domain_name) }}" placeholder="example.com">
+                                    <input type="text" name="domain_name" class="form-inp @error('domain_name') is-invalid @enderror" value="{{ old('domain_name', $order->domain_name) }}" placeholder="example.com">
+                                    @error('domain_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Service / Product <span style="color:#ef4444">*</span></label>
@@ -89,6 +92,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    @error('service_ids')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Lead Sources <span style="color:#ef4444">*</span></label>
@@ -121,27 +125,32 @@
                                             </div>
                                         </div>
                                     </div>
+                                    @error('source_ids')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Order Value <span style="color:#ef4444">*</span></label>
-                                    <input type="number" name="order_value" class="form-inp" value="{{ old('order_value', $order->order_value) }}" placeholder="₹ Amount" required>
+                                    <input type="number" name="order_value" class="form-inp @error('order_value') is-invalid @enderror" value="{{ old('order_value', $order->order_value) }}" placeholder="₹ Amount">
+                                    @error('order_value')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Advance Payment</label>
-                                    <input type="number" name="advance_payment" class="form-inp" value="{{ old('advance_payment', $order->advance_payment) }}" placeholder="₹ Advance Received">
+                                    <input type="number" name="advance_payment" class="form-inp @error('advance_payment') is-invalid @enderror" value="{{ old('advance_payment', $order->advance_payment) }}" placeholder="₹ Advance Received">
+                                    @error('advance_payment')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Payment Terms</label>
-                                    <select name="payment_terms_id" class="form-inp">
+                                    <select name="payment_terms_id" class="form-inp @error('payment_terms_id') is-invalid @enderror">
                                         <option value="">— Select Terms —</option>
                                         @foreach($paymentStatuses as $ps)
                                             <option value="{{ $ps->id }}" {{ old('payment_terms_id', $order->payment_terms_id) == $ps->id ? 'selected' : '' }}>{{ $ps->name }}</option>
                                         @endforeach
                                     </select>
+                                    @error('payment_terms_id')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Delivery Date</label>
-                                    <input type="date" name="delivery_date" class="form-inp" value="{{ old('delivery_date', $order->delivery_date ? $order->delivery_date->format('Y-m-d') : '') }}">
+                                    <input type="date" name="delivery_date" class="form-inp @error('delivery_date') is-invalid @enderror" value="{{ old('delivery_date', $order->delivery_date ? $order->delivery_date->format('Y-m-d') : '') }}">
+                                    @error('delivery_date')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                             </div>
                         </div>
@@ -156,20 +165,24 @@
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row">
-                                    <label class="form-lbl">City</label>
-                                    <input type="text" name="city" class="form-inp" value="{{ old('city', $order->city) }}" placeholder="City">
+                                    <label class="form-lbl">City <span style="color:#ef4444">*</span></label>
+                                    <input type="text" name="city" class="form-inp @error('city') is-invalid @enderror" value="{{ old('city', $order->city) }}" placeholder="City">
+                                    @error('city')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Region / State</label>
-                                    <input type="text" name="state" class="form-inp" value="{{ old('state', $order->state) }}" placeholder="State or Province">
+                                    <label class="form-lbl">Region / State <span style="color:#ef4444">*</span></label>
+                                    <input type="text" name="state" class="form-inp @error('state') is-invalid @enderror" value="{{ old('state', $order->state) }}" placeholder="State or Province">
+                                    @error('state')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Zip Code <span style="color:#ef4444">*</span></label>
-                                    <input type="number" name="zip_code" class="form-inp" value="{{ old('zip_code', $order->zip_code) }}" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits" required>
+                                    <input type="number" name="zip_code" class="form-inp @error('zip_code') is-invalid @enderror" value="{{ old('zip_code', $order->zip_code) }}" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits">
+                                    @error('zip_code')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Full Address</label>
-                                    <textarea name="full_address" class="form-inp" rows="2" placeholder="Street address…">{{ old('full_address', $order->full_address) }}</textarea>
+                                    <textarea name="full_address" class="form-inp @error('full_address') is-invalid @enderror" rows="2" placeholder="Street address…">{{ old('full_address', $order->full_address) }}</textarea>
+                                    @error('full_address')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                             </div>
                         </div>
@@ -199,14 +212,16 @@
                                             <option value="{{ $ps->id }}" {{ old('mkt_payment_status_id', $order->mkt_payment_status_id) == $ps->id ? 'selected' : '' }}>{{ $ps->name }}</option>
                                         @endforeach
                                     </select>
+                                    @error('mkt_payment_status_id')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Starting Date</label>
-                                    <input type="date" name="mkt_starting_date" class="form-inp" value="{{ old('mkt_starting_date', $order->mkt_starting_date ? $order->mkt_starting_date->format('Y-m-d') : '') }}">
+                                    <input type="date" name="mkt_starting_date" class="form-inp @error('mkt_starting_date') is-invalid @enderror" value="{{ old('mkt_starting_date', $order->mkt_starting_date ? $order->mkt_starting_date->format('Y-m-d') : '') }}">
+                                    @error('mkt_starting_date')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Plan Name</label>
-                                    @php $selectedPlanIds = $order->plans->pluck('id')->toArray(); @endphp
+                                    @php $selectedPlanIds = old('plan_ids', $order->plans->pluck('id')->toArray()); @endphp
                                     <div class="ms-wrap" id="planWrap">
                                         <div class="ms-trigger" onclick="toggleMs('planWrap')" data-placeholder="Select plans…">
                                             <div class="ms-pills" id="planPills">
@@ -235,14 +250,17 @@
                                             </div>
                                         </div>
                                     </div>
+                                    @error('plan_ids')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Username</label>
-                                    <input type="text" name="mkt_username" class="form-inp" value="{{ old('mkt_username', $order->mkt_username) }}" placeholder="Account username">
+                                    <input type="text" name="mkt_username" class="form-inp @error('mkt_username') is-invalid @enderror" value="{{ old('mkt_username', $order->mkt_username) }}" placeholder="Account username">
+                                    @error('mkt_username')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Password</label>
-                                    <input type="text" name="mkt_password" class="form-inp" value="{{ old('mkt_password', $order->mkt_password) }}" placeholder="Account password">
+                                    <input type="text" name="mkt_password" class="form-inp @error('mkt_password') is-invalid @enderror" value="{{ old('mkt_password', $order->mkt_password) }}" placeholder="Account password">
+                                    @error('mkt_password')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                             </div>
                         </div>
@@ -262,17 +280,17 @@
 
                             {{-- Order Status --}}
                             <div class="form-row" style="margin-bottom:16px;">
-                                <label class="form-lbl">Order Status</label>
-                                <select name="status_id" class="form-inp" required>
+                                <label class="form-lbl">Order Status <span style="color:#ef4444">*</span></label>
+                                <select name="status_id" class="form-inp @error('status_id') is-invalid @enderror">
                                     <option value="">— Select Status —</option>
                                     @foreach($orderStatuses as $st)
                                     <option value="{{ $st->id }}" {{ old('status_id', $order->status_id) == $st->id ? 'selected' : '' }}>{{ $st->name }}</option>
                                     @endforeach
                                 </select>
+                                @error('status_id')<span class="field-error">{{ $message }}</span>@enderror
                             </div>
 
                           
-                            {{-- Assign Sales — multi-select --}}
                             @php 
                                 $assignedIds = old('sales_person', $order->assignments->pluck('assigned_to')->toArray());
                             @endphp
@@ -311,6 +329,8 @@
                                         </div>
                                     </div>
                                 </div>
+                                @error('sales_person')<span class="field-error">{{ $message }}</span>@enderror
+                            </div> </div>
                             </div>
 
                             <div style="display:flex;flex-direction:column;gap:8px;">
@@ -343,6 +363,7 @@
 @include('admin.orders.multiselect-assets')
 @include('admin.leads._phone_email_assets')
 @include('admin.orders._notes_assets')
+@include('admin.orders._validation_assets')
 
 <script>
     function toggleMktSection() {
