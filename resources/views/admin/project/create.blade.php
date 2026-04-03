@@ -288,8 +288,8 @@
                                 <input type="date" name="project_start_date" class="form-inp" value="{{ old('project_start_date', date('Y-m-d')) }}">
                             </div>
                             <div class="form-row">
-                                <label class="form-lbl">Complete Date (Actual)</label>
-                                <input type="date" name="actual_delivery_date" class="form-inp" value="{{ old('actual_delivery_date') }}">
+                                <label class="form-lbl">Complete Date (Expected)</label>
+                                <input type="date" name="expected_delivery_date" class="form-inp" value="{{ old('expected_delivery_date') }}">
                             </div>
                         </div>
                     </div>

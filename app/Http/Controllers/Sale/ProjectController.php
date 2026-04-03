@@ -175,6 +175,7 @@ class ProjectController extends Controller
             'primary_domain_name' => 'required|string|max:255',
             'cms_platform' => 'required|string|max:255',
             'order_date_create' => 'required|date',
+            'expected_delivery_date' => 'nullable|date',
             'project_price' => 'nullable|numeric',
             'project_status_id' => 'required|exists:statuses,id',
         ]);
@@ -230,7 +231,8 @@ class ProjectController extends Controller
         }
 
         if ($request->has('sales_person_ids')) {
-            $project->salesPersons()->sync($request->sales_person_ids);
+            $validSalesIds = \App\Models\Sale::whereIn('id', (array)$request->sales_person_ids)->pluck('id')->toArray();
+            $project->salesPersons()->sync($validSalesIds);
         }
 
         return redirect()->route('sale.projects.index')->with('success', 'Project created successfully!');
@@ -238,7 +240,7 @@ class ProjectController extends Controller
 
     public function show($id)
     {
-        $project = $this->getFilteredProjects()->with(['projectStatus', 'paymentStatus', 'developers', 'feedbacks', 'order'])->findOrFail($id);
+        $project = $this->getFilteredProjects()->with(['projectStatus', 'paymentStatus', 'developers', 'feedbacks', 'order', 'services', 'sources', 'salesPersons'])->findOrFail($id);
         $statuses = $this->getStatusOptions();
         $routePrefix = 'sale';
         return view('admin.project.show', compact('project', 'statuses', 'routePrefix'));
@@ -295,6 +297,7 @@ class ProjectController extends Controller
             'primary_domain_name' => 'required|string|max:255',
             'cms_platform' => 'required|string|max:255',
             'order_date_create' => 'required|date',
+            'expected_delivery_date' => 'nullable|date',
             'project_price' => 'nullable|numeric',
             'project_status_id' => 'required|exists:statuses,id',
         ]);
@@ -347,7 +350,8 @@ class ProjectController extends Controller
         }
 
         if ($request->has('sales_person_ids')) {
-            $project->salesPersons()->sync($request->sales_person_ids);
+            $validSalesIds = \App\Models\Sale::whereIn('id', (array)$request->sales_person_ids)->pluck('id')->toArray();
+            $project->salesPersons()->sync($validSalesIds);
         }
 
         return redirect()->route('sale.projects.index')->with('success', 'Project updated successfully!');

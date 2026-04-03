@@ -209,15 +209,19 @@
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">CMS / Platform <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    @php
+                                        $standardPlatforms = ['WordPress', 'Shopify', 'Custom'];
+                                        $isOthers = !in_array($project->cms_platform, $standardPlatforms) && !empty($project->cms_platform);
+                                    @endphp
                                     <div style="display:flex;gap:12px;">
                                         <select name="cms_platform" class="form-inp" style="flex:1" id="cmsSelect" onchange="toggleCustomCms()">
                                             <option value="">— Select —</option>
                                             <option value="WordPress" {{ old('cms_platform', $project->cms_platform) == 'WordPress' ? 'selected' : '' }}>WordPress</option>
                                             <option value="Shopify" {{ old('cms_platform', $project->cms_platform) == 'Shopify' ? 'selected' : '' }}>Shopify</option>
                                             <option value="Custom" {{ old('cms_platform', $project->cms_platform) == 'Custom' ? 'selected' : '' }}>Custom</option>
-                                            <option value="Others" {{ old('cms_platform', $project->cms_platform) == 'Others' ? 'selected' : '' }}>Others</option>
+                                            <option value="Others" {{ (old('cms_platform') == 'Others' || $isOthers) ? 'selected' : '' }}>Others</option>
                                         </select>
-                                        <input type="text" name="cms_custom" id="cmsCustomInput" class="form-inp" style="flex:1; display: {{ old('cms_platform', $project->cms_platform) == 'Others' ? 'block' : 'none' }};" placeholder="Specify platform..." value="{{ old('cms_custom', $project->cms_custom) }}">
+                                        <input type="text" name="cms_custom" id="cmsCustomInput" class="form-inp" style="flex:1; display: {{ (old('cms_platform') == 'Others' || $isOthers) ? 'block' : 'none' }};" placeholder="Specify platform..." value="{{ old('cms_custom', $isOthers ? $project->cms_platform : $project->cms_custom) }}">
                                     </div>
                                     @error('cms_platform')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
@@ -289,8 +293,8 @@
                                 <input type="date" name="project_start_date" class="form-inp" value="{{ old('project_start_date', $project->project_start_date ? $project->project_start_date->format('Y-m-d') : '') }}">
                             </div>
                             <div class="form-row">
-                                <label class="form-lbl">Complete Date (Actual)</label>
-                                <input type="date" name="actual_delivery_date" class="form-inp" value="{{ old('actual_delivery_date', $project->actual_delivery_date ? $project->actual_delivery_date->format('Y-m-d') : '') }}">
+                                <label class="form-lbl">Complete Date (Expected)</label>
+                                <input type="date" name="expected_delivery_date" class="form-inp" value="{{ old('expected_delivery_date', $project->expected_delivery_date ? $project->expected_delivery_date->format('Y-m-d') : '') }}">
                             </div>
                         </div>
                     </div>
@@ -453,11 +457,20 @@
             updateMs('serviceWrap');
             updateMs('sourceWrap');
         }
+    });
+</script>
 
+@include('admin.project._multiselect_assets')
+@include('admin.project._order_select_assets')
+@include('admin.project._phone_email_assets')
+@include('admin.project._validation_assets')
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
         // Seed Existing Emails
         @if($project->emails && is_array($project->emails))
             @foreach($project->emails as $email)
-                addEmailRow('edit-email-list', '{{ $email }}');
+                if(typeof addEmailRow === 'function') addEmailRow('edit-email-list', '{{ $email }}');
             @endforeach
         @endif
         
@@ -465,9 +478,9 @@
         @if($project->phones && is_array($project->phones))
             @foreach($project->phones as $phone)
                 @if(is_array($phone))
-                    addPhoneRow('edit-phone-list', '{{ $phone['num'] }}', '{{ $phone['code'] }}');
+                    if(typeof addPhoneRow === 'function') addPhoneRow('edit-phone-list', '{{ $phone['num'] ?? '' }}', '{{ $phone['code'] ?? '' }}');
                 @else
-                    addPhoneRow('edit-phone-list', '{{ $phone }}');
+                    if(typeof addPhoneRow === 'function') addPhoneRow('edit-phone-list', '{{ $phone }}');
                 @endif
             @endforeach
         @endif
@@ -478,11 +491,5 @@
             updateButtons('edit-phone-list');
         }
     });
-</script>
-
-@include('admin.project._multiselect_assets')
-@include('admin.project._order_select_assets')
-@include('admin.project._phone_email_assets')
-@include('admin.project._validation_assets')
 
 @endsection
