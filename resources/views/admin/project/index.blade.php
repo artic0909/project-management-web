@@ -355,11 +355,10 @@
                                         <a href="{{ route($routePrefix . '.projects.show', $project->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
                                         <a href="{{ route($routePrefix . '.payments.create', $project->order_id) }}" class="ra-btn" title="Payments"><i class="bi bi-wallet2"></i></a>
                                         <a href="{{ route($routePrefix . '.projects.edit', $project->id) }}" class="ra-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
-                                        <form action="{{ route($routePrefix . '.projects.destroy', $project->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this project?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="ra-btn danger" title="Delete"><i class="bi bi-trash-fill"></i></button>
-                                        </form>
+                                        <button type="button" class="ra-btn danger" title="Delete" 
+                                                onclick="openDeleteModal('{{ route($routePrefix . '.projects.destroy', $project->id) }}')">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -500,26 +499,29 @@
     </div>
 
 
-    {{-- ── DELETE MODAL ── --}}
-    <div class="modal-backdrop" id="deleteProjectModal">
-        <div class="modal-box sm-box" onclick="event.stopPropagation()">
-            <div class="modal-hd" style="border-bottom:1px solid #fecaca;">
-                <span style="color:#dc2626;">Delete Project</span>
-                <button class="modal-close" onclick="closeModal('deleteProjectModal')"><i class="bi bi-x-lg"></i></button>
-            </div>
-            <div class="modal-bd" style="text-align:center;padding:32px 24px;">
-                <div style="width:64px;height:64px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-                    <i class="bi bi-trash3-fill" style="font-size:28px;color:#dc2626;"></i>
+    <!-- ── Delete Project Modal (Bootstrap) ── -->
+    <div class="modal fade" id="deleteProjectModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+            <div class="modal-content" style="background: var(--bg2); border-color: var(--b1); border-radius: 12px; border-bottom: 2px solid #ef4444;">
+                <div class="modal-body p-4 text-center">
+                    <div style="background: rgba(239, 68, 68, 0.1); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                        <i class="bi bi-exclamation-triangle-fill" style="color: #ef4444; font-size: 24px;"></i>
+                    </div>
+                    <h5 style="color: var(--t1); font-weight: 700; margin-bottom: 8px;">Delete Project?</h5>
+                    <p style="color: var(--t3); font-size: 13.5px; line-height: 1.5; margin-bottom: 24px;">
+                        Are you sure you want to delete this project? This action cannot be undone and all associated data will be lost.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-ghost" data-bs-dismiss="modal" style="border: 1px solid var(--b1); color: var(--t3); font-weight: 600;">Cancel</button>
+                        <form id="deleteProjectForm" method="POST" class="w-100">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger w-100" style="background: #ef4444; border: none; font-weight: 600; padding: 10px;">
+                                Delete Forever
+                            </button>
+                        </form>
+                    </div>
                 </div>
-                <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:var(--t1);">Are you sure?</h3>
-                <p style="margin:0;font-size:14px;color:var(--t3);line-height:1.6;">This project will be permanently deleted.<br>This action <strong style="color:#dc2626;">cannot be undone.</strong></p>
-            </div>
-            <div class="modal-ft" style="border-top:1px solid #fecaca;">
-                <button class="btn-ghost" onclick="closeModal('deleteProjectModal')">Cancel</button>
-                <button style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;"
-                    onclick="closeModal('deleteProjectModal');showToast('success','Project deleted!','bi-trash3-fill')">
-                    <i class="bi bi-trash3-fill"></i> Delete
-                </button>
             </div>
         </div>
     </div>
@@ -864,6 +866,15 @@
     </div>
 
     <script>
+        function openDeleteModal(url) {
+            const form = document.getElementById('deleteProjectForm');
+            if (form) {
+                form.action = url;
+                const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteProjectModal'));
+                modal.show();
+            }
+        }
+
         function handleContactClick(e, protocol, options) {
             e.preventDefault();
             e.stopPropagation();
