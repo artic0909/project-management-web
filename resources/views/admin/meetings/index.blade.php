@@ -232,13 +232,9 @@
                                                 <a href="{{ route($routePrefix . '.meetings.edit', $meeting->id) }}"
                                                     class="act-btn" title="Edit Meeting"><i class="bi bi-pencil"></i></a>
                                                 @if($routePrefix == 'admin')
-                                                    <form action="{{ route($routePrefix . '.meetings.destroy', $meeting->id) }}"
-                                                        method="POST" style="display:inline;"
-                                                        onsubmit="return confirm('Archive this meeting?')">
-                                                        @csrf @method('DELETE')
-                                                        <button type="submit" class="act-btn danger" title="Delete"><i
-                                                                class="bi bi-trash"></i></button>
-                                                    </form>
+                                                    <button type="button" class="act-btn danger" title="Delete" onclick="confirmDelete('{{ route($routePrefix . '.meetings.destroy', $meeting->id) }}')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
                                                 @endif
                                             </div>
                                         </td>
@@ -269,6 +265,34 @@
 
         </div>
     </main>
+
+    <!-- {{-- DELETE MODAL --}} -->
+    <div class="modal-backdrop" id="deleteModal">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <div class="modal-hd" style="border-bottom:1px solid #fecaca;">
+                <span style="color:#dc2626;">Delete Meeting</span>
+                <button class="modal-close" onclick="closeModal('deleteModal')"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-bd" style="text-align:center;padding:32px 24px;">
+                <div style="width:64px;height:64px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                    <i class="bi bi-trash3-fill" style="font-size:28px;color:#dc2626;"></i>
+                </div>
+                <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:var(--t1);">Are you sure?</h3>
+                <p style="margin:0;font-size:14px;color:var(--t3);line-height:1.6;">Are you sure you want to delete this meeting schedule?<br>This action <strong style="color:#dc2626;">cannot be undone.</strong></p>
+            </div>
+            <div class="modal-ft" style="border-top:1px solid #fecaca;">
+                <button class="btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
+                <button style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="document.getElementById('deleteMeetingForm').submit()">
+                    <i class="bi bi-trash3-fill"></i> Confirm Deletion
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <form id="deleteMeetingForm" action="" method="POST" style="display:none;">
+        @csrf
+        @method('DELETE')
+    </form>
 
     <style>
         /* ── ORION TABLE SYSTEM ── */
@@ -584,6 +608,26 @@
             searchTimeout = setTimeout(() => {
                 document.getElementById('filterForm').submit();
             }, 600);
+        }
+
+        function confirmDelete(url) {
+            const form = document.getElementById('deleteMeetingForm');
+            form.action = url;
+            openModal('deleteModal');
+        }
+
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById(id).classList.add('active');
+            }, 10);
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+            setTimeout(() => {
+                document.getElementById(id).style.display = 'none';
+            }, 300);
         }
     </script>
 
