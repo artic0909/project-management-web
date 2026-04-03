@@ -133,6 +133,11 @@
                                     @error('order_value')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
+                                    <label class="form-lbl">Discount (Optional)</label>
+                                    <input type="number" step="0.01" name="discount" class="form-inp @error('discount') is-invalid @enderror" value="{{ old('discount', $order->discount) }}" placeholder="₹ Discount Amount">
+                                    @error('discount')<span class="field-error">{{ $message }}</span>@enderror
+                                </div>
+                                <div class="form-row">
                                     <label class="form-lbl">Advance Payment</label>
                                     <input type="number" name="advance_payment" class="form-inp @error('advance_payment') is-invalid @enderror" value="{{ old('advance_payment', $order->advance_payment) }}" placeholder="₹ Advance Received">
                                     @error('advance_payment')<span class="field-error">{{ $message }}</span>@enderror

@@ -142,6 +142,7 @@ class OrderController extends Controller
             'source_ids' => 'required|array|min:1',
             'source_ids.*' => 'exists:sources,id',
             'order_value' => 'required|numeric',
+            'discount' => 'nullable|numeric|min:0',
             'payment_terms_id' => 'required|exists:statuses,id',
             'delivery_date' => 'required|date',
             'city' => 'required|string|max:100',
@@ -177,7 +178,7 @@ class OrderController extends Controller
 
         $orderData = $request->only([
             'lead_id', 'company_name', 'client_name', 'domain_name',
-            'order_value', 'payment_terms_id', 'delivery_date', 'city', 'state',
+            'order_value', 'discount', 'payment_terms_id', 'delivery_date', 'city', 'state',
             'zip_code', 'full_address', 'status_id',
             'mkt_payment_status_id', 'mkt_starting_date', 'mkt_username', 'mkt_password'
         ]);
@@ -298,6 +299,7 @@ class OrderController extends Controller
             'phone' => 'required|array|min:1',
             'phone.*' => 'required|numeric|digits_between:7,15',
             'order_value' => 'required|numeric',
+            'discount' => 'nullable|numeric|min:0',
             'zip_code' => 'required|numeric|digits:6',
             'status_id' => 'required|exists:statuses,id',
             'service_ids' => 'required|array|min:1',
@@ -329,7 +331,7 @@ class OrderController extends Controller
 
         $orderData = $request->only([
             'company_name', 'client_name', 'domain_name',
-            'order_value', 'advance_payment', 'payment_terms_id', 'delivery_date', 'city', 'state',
+            'order_value', 'discount', 'advance_payment', 'payment_terms_id', 'delivery_date', 'city', 'state',
             'zip_code', 'full_address', 'status_id',
             'mkt_payment_status_id', 'mkt_starting_date', 'mkt_username', 'mkt_password'
         ]);

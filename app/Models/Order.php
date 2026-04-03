@@ -8,7 +8,7 @@ class Order extends Model
 {
     protected $fillable = [
         'lead_id', 'company_name', 'client_name', 'emails', 'phones',
-        'domain_name', 'service_id', 'order_value', 'advance_payment', 'payment_terms_id',
+        'domain_name', 'service_id', 'order_value', 'discount', 'advance_payment', 'payment_terms_id',
         'delivery_date', 'city', 'state', 'zip_code', 'full_address',
         'status_id', 'is_marketing', 'mkt_payment_status_id',
         'mkt_starting_date', 'plan_name', 'mkt_username', 'mkt_password',

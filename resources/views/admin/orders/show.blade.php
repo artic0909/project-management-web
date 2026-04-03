@@ -117,6 +117,16 @@
                                 <div class="dk-val">₹{{ number_format($order->order_value, 2) }}</div>
                                 <div class="dk-lbl">Order Value</div>
                             </div>
+                            @if($order->discount > 0)
+                            <div class="dk-item">
+                                <div class="dk-val" style="color:#ef4444;">₹{{ number_format($order->discount, 2) }}</div>
+                                <div class="dk-lbl">Discount</div>
+                            </div>
+                            <div class="dk-item">
+                                <div class="dk-val" style="color:#10b981;">₹{{ number_format($order->order_value - $order->discount, 2) }}</div>
+                                <div class="dk-lbl">Net Total</div>
+                            </div>
+                            @endif
                             <div class="dk-item">
                                 <div class="dk-val" style="color:{{ $order->status->color ?? 'var(--accent)' }};">{{ $order->status->name }}</div>
                                 <div class="dk-lbl">Status</div>

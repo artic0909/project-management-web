@@ -139,6 +139,11 @@
                                     @error('order_value')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
+                                    <label class="form-lbl">Discount (Optional)</label>
+                                    <input type="number" step="0.01" name="discount" class="form-inp @error('discount') is-invalid @enderror" value="{{ old('discount') }}" placeholder="₹ Discount Amount">
+                                    @error('discount')<span class="field-error">{{ $message }}</span>@enderror
+                                </div>
+                                <div class="form-row">
                                     <label class="form-lbl">Payment Terms <span style="color:#ef4444">*</span></label>
                                     <select name="payment_terms_id" class="form-inp @error('payment_terms_id') is-invalid @enderror">
                                         <option value="">— Select Terms —</option>
