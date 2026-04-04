@@ -202,10 +202,10 @@
                 <h1 class="page-title">Losted Leads</h1>
             </div>
             <div class="d-flex gap-2">
-                <button class="btn-primary-solid sm">
+                <!-- <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
-                </button>
-                <button class="btn-primary-solid sm">
+                </button> -->
+                <button type="button" class="btn-primary-solid sm" onclick="exportLostedLeads()">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
             </div>
@@ -2036,6 +2036,18 @@
             fetchAndReplace(new URL(paginationLink.href));
         }
     });
+
+    function exportLostedLeads() {
+        const form = document.querySelector('.card-actions form');
+        if(form) {
+            const formData = new FormData(form);
+            const params = new URLSearchParams(formData);
+            let exportUrl = '{{ route($routePrefix . '.losted-leads.export') }}';
+            window.location.href = exportUrl + '?' + params.toString();
+        } else {
+            window.location.href = '{{ route($routePrefix . '.losted-leads.export') }}';
+        }
+    }
 </script>
 
 @endsection

@@ -89,6 +89,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
 
     // Losted Leads
     Route::get('/losted-leads', [LeadController::class, 'lostedLeads'])->name('losted-leads');
+    Route::get('/export-losted-leads', [LeadController::class, 'lostedLeadExport'])->name('losted-leads.export');
 
     // Orders
     Route::get('/all-orders', [OrderController::class, 'index'])->name('orders.index');
