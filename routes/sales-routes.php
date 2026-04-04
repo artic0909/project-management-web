@@ -40,6 +40,7 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
 
     // Orders
     Route::get('/all-orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/export-orders', [OrderController::class, 'export'])->name('orders.export');
     Route::get('/add-order/{lead_id?}', [OrderController::class, 'create'])->name('orders.create');
     Route::post('/all-orders', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/view-order/{id}', [OrderController::class, 'show'])->name('orders.show');

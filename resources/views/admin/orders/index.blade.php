@@ -17,11 +17,11 @@
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
+                @endif
 
-                <button class="btn-primary-solid sm">
+                <button class="btn-primary-solid sm" onclick="exportOrders()">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
-                @endif
 
                 <a href="{{ route($routePrefix . '.orders.create') }}" class="btn-primary-solid sm">
                     <i class="bi bi-plus-lg"></i> Add Order
@@ -918,6 +918,16 @@
             fetchAndReplace(new URL(paginationLink.href));
         }
     });
+
+    window.exportOrders = function() {
+        const form = document.querySelector('.card-actions form') || document.querySelector('.card-actions');
+        let params = '';
+        if (form) {
+            const formData = new FormData(form);
+            params = '?' + new URLSearchParams(formData).toString();
+        }
+        window.location.href = "{{ route($routePrefix . '.orders.export') }}" + params;
+    };
 </script>
 
     <!-- ── Contact Selection Modal (Bootstrap) ── -->
