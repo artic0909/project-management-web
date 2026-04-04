@@ -20,23 +20,49 @@ class MeetingController extends Controller
             ->with(['lead', 'order', 'project', 'createdBy']);
 
         // Filtering
-        if ($request->filled('date')) {
-            $query->whereDate('meeting_date', $request->date);
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('meeting_date', [$request->start_date, $request->end_date]);
         }
 
         if ($request->filled('sale_id')) {
-            $query->whereJsonContains('assignsale_ids', (string)$request->sale_id);
+            $query->whereJsonContains('assignsale_ids', (int)$request->sale_id);
         }
 
         if ($request->filled('dev_id')) {
-            $query->whereJsonContains('assigndev_ids', (string)$request->dev_id);
+            $query->whereJsonContains('assigndev_ids', (int)$request->dev_id);
         }
 
-        if ($request->filled('search')) {
-            $s = $request->search;
-            $query->where(function($q) use ($s) {
-                $q->where('meeting_title', 'like', "%$s%")
-                  ->orWhere('meeting_description', 'like', "%$s%");
+        if ($request->has('q') && !empty($request->q)) {
+            $s = $request->q;
+            $cleanId = ltrim(str_ireplace(['#MT-', '#MT0'], '', $s), '0');
+            if(empty($cleanId)) $cleanId = $s;
+
+            // Find matching devs/sales for JSON array searching
+            $devIds = \App\Models\Developer::where('name', 'like', "%$s%")->orWhere('email', 'like', "%$s%")->pluck('id');
+            $saleIds = \App\Models\Sale::where('name', 'like', "%$s%")->orWhere('email', 'like', "%$s%")->pluck('id');
+
+            $query->where(function($q) use ($s, $cleanId, $devIds, $saleIds) {
+                $q->where('id', 'LIKE', "%$cleanId%")
+                  ->orWhere('meeting_title', 'like', "%$s%")
+                  ->orWhere('meeting_description', 'like', "%$s%")
+                  ->orWhere('status', 'like', "%$s%")
+                  ->orWhere('meeting_type', 'like', "%$s%")
+                  ->orWhereHas('lead', function($lq) use ($s) {
+                      $lq->where('company', 'like', "%$s%")->orWhere('contact_person', 'like', "%$s%");
+                  })
+                  ->orWhereHas('order', function($oq) use ($s) {
+                      $oq->where('company_name', 'like', "%$s%")->orWhere('client_name', 'like', "%$s%");
+                  })
+                  ->orWhereHas('project', function($pq) use ($s) {
+                      $pq->where('project_name', 'like', "%$s%");
+                  });
+
+                foreach($devIds as $dId) {
+                    $q->orWhereJsonContains('assigndev_ids', $dId);
+                }
+                foreach($saleIds as $sId) {
+                    $q->orWhereJsonContains('assignsale_ids', $sId);
+                }
             });
         }
 
@@ -45,7 +71,7 @@ class MeetingController extends Controller
         }
 
         // Scoped Status Counts
-        $countQuery = Meeting::whereJsonContains('assignsale_ids', $saleId);
+        $countQuery = clone $query;
         $counts = [
             'total' => (clone $countQuery)->count(),
             'pending' => (clone $countQuery)->where('status', 'pending')->count(),

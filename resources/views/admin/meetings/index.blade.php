@@ -28,95 +28,105 @@
                 </div>
             @endif
             <!-- ── STATUS ANALYTICS ── -->
-            <div class="dash-grid" style="margin-bottom:24px;">
-                <div class="span-3">
-                    <div class="dash-card stat-card pending">
-                        <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
-                        <div class="stat-meta">
-                            <span class="stat-lbl">Pending</span>
-                            <h2 class="stat-val text-pending">{{ $counts['pending'] }}</h2>
+            <div id="statsWrap">
+                <div class="stat-grid-wrap" style="margin-bottom:20px;">
+                    <div class="stat-box" style="--sb-color:#64748b;">
+                        <div class="sb-icon"><i class="bi bi-calendar-event"></i></div>
+                        <div class="sb-content">
+                            <div class="sb-cat" style="--cat-color:#64748b;">Total</div>
+                            <div class="sb-val">{{ $counts['total'] }}</div>
+                            <div class="sb-lbl">All Meetings</div>
                         </div>
                     </div>
-                </div>
-                <div class="span-3">
-                    <div class="dash-card stat-card rescheduled">
-                        <div class="stat-icon"><i class="bi bi-arrow-repeat"></i></div>
-                        <div class="stat-meta">
-                            <span class="stat-lbl">Rescheduled</span>
-                            <h2 class="stat-val text-rescheduled">{{ $counts['rescheduled'] }}</h2>
-                        </div>
-                    </div>
-                </div>
-                <div class="span-3">
-                    <div class="dash-card stat-card completed">
-                        <div class="stat-icon"><i class="bi bi-check2-all"></i></div>
-                        <div class="stat-meta">
-                            <span class="stat-lbl">Completed</span>
-                            <h2 class="stat-val text-success">{{ $counts['completed'] }}</h2>
-                        </div>
-                    </div>
-                </div>
-                <div class="span-3">
-                    <div class="dash-card stat-card canceled">
-                        <div class="stat-icon"><i class="bi bi-x-circle"></i></div>
-                        <div class="stat-meta">
-                            <span class="stat-lbl">Cancelled</span>
-                            <h2 class="stat-val text-danger">{{ $counts['canceled'] }}</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- ── FILTER BAR ── -->
-            <div class="dash-card" style="margin-bottom:24px;">
-                <form action="{{ route($routePrefix . '.meetings.index') }}" method="GET" id="filterForm">
-                    <div class="card-body"
-                        style="padding:16px 20px; display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
-                        <div style="flex:1; min-width:200px;">
-                            <div class="search-inp-wrap">
-                                <i class="bi bi-search"></i>
-                                <input type="text" name="search" value="{{ request('search') }}"
-                                    placeholder="Search title or description..." class="filter-inp"
-                                    onkeyup="debounceSearch()">
-                            </div>
+                    <div class="stat-box" style="--sb-color:#f59e0b;">
+                        <div class="sb-icon"><i class="bi bi-hourglass-split"></i></div>
+                        <div class="sb-content">
+                            <div class="sb-cat" style="--cat-color:#f59e0b;">Pending</div>
+                            <div class="sb-val">{{ $counts['pending'] }}</div>
+                            <div class="sb-lbl">Awaiting</div>
                         </div>
-                        <div style="width:180px;">
-                            <input type="date" name="date" value="{{ request('date') }}" class="filter-inp"
-                                onchange="this.form.submit()">
-                        </div>
-                        <div style="width:180px;">
-                            <select name="sale_id" class="filter-inp" onchange="this.form.submit()">
-                                <option value="">— All Sales —</option>
-                                @foreach($sales as $sale)
-                                    <option value="{{ $sale->id }}" {{ request('sale_id') == $sale->id ? 'selected' : '' }}>
-                                        {{ $sale->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div style="width:180px;">
-                            <select name="dev_id" class="filter-inp" onchange="this.form.submit()">
-                                <option value="">— All Developers —</option>
-                                @foreach($developers as $dev)
-                                    <option value="{{ $dev->id }}" {{ request('dev_id') == $dev->id ? 'selected' : '' }}>
-                                        {{ $dev->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        @if(request()->anyFilled(['search', 'date', 'sale_id', 'dev_id']))
-                            <a href="{{ route($routePrefix . '.meetings.index') }}" class="btn-primary-ghost"
-                                style="padding:8px 12px; border-radius:8px; font-size:13px;"><i class="bi bi-x-lg"></i>
-                                Clear</a>
-                        @endif
                     </div>
-                </form>
+                    
+                    <div class="stat-box" style="--sb-color:#8b5cf6;">
+                        <div class="sb-icon"><i class="bi bi-arrow-repeat"></i></div>
+                        <div class="sb-content">
+                            <div class="sb-cat" style="--cat-color:#8b5cf6;">Rescheduled</div>
+                            <div class="sb-val">{{ $counts['rescheduled'] }}</div>
+                            <div class="sb-lbl">Moved</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-box" style="--sb-color:#10b981;">
+                        <div class="sb-icon"><i class="bi bi-check2-all"></i></div>
+                        <div class="sb-content">
+                            <div class="sb-cat" style="--cat-color:#10b981;">Completed</div>
+                            <div class="sb-val">{{ $counts['completed'] }}</div>
+                            <div class="sb-lbl">Done</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-box" style="--sb-color:#ef4444;">
+                        <div class="sb-icon"><i class="bi bi-x-circle"></i></div>
+                        <div class="sb-content">
+                            <div class="sb-cat" style="--cat-color:#ef4444;">Cancelled</div>
+                            <div class="sb-val">{{ $counts['canceled'] }}</div>
+                            <div class="sb-lbl">Dropped</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- ── MEETINGS TABLE ── -->
-            <div class="dash-card">
-                <div class="card-head"
-                    style="padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
-                    <div class="card-title">Timeline History ({{ $meetings->total() }})</div>
-                </div>
+            <div id="tableWrap">
+                <div class="dash-card">
+                    <div class="card-head">
+                        <div>
+                            <div class="card-title">Timeline History</div>
+                            <div class="card-sub">{{ $meetings->total() }} total meetings</div>
+                        </div>
+                        <form action="{{ route($routePrefix . '.meetings.index') }}" method="GET" class="card-actions mb-0">
+                             <div class="global-search">
+                                 <i class="bi bi-search"></i>
+                                 <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search...">
+                                 <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
+                             </div>
+
+                             <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
+                             <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
+                             <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
+                             <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
+                                 <i class="bi bi-calendar3"></i>
+                                 <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'All Time' }}</span>
+                                 <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
+                             </button>
+                             <div style="position:relative;">
+                                  @include('admin.includes.date-range-picker')
+                             </div>
+
+                             <select name="status" class="filter-select" onchange="updateFilters()">
+                                 <option value="">Status</option>
+                                 <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                 <option value="rescheduled" {{ request('status') == 'rescheduled' ? 'selected' : '' }}>Rescheduled</option>
+                                 <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                                 <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : '' }}>Canceled</option>
+                             </select>
+
+                             <select name="sale_id" class="filter-select" onchange="updateFilters()">
+                                 <option value="">Assign To (Sales)</option>
+                                 @foreach($sales as $sale)
+                                     <option value="{{ $sale->id }}" {{ request('sale_id') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
+                                 @endforeach
+                             </select>
+
+                             <select name="dev_id" class="filter-select" onchange="updateFilters()">
+                                 <option value="">Assign To (Dev)</option>
+                                 @foreach($developers as $dev)
+                                     <option value="{{ $dev->id }}" {{ request('dev_id') == $dev->id ? 'selected' : '' }}>{{ $dev->name }}</option>
+                                 @endforeach
+                             </select>
+                        </form>
+                    </div>
                 <div class="card-body" style="padding:0;">
                     <div class="table-responsive">
                         <table class="orion-table">
@@ -295,12 +305,111 @@
     </form>
 
     <style>
-        /* ── ORION TABLE SYSTEM ── */
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+        /* ── 6-COLUMN RESPONSIVE GRID ── */
+        .stat-grid-wrap {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
         }
+
+        .stat-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg2);
+            border: 1px solid var(--b1);
+            border-radius: var(--r);
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            min-width: 0; 
+        }
+
+        .stat-box::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--sb-color);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .22s ease;
+        }
+
+        .stat-box:hover {
+            border-color: var(--sb-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
+        }
+
+        .stat-box:hover::after {
+            transform: scaleX(1);
+        }
+
+        .sb-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            background: color-mix(in srgb, var(--sb-color) 14%, transparent);
+            color: var(--sb-color);
+        }
+
+        .sb-content {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .sb-cat {
+            display: inline-block;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            color: var(--cat-color);
+            background: color-mix(in srgb, var(--cat-color) 12%, transparent);
+            padding: 1px 6px;
+            border-radius: 20px;
+            margin-bottom: 3px;
+            white-space: nowrap;
+        }
+
+        .sb-val {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--t1);
+            letter-spacing: -.3px;
+            line-height: 1.1;
+        }
+
+        .sb-lbl {
+            font-size: 11px;
+            color: var(--t3);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        @media (max-width: 1200px) {
+            .stat-grid-wrap { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (max-width: 860px) {
+            .stat-grid-wrap { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 560px) {
+            .stat-grid-wrap { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* ── ORION TABLE SYSTEM ── */
 
         .orion-table {
             width: 100%;
@@ -602,13 +711,76 @@
     </style>
 
     <script>
-        let searchTimeout;
-        function debounceSearch() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                document.getElementById('filterForm').submit();
-            }, 600);
+        // ── AJAX FILTERING LOGIC ── //
+        function updateFilters() {
+            const searchQuery = document.getElementById('searchQuery')?.value || '';
+            const startDate = document.getElementById('drpStartInput')?.value || '';
+            const endDate = document.getElementById('drpEndInput')?.value || '';
+            
+            const selects = document.querySelectorAll('.filter-select');
+            
+            let url = new URL(window.location.href);
+            url.searchParams.set('q', searchQuery);
+            url.searchParams.set('start_date', startDate);
+            url.searchParams.set('end_date', endDate);
+            
+            selects.forEach(select => {
+                const name = select.getAttribute('name');
+                const val = select.value;
+                if (val) {
+                    url.searchParams.set(name, val);
+                } else {
+                    url.searchParams.delete(name);
+                }
+            });
+
+            if (!searchQuery) url.searchParams.delete('q');
+            if (!startDate) url.searchParams.delete('start_date');
+            if (!endDate) url.searchParams.delete('end_date');
+
+            history.pushState(null, '', url);
+            fetchAndReplace(url);
         }
+
+        async function fetchAndReplace(url) {
+            try {
+                const response = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                const newTable = doc.getElementById('tableWrap');
+                const newStats = doc.getElementById('statsWrap');
+
+                if (newTable && document.getElementById('tableWrap')) {
+                    document.getElementById('tableWrap').innerHTML = newTable.innerHTML;
+                }
+                if (newStats && document.getElementById('statsWrap')) {
+                    document.getElementById('statsWrap').innerHTML = newStats.innerHTML;
+                }
+
+                // Re-bind events
+                bindSearchEvent();
+            } catch (err) {
+                console.error("Failed to fetch filtered data", err);
+            }
+        }
+
+        let searchTimeout;
+        function bindSearchEvent() {
+            const sq = document.getElementById('searchQuery');
+            if(sq) {
+                sq.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(updateFilters, 500);
+                });
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             bindSearchEvent();
+             document.addEventListener('dateRangeApplied', updateFilters);
+        });
 
         function confirmDelete(url) {
             const form = document.getElementById('deleteMeetingForm');
