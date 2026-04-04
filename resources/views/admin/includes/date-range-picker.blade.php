@@ -963,7 +963,30 @@
         function onDayHover(e) {
             if (!selecting) return;
             hoverDate = new Date(parseInt(e.currentTarget.dataset.ts));
-            render();
+            updateHoverState();
+        }
+
+        function updateHoverState() {
+            document.querySelectorAll('.drp-day').forEach(span => {
+                const ts = parseInt(span.dataset.ts);
+                const d = new Date(ts);
+                d.setHours(0,0,0,0);
+                
+                span.classList.remove('drp-day-selected', 'drp-day-range-start', 'drp-day-range-end', 'drp-day-in-range');
+                
+                const effEnd = hoverDate && selecting && !rangeEnd ? (hoverDate >= rangeStart ? hoverDate : rangeStart) : rangeEnd;
+                const effStart = hoverDate && selecting && !rangeEnd ? (hoverDate < rangeStart ? hoverDate : rangeStart) : rangeStart;
+
+                if (sameDay(d, effStart) && sameDay(d, effEnd)) {
+                    span.classList.add('drp-day-selected', 'drp-day-range-start', 'drp-day-range-end');
+                } else if (sameDay(d, effStart)) {
+                    span.classList.add('drp-day-range-start');
+                } else if (sameDay(d, effEnd)) {
+                    span.classList.add('drp-day-range-end');
+                } else if (effStart && effEnd && between(d, effStart, effEnd)) {
+                    span.classList.add('drp-day-in-range');
+                }
+            });
         }
 
         function setCustomPreset() {
