@@ -246,6 +246,7 @@
                     <table class="data-table" id="ordersTable">
                         <thead>
                             <tr>
+                                <th>SL.</th>
                                 <th>Order ID</th>
                                 <th>Date</th>
                                 <th>Type</th>
@@ -266,6 +267,7 @@
                             <tr data-order-type="{{ $order->is_marketing ? 'marketing' : 'website' }}" 
                                 data-status="{{ strtolower($order->status->name ?? '') }}"
                                 data-service="{{ $order->service_id }}">
+                                <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration + ($orders->currentPage() - 1) * $orders->perPage() }}</td>
                                 <td><span class="mono">#ORD-{{ $order->id }}</span></td>
                                 <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $order->created_at->format('d M Y') }}</div></td>
                                 <td>

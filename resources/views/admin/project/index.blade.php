@@ -181,6 +181,7 @@
                     <table class="data-table" id="projectsTable">
                         <thead>
                             <tr>
+                                <th>SL.</th>
                                 <th>Project ID</th>
                                 <th>Project / Domain</th>
                                 <th>Client</th>
@@ -204,6 +205,7 @@
                         <tbody>
                         @forelse($projects as $project)
                             <tr>
+                                <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration + ($projects->currentPage() - 1) * $projects->perPage() }}</td>
                                 <td><span class="mono">#PRJ-{{ str_pad($project->id, 4, '0', STR_PAD_LEFT) }}</span></td>
                                 <td>
                                     <div class="lead-cell">

@@ -94,6 +94,7 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
+                                    <th>SL.</th>
                                     <th>Date</th>
                                     <th>Order ID</th>
                                     <th>Company</th>
@@ -109,6 +110,7 @@
                             <tbody>
                                 @foreach($payments as $pay)
                                     <tr>
+                                        <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration }}</td>
                                         <td>
                                             <div class="ls">{{ $pay->transaction_date->format('d M Y') }}</div>
                                         </td>
