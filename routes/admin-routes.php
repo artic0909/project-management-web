@@ -137,6 +137,11 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     // Account Settings
     Route::get('/my-account', [AccountSettingController::class, 'index'])->name('account-settings');
     Route::post('/my-account', [\App\Http\Controllers\Auth\LoginController::class, 'adminProfileAndPasswordUpdate'])->name('account-settings.update');
+    // Attendance
+    Route::get('/attendance', [\App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendance.index');
+    Route::post('/attendance/settings', [\App\Http\Controllers\Admin\AttendanceController::class, 'storeSettings'])->name('attendance.store-settings');
+    Route::post('/attendance/give', [\App\Http\Controllers\Admin\AttendanceController::class, 'giveAttendance'])->name('attendance.give');
+
     // Meetings
     Route::resource('meetings', \App\Http\Controllers\Admin\MeetingController::class);
 });

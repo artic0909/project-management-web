@@ -104,20 +104,17 @@
           <span class="nav-count">{{ $salesPersonCount }}</span>
         </a>
       @endif
-      <a class="nav-item" href="#">
-        <i class="bi bi-clock-history"></i><span>{{ $guard === 'sale' ? 'My Attendances' : 'Sales Attendance' }}</span>
+      <a class="nav-item {{ request()->routeIs($routePrefix . 'attendance*') ? 'active' : '' }}"
+        href="{{ route($routePrefix . 'attendance.index') }}">
+        <i class="bi bi-clock-history"></i><span>{{ $guard === 'admin' ? 'Attendances' : 'My Attendances' }}</span>
         <div class="nav-dot green"></div>
       </a>
+      @if($guard === 'admin' || $guard === 'sale')
       <a class="nav-item {{ request()->routeIs($routePrefix . 'developer*') ? 'active' : '' }}"
         href="{{ route($routePrefix . 'developer') }}">
         <i class="bi bi-person-workspace"></i><span>Developers</span>
         <span class="nav-count">{{ $developerCount }}</span>
       </a>
-      @if($guard === 'admin')
-        <a class="nav-item" href="#">
-          <i class="bi bi-clock-history"></i><span>Developer Attendances</span>
-          <div class="nav-dot green"></div>
-        </a>
       @endif
 
       <div class="nav-section-label">Others</div>

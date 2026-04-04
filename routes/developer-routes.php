@@ -28,4 +28,7 @@ Route::middleware(['auth:developer'])->prefix('developer')->name('developer.')->
     Route::get('/meetings', [\App\Http\Controllers\Developer\MeetingController::class, 'index'])->name('meetings.index');
     Route::get('/meetings/export', [\App\Http\Controllers\Developer\MeetingController::class, 'export'])->name('meetings.export');
     Route::get('/meetings/{meeting}', [\App\Http\Controllers\Developer\MeetingController::class, 'show'])->name('meetings.show');
+    // Attendance
+    Route::get('/attendance', [\App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendance.index');
+    Route::post('/attendance/give', [\App\Http\Controllers\Admin\AttendanceController::class, 'giveAttendance'])->name('attendance.give');
 });

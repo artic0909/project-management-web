@@ -53,4 +53,8 @@ class Developer extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function attendances()
+    {
+        return $this->morphMany(\App\Models\Attendance::class, 'user');
+    }
 }

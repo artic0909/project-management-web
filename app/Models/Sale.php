@@ -40,4 +40,8 @@ class Sale extends Authenticatable
     {
         return $this->hasMany(LeadAssign::class, 'assigned_to');
     }
+    public function attendances()
+    {
+        return $this->morphMany(\App\Models\Attendance::class, 'user');
+    }
 }

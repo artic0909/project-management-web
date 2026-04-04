@@ -95,6 +95,10 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     // Account Settings
     Route::get('/my-account', [AccountSettingController::class, 'index'])->name('account-settings');
     Route::post('/my-account', [\App\Http\Controllers\Auth\LoginController::class, 'saleProfileAndPasswordUpdate'])->name('account-settings.update');
+    // Attendance
+    Route::get('/attendance', [\App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendance.index');
+    Route::post('/attendance/give', [\App\Http\Controllers\Admin\AttendanceController::class, 'giveAttendance'])->name('attendance.give');
+
     // Meetings
     Route::get('/export-meetings', [MeetingController::class, 'export'])->name('meetings.export');
     Route::resource('meetings', \App\Http\Controllers\Sale\MeetingController::class);

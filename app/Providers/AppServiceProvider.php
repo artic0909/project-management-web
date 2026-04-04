@@ -11,6 +11,7 @@ use App\Models\Source;
 use App\Models\Service;
 use App\Models\Campaign;
 use Illuminate\Support\Facades\View;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +30,11 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->shareViewData();
+
+        Relation::morphMap([
+            'Developer' => \App\Models\Developer::class,
+            'Sale'      => \App\Models\Sale::class,
+        ]);
     }
 
     private function shareViewData(): void

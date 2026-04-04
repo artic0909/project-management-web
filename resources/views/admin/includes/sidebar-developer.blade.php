@@ -40,7 +40,7 @@
         <i class="bi bi-calendar-check"></i><span>My Meetings</span>
       </a>
 
-      <a class="nav-item" href="#">
+      <a class="nav-item {{ request()->routeIs('developer.attendance*') ? 'active' : '' }}" href="{{ route('developer.attendance.index') }}">
         <i class="bi bi-clock-history"></i><span>MY Attendance</span>
         <div class="nav-dot green"></div>
       </a>
