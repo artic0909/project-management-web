@@ -12,6 +12,14 @@
                     <h1 class="page-title">Payment Transactions</h1>
                     <p class="page-desc">Audit trail for all payments received across all orders</p>
                 </div>
+                <div class="header-actions">
+                    <button type="button" class="btn-primary-solid sm" onclick="exportPayments()">
+                        <i class="bi bi-file-earmark-spreadsheet"></i> Export
+                    </button>
+                    <!-- <a href="#" class="btn-primary-solid">
+                        <i class="bi bi-plus-lg"></i> Add Payment
+                    </a> -->
+                </div>
             </div>
 
             {{-- SUMMARY BOXES --}}
@@ -118,7 +126,7 @@
                                             <a href="{{ route($routePrefix . '.orders.show', $pay->order_id) }}"
                                                 style="text-decoration:none">
                                                 <span class="mono"
-                                                    style="color:var(--accent); font-weight:700;">#ORD-{{ 1000 + $pay->order_id }}</span>
+                                                    style="color:var(--accent); font-weight:700;">#ORD-{{ $pay->order_id }}</span>
                                             </a>
                                         </td>
                                         <td>
@@ -308,5 +316,17 @@
                 fetchAndReplace(new URL(paginationLink.href));
             }
         });
+
+        function exportPayments() {
+            const form = document.querySelector('.card-actions form');
+            if(form) {
+                const formData = new FormData(form);
+                const params = new URLSearchParams(formData);
+                let exportUrl = '{{ route($routePrefix . '.payments.export') }}';
+                window.location.href = exportUrl + '?' + params.toString();
+            } else {
+                window.location.href = '{{ route($routePrefix . '.payments.export') }}';
+            }
+        }
     </script>
 @endsection

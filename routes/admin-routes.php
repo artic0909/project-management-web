@@ -122,6 +122,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
 
     // Payments
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/export-payments', [PaymentController::class, 'export'])->name('payments.export');
     Route::get('/payments/create/{order_id}', [PaymentController::class, 'create'])->name('payments.create');
     Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
     Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
