@@ -517,6 +517,7 @@ class LeadController extends Controller
                 'ID',
                 'Date',
                 'Company Name',
+                'Business Type',
                 'Contact Person',
                 'Emails',
                 'Phones',
@@ -529,7 +530,6 @@ class LeadController extends Controller
                 'Address',
                 'State',
                 'Zip Code',
-                'Notes'
             ]);
 
             $codes = [0=>'+93',1=>'+355',2=>'+213',3=>'+376',4=>'+244',5=>'+54',6=>'+61',7=>'+43',8=>'+880',9=>'+32',10=>'+55',11=>'+1',12=>'+86',13=>'+57',14=>'+45',15=>'+20',16=>'+33',17=>'+49',18=>'+233',19=>'+30',20=>'+91',21=>'+62',22=>'+98',23=>'+964',24=>'+353',25=>'+972',26=>'+39',27=>'+81',28=>'+962',29=>'+254',30=>'+965',31=>'+961',32=>'+60',33=>'+52',34=>'+212',35=>'+977',36=>'+31',37=>'+64',38=>'+234',39=>'+47',40=>'+968',41=>'+92',42=>'+63',43=>'+48',44=>'+351',45=>'+974',46=>'+7',47=>'+966',48=>'+65',49=>'+27',50=>'+34',51=>'+94',52=>'+46',53=>'+41',54=>'+886',55=>'+66',56=>'+90',57=>'+971',58=>'+44',59=>'+1',60=>'+84',61=>'+260',62=>'+263'];
@@ -578,6 +578,7 @@ class LeadController extends Controller
                     $lead->id,
                     $lead->created_at->format('Y-m-d H:i:s'),
                     $lead->company,
+                    $lead->business_type,
                     $lead->contact_person,
                     $emailsStr,
                     $phonesStr,
@@ -590,7 +591,6 @@ class LeadController extends Controller
                     $lead->address,
                     $lead->state,
                     $lead->zip_code,
-                    $lead->notes
                 ]);
             }
 
@@ -679,6 +679,7 @@ class LeadController extends Controller
                 'ID',
                 'Date',
                 'Company Name',
+                'Business Type',
                 'Contact Person',
                 'Emails',
                 'Phones',
@@ -691,7 +692,7 @@ class LeadController extends Controller
                 'Address',
                 'State',
                 'Zip Code',
-                'Notes'
+         
             ]);
 
             $codes = [0=>'+93',1=>'+355',2=>'+213',3=>'+376',4=>'+244',5=>'+54',6=>'+61',7=>'+43',8=>'+880',9=>'+32',10=>'+55',11=>'+1',12=>'+86',13=>'+57',14=>'+45',15=>'+20',16=>'+33',17=>'+49',18=>'+233',19=>'+30',20=>'+91',21=>'+62',22=>'+98',23=>'+964',24=>'+353',25=>'+972',26=>'+39',27=>'+81',28=>'+962',29=>'+254',30=>'+965',31=>'+961',32=>'+60',33=>'+52',34=>'+212',35=>'+977',36=>'+31',37=>'+64',38=>'+234',39=>'+47',40=>'+968',41=>'+92',42=>'+63',43=>'+48',44=>'+351',45=>'+974',46=>'+7',47=>'+966',48=>'+65',49=>'+27',50=>'+34',51=>'+94',52=>'+46',53=>'+41',54=>'+886',55=>'+66',56=>'+90',57=>'+971',58=>'+44',59=>'+1',60=>'+84',61=>'+260',62=>'+263'];
@@ -740,6 +741,7 @@ class LeadController extends Controller
                     $lead->id,
                     $lead->created_at->format('Y-m-d H:i:s'),
                     $lead->company,
+                    $lead->business_type,
                     $lead->contact_person,
                     $emailsStr,
                     $phonesStr,
@@ -752,7 +754,7 @@ class LeadController extends Controller
                     $lead->address,
                     $lead->state,
                     $lead->zip_code,
-                    $lead->notes
+               
                 ]);
             }
 
@@ -760,5 +762,192 @@ class LeadController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt'
+        ]);
+
+        $file = $request->file('csv_file');
+        $path = $file->getRealPath();
+        $handle = fopen($path, 'r');
+
+        // Skip UTF-8 BOM if present
+        $bom = fread($handle, 3);
+        if ($bom !== "\xef\xbb\xbf") {
+            rewind($handle);
+        }
+
+        $header = fgetcsv($handle);
+        if (!$header) {
+            fclose($handle);
+            return back()->with('error', 'Empty file provided');
+        }
+
+        // Clean headers (remove BOM/white-space)
+        $header = array_map(function($h) {
+            return trim(preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $h));
+        }, $header);
+
+        $rowCount = 0;
+        $successCount = 0;
+        
+        DB::beginTransaction();
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                if (count($row) < 3) continue; // Skip near-empty lines
+                
+                // Map headers to row data, ignoring extra columns
+                $data = [];
+                foreach($header as $idx => $label) {
+                    if (isset($row[$idx])) {
+                        $data[$label] = $row[$idx];
+                    }
+                }
+
+                $rowCount++;
+
+                // Robust mapping with variations
+                $companyName = $data['Company Name'] ?? ($data['company'] ?? ($data['Company'] ?? ''));
+                if (empty($companyName)) {
+                    // Try column 2 if headers are totally missing/wrong
+                    $companyName = isset($row[2]) ? $row[2] : '';
+                }
+                if (empty($companyName)) continue;
+
+                $contactPerson = $data['Contact Person'] ?? ($data['contact_person'] ?? ($data['Contact'] ?? ($row[3] ?? '')));
+
+                $emailsStr = $data['Emails'] ?? ($data['emails'] ?? ($data['Email'] ?? ''));
+                $emails = !empty($emailsStr) ? array_filter(array_map('trim', explode(',', $emailsStr))) : [];
+
+                $phonesRaw = $data['Phones'] ?? ($data['phones'] ?? ($data['Phone'] ?? ''));
+                $phonesArray = [];
+                if (!empty($phonesRaw)) {
+                    $phonesList = explode(',', $phonesRaw);
+                    foreach($phonesList as $p) {
+                        $p = trim($p);
+                        if (!empty($p)) {
+                            // Keep original for visibility or clean it
+                            $num = preg_replace('/[^0-9+]/', '', $p); 
+                            if (!empty($num)) {
+                                $phonesArray[] = ['code_idx' => 20, 'number' => $num];
+                            }
+                        }
+                    }
+                }
+
+                $campaignSourceStr = $data['Campaign / Source'] ?? ($data['campaign_source'] ?? '');
+                $campaignName = '';
+                $sourceNames = [];
+                if (!empty($campaignSourceStr)) {
+                    $parts = explode('/', $campaignSourceStr);
+                    $campaignName = trim($parts[0]);
+                    if (count($parts) > 1) {
+                        $sourceNames = array_map('trim', explode(',', $parts[1]));
+                    }
+                } else {
+                    // Try individual columns if they exist
+                    $campaignName = $data['Campaign'] ?? '';
+                    $sourcesStr = $data['Source'] ?? ($data['Sources'] ?? '');
+                    if (!empty($sourcesStr)) {
+                        $sourceNames = array_map('trim', explode(',', $sourcesStr));
+                    }
+                }
+
+                $servicesStr = $data['Services'] ?? ($data['services'] ?? ($data['Service'] ?? ''));
+                $serviceNames = !empty($servicesStr) ? array_map('trim', explode(',', $servicesStr)) : [];
+
+                $statusName = trim($data['Status'] ?? ($data['status'] ?? 'interested'));
+                if (empty($statusName)) $statusName = 'interested';
+
+                $priority = strtolower(trim($data['Priority'] ?? ($data['priority'] ?? 'warm')));
+                if (empty($priority)) $priority = 'warm';
+
+                // Find or create relationship models
+                $status = Status::firstOrCreate(['name' => $statusName]);
+                $campaign = !empty($campaignName) ? Campaign::firstOrCreate(['name' => $campaignName]) : null;
+
+                // Identify IDs for single-column relations (source_id and service_id)
+                $firstSourceId = null;
+                if (!empty($sourceNames)) {
+                    $firstSource = Source::firstOrCreate(['name' => $sourceNames[0]]);
+                    $firstSourceId = $firstSource->id;
+                }
+
+                $firstServiceId = null;
+                if (!empty($serviceNames)) {
+                    $firstService = Service::firstOrCreate(['name' => $serviceNames[0]]);
+                    $firstServiceId = $firstService->id;
+                }
+
+                $lead = Lead::create([
+                    'company' => $companyName,
+                    'contact_person' => $contactPerson,
+                    'business_type' => $data['Type'] ?? ($data['business_type'] ?? ($data['Company Type'] ?? '')),
+                    'emails' => $emails,
+                    'phones' => $phonesArray,
+                    'priority' => $priority,
+                    'status_id' => $status->id,
+                    'campaign_id' => $campaign?->id,
+                    'source_id' => $firstSourceId,
+                    'service_id' => $firstServiceId,
+                    'address' => $data['Address'] ?? ($data['address'] ?? ''),
+                    'state' => $data['State'] ?? ($data['state'] ?? ''),
+                    'zip_code' => $data['Zip Code'] ?? ($data['zip_code'] ?? ($data['Zip'] ?? '')),
+               
+                    'created_by' => auth()->guard('admin')->id(),
+                    'created_by_type' => \App\Models\Admin::class,
+                ]);
+
+                // Sync sources
+                if (!empty($sourceNames)) {
+                    $sourceIds = [];
+                    foreach($sourceNames as $sn) {
+                        $s = Source::firstOrCreate(['name' => $sn]);
+                        $sourceIds[] = $s->id;
+                    }
+                    $lead->sources()->sync($sourceIds);
+                }
+
+                // Sync services
+                if (!empty($serviceNames)) {
+                    $serviceIds = [];
+                    foreach($serviceNames as $sn) {
+                        $s = Service::firstOrCreate(['name' => $sn]);
+                        $serviceIds[] = $s->id;
+                    }
+                    $lead->services()->sync($serviceIds);
+                }
+
+                // Lead assignments
+                $salesPersonStr = $data['Sales Person'] ?? ($data['sales_person'] ?? '');
+                if (!empty($salesPersonStr)) {
+                    $spNames = array_map('trim', explode(',', $salesPersonStr));
+                    foreach($spNames as $sp) {
+                        $name = trim(explode('(', $sp)[0]);
+                        $sale = Sale::where('name', 'like', "%$name%")->first();
+                        if ($sale) {
+                            LeadAssign::create([
+                                'lead_id' => $lead->id,
+                                'assigned_to' => $sale->id,
+                                'assigned_by' => auth()->guard('admin')->id(),
+                                'assigned_by_type' => \App\Models\Admin::class,
+                            ]);
+                        }
+                    }
+                }
+                
+                $successCount++;
+            }
+            DB::commit();
+            fclose($handle);
+            return back()->with('success', "Imported $successCount of $rowCount leads successfully.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            fclose($handle);
+            return back()->withErrors(['import' => 'Error importing file: ' . $e->getMessage()]);
+        }
     }
 }

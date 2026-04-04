@@ -197,11 +197,9 @@
                 <h1 class="page-title">Your All Leads</h1>
             </div>
             <div class="d-flex gap-2">
-                @if($routePrefix == 'admin')
-                <button class="btn-primary-solid sm">
+                <button type="button" class="btn-primary-solid sm" onclick="openImportModal()">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
-                @endif
                 <button class="btn-primary-solid sm" onclick="exportLeads()">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
@@ -461,7 +459,7 @@
                                     <div class="lead-cell">
                                         @php
                                             $initials = strtoupper(substr($lead->company, 0, 1) . substr($lead->contact_person, 0, 1));
-                                            $emails = is_array($lead->emails) ? $lead->emails[0] : (json_decode($lead->emails)[0] ?? 'N/A');
+                                            $emails = is_array($lead->emails) ? ($lead->emails[0] ?? 'N/A') : (json_decode($lead->emails)[0] ?? 'N/A');
                                         @endphp
                                         <div class="mini-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">{{ $initials }}</div>
                                         <div>
@@ -1565,7 +1563,30 @@
             </div>
         </div>
     </div>
-
+    <!-- ── Import Leads Modal ── -->
+    <div class="modal fade" id="importLeadsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form action="{{ route($routePrefix . '.leads.import') }}" method="POST" enctype="multipart/form-data" class="modal-content" style="background: var(--bg2); border-color: var(--b2); border-radius: 12px;">
+                @csrf
+                <div class="modal-header" style="border-bottom-color: var(--b1);">
+                    <h5 class="modal-title" style="font-weight: 700; color: var(--t1);">Import Leads from CSV</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--close-filter);"></button>
+                </div>
+                <div class="modal-body">
+                    <div style="background: rgba(99,102,241,0.05); border: 1px dashed var(--accent); border-radius: 8px; padding: 20px; text-align: center;">
+                        <i class="bi bi-cloud-upload" style="font-size: 32px; color: var(--accent); display: block; margin-bottom: 10px;"></i>
+                        <p style="font-size: 14px; font-weight: 600; color: var(--t2); margin-bottom: 5px;">Select your CSV file</p>
+                        <p style="font-size: 12px; color: var(--t4); margin-bottom: 15px;">Column headers should match the Export format</p>
+                        <input type="file" name="csv_file" class="form-control" accept=".csv" required style="font-size: 13px;">
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top-color: var(--b1);">
+                    <button type="button" class="btn btn-secondary sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-primary-solid sm">Start Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <script>
         function handleContactClick(e, protocol, options) {
             e.preventDefault();
@@ -1608,7 +1629,11 @@
                 optionsGroup.appendChild(item);
             });
 
-            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+        }
+
+        function openImportModal() {
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('importLeadsModal'));
             modal.show();
         }
     </script>

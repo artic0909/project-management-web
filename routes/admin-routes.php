@@ -72,6 +72,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     // Leads
     Route::get('/all-leads', [LeadController::class, 'index'])->name('leads.index');
     Route::get('/export-leads', [LeadController::class, 'export'])->name('leads.export');
+    Route::post('/import-leads', [LeadController::class, 'import'])->name('leads.import');
     Route::get('/add-lead', [LeadController::class, 'create'])->name('leads.create');
     Route::post('/add-lead', [LeadController::class, 'store'])->name('leads.store');
     Route::get('/view-lead/{id}', [LeadController::class, 'show'])->name('leads.show');
