@@ -370,11 +370,27 @@ class LeadController extends Controller
         // Search filter
         if ($request->has('q') && !empty($request->q)) {
             $q = $request->q;
-            $query->where(function($fq) use ($q) {
-                $fq->where('company', 'like', "%$q%")
+            $cleanId = ltrim(str_ireplace(['#LD-', '#LD0'], '', $q), '0');
+            if(empty($cleanId)) $cleanId = $q;
+            
+            $query->where(function($fq) use ($q, $cleanId) {
+                $fq->where('id', 'LIKE', "%$cleanId%")
+                   ->orWhere('company', 'like', "%$q%")
                    ->orWhere('contact_person', 'like', "%$q%")
                    ->orWhere('emails', 'like', "%$q%")
-                   ->orWhere('phones', 'like', "%$q%");
+                   ->orWhere('phones', 'like', "%$q%")
+                   ->orWhere('priority', 'like', "%$q%")
+                   ->orWhereHas('campaign', function($cq) use ($q) { $cq->where('name', 'like', "%$q%"); })
+                   ->orWhereHas('sources', function($sq) use ($q) { $sq->where('name', 'like', "%$q%"); })
+                   ->orWhereHas('services', function($sq) use ($q) { $sq->where('name', 'like', "%$q%"); })
+                   ->orWhereHas('createdBy', function($sq) use ($q) { 
+                       $sq->where('name', 'like', "%$q%")
+                          ->orWhere('email', 'like', "%$q%"); 
+                   })
+                   ->orWhereHas('assignments.sale', function($sq) use ($q) { 
+                       $sq->where('name', 'like', "%$q%")
+                          ->orWhere('email', 'like', "%$q%"); 
+                   });
             });
         }
 
@@ -385,10 +401,14 @@ class LeadController extends Controller
 
         // Dropdown filters
         if ($request->has('source_id') && !empty($request->source_id)) {
-            $query->where('source_id', $request->source_id);
+            $query->whereHas('sources', function($q) use ($request) {
+                $q->where('sources.id', $request->source_id);
+            });
         }
         if ($request->has('service_id') && !empty($request->service_id)) {
-            $query->where('service_id', $request->service_id);
+            $query->whereHas('services', function($q) use ($request) {
+                $q->where('services.id', $request->service_id);
+            });
         }
         if ($request->has('priority') && !empty($request->priority)) {
             $query->where('priority', $request->priority);

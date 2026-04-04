@@ -79,34 +79,45 @@
         background: rgba(239, 68, 68, .08);
     }
 
-    /* ── Summary stat boxes ── */
-    .stat-scroll-row {
-        display: flex;
+    /* ── 6-column uniform grid ── */
+    .stat-grid-wrap {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
         gap: 10px;
-        overflow-x: auto;
-        padding-bottom: 4px;
         margin-bottom: 20px;
-        scrollbar-width: none;
     }
 
-    .stat-scroll-row::-webkit-scrollbar {
-        display: none;
+    @media (max-width: 1200px) {
+        .stat-grid-wrap {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    @media (max-width: 860px) {
+        .stat-grid-wrap {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 560px) {
+        .stat-grid-wrap {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 
     .stat-box {
-        flex-shrink: 0;
         display: flex;
         align-items: center;
         gap: 10px;
         background: var(--bg2);
         border: 1px solid var(--b1);
         border-radius: var(--r);
-        padding: 11px 16px;
-        min-width: 148px;
+        padding: 12px 14px;
         cursor: pointer;
         transition: var(--transition);
         position: relative;
         overflow: hidden;
+        min-width: 0;
     }
 
     .stat-box::after {
@@ -154,500 +165,29 @@
         color: var(--sb-color);
     }
 
+    .sb-content {
+        min-width: 0;
+        flex: 1;
+    }
+
     .sb-val {
-        font-size: 20px;
+        font-size: 18px;
         font-weight: 800;
         color: var(--t1);
-        letter-spacing: -.4px;
-        line-height: 1;
+        letter-spacing: -.3px;
+        line-height: 1.1;
     }
 
     .sb-lbl {
         font-size: 11px;
         color: var(--t3);
         font-weight: 500;
-        margin-top: 2px;
         white-space: nowrap;
-    }
-
-    .stat-section-lbl {
-        font-size: 10px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .1em;
-        color: var(--t4);
-        padding: 0 6px;
-        display: flex;
-        align-items: center;
-        white-space: nowrap;
-        flex-shrink: 0;
-    }
-
-    .stat-divider {
-        width: 1px;
-        height: 40px;
-        background: var(--b2);
-        flex-shrink: 0;
-        margin: 0 4px;
-    }
-
-    /* ══════════════════════════════
-       DATE RANGE PICKER STYLES
-    ══════════════════════════════ */
-    .drp-trigger {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        background: var(--bg3);
-        border: 1px solid var(--b1);
-        border-radius: var(--r-sm);
-        padding: 6px 12px;
-        font-size: 12.5px;
-        font-weight: 500;
-        color: var(--t2);
-        cursor: pointer;
-        transition: var(--transition);
-        font-family: var(--font);
-        white-space: nowrap;
-        position: relative;
-    }
-
-    .drp-trigger:hover,
-    .drp-trigger.open {
-        border-color: var(--accent);
-        color: var(--t1);
-        background: var(--bg2);
-    }
-
-    .drp-trigger.open {
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, .1);
-    }
-
-    .drp-chevron {
-        font-size: 10px;
-        color: var(--t3);
-        transition: transform .2s ease;
-    }
-
-    .drp-trigger.open .drp-chevron {
-        transform: rotate(180deg);
-    }
-
-    .drp-panel {
-        position: fixed;
-        z-index: 9999;
-        display: flex;
-        background: var(--bg2);
-        border: 1px solid var(--b2);
-        border-radius: var(--r-lg);
-        box-shadow: 0 20px 60px rgba(0, 0, 0, .28), 0 4px 16px rgba(0, 0, 0, .14);
         overflow: hidden;
-        animation: drpIn .18s cubic-bezier(.34, 1.56, .64, 1);
-        min-width: 760px;
+        text-overflow: ellipsis;
     }
 
-    @keyframes drpIn {
-        from {
-            opacity: 0;
-            transform: translateY(-8px) scale(.98);
-        }
 
-        to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-    }
-
-    .drp-presets {
-        width: 188px;
-        flex-shrink: 0;
-        border-right: 1px solid var(--b1);
-        padding: 14px 10px;
-        overflow-y: auto;
-        max-height: 480px;
-        scrollbar-width: thin;
-        scrollbar-color: var(--b2) transparent;
-    }
-
-    .drp-presets::-webkit-scrollbar {
-        width: 4px;
-    }
-
-    .drp-presets::-webkit-scrollbar-thumb {
-        background: var(--b2);
-        border-radius: 4px;
-    }
-
-    .drp-preset-group-label {
-        font-size: 10px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .1em;
-        color: var(--t4);
-        padding: 6px 8px 4px;
-    }
-
-    .drp-preset {
-        display: flex;
-        align-items: center;
-        gap: 9px;
-        padding: 7px 10px;
-        border-radius: var(--r-sm);
-        font-size: 13px;
-        color: var(--t2);
-        font-weight: 500;
-        cursor: pointer;
-        transition: var(--transition);
-        user-select: none;
-    }
-
-    .drp-preset:hover {
-        background: var(--bg4);
-        color: var(--t1);
-    }
-
-    .drp-preset.active {
-        background: var(--accent-bg);
-        color: var(--accent);
-        font-weight: 600;
-    }
-
-    .drp-radio {
-        width: 15px;
-        height: 15px;
-        border-radius: 50%;
-        border: 2px solid var(--b3);
-        flex-shrink: 0;
-        position: relative;
-        transition: var(--transition);
-    }
-
-    .drp-preset.active .drp-radio {
-        border-color: var(--accent);
-        background: var(--accent);
-    }
-
-    .drp-preset.active .drp-radio::after {
-        content: '';
-        position: absolute;
-        inset: 3px;
-        border-radius: 50%;
-        background: #fff;
-    }
-
-    .drp-calendars {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        padding: 16px 18px 14px;
-        min-width: 0;
-    }
-
-    .drp-cal-row {
-        display: flex;
-        gap: 24px;
-        flex: 1;
-    }
-
-    .drp-cal {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .drp-cal-nav {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 10px;
-    }
-
-    .drp-cal-title {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        flex: 1;
-        justify-content: center;
-    }
-
-    .drp-nav-btn {
-        width: 28px;
-        height: 28px;
-        border-radius: var(--r-sm);
-        background: var(--bg3);
-        border: 1px solid var(--b1);
-        color: var(--t2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        font-size: 11px;
-        flex-shrink: 0;
-        transition: var(--transition);
-    }
-
-    .drp-nav-btn:hover {
-        background: var(--accent-bg);
-        color: var(--accent);
-        border-color: var(--accent);
-    }
-
-    .drp-month-sel,
-    .drp-year-sel {
-        background: transparent;
-        border: none;
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--t1);
-        cursor: pointer;
-        outline: none;
-        font-family: var(--font);
-        padding: 2px 4px;
-        border-radius: 5px;
-    }
-
-    .drp-month-sel:hover,
-    .drp-year-sel:hover {
-        background: var(--bg4);
-    }
-
-    .drp-month-sel option,
-    .drp-year-sel option {
-        background: var(--bg2);
-        color: var(--t1);
-    }
-
-    .drp-cal-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .drp-cal-table th {
-        font-size: 10.5px;
-        font-weight: 700;
-        color: var(--t3);
-        text-align: center;
-        padding: 4px 2px 6px;
-        text-transform: uppercase;
-        letter-spacing: .06em;
-    }
-
-    .drp-cal-table td {
-        text-align: center;
-        padding: 1.5px;
-    }
-
-    .drp-day {
-        width: 30px;
-        height: 30px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12.5px;
-        font-weight: 500;
-        color: var(--t2);
-        border-radius: 7px;
-        cursor: pointer;
-        transition: background .12s, color .12s;
-        user-select: none;
-        position: relative;
-    }
-
-    .drp-day:hover:not(.drp-day-disabled):not(.drp-day-selected) {
-        background: var(--bg4);
-        color: var(--t1);
-    }
-
-    .drp-day-disabled {
-        color: var(--t4);
-        cursor: default;
-        pointer-events: none;
-    }
-
-    .drp-day-today {
-        font-weight: 800;
-        color: var(--accent);
-    }
-
-    .drp-day-today::after {
-        content: '';
-        position: absolute;
-        bottom: 3px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 4px;
-        height: 4px;
-        border-radius: 50%;
-        background: var(--accent);
-    }
-
-    .drp-day-selected {
-        background: var(--accent) !important;
-        color: #fff !important;
-        font-weight: 700;
-        border-radius: 7px;
-    }
-
-    .drp-day-in-range {
-        background: var(--accent-bg);
-        color: var(--accent);
-        border-radius: 0;
-    }
-
-    .drp-day-range-start {
-        background: var(--accent) !important;
-        color: #fff !important;
-        border-radius: 7px 0 0 7px !important;
-    }
-
-    .drp-day-range-end {
-        background: var(--accent) !important;
-        color: #fff !important;
-        border-radius: 0 7px 7px 0 !important;
-    }
-
-    .drp-day-range-start.drp-day-range-end {
-        border-radius: 7px !important;
-    }
-
-    .drp-compare-row {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-top: 14px;
-        padding-top: 12px;
-        border-top: 1px solid var(--b1);
-        flex-wrap: wrap;
-    }
-
-    .drp-compare-toggle {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        user-select: none;
-    }
-
-    .drp-compare-toggle input {
-        display: none;
-    }
-
-    .drp-compare-chk {
-        width: 36px;
-        height: 20px;
-        border-radius: 20px;
-        background: var(--b2);
-        position: relative;
-        transition: var(--transition);
-        flex-shrink: 0;
-    }
-
-    .drp-compare-chk::after {
-        content: '';
-        position: absolute;
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: var(--t3);
-        top: 3px;
-        left: 3px;
-        transition: var(--transition);
-    }
-
-    .drp-compare-toggle input:checked+.drp-compare-chk {
-        background: var(--accent);
-    }
-
-    .drp-compare-toggle input:checked+.drp-compare-chk::after {
-        left: 19px;
-        background: #fff;
-    }
-
-    .drp-compare-inputs {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-
-    .drp-compare-sel {
-        background: var(--bg3);
-        border: 1px solid var(--b1);
-        color: var(--t2);
-        border-radius: var(--r-sm);
-        padding: 5px 8px;
-        font-size: 12.5px;
-        font-weight: 500;
-        outline: none;
-        cursor: pointer;
-        font-family: var(--font);
-    }
-
-    .drp-date-inputs {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .drp-date-inp {
-        background: var(--bg3);
-        border: 1px solid var(--b1);
-        color: var(--t2);
-        border-radius: var(--r-sm);
-        padding: 5px 9px;
-        font-size: 12px;
-        font-family: var(--font);
-        width: 105px;
-        outline: none;
-    }
-
-    .drp-dash {
-        color: var(--t4);
-        font-size: 13px;
-    }
-
-    .drp-range-display {
-        margin-top: 12px;
-        padding: 10px 12px;
-        background: var(--bg3);
-        border: 1px solid var(--b1);
-        border-radius: var(--r-sm);
-    }
-
-    .drp-range-fields {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .drp-range-field {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .drp-range-lbl {
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .07em;
-        color: var(--t3);
-    }
-
-    .drp-range-val {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--t1);
-        font-family: var(--mono);
-    }
-
-    .drp-footer {
-        display: flex;
-        gap: 8px;
-        justify-content: flex-end;
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 1px solid var(--b1);
-    }
 </style>
 
 
@@ -672,10 +212,10 @@
         </div>
 
         <!-- SUMMARY STAT BOXES -->
-        <div id="statsWrap" class="stat-scroll-row">
-            <div class="stat-box" style="--sb-color:#6366f1;">
+        <div id="statsWrap" class="stat-grid-wrap">
+            <div class="stat-box" style="--sb-color:#ef4444;">
                 <div class="sb-icon"><i class="bi bi-people-fill"></i></div>
-                <div>
+                <div class="sb-content">
                     <div class="sb-val">{{ $totalLostLeads }}</div>
                     <div class="sb-lbl">Total Losted Leads</div>
                 </div>
@@ -684,28 +224,20 @@
 
 
         <!-- MAIN GRID -->
-        <div class="dash-grid" id="tableWrap">
+        <div class="dash-grid">
             <div class="dash-card span-12">
                 <div class="card-head">
                     <div>
                         <div class="card-title">Losted Lead Pipeline</div>
-                        <div class="card-sub">{{ $leads->count() }} total leads identified as lost</div>
+                        <div class="card-sub" id="tableSub">{{ $leads->count() }} total leads identified as lost</div>
                     </div>
-                        <form action="{{ route($routePrefix . '.losted-leads') }}" method="GET" class="card-actions mb-2">
+                    <div class="card-actions mb-2">
+                        <form action="{{ route($routePrefix . '.losted-leads') }}" method="GET" class="card-actions mb-0">
                              <div class="global-search">
                                  <i class="bi bi-search"></i>
                                  <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search...">
                                  <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
                              </div>
-
-                             <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
-                             <input type="hidden" name="start_date" id="startDateInp" value="{{ request('start_date') }}">
-                             <input type="hidden" name="end_date" id="endDateInp" value="{{ request('end_date') }}">
-                             <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
-                                 <i class="bi bi-calendar3"></i>
-                                 <span id="drpLabel">{{ request('start_date') ? request('start_date').' to '.request('end_date') : 'Select Date Range' }}</span>
-                                 <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
-                             </button>
 
                              <select name="source_id" class="filter-select" onchange="updateFilters()">
                                  <option value="">Lead Source</option>
@@ -734,8 +266,10 @@
                                  @endforeach
                              </select>
                         </form>
+                    </div>
                 </div>
 
+                <div id="tableWrap">
                 <div class="table-wrap">
                     <table class="data-table">
                         <thead>
@@ -2415,6 +1949,93 @@
         if (_origOpenModal) _origOpenModal(id);
         initModalRows(id);
     }
+
+    window.updateFilters = function () {
+        const form = document.querySelector('.card-actions form') || document.querySelector('.card-actions');
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+        const url = new URL(window.location.pathname, window.location.origin);
+        url.search = params.toString();
+        fetchAndReplace(url);
+    };
+
+    async function fetchAndReplace(url) {
+        const tableWrap = document.getElementById('tableWrap');
+        const statsWrap = document.getElementById('statsWrap');
+        if (tableWrap) tableWrap.style.opacity = '0.5';
+
+        try {
+            const response = await fetch(url.toString(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            const newTable = doc.getElementById('tableWrap');
+            if (newTable && tableWrap) {
+                tableWrap.innerHTML = newTable.innerHTML;
+            }
+
+            const newStats = doc.getElementById('statsWrap');
+            if (newStats && statsWrap) {
+                statsWrap.innerHTML = newStats.innerHTML;
+            }
+
+            const newSub = doc.getElementById('tableSub');
+            const oldSub = document.getElementById('tableSub');
+            if (newSub && oldSub) {
+                oldSub.innerHTML = newSub.innerHTML;
+            }
+
+            if (tableWrap) tableWrap.style.opacity = '1';
+            window.history.pushState({}, '', url);
+        } catch (error) {
+            console.error('AJAX error:', error);
+            if (tableWrap) tableWrap.style.opacity = '1';
+        }
+    }
+
+    /* ── Listen for date range applied from our custom picker ── */
+    document.addEventListener('dateRangeApplied', function(e) {
+        const { start, end } = e.detail;
+        
+        function formatDate(date) {
+            if(!date) return '';
+            let d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+            return [year, month, day].join('-');
+        }
+
+        const sInp = document.getElementById('drpStartInput');
+        const eInp = document.getElementById('drpEndInput');
+        if(sInp && eInp) {
+            sInp.value = formatDate(start);
+            eInp.value = formatDate(end);
+            updateFilters();
+        }
+    });
+    
+    let l_debounceTimer;
+    document.addEventListener('input', function (e) {
+        if (e.target && e.target.id === 'searchQuery') {
+            clearTimeout(l_debounceTimer);
+            l_debounceTimer = setTimeout(updateFilters, 500);
+        }
+    });
+
+    // Intercept pagination clicks
+    document.addEventListener('click', function (e) {
+        const paginationLink = e.target.closest('.tf-pagination a');
+        if (paginationLink) {
+            e.preventDefault();
+            fetchAndReplace(new URL(paginationLink.href));
+        }
+    });
 </script>
 
 @endsection
