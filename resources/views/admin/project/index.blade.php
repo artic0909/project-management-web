@@ -351,7 +351,9 @@
 
                                         <a href="{{ route($routePrefix . '.projects.tasks', $project->id) }}" class="ra-btn" title="Tasks" style="color:#6366f1;background:rgba(99,102,241,0.1);"><i class="bi bi-list-task"></i></a>
                                         <a href="{{ route($routePrefix . '.projects.show', $project->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
+                                        @if($project->order_id)
                                         <a href="{{ route($routePrefix . '.payments.create', $project->order_id) }}" class="ra-btn" title="Payments"><i class="bi bi-wallet2"></i></a>
+                                        @endif
                                         <a href="{{ route($routePrefix . '.projects.edit', $project->id) }}" class="ra-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
                                         <button type="button" class="ra-btn danger" title="Delete" 
                                                 onclick="openDeleteModal('{{ route($routePrefix . '.projects.destroy', $project->id) }}')">
