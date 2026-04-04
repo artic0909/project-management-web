@@ -59,12 +59,12 @@
                 </div>
             </div>
 
-            <div class="dash-grid" id="tableWrap">
+            <div class="dash-grid">
                 <div class="dash-card span-12">
                     <div class="card-head">
                         <div>
                             <div class="card-title">All Transactions</div>
-                            <div class="card-sub">Total {{ $payments->count() }} transaction entries</div>
+                            <div class="card-sub" id="paymentTableSub">Total {{ $payments->count() }} transaction entries</div>
                         </div>
                         <div class="card-actions mb-2">
                             <form action="{{ route($routePrefix . '.payments.index') }}" method="GET"
@@ -75,10 +75,21 @@
                                         placeholder="Search Company / Order #...">
                                     <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
                                 </div>
+                                <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
+                                    <i class="bi bi-calendar3"></i>
+                                    <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'All Time' }}</span>
+                                    <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
+                                </button>
+                                <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
+                                <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
                             </form>
+                            <div style="position:relative;">
+                                @include('admin.includes.date-range-picker')
+                            </div>
                         </div>
                     </div>
 
+                    <div id="tableWrap">
                     <div class="table-wrap">
                         <table class="data-table">
                             <thead>
@@ -164,6 +175,7 @@
                     <div class="table-footer">
                         <span class="tf-info">Total Transactions: {{ $payments->count() }}</span>
                     </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -208,6 +220,30 @@
             openModal('deleteModal');
         }
 
+        /* ── Listen for date range applied from our custom picker ── */
+        document.addEventListener('dateRangeApplied', function(e) {
+            const { start, end } = e.detail;
+            
+            function formatDate(date) {
+                if(!date) return '';
+                let d = new Date(date),
+                    month = '' + (d.getMonth() + 1),
+                    day = '' + d.getDate(),
+                    year = d.getFullYear();
+                if (month.length < 2) month = '0' + month;
+                if (day.length < 2) day = '0' + day;
+                return [year, month, day].join('-');
+            }
+
+            const sInp = document.getElementById('drpStartInput');
+            const eInp = document.getElementById('drpEndInput');
+            if(sInp && eInp) {
+                sInp.value = formatDate(start);
+                eInp.value = formatDate(end);
+                updateFilters();
+            }
+        });
+
         window.updateFilters = function () {
             const form = document.querySelector('.card-actions form') || document.querySelector('.card-actions');
             const formData = new FormData(form);
@@ -238,6 +274,12 @@
                 const newStats = doc.getElementById('statsWrap');
                 if (newStats && statsWrap) {
                     statsWrap.innerHTML = newStats.innerHTML;
+                }
+
+                const newSub = doc.getElementById('paymentTableSub');
+                const oldSub = document.getElementById('paymentTableSub');
+                if (newSub && oldSub) {
+                    oldSub.innerHTML = newSub.innerHTML;
                 }
 
                 if (tableWrap) tableWrap.style.opacity = '1';

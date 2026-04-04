@@ -18,12 +18,34 @@ class PaymentController extends Controller
         // Search Filter
         if ($request->filled('q')) {
             $q = $request->q;
-            $query->whereHas('order', function($sub) use ($q) {
-                $sub->where('company_name', 'LIKE', "%$q%")
-                    ->orWhere('client_name', 'LIKE', "%$q%")
-                    ->orWhere('emails', 'LIKE', "%$q%")
-                    ->orWhere('phones', 'LIKE', "%$q%");
+            $cleanId = ltrim(str_ireplace(['#ORD-', '#PAY-'], '', $q), '0');
+            if (empty($cleanId)) $cleanId = $q;
+
+            $query->where(function($sub) use ($q, $cleanId) {
+                // Payment fields
+                $sub->where('transaction_id', 'LIKE', "%$q%")
+                    ->orWhere('payment_method', 'LIKE', "%$q%")
+                    ->orWhere('amount', 'LIKE', "%$q%")
+                    // Order ID search
+                    ->orWhere('order_id', 'LIKE', "%$cleanId%")
+                    // Related Order Fields
+                    ->orWhereHas('order', function($o) use ($q) {
+                        $o->where('company_name', 'LIKE', "%$q%")
+                          ->orWhere('client_name', 'LIKE', "%$q%")
+                          ->orWhere('emails', 'LIKE', "%$q%")
+                          ->orWhere('phones', 'LIKE', "%$q%");
+                    })
+                    // Created By for Payment
+                    ->orWhereHasMorph('createdBy', [\App\Models\User::class, \App\Models\Sale::class], function($c) use ($q) {
+                        $c->where('name', 'LIKE', "%$q%")
+                          ->orWhere('email', 'LIKE', "%$q%");
+                    });
             });
+        }
+
+        // Date Range Filter
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('transaction_date', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
         }
 
         // Status Filter
@@ -31,12 +53,17 @@ class PaymentController extends Controller
             $query->where('status_id', $request->status_id);
         }
 
+        $aggQuery = clone $query;
         $payments = $query->latest()->get();
 
-        // Summaries (Keep them global)
-        $totalCollected = Payment::sum('amount');
-        $totalOrderValue = Order::sum('order_value');
-        $totalOutstanding = $totalOrderValue - $totalCollected;
+        // Summaries
+        $totalCollected = (clone $aggQuery)->sum('amount');
+        
+        $orderIds = (clone $aggQuery)->pluck('order_id')->unique();
+        $totalOrderValue = Order::whereIn('id', $orderIds)->sum('order_value');
+        $actualCollectedForTheseOrders = Payment::whereIn('order_id', $orderIds)->sum('amount');
+        
+        $totalOutstanding = $totalOrderValue - $actualCollectedForTheseOrders;
 
         $allStatuses = Status::where('type', 'payment')->get(); // Filter by payment status now
 
