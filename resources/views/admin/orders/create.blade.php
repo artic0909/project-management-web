@@ -323,7 +323,7 @@
                 {{-- RIGHT — 4 --}}
                 <div class="span-4" style="display:flex;flex-direction:column;gap:16px;">
 
-                    <div class="dash-card" style="position:sticky;top:80px;overflow:visible;">
+                    <div class="dash-card" style="position:sticky;top:80px;overflow:visible;z-index:10;">
                         <div class="card-head">
                             <div class="card-title"><i class="bi bi-send-fill" style="color:#10b981;margin-right:6px;"></i>Confirm Conversion</div>
                             <div class="card-sub">Review and initiate delivery</div>
@@ -347,7 +347,7 @@
                             @php 
                                 $assignedIds = isset($lead) ? $lead->assignments->pluck('assigned_to')->toArray() : [];
                             @endphp
-                             <div class="form-row" style="margin-bottom:20px;">
+                             <div class="form-row" style="margin-bottom:20px; position:relative; z-index:99;">
                                 <label class="form-lbl">Assign Personnel</label>
                                 <div class="ms-wrap" id="salesWrap">
                                     <div class="ms-trigger" onclick="toggleMs('salesWrap')">
@@ -398,7 +398,7 @@
                     </div>
 
                     {{-- Internal Notes --}}
-                    <div class="dash-card" style="z-index:-1;">
+                    <div class="dash-card">
                         <div class="card-head" style="padding:16px 18px; border-bottom:1px solid var(--b1);">
                             <div class="card-title">Order Notes History</div>
                         </div>
