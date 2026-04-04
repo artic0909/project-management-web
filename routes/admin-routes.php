@@ -104,8 +104,9 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::post('/order-followup/{id}', [FollowupController::class, 'store'])->name('orders.followup.store');
 
 
-    // Project
+    // Projects
     Route::get('/all-projects', [ProjectController::class, 'index'])->name('projects.index');
+    Route::get('/export-projects', [ProjectController::class, 'export'])->name('projects.export');
     Route::get('/project/create/{order_id?}', [ProjectController::class, 'create'])->name('projects.create');
     Route::post('/project/store', [ProjectController::class, 'store'])->name('projects.store');
     Route::get('/project/show/{id}', [ProjectController::class, 'show'])->name('projects.show');

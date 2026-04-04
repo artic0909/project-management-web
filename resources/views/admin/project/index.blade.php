@@ -17,7 +17,7 @@
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
-                <button class="btn-primary-solid sm">
+                <button type="button" class="btn-primary-solid sm" onclick="exportProjects()">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
                 <a href="{{ route($routePrefix . '.projects.create') }}" class="btn-primary-solid">
@@ -932,6 +932,17 @@
 
             const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
             modal.show();
+        }
+        function exportProjects() {
+            const form = document.querySelector('.card-actions form');
+            if(form) {
+                const formData = new FormData(form);
+                const params = new URLSearchParams(formData);
+                let exportUrl = '{{ route($routePrefix . '.projects.export') }}';
+                window.location.href = exportUrl + '?' + params.toString();
+            } else {
+                window.location.href = '{{ route($routePrefix . '.projects.export') }}';
+            }
         }
     </script>
 @endsection
