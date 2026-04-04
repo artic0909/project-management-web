@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DeveloperController;
 use App\Http\Controllers\Admin\FollowupController;
 use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\MarketingOrderController;
+use App\Http\Controllers\Admin\MeetingController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PlanController;
@@ -39,6 +40,10 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::post('/sources', [SourceController::class, 'store'])->name('sources.store');
     Route::put('/sources/{id}', [SourceController::class, 'edit'])->name('sources.update');
     Route::delete('/sources/{id}', [SourceController::class, 'delete'])->name('sources.destroy');
+
+    // Meetings
+    Route::get('/export-meetings', [MeetingController::class, 'export'])->name('meetings.export');
+    Route::resource('meetings', MeetingController::class);
 
     // Services
     Route::get('/add-services', [ServiceController::class, 'index'])->name('services.index');

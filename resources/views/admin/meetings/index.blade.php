@@ -13,7 +13,10 @@
                     <h1 class="page-title">Meeting Schedule</h1>
                     <p class="page-desc">Track and manage upcoming discussions with clients and teams.</p>
                 </div>
-                <div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn-primary-solid" onclick="exportMeetings()">
+                        <i class="bi bi-file-earmark-spreadsheet"></i> Export
+                    </button>
                     <a href="{{ route($routePrefix . '.meetings.create') }}" class="btn-primary-solid">
                         <i class="bi bi-plus-lg"></i> Schedule Meeting
                     </a>
@@ -86,23 +89,13 @@
                             <div class="card-sub">{{ $meetings->total() }} total meetings</div>
                         </div>
                         <form action="{{ route($routePrefix . '.meetings.index') }}" method="GET" class="card-actions mb-0">
-                             <div class="global-search">
+                             <div class="global-search mb-2">
                                  <i class="bi bi-search"></i>
                                  <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search...">
                                  <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
                              </div>
 
-                             <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
-                             <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
-                             <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
-                             <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
-                                 <i class="bi bi-calendar3"></i>
-                                 <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'All Time' }}</span>
-                                 <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
-                             </button>
-                             <div style="position:relative;">
-                                  @include('admin.includes.date-range-picker')
-                             </div>
+                             
 
                              <select name="status" class="filter-select" onchange="updateFilters()">
                                  <option value="">Status</option>
@@ -110,6 +103,13 @@
                                  <option value="rescheduled" {{ request('status') == 'rescheduled' ? 'selected' : '' }}>Rescheduled</option>
                                  <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
                                  <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : '' }}>Canceled</option>
+                             </select>
+                             
+                             <select name="meeting_type" class="filter-select" onchange="updateFilters()">
+                                 <option value="">Type</option>
+                                 <option value="lead" {{ request('meeting_type') == 'lead' ? 'selected' : '' }}>Lead</option>
+                                 <option value="order" {{ request('meeting_type') == 'order' ? 'selected' : '' }}>Order</option>
+                                 <option value="project" {{ request('meeting_type') == 'project' ? 'selected' : '' }}>Project</option>
                              </select>
 
                              <select name="sale_id" class="filter-select" onchange="updateFilters()">
@@ -800,6 +800,18 @@
             setTimeout(() => {
                 document.getElementById(id).style.display = 'none';
             }, 300);
+        }
+
+        function exportMeetings() {
+            const form = document.querySelector('form.card-actions');
+            if (form) {
+                const formData = new FormData(form);
+                const params = new URLSearchParams(formData);
+                let exportUrl = '{{ route($routePrefix . '.meetings.export') }}';
+                window.location.href = exportUrl + '?' + params.toString();
+            } else {
+                window.location.href = '{{ route($routePrefix . '.meetings.export') }}';
+            }
         }
     </script>
 

@@ -10,6 +10,7 @@ use App\Http\Controllers\Sale\MarketingOrderController;
 use App\Http\Controllers\Sale\OrderController;
 use App\Http\Controllers\Sale\PaymentController;
 use App\Http\Controllers\Sale\ProjectController;
+use App\Http\Controllers\Sale\MeetingController;
 use App\Http\Controllers\Sale\ProjectTaskController;
 use Illuminate\Support\Facades\Route;
 
@@ -94,5 +95,6 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     Route::get('/my-account', [AccountSettingController::class, 'index'])->name('account-settings');
     Route::post('/my-account', [\App\Http\Controllers\Auth\LoginController::class, 'saleProfileAndPasswordUpdate'])->name('account-settings.update');
     // Meetings
+    Route::get('/export-meetings', [MeetingController::class, 'export'])->name('meetings.export');
     Route::resource('meetings', \App\Http\Controllers\Sale\MeetingController::class);
 });

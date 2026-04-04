@@ -68,6 +68,10 @@ class MeetingController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->filled('meeting_type')) {
+            $query->where('meeting_type', $request->meeting_type);
+        }
+
         // Status Counts
         $statsQuery = clone $query;
         $counts = [
@@ -168,5 +172,145 @@ class MeetingController extends Controller
         $meeting->delete();
         $routePrefix = 'admin';
         return redirect()->route($routePrefix . '.meetings.index')->with('success', 'Meeting deleted successfully.');
+    }
+
+    public function export(Request $request)
+    {
+        $query = Meeting::with(['lead', 'order', 'project', 'createdBy']);
+
+        // Filtering
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('meeting_date', [$request->start_date, $request->end_date]);
+        }
+
+        if ($request->filled('sale_id')) {
+            $query->whereJsonContains('assignsale_ids', (int)$request->sale_id);
+        }
+
+        if ($request->filled('dev_id')) {
+            $query->whereJsonContains('assigndev_ids', (int)$request->dev_id);
+        }
+
+        if ($request->has('q') && !empty($request->q)) {
+            $s = $request->q;
+            $cleanId = ltrim(str_ireplace(['#MT-', '#MT0'], '', $s), '0');
+            if(empty($cleanId)) $cleanId = $s;
+
+            $devIds = \App\Models\Developer::where('name', 'like', "%$s%")->orWhere('email', 'like', "%$s%")->pluck('id');
+            $saleIds = \App\Models\Sale::where('name', 'like', "%$s%")->orWhere('email', 'like', "%$s%")->pluck('id');
+
+            $query->where(function($q) use ($s, $cleanId, $devIds, $saleIds) {
+                $q->where('id', 'LIKE', "%$cleanId%")
+                  ->orWhere('meeting_title', 'like', "%$s%")
+                  ->orWhere('meeting_description', 'like', "%$s%")
+                  ->orWhere('status', 'like', "%$s%")
+                  ->orWhere('meeting_type', 'like', "%$s%")
+                  ->orWhereHas('lead', function($lq) use ($s) {
+                      $lq->where('company', 'like', "%$s%")->orWhere('contact_person', 'like', "%$s%");
+                  })
+                  ->orWhereHas('order', function($oq) use ($s) {
+                      $oq->where('company_name', 'like', "%$s%")->orWhere('client_name', 'like', "%$s%");
+                  })
+                  ->orWhereHas('project', function($pq) use ($s) {
+                      $pq->where('project_name', 'like', "%$s%");
+                  });
+
+                foreach($devIds as $dId) {
+                    $q->orWhereJsonContains('assigndev_ids', $dId);
+                }
+                foreach($saleIds as $sId) {
+                    $q->orWhereJsonContains('assignsale_ids', $sId);
+                }
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('meeting_type')) {
+            $query->where('meeting_type', $request->meeting_type);
+        }
+
+        $meetings = $query->orderBy('meeting_date', 'desc')->get();
+
+        $filename = "meetings_export_" . date('Y-m-d_H-i-s') . ".csv";
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function() use($meetings) {
+            $file = fopen('php://output', 'w');
+            fputs($file, "\xEF\xBB\xBF");
+            
+            fputcsv($file, [
+                'Meeting ID',
+                'Date',
+                'Time',
+                'Type',
+                'Target (Lead/Order/Project)',
+                'Title',
+                'Description',
+                'Status',
+                'Meeting Link',
+                'Developers',
+                'Sales Team',
+                'Created By',
+                'Created At'
+            ]);
+
+            $developers = Developer::all()->pluck('name', 'id')->toArray();
+            $sales = Sale::all()->pluck('name', 'id')->toArray();
+
+            foreach ($meetings as $meeting) {
+                $target = '';
+                if($meeting->meeting_type == 'lead' && $meeting->lead) {
+                    $target = $meeting->lead->company . ' (Lead #' . $meeting->lead_id . ')';
+                } elseif($meeting->meeting_type == 'order' && $meeting->order) {
+                    $target = $meeting->order->company_name . ' (Order #' . $meeting->order_id . ')';
+                } elseif($meeting->meeting_type == 'project' && $meeting->project) {
+                    $target = $meeting->project->project_name . ' (Project #' . $meeting->project_id . ')';
+                }
+
+                $d_ids = is_string($meeting->assigndev_ids) ? json_decode($meeting->assigndev_ids, true) : ($meeting->assigndev_ids ?? []);
+                $devsList = [];
+                foreach((array)$d_ids as $id) {
+                    if(isset($developers[$id])) $devsList[] = $developers[$id];
+                }
+                $devsStr = implode(', ', $devsList);
+
+                $s_ids = is_string($meeting->assignsale_ids) ? json_decode($meeting->assignsale_ids, true) : ($meeting->assignsale_ids ?? []);
+                $salesList = [];
+                foreach((array)$s_ids as $id) {
+                    if(isset($sales[$id])) $salesList[] = $sales[$id];
+                }
+                $salesStr = implode(', ', $salesList);
+
+                $createdBy = $meeting->createdBy ? $meeting->createdBy->name . ' (' . $meeting->createdBy->email . ')' : 'System';
+
+                fputcsv($file, [
+                    '#MT-' . $meeting->id,
+                    $meeting->meeting_date->format('Y-m-d'),
+                    \Carbon\Carbon::parse($meeting->meeting_time)->format('h:i A'),
+                    strtoupper($meeting->meeting_type),
+                    $target,
+                    $meeting->meeting_title,
+                    $meeting->meeting_description,
+                    ucfirst($meeting->status),
+                    $meeting->meeting_link,
+                    $devsStr,
+                    $salesStr,
+                    $createdBy,
+                    $meeting->created_at->format('Y-m-d H:i:s')
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }
