@@ -178,7 +178,7 @@
                             </div>
                         </div>
 
-                        @if($routePrefix == 'admin')
+                 
                         <div id="devSection" style="display:none;">
                             <div class="form-row" style="margin-top:20px;">
                                 <label class="form-lbl">Developers (Internal)</label>
@@ -212,7 +212,7 @@
                                 </div>
                             </div>
                         </div>
-                        @endif
+                     
                     </div>
                 </div>
                 </form>
