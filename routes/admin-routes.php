@@ -62,7 +62,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::get('/add-status', [StatusController::class, 'index'])->name('status');
     Route::post('/add-status', [StatusController::class, 'store'])->name('status.store');
     Route::put('/add-status/{id}', [StatusController::class, 'edit'])->name('status.update');
-    Route::delete('/add-status/{id}', [StatusController::class, 'delete'])->name('status.destroy');
+    Route::delete('/add-status/{id}', [StatusController::class, 'destroy'])->name('status.destroy');
 
     // Leads
     Route::get('/all-leads', [LeadController::class, 'index'])->name('leads.index');
