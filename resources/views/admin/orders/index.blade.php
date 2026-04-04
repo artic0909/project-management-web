@@ -177,7 +177,7 @@
         </div>
         <!-- {{-- END KPI CARDS --}} -->
 
-        <div class="dash-grid" id="tableWrap">
+        <div class="dash-grid">
             <div class="dash-card span-12">
                 <div class="card-head">
                     <div>
@@ -241,7 +241,8 @@
                     </div>
                 </div>
 
-                <div class="table-wrap">
+                <div id="tableWrap">
+                    <div class="table-wrap">
                     <table class="data-table" id="ordersTable">
                         <thead>
                             <tr>
@@ -373,6 +374,7 @@
                     <div class="tf-pagination">
                         {{ $orders->links('admin.includes.pagination') }}
                     </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -882,6 +884,12 @@
             const newStats = doc.getElementById('statsWrap');
             if (newStats && statsWrap) {
                 statsWrap.innerHTML = newStats.innerHTML;
+            }
+
+            const newSub = doc.getElementById('orderTableSub');
+            const oldSub = document.getElementById('orderTableSub');
+            if (newSub && oldSub) {
+                oldSub.innerHTML = newSub.innerHTML;
             }
 
             if (tableWrap) tableWrap.style.opacity = '1';

@@ -33,7 +33,7 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
-        $query = $this->getFilteredOrders()->with(['status', 'services', 'sources', 'plans', 'assignments.sale', 'createdBy'])->withCount('followups');
+        $query = $this->getFilteredOrders();
 
         // Search Filter
         if ($request->filled('q')) {
@@ -76,10 +76,12 @@ class OrderController extends Controller
             $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
         }
 
+        $aggQuery = clone $query;
+        $query->with(['status', 'services', 'sources', 'plans', 'assignments.sale', 'createdBy'])->withCount('followups');
         $orders = $query->latest()->paginate(20)->withQueryString();
 
         // Total Calling & Message Followups for the logged-in salesperson's assigned orders
-        $orderIds = $this->getFilteredOrders()->pluck('id');
+        $orderIds = (clone $aggQuery)->pluck('id');
         $followupCounts = \App\Models\Followup::whereIn('followable_id', $orderIds)
             ->where('followable_type', \App\Models\Order::class)
             ->select('followup_type', DB::raw('count(*) as count'))
@@ -90,16 +92,15 @@ class OrderController extends Controller
         $totalMessageUserFollowups = ($followupCounts['Message'] ?? 0) + ($followupCounts['Both'] ?? 0);
 
         // Counts (Only for their orders)
-        $totalOrders = $this->getFilteredOrders()->count();
-        $marketingOrders = $this->getFilteredOrders()->where('is_marketing', true)->count();
-        $totalValue = $this->getFilteredOrders()->whereHas('status', function ($q) {
+        $totalOrders = (clone $aggQuery)->count();
+        $marketingOrders = (clone $aggQuery)->where('is_marketing', true)->count();
+        $totalValue = (clone $aggQuery)->whereHas('status', function ($q) {
             $q->where('name', '!=', 'cancel');
         })->sum('order_value');
-        $cancelledOrders = $this->getFilteredOrders()->whereHas('status', function ($q) {
+        $cancelledOrders = (clone $aggQuery)->whereHas('status', function ($q) {
             $q->where('name', 'cancel');
         })->count();
 
-        $orderIds = $this->getFilteredOrders()->pluck('id');
         $totalReceived = \App\Models\Payment::whereIn('order_id', $orderIds)->sum('amount');
         $pendingValue = $totalValue - $totalReceived;
 

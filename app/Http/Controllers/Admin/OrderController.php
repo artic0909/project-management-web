@@ -18,7 +18,7 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $routePrefix = 'admin';
-        $query = Order::with(['status', 'services', 'sources', 'plans', 'assignments.sale', 'createdBy'])->withCount('followups');
+        $query = Order::query();
 
         // Search Filter
         if ($request->filled('q')) {
@@ -66,6 +66,8 @@ class OrderController extends Controller
             });
         }
 
+        $aggQuery = clone $query;
+        $query->with(['status', 'services', 'sources', 'plans', 'assignments.sale', 'createdBy'])->withCount('followups');
         $orders = $query->latest()->paginate(20)->withQueryString();
         
         // Total Followups for filtered salesperson
@@ -89,15 +91,15 @@ class OrderController extends Controller
         }
         
         // Counts
-        $totalOrders = Order::count();
-        $marketingOrders = Order::where('is_marketing', true)->count();
-        $totalValue = Order::whereHas('status', function($q) {
+        $totalOrders = (clone $aggQuery)->count();
+        $marketingOrders = (clone $aggQuery)->where('is_marketing', true)->count();
+        $totalValue = (clone $aggQuery)->whereHas('status', function($q) {
             $q->where('name', '!=', 'cancel');
         })->sum('order_value');
-        $cancelledOrders = Order::whereHas('status', function($q) {
+        $cancelledOrders = (clone $aggQuery)->whereHas('status', function($q) {
             $q->where('name', 'cancel'); // Corrected from 'Cancelled'
         })->count();
-        $totalReceived = \App\Models\Payment::sum('amount');
+        $totalReceived = \App\Models\Payment::whereIn('order_id', (clone $aggQuery)->select('id'))->sum('amount');
         $pendingValue = $totalValue - $totalReceived;
 
         $allStatuses = Status::where('type', 'order')->get();
