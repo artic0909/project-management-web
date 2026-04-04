@@ -16,7 +16,8 @@ class ProjectTaskController extends Controller
     {
         $project = Project::with(['tasks.assignments.developer', 'tasks.creator'])->findOrFail($projectId);
         $developers = Developer::all();
-        return view('admin.project.tasks', compact('project', 'developers'));
+        $routePrefix = 'admin';
+        return view('admin.project.tasks', compact('project', 'developers', 'routePrefix'));
     }
 
     public function store(Request $request, $projectId)

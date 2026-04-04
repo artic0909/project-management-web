@@ -11,6 +11,8 @@ Route::middleware(['auth:developer'])->prefix('developer')->name('developer.')->
 
     // Projects
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
+    Route::get('/export-projects', [ProjectController::class, 'export'])->name('projects.export');
+    Route::post('/projects/quick-update/{id}', [ProjectController::class, 'quickUpdate'])->name('projects.quickUpdate');
     Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
 
     // Tasks

@@ -30,7 +30,8 @@ class ProjectTaskController extends Controller
         $project = $this->getScopedProject($projectId);
         $project->load(['tasks.assignments.developer', 'tasks.creator']);
         $developers = Developer::all();
-        return view('sale.project.tasks', compact('project', 'developers'));
+        $routePrefix = 'sale';
+        return view('admin.project.tasks', compact('project', 'developers', 'routePrefix'));
     }
 
     public function store(Request $request, $projectId)

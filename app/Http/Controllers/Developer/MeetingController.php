@@ -49,7 +49,9 @@ class MeetingController extends Controller
         $sales = Sale::all();
         $developers = Developer::all();
             
-        return view('developer.meetings.index', compact('meetings', 'counts', 'sales', 'developers'));
+        $routePrefix = 'developer';
+            
+        return view('admin.meetings.index', compact('meetings', 'counts', 'sales', 'developers', 'routePrefix'));
     }
 
     public function show(Meeting $meeting)
@@ -60,6 +62,7 @@ class MeetingController extends Controller
         }
         
         $meeting->load(['lead', 'order', 'project', 'createdBy']);
-        return view('developer.meetings.show', compact('meeting'));
+        $routePrefix = 'developer';
+        return view('admin.meetings.show', compact('meeting', 'routePrefix'));
     }
 }

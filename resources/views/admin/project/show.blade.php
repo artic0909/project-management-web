@@ -38,7 +38,7 @@
                     </div>
                 </div>
                 <div class="header-actions">
-                    
+                    @if($routePrefix == 'admin')
                     <a href="{{ route($routePrefix . '.projects.edit', $project->id) }}" class="btn-primary-solid sm">
                         <i class="bi bi-pencil-square"></i> Edit Project
                     </a>
@@ -47,14 +47,7 @@
                             <i class="bi bi-wallet2"></i> Add Payment
                         </a>
                     @endif
-                    <!-- <form action="{{ route($routePrefix . '.projects.destroy', $project->id) }}" method="POST"
-                        onsubmit="return confirm('Are you sure?')" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn-ghost sm" style="color:#ef4444;">
-                            <i class="bi bi-trash3"></i> Delete
-                        </button>
-                    </form> -->
+                    @endif
                     <a href="{{ route($routePrefix . '.projects.index') }}" class="btn-ghost sm">
                         <i class="bi bi-arrow-left"></i> Back to List
                     </a>
@@ -320,6 +313,7 @@
                 <div class="span-4" style="display:flex;flex-direction:column;gap:20px;">
 
                     {{-- Quick Update Form --}}
+                    
                     <div class="dash-card" style="border: 2px solid var(--accent);box-shadow: 0 10px 30px rgba(99,102,241,0.1);">
                         <div class="card-head" style="background:rgba(99,102,241,0.05);border-bottom:1px solid var(--b1);">
                             <div class="card-title"><i class="bi bi-lightning-charge-fill" style="color:var(--accent);margin-right:6px;"></i>Quick Update</div>
@@ -345,16 +339,19 @@
                                         </select>
                                     </div>
                                 </div>
+                               
                                 <div class="form-row" style="margin-bottom:12px;">
                                     <label class="form-lbl" style="font-size:9px;">Latest Feedback / Notes</label>
                                     <textarea name="internal_notes" class="form-inp" rows="2" style="font-size:12px;padding:8px;" placeholder="Add a quick note..."></textarea>
                                 </div>
+                       
                                 <button type="submit" class="btn-primary-solid" style="width:100%;justify-content:center;padding:8px;font-size:13px;">
                                     Update Now
                                 </button>
                             </form>
                         </div>
                     </div>
+                
 
                     {{-- Financials --}}
                     <!-- <div class="dash-card fb-top-accent">

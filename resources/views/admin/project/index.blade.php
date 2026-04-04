@@ -14,15 +14,21 @@
                 <p class="page-desc">Manage website and development projects</p>
             </div>
             <div class="header-actions">
+                @if($routePrefix == 'admin')
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
+                @endif
+                @if($routePrefix == 'admin' || $routePrefix == 'sale' || $routePrefix == 'developer')
                 <button type="button" class="btn-primary-solid sm" onclick="exportProjects()">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
+                @endif
+                @if($routePrefix == 'admin')
                 <a href="{{ route($routePrefix . '.projects.create') }}" class="btn-primary-solid">
                     <i class="bi bi-plus-lg"></i> Add Project
                 </a>
+                @endif
             </div>
         </div>
 
@@ -353,19 +359,21 @@
                                            onclick="handleContactClick(event, 'mailto', {{ json_encode($emailList) }})" title="Email Client">
                                             <i class="bi bi-envelope-fill"></i>
                                         </a>
-                                        
+                                        @if($routePrefix == 'admin' || $routePrefix == 'sale')
                                         <a href="{{ route($routePrefix . '.meetings.create', ['project_id' => $project->id]) }}" class="ra-btn" title="Meeting"><i class="bi bi-camera-video-fill"></i></a>
-
+                                        @endif
                                         <a href="{{ route($routePrefix . '.projects.tasks', $project->id) }}" class="ra-btn" title="Tasks" style="color:#6366f1;background:rgba(99,102,241,0.1);"><i class="bi bi-list-task"></i></a>
                                         <a href="{{ route($routePrefix . '.projects.show', $project->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                        @if($project->order_id)
-                                        <a href="{{ route($routePrefix . '.payments.create', $project->order_id) }}" class="ra-btn" title="Payments"><i class="bi bi-wallet2"></i></a>
+                                        @if($routePrefix == 'admin')
+                                            @if($project->order_id)
+                                            <a href="{{ route($routePrefix . '.payments.create', $project->order_id) }}" class="ra-btn" title="Payments"><i class="bi bi-wallet2"></i></a>
+                                            @endif
+                                            <a href="{{ route($routePrefix . '.projects.edit', $project->id) }}" class="ra-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
+                                            <button type="button" class="ra-btn danger" title="Delete" 
+                                                    onclick="openDeleteModal('{{ route($routePrefix . '.projects.destroy', $project->id) }}')">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
                                         @endif
-                                        <a href="{{ route($routePrefix . '.projects.edit', $project->id) }}" class="ra-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
-                                        <button type="button" class="ra-btn danger" title="Delete" 
-                                                onclick="openDeleteModal('{{ route($routePrefix . '.projects.destroy', $project->id) }}')">
-                                            <i class="bi bi-trash-fill"></i>
-                                        </button>
                                     </div>
                                 </td>
                             </tr>

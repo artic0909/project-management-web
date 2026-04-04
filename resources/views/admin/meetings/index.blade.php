@@ -14,12 +14,16 @@
                     <p class="page-desc">Track and manage upcoming discussions with clients and teams.</p>
                 </div>
                 <div class="d-flex gap-2">
+                    @if($routePrefix == 'admin' || $routePrefix == 'sale')
                     <button type="button" class="btn-primary-solid" onclick="exportMeetings()">
                         <i class="bi bi-file-earmark-spreadsheet"></i> Export
                     </button>
+                    @endif
+                    @if($routePrefix == 'admin' || $routePrefix == 'sale')
                     <a href="{{ route($routePrefix . '.meetings.create') }}" class="btn-primary-solid">
                         <i class="bi bi-plus-lg"></i> Schedule Meeting
                     </a>
+                    @endif
                 </div>
             </div>
 
@@ -239,8 +243,10 @@
                                                 @endif
                                                 <a href="{{ route($routePrefix . '.meetings.show', $meeting->id) }}"
                                                     class="act-btn" title="View Details"><i class="bi bi-eye"></i></a>
+                                                @if($routePrefix == 'admin' || $routePrefix == 'sale')
                                                 <a href="{{ route($routePrefix . '.meetings.edit', $meeting->id) }}"
                                                     class="act-btn" title="Edit Meeting"><i class="bi bi-pencil"></i></a>
+                                                @endif
                                                 @if($routePrefix == 'admin')
                                                     <button type="button" class="act-btn danger" title="Delete" onclick="confirmDelete('{{ route($routePrefix . '.meetings.destroy', $meeting->id) }}')">
                                                         <i class="bi bi-trash"></i>

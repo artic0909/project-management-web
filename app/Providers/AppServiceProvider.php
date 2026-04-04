@@ -38,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
             $leadCount = 0;
             $orderCount = 0;
             $projectCount = 0;
+            $taskCount = 0;
             $lostLeadCount = 0;
             $sourceCount = \App\Models\Source::count();
             $serviceCount = \App\Models\Service::count();
@@ -104,6 +105,9 @@ class AppServiceProvider extends ServiceProvider
 
                 $meetingCount = \App\Models\Meeting::whereJsonContains('assigndev_ids', (int)$devId)
                     ->where('status', 'pending')->count();
+                $taskCount = \App\Models\ProjectTask::whereHas('assignments', function($q) use ($devId) {
+                    $q->where('developer_id', (int)$devId);
+                })->where('status', '!=', 'Completed')->count();
             }
 
             $view->with([
@@ -119,6 +123,7 @@ class AppServiceProvider extends ServiceProvider
                 'lostLeadCount' => $lostLeadCount,
                 'projectCount' => $projectCount,
                 'meetingCount' => $meetingCount,
+                'taskCount' => $taskCount,
             ]);
         });
     }

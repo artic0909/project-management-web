@@ -12,17 +12,7 @@ class TaskController extends Controller
 {
     public function projectTasks($projectId)
     {
-        $project = auth()->guard('developer')->user()->projects()->findOrFail($projectId);
-        $tasks = ProjectTask::where('project_id', $projectId)
-            ->whereHas('assignments', function($q) {
-                $q->where('developer_id', auth()->guard('developer')->id());
-            })
-            ->with(['creator', 'assignments' => function($q) {
-                $q->where('developer_id', auth()->guard('developer')->id());
-            }])
-            ->get();
-
-        return view('developer.task.index', compact('project', 'tasks'));
+        return redirect()->route('developer.tasks.completed', ['project_id' => $projectId]);
     }
 
     public function update(Request $request, $taskId)
@@ -48,24 +38,32 @@ class TaskController extends Controller
     {
         $developer = auth()->guard('developer')->user();
         
-        // Counts for KPI cards
         $total_completed = ProjectTask::where('status', 'Completed')
             ->whereHas('assignments', function($q) use ($developer) {
                 $q->where('developer_id', $developer->id);
-            })->count();
+            });
             
-        $total_pending = ProjectTask::where('status', '!=', 'Completed')
+        $total_pending = ProjectTask::where('status', 'Pending')
             ->whereHas('assignments', function($q) use ($developer) {
                 $q->where('developer_id', $developer->id);
-            })->count();
+            });
             
         $total_in_progress = ProjectTask::where('status', 'In Progress')
             ->whereHas('assignments', function($q) use ($developer) {
                 $q->where('developer_id', $developer->id);
-            })->count();
+            });
 
-        $query = ProjectTask::where('status', 'Completed')
-            ->whereHas('assignments', function($q) use ($developer) {
+        if ($request->filled('project_id')) {
+            $total_completed->where('project_id', $request->project_id);
+            $total_pending->where('project_id', $request->project_id);
+            $total_in_progress->where('project_id', $request->project_id);
+        }
+
+        $total_completed = $total_completed->count();
+        $total_pending = $total_pending->count();
+        $total_in_progress = $total_in_progress->count();
+
+        $query = ProjectTask::whereHas('assignments', function($q) use ($developer) {
                 $q->where('developer_id', $developer->id);
             })
             ->with(['project', 'assignments' => function($q) use ($developer) {
@@ -74,17 +72,27 @@ class TaskController extends Controller
             ->latest();
 
         if ($request->filled('date')) {
-            $query->whereDate('updated_at', $request->date);
+            $query->whereDate('created_at', $request->date);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('project_id')) {
+            $query->where('project_id', $request->project_id);
         }
 
         $tasks = $query->paginate(15)->withQueryString();
+        $routePrefix = 'developer';
 
-        return view('developer.task.my-tasks', compact('tasks', 'total_completed', 'total_pending', 'total_in_progress'));
+        return view('admin.tasks.index', compact('tasks', 'total_completed', 'total_pending', 'total_in_progress', 'routePrefix'));
     }
 
     public function show($taskId)
     {
         $task = ProjectTask::with('project', 'creator', 'assignments.developer')->findOrFail($taskId);
-        return view('developer.task.show', compact('task'));
+        $routePrefix = 'developer';
+        return view('admin.tasks.view', compact('task', 'routePrefix'));
     }
 }

@@ -12,7 +12,7 @@
                     <p class="page-desc">{{ $project->company_name ?? 'Client: ' . $project->client_name }}</p>
                 </div>
                 <div class="header-actions">
-                    <a href="{{ route('admin.projects.index') }}" class="btn-ghost sm">
+                    <a href="{{ route($routePrefix . '.projects.index') }}" class="btn-ghost sm">
                         <i class="bi bi-arrow-left"></i> Back to List
                     </a>
                 </div>
@@ -26,7 +26,7 @@
                             <div class="card-title"><i class="bi bi-plus-circle-fill" style="color:var(--accent);margin-right:8px;"></i>Create New Task</div>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('admin.projects.tasks.store', $project->id) }}" method="POST">
+                            <form action="{{ route($routePrefix . '.projects.tasks.store', $project->id) }}" method="POST">
                                 @csrf
                                 <div class="form-row">
                                     <label class="form-lbl">Task Title</label>
@@ -59,6 +59,7 @@
                                                     <label class="ms-opt">
                                                         <input type="checkbox" name="developer_ids[]" value="{{ $dev->id }}" 
                                                             data-name="{{ $dev->name }}" data-initials="{{ $initials }}"
+                                                            {{ in_array($dev->id, $project->developers->pluck('id')->toArray()) ? 'checked' : '' }}
                                                             onchange="updateMs('taskAssignWrap')">
                                                         <span class="ms-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">{{ $initials }}</span>
                                                         <div style="display:flex;flex-direction:column;">
@@ -206,12 +207,12 @@
         .status-pill {
             font-size: 10px;
             font-weight: 700;
-            padding: 2px 10px;
+            padding: 3px 12px;
             border-radius: 20px;
         }
-        .status-pill.pending { background: rgba(245, 158, 11, .12); color: #f59e0b; }
-        .status-pill.in-progress { background: rgba(99, 102, 241, .12); color: #6366f1; }
-        .status-pill.completed { background: rgba(16, 185, 129, .12); color: #10b981; }
+        .status-pill.pending { background: rgba(245, 158, 11, .1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
+        .status-pill.in-progress { background: rgba(99, 102, 241, .1); color: #6366f1; border: 1px solid rgba(99,102,241,0.2); }
+        .status-pill.completed { background: rgba(16, 185, 129, .1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
     </style>
     @include('admin.project._multiselect_assets')
     <script>

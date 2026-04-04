@@ -3031,11 +3031,15 @@
 
 
     @php
-        $guard = auth()->guard('admin')->check() ? 'admin' : (auth()->guard('sale')->check() ? 'sale' : 'web');
-        $panelLabel = $guard === 'admin' ? 'Admin Panel' : ($guard === 'sale' ? 'Sale Panel' : 'User Panel');
+        $guard = auth()->guard('admin')->check() ? 'admin' : (auth()->guard('sale')->check() ? 'sale' : (auth()->guard('developer')->check() ? 'developer' : 'web'));
+        $panelLabel = $guard === 'admin' ? 'Admin Panel' : ($guard === 'sale' ? 'Sale Panel' : ($guard === 'developer' ? 'Developer Panel' : 'User Panel'));
     @endphp
 
-    @include('admin.includes.sidebar')
+    @if($guard === 'developer')
+        @include('developer.includes.sidebar')
+    @else
+        @include('admin.includes.sidebar')
+    @endif
 
 
     <div class="main-wrap" id="mainWrap">
@@ -3105,15 +3109,14 @@
                     <div class="notif-footer"><a href="#">View all notifications →</a></div>
                 </div>
 
-
-                <div class="tb-divider"></div>
                 <div class="tb-user" onclick="toggleUserMenu()">
                     <div class="user-ava sm" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">
                         {{ strtoupper(substr(auth()->guard($guard)->user()->name ?? 'U', 0, 2)) }}
                     </div>
-                    <span class="tb-user-name">{{ auth()->guard($guard)->user()->name }}</span>
-                    <i class="bi bi-chevron-down" style="font-size:10px;color:var(--t3)"></i>
+                    <span class="tb-user-name d-none d-sm-block">{{ auth()->guard($guard)->user()->name ?? 'User' }}</span>
+                    <i class="bi bi-chevron-down ms-1" style="font-size:10px;color:var(--t3)"></i>
                 </div>
+
                 <div class="user-menu" id="userMenu">
                     <a class="um-item" href="{{ route($guard . '.account-settings') }}"><i class="bi bi-person-fill"></i> My Profile</a>
                     <hr class="um-divider">

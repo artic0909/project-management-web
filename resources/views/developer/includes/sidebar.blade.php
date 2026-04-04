@@ -32,7 +32,8 @@
       </a>
 
       <a class="nav-item {{ request()->routeIs('developer.tasks.completed*') ? 'active' : '' }}" href="{{ route('developer.tasks.completed') }}">
-        <i class="bi bi-list-check"></i><span>Completed Tasks</span>
+        <i class="bi bi-list-task"></i><span>My Task</span>
+        <span class="nav-count">{{ $taskCount }}</span>
       </a>
 
       <a class="nav-item {{ request()->routeIs('developer.meetings*') ? 'active' : '' }}" href="{{ route('developer.meetings.index') }}">
