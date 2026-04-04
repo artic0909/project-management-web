@@ -94,7 +94,7 @@ class AppServiceProvider extends ServiceProvider
                       });
                 })->count();
 
-                $meetingCount = \App\Models\Meeting::whereJsonContains('assignsale_ids', (string)$saleId)
+                $meetingCount = \App\Models\Meeting::whereJsonContains('assignsale_ids', (int)$saleId)
                     ->where('status', 'pending')->count();
             } elseif (auth()->guard('developer')->check()) {
                 $devId = auth()->guard('developer')->id();
@@ -102,7 +102,7 @@ class AppServiceProvider extends ServiceProvider
                     $q->where('assigned_to', $devId);
                 })->count();
 
-                $meetingCount = \App\Models\Meeting::whereJsonContains('assigndev_ids', (string)$devId)
+                $meetingCount = \App\Models\Meeting::whereJsonContains('assigndev_ids', (int)$devId)
                     ->where('status', 'pending')->count();
             }
 
