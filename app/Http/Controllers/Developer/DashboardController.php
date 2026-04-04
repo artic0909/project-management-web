@@ -64,7 +64,7 @@ class DashboardController extends Controller
         $availableYears = range(Carbon::now()->year - 2, Carbon::now()->year + 1);
         $routePrefix = 'developer';
 
-        return view('developer.dashboard', compact(
+        return view('admin.dashboard', compact(
             'totalRunningProjects', 'totalCompletedProjects', 
             'pendingTasks', 'completedTasks', 
             'pendingMeetings', 'completedMeetings',

@@ -27,7 +27,7 @@
             <!-- Page Header -->
             <div class="page-header">
                 <div>
-                    <h1 class="page-title">{{ $routePrefix == 'admin' ? 'Admin' : 'Sales' }} Dashboard</h1>
+                    <h1 class="page-title">{{ $routePrefix == 'admin' ? 'Admin' : ($routePrefix == 'developer' ? 'Developer' : 'Sales') }} Dashboard</h1>
                     <p class="page-desc">Live overview · <span id="liveDate"></span></p>
                 </div>
 
@@ -95,6 +95,65 @@
 
             <!-- KPI STRIP -->
             <div class="kpi-grid">
+                @if($routePrefix == 'developer')
+                <div class="kpi-card" style="--kpi-accent:#6366f1">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:rgba(99,102,241,.15);color:#6366f1"><i
+                                class="bi bi-kanban-fill"></i></div>
+                    </div>
+                    <div class="kpi-value">{{ $totalRunningProjects }}</div>
+                    <div class="kpi-label">Total Running Projects</div>
+                </div>
+                <div class="kpi-card" style="--kpi-accent:#10b981">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:rgba(16,185,129,.15);color:#10b981"><i
+                                class="bi bi-check-all"></i></div>
+                    </div>
+                    <div class="kpi-value">{{ $totalCompletedProjects }}</div>
+                    <div class="kpi-label">Total Completed Projects</div>
+                </div>
+                <div class="kpi-card" style="--kpi-accent:#f59e0b">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:rgba(245,158,11,.15);color:#f59e0b"><i
+                                class="bi bi-hourglass-split"></i></div>
+                    </div>
+                    <div class="kpi-value">{{ $pendingTasks }}</div>
+                    <div class="kpi-label">Pending Tasks</div>
+                </div>
+                <div class="kpi-card" style="--kpi-accent:#10b981">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:rgba(16,185,129,.15);color:#10b981"><i
+                                class="bi bi-check2-square"></i></div>
+                    </div>
+                    <div class="kpi-value">{{ $completedTasks }}</div>
+                    <div class="kpi-label">Completed Tasks</div>
+                </div>
+                <div class="kpi-card" style="--kpi-accent:#8b5cf6">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:rgba(139,92,246,.15);color:#8b5cf6"><i
+                                class="bi bi-calendar-event"></i></div>
+                    </div>
+                    <div class="kpi-value">{{ $pendingMeetings }}</div>
+                    <div class="kpi-label">Pending Meetings</div>
+                </div>
+                <div class="kpi-card" style="--kpi-accent:#10b981">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:rgba(16,185,129,.15);color:#10b981"><i
+                                class="bi bi-calendar-check"></i></div>
+                    </div>
+                    <div class="kpi-value">{{ $completedMeetings }}</div>
+                    <div class="kpi-label">Completed Meetings</div>
+                </div>
+                <div class="kpi-card" style="--kpi-accent:#06b6d4">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:rgba(6,182,212,.15);color:#06b6d4"><i
+                                class="bi bi-clock-fill"></i></div>
+                    </div>
+                    <div class="kpi-value">168h</div>
+                    <div class="kpi-label">Hours Logged</div>
+                </div>
+                @else
+                {{-- ADMIN / SALE KPI STRIP --}}
                 <div class="kpi-card" style="--kpi-accent:#6366f1">
                     <div class="kpi-top">
                         <div class="kpi-icon" style="background:rgba(99,102,241,.15);color:#6366f1"><i
@@ -151,6 +210,7 @@
                     </div>
                 </div>
 
+                @if($routePrefix != 'developer')
                 <div class="kpi-card" style="--kpi-accent:#f59e0b">
                     <div class="kpi-top">
                         <div class="kpi-icon" style="background:rgba(245,158,11,.15);color:#f59e0b"><i
@@ -188,6 +248,7 @@
                         <div class="spark-bar active" style="height:90%;--kpi-accent:#10b981"></div>
                     </div>
                 </div>
+                @endif
 
                 <div class="kpi-card" style="--kpi-accent:#8b5cf6">
                     <div class="kpi-top">
@@ -195,7 +256,7 @@
                                 class="bi bi-kanban-fill"></i></div>
 
                     </div>
-                    <div class="kpi-value">{{ number_format($activeProjects) }}</div>
+                    <div class="kpi-value">{{ number_format($routePrefix == 'developer' ? $totalRunningProjects : $activeProjects) }}</div>
                     <div class="kpi-label">Active Projects</div>
                     <div class="kpi-spark">
                         <div class="spark-bar" style="height:80%;--kpi-accent:#8b5cf6"></div>
@@ -214,7 +275,7 @@
                                 class="bi bi-check-circle-fill"></i></div>
 
                     </div>
-                    <div class="kpi-value">{{ number_format($completedProjects) }}</div>
+                    <div class="kpi-value">{{ number_format($routePrefix == 'developer' ? $totalCompletedProjects : $completedProjects) }}</div>
                     <div class="kpi-label">Complete Projects</div>
                     <div class="kpi-spark">
                         <div class="spark-bar" style="height:80%;--kpi-accent:#10b981"></div>
@@ -304,8 +365,10 @@
                     </div>
                 </div>
                 @endif
+                @endif
             </div>
 
+            @if($routePrefix != 'developer')
             <!-- MAIN GRID -->
             <div class="dash-grid">
 
@@ -407,6 +470,7 @@
                 </div>
 
             </div>
+            @endif
         </div>
 
     </main>

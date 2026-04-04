@@ -10,7 +10,8 @@ class AccountSettingController extends Controller
     public function index()
     {
         $developer = auth()->guard('developer')->user();
-        return view('developer.account-settings', compact('developer'));
+        $routePrefix = 'developer';
+        return view('admin.account-settings', compact('developer', 'routePrefix'));
     }
 
     public function update(Request $request)

@@ -3036,7 +3036,7 @@
     @endphp
 
     @if($guard === 'developer')
-        @include('developer.includes.sidebar')
+        @include('admin.includes.sidebar-developer')
     @else
         @include('admin.includes.sidebar')
     @endif
