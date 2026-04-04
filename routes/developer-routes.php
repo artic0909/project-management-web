@@ -26,5 +26,6 @@ Route::middleware(['auth:developer'])->prefix('developer')->name('developer.')->
     Route::post('/my-account/update', [AccountSettingController::class, 'update'])->name('account-settings.update');
     // Meetings
     Route::get('/meetings', [\App\Http\Controllers\Developer\MeetingController::class, 'index'])->name('meetings.index');
+    Route::get('/meetings/export', [\App\Http\Controllers\Developer\MeetingController::class, 'export'])->name('meetings.export');
     Route::get('/meetings/{meeting}', [\App\Http\Controllers\Developer\MeetingController::class, 'show'])->name('meetings.show');
 });

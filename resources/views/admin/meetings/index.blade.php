@@ -14,11 +14,11 @@
                     <p class="page-desc">Track and manage upcoming discussions with clients and teams.</p>
                 </div>
                 <div class="d-flex gap-2">
-                    @if($routePrefix == 'admin' || $routePrefix == 'sale')
+               
                     <button type="button" class="btn-primary-solid" onclick="exportMeetings()">
                         <i class="bi bi-file-earmark-spreadsheet"></i> Export
                     </button>
-                    @endif
+           
                     @if($routePrefix == 'admin' || $routePrefix == 'sale')
                     <a href="{{ route($routePrefix . '.meetings.create') }}" class="btn-primary-solid">
                         <i class="bi bi-plus-lg"></i> Schedule Meeting
@@ -115,7 +115,7 @@
                                  <option value="order" {{ request('meeting_type') == 'order' ? 'selected' : '' }}>Order</option>
                                  <option value="project" {{ request('meeting_type') == 'project' ? 'selected' : '' }}>Project</option>
                              </select>
-
+@if($routePrefix == 'admin' || $routePrefix == 'sale')
                              <select name="sale_id" class="filter-select" onchange="updateFilters()">
                                  <option value="">Assign To (Sales)</option>
                                  @foreach($sales as $sale)
@@ -129,6 +129,7 @@
                                      <option value="{{ $dev->id }}" {{ request('dev_id') == $dev->id ? 'selected' : '' }}>{{ $dev->name }}</option>
                                  @endforeach
                              </select>
+                             @endif
                         </form>
                     </div>
                 <div class="card-body" style="padding:0;">
