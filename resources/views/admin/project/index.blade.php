@@ -160,7 +160,7 @@
                                     <option value="{{ $source->id }}" {{ request('source_id') == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
                                 @endforeach
                             </select>
-
+@if($routePrefix == 'admin' || $routePrefix == 'sale')
                             <select name="assigned_to" class="filter-select" onchange="updateFilters()">
                                 <option value="">Developers</option>
                                 @foreach($allDevelopers as $dev)
@@ -174,6 +174,7 @@
                                     <option value="{{ $sale->id }}" {{ request('sales_person_id') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
                                 @endforeach
                             </select>
+                            @endif
                         </form>
 
                         <div style="position:relative;">
