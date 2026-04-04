@@ -45,11 +45,36 @@ class ProjectController extends Controller
         // Search Filter
         if ($request->filled('q')) {
             $q = $request->q;
-            $query->where(function($qq) use ($q) {
-                $qq->where('project_name', 'like', "%$q%")
+            $cleanId = ltrim(str_ireplace('#PRJ-', '', $q), '0');
+            if (empty($cleanId)) $cleanId = $q;
+
+            $query->where(function($qq) use ($q, $cleanId) {
+                $qq->where('id', 'LIKE', "%$cleanId%")
+                   ->orWhere('project_name', 'like', "%$q%")
                    ->orWhere('client_name', 'like', "%$q%")
                    ->orWhere('company_name', 'like', "%$q%")
-                   ->orWhere('domain_name', 'like', "%$q%");
+                   ->orWhere('domain_name', 'like', "%$q%")
+                   ->orWhere('emails', 'like', "%$q%")
+                   ->orWhere('phones', 'like', "%$q%")
+                   ->orWhere('cms_platform', 'like', "%$q%")
+                   ->orWhereHas('projectStatus', function($s) use ($q) {
+                       $s->where('name', 'like', "%$q%");
+                   })
+                   ->orWhereHas('services', function($s) use ($q) {
+                       $s->where('services.name', 'like', "%$q%");
+                   })
+                   ->orWhereHas('developers', function($s) use ($q) {
+                       $s->where('developers.name', 'like', "%$q%")
+                         ->orWhere('developers.email', 'like', "%$q%");
+                   })
+                   ->orWhereHas('salesPersons', function($s) use ($q) {
+                       $s->where('sales.name', 'like', "%$q%")
+                         ->orWhere('sales.email', 'like', "%$q%");
+                   })
+                   ->orWhereHasMorph('createdBy', [\App\Models\User::class, \App\Models\Sale::class], function($s) use ($q) {
+                       $s->where('name', 'LIKE', "%$q%")
+                         ->orWhere('email', 'LIKE', "%$q%");
+                   });
             });
         }
 
@@ -79,20 +104,21 @@ class ProjectController extends Controller
             $query->where('payment_status_id', $request->payment_status_id);
         }
 
+        $aggQuery = clone $query;
         $projects = $query->latest()->paginate(10)->withQueryString();
         
-        // Accurate Counts (Only for their projects)
-        $totalProjects = $this->getFilteredProjects()->count();
+        // Accurate Counts (dynamically reflect filters)
+        $totalProjects = (clone $aggQuery)->count();
         
-        $activeProjects = $this->getFilteredProjects()->whereHas('projectStatus', function($q) {
+        $activeProjects = (clone $aggQuery)->whereHas('projectStatus', function($q) {
             $q->where('name', 'development');
         })->count();
 
-        $completedProjects = $this->getFilteredProjects()->whereHas('projectStatus', function($q) {
+        $completedProjects = (clone $aggQuery)->whereHas('projectStatus', function($q) {
             $q->where('name', 'complete');
         })->count();
 
-        $onHoldProjects = $this->getFilteredProjects()->whereHas('projectStatus', function($q) {
+        $onHoldProjects = (clone $aggQuery)->whereHas('projectStatus', function($q) {
             $q->where('name', 'on hold');
         })->count();
 

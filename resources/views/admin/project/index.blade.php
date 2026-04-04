@@ -101,7 +101,7 @@
         </div>
 
         {{-- ── TABLE ── --}}
-        <div class="dash-grid" id="tableWrap">
+        <div class="dash-grid">
             <div class="dash-card span-12">
                 <div class="card-head">
                     <div>
@@ -117,7 +117,11 @@
                             </div>
 
                             <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
-                            <!-- here -->
+                            <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
+                                <i class="bi bi-calendar3"></i>
+                                <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'All Time' }}</span>
+                                <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
+                            </button>
 
                             <!-- Hidden inputs for date range -->
                             <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
@@ -172,7 +176,8 @@
                     </div>
                 </div>
 
-                <div class="table-wrap">
+                <div id="tableWrap">
+                    <div class="table-wrap">
                     <table class="data-table" id="projectsTable">
                         <thead>
                             <tr>
@@ -376,6 +381,7 @@
                     <div class="tf-pagination">
                         {{ $projects->links('pagination::bootstrap-4') }}
                     </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -810,6 +816,12 @@
             const newStats = doc.getElementById('statsWrap');
             if (newStats && statsWrap) {
                 statsWrap.innerHTML = newStats.innerHTML;
+            }
+
+            const newSub = doc.getElementById('projectTableSub');
+            const oldSub = document.getElementById('projectTableSub');
+            if (newSub && oldSub) {
+                oldSub.innerHTML = newSub.innerHTML;
             }
 
             if (tableWrap) tableWrap.style.opacity = '1';
