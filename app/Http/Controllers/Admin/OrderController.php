@@ -23,12 +23,32 @@ class OrderController extends Controller
         // Search Filter
         if ($request->filled('q')) {
             $q = $request->q;
-            $query->where(function ($sub) use ($q) {
-                $sub->where('company_name', 'LIKE', "%$q%")
+            $cleanId = ltrim(str_ireplace('#ORD-', '', $q), '0');
+            if (empty($cleanId)) $cleanId = $q;
+
+            $query->where(function ($sub) use ($q, $cleanId) {
+                $sub->where('id', 'LIKE', "%$cleanId%")
+                    ->orWhere('company_name', 'LIKE', "%$q%")
                     ->orWhere('client_name', 'LIKE', "%$q%")
                     ->orWhere('emails', 'LIKE', "%$q%")
                     ->orWhere('phones', 'LIKE', "%$q%")
-                    ->orWhere('domain_name', 'LIKE', "%$q%");
+                    ->orWhere('domain_name', 'LIKE', "%$q%")
+                    ->orWhere('order_value', 'LIKE', "%$q%")
+                    ->orWhere('advance_payment', 'LIKE', "%$q%")
+                    ->orWhereHas('status', function($s) use ($q) {
+                        $s->where('name', 'LIKE', "%$q%");
+                    })
+                    ->orWhereHas('services', function($s) use ($q) {
+                        $s->where('services.name', 'LIKE', "%$q%");
+                    })
+                    ->orWhereHas('sales', function($s) use ($q) {
+                        $s->where('sales.name', 'LIKE', "%$q%")
+                          ->orWhere('sales.email', 'LIKE', "%$q%");
+                    })
+                    ->orWhereHasMorph('createdBy', [\App\Models\User::class, \App\Models\Sale::class], function ($s) use ($q) {
+                        $s->where('name', 'LIKE', "%$q%")
+                          ->orWhere('email', 'LIKE', "%$q%");
+                    });
             });
         }
 
