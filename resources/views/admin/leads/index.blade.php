@@ -201,10 +201,10 @@
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
-                <button class="btn-primary-solid sm">
+                @endif
+                <button class="btn-primary-solid sm" onclick="exportLeads()">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
-                @endif
                 <a class="btn-primary-solid sm" href="{{ route($routePrefix . '.leads.create') }}">
                     <i class="bi bi-plus-lg"></i> Add Lead
                 </a>
@@ -657,6 +657,16 @@
                 if (wrap) wrap.style.opacity = '1';
             }
         }
+
+        window.exportLeads = function() {
+            const form = document.querySelector('.card-actions');
+            let params = '';
+            if (form) {
+                const formData = new FormData(form);
+                params = '?' + new URLSearchParams(formData).toString();
+            }
+            window.location.href = "{{ route($routePrefix . '.leads.export') }}" + params;
+        };
 
         let debounceTimer;
         document.addEventListener('input', function(e) {
