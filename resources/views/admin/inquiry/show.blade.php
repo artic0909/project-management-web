@@ -199,7 +199,7 @@
                                 <select name="status" class="form-inp" style="border-left: 4px solid var(--accent);">
                                     <option value="pending" {{ $inquiry->status == 'pending' ? 'selected' : '' }}>Pending</option>
                                     <option value="reviewed" {{ $inquiry->status == 'reviewed' ? 'selected' : '' }}>Reviewed</option>
-                                    <option value="converted" {{ $inquiry->status == 'converted' ? 'selected' : '' }}>Converted</option>
+                                    <!-- <option value="converted" {{ $inquiry->status == 'converted' ? 'selected' : '' }}>Converted</option> -->
                                     <option value="rejected" {{ $inquiry->status == 'rejected' ? 'selected' : '' }}>Rejected</option>
                                 </select>
                             </div>

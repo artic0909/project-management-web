@@ -27,7 +27,7 @@
                     ['lbl' => 'Total Inquiries', 'val' => $stats['total'], 'ico' => 'bi-inboxes-fill', 'clr' => '#6366f1', 'key' => ''],
                     ['lbl' => 'Pending', 'val' => $stats['pending'], 'ico' => 'bi-hourglass-split', 'clr' => '#f59e0b', 'key' => 'pending'],
                     ['lbl' => 'Reviewed', 'val' => $stats['reviewed'], 'ico' => 'bi-eye-fill', 'clr' => '#0ea5e9', 'key' => 'reviewed'],
-                    ['lbl' => 'Converted', 'val' => $stats['converted'], 'ico' => 'bi-check-circle-fill', 'clr' => '#10b981', 'key' => 'converted'],
+                    // ['lbl' => 'Converted', 'val' => $stats['converted'], 'ico' => 'bi-check-circle-fill', 'clr' => '#10b981', 'key' => 'converted'],
                     ['lbl' => 'Rejected', 'val' => $stats['rejected'], 'ico' => 'bi-x-circle-fill', 'clr' => '#ef4444', 'key' => 'rejected'],
                 ];
             @endphp
