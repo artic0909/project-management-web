@@ -170,8 +170,8 @@
                                                     class="ra-btn" target="_blank" title="Generate Invoice">
                                                     <i class="bi bi-file-earmark-pdf-fill"></i>
                                                 </a>
-                                                <a href="{{ route($routePrefix . '.payments.create', $pay->id) }}"
-                                                    class="ra-btn" title="View Details"><i class="bi bi-eye"></i></a>
+                                                <a href="{{ route($routePrefix . '.payments.create', $pay->order_id) }}"
+                                                    class="ra-btn" title="View Order"><i class="bi bi-eye"></i></a>
                                                 @if($routePrefix == 'admin')
                                                     <button class="ra-btn danger"
                                                         onclick="confirmDelete('{{ route($routePrefix . '.payments.destroy', $pay->id) }}')">
