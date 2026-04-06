@@ -134,20 +134,20 @@
                         <tbody>
                             @forelse ($attendances as $index => $row)
                                 <tr>
-                                    <td>{{ $attendances->firstItem() + $index }}</td>
+                                    <td>{{ ($attendances ?? null) ? $attendances->firstItem() + $index : ($index + 1) }}</td>
                                     <td>
                                         <div class="user-info" style="align-items: center; gap: 8px;">
-                                            <div class="user-ava sm" style="background:#6366f1; width:32px; height:32px; font-size:12px;">{{ strtoupper(substr($row->user->name ?? 'D', 0, 1)) }}</div>
+                                            <div class="user-ava sm" style="background:#6366f1; width:32px; height:32px; font-size:12px;">{{ strtoupper(substr($row->user?->name ?? 'D', 0, 1)) }}</div>
                                             <div class="user-det">
-                                                <div class="u-name-sm" style="font-size:13px; font-weight:600;">{{ $row->user->name ?? 'Unknown' }}</div>
+                                                <div class="u-name-sm" style="font-size:13px; font-weight:600;">{{ $row->user?->name ?? 'Unknown' }}</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{ $row->date->format('d M, Y') }}</td>
+                                    <td>{{ $row->date?->format('d M, Y') ?? 'N/A' }}</td>
                                     <td>{{ $row->check_in_time ? \Carbon\Carbon::parse($row->check_in_time)->format('h:i A') : '--:--' }}</td>
                                     <td>{{ $row->check_out_time ? \Carbon\Carbon::parse($row->check_out_time)->format('h:i A') : '--:--' }}</td>
                                     <td>
-                                        @if($row->late_seconds > 0)
+                                        @if(($row->late_seconds ?? 0) > 0)
                                             <span class="text-danger fw-bold">{{ formatDuration($row->late_seconds) }} Late</span>
                                         @else
                                             <span class="text-success small">On-time</span>
@@ -156,9 +156,9 @@
                                     <td>
                                         @if($row->check_out_time)
                                             @php
-                                                $displaySeconds = $row->total_seconds;
+                                                $displaySeconds = (int)($row->total_seconds ?? 0);
                                                 // Dynamic fallback for older records or test entries
-                                                if($displaySeconds == 0 && $row->check_in_time){
+                                                if($displaySeconds == 0 && $row->check_in_time && $row->date){
                                                     $cIn = \Carbon\Carbon::parse($row->date->format('Y-m-d') . ' ' . $row->check_in_time);
                                                     $cOut = \Carbon\Carbon::parse($row->date->format('Y-m-d') . ' ' . $row->check_out_time);
                                                     $displaySeconds = abs($cOut->diffInSeconds($cIn, false));

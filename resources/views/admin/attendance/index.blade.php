@@ -13,10 +13,11 @@
 
             <div class="page-actions">
                 @php
-                    $isCurrentlyCheckedIn = $todayAttendance && $todayAttendance->is_checked_in;
+                    $isCurrentlyCheckedIn = ($todayAttendance ?? null) && ($todayAttendance?->is_checked_in);
                     $userRole = ucfirst($routePrefix);
 
                     function formatDuration($seconds) {
+                        $seconds = (int)($seconds ?? 0);
                         if($seconds < 0) $seconds = 0;
                         $h = floor($seconds / 3600);
                         $m = floor(($seconds % 3600) / 60);
@@ -25,9 +26,9 @@
                         $res = [];
                         if($h > 0) $res[] = $h . 'h';
                         if($m > 0) $res[] = $m . 'm';
-                        $res[] = $s . 's'; // Always show seconds for accuracy
+                        $res[] = $s . 's'; 
                         
-                        return implode(' ', $res);
+                        return count($res) > 0 ? implode(' ', $res) : '0s';
                     }
                 @endphp
                 
@@ -109,10 +110,10 @@
                             @forelse ($attendances as $index => $row)
                                 <tr>
                                     <td>{{ $attendances->firstItem() + $index }}</td>
-                                    <td style="font-weight:600;">{{ $row->date->format('d M, Y') }}</td>
+                                    <td style="font-weight:600;">{{ $row->date?->format('d M, Y') ?? 'N/A' }}</td>
                                     <td>
-                                        <span class="badge {{ $row->status == 'Present' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }}" style="font-weight:700;">
-                                            {{ strtoupper($row->status) }}
+                                        <span class="badge {{ ($row->status ?? 'Present') == 'Present' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }}" style="font-weight:700;">
+                                            {{ strtoupper($row->status ?? 'Present') }}
                                         </span>
                                     </td>
                                     <td>
@@ -128,7 +129,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        @if($row->late_seconds > 0)
+                                        @if(($row->late_seconds ?? 0) > 0)
                                             <span class="text-danger fw-bold">
                                                 {{ formatDuration($row->late_seconds) }} Late
                                             </span>
@@ -139,9 +140,9 @@
                                     <td>
                                         @if($row->check_out_time)
                                             @php
-                                                $displaySeconds = $row->total_seconds;
+                                                $displaySeconds = (int)($row->total_seconds ?? 0);
                                                 // Dynamic fallback for older records or test entries
-                                                if($displaySeconds == 0 && $row->check_in_time){
+                                                if($displaySeconds == 0 && $row->check_in_time && $row->date){
                                                     $cIn = \Carbon\Carbon::parse($row->date->format('Y-m-d') . ' ' . $row->check_in_time);
                                                     $cOut = \Carbon\Carbon::parse($row->date->format('Y-m-d') . ' ' . $row->check_out_time);
                                                     $displaySeconds = abs($cOut->diffInSeconds($cIn, false));
