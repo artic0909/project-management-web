@@ -1,8 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OrderInquiryController;
 
-Route::view('/', 'welcome')->name('home');
+Route::get('/', function () {
+    $services = \App\Models\Service::all();
+    $sources = \App\Models\Source::all();
+    $plans = \App\Models\Plan::all();
+    $paymentStatuses = \App\Models\Status::where('type', 'payment')->get();
+    return view('welcome', compact('services', 'sources', 'plans', 'paymentStatuses'));
+})->name('home');
+
+Route::post('/order-inquiry', [OrderInquiryController::class, 'store'])->name('order.inquiry.store');
 
 Route::post('/admin/login', [\App\Http\Controllers\Auth\LoginController::class, 'adminLogin'])->name('admin.login.post');
 Route::post('/sale/login', [\App\Http\Controllers\Auth\LoginController::class, 'saleLogin'])->name('sale.login.post');
