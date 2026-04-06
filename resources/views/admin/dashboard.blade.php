@@ -19,6 +19,14 @@
                 }
                 return '₹' . number_format($amount, 0);
             }
+
+            function formatDurationDash($seconds) {
+                if($seconds <= 0) return '0s';
+                $h = floor($seconds / 3600);
+                $m = floor(($seconds % 3600) / 60);
+                $s = $seconds % 60;
+                return ($h > 0 ? $h . 'h ' : '') . ($m > 0 || $h > 0 ? $m . 'm ' : '') . $s . 's';
+            }
         @endphp
 
         <!-- ADMIN DASHBOARD PAGE -->
@@ -149,8 +157,8 @@
                         <div class="kpi-icon" style="background:rgba(6,182,212,.15);color:#06b6d4"><i
                                 class="bi bi-clock-fill"></i></div>
                     </div>
-                    <div class="kpi-value">168h</div>
-                    <div class="kpi-label">Hours Logged</div>
+                    <div class="kpi-value" style="font-size: 18px;">{{ formatDurationDash($totalWorkSeconds ?? 0) }}</div>
+                    <div class="kpi-label">Total Work Hours</div>
                 </div>
                 @else
                 {{-- ADMIN / SALE KPI STRIP --}}

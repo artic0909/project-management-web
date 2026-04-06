@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\ProjectTask;
 use App\Models\Meeting;
+use App\Models\Attendance;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -61,6 +62,11 @@ class DashboardController extends Controller
             ->whereBetween('meeting_date', [$startDate, $endDate])
             ->count();
 
+        $totalWorkSeconds = Attendance::where('user_id', $dev->id)
+            ->where('user_type', 'Developer')
+            ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->sum(DB::raw('ABS(total_seconds)'));
+
         $availableYears = range(Carbon::now()->year - 2, Carbon::now()->year + 1);
         $routePrefix = 'developer';
 
@@ -69,7 +75,7 @@ class DashboardController extends Controller
             'pendingTasks', 'completedTasks', 
             'pendingMeetings', 'completedMeetings',
             'selectedMonth', 'selectedYear', 'availableYears',
-            'routePrefix'
+            'routePrefix', 'totalWorkSeconds'
         ));
     }
 }
