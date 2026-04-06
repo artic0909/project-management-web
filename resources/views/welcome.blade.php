@@ -52,7 +52,11 @@
 
     body {
       font-family: var(--fb);
-      background: var(--paper);
+      background-color: var(--paper);
+      background-image: 
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px;
       color: var(--t1);
       overflow-x: hidden;
       line-height: 1.6
@@ -991,10 +995,10 @@
           <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
         </svg>
       </div>
-      Orion Technologies
+      CRM
     </div>
     <div class="nav-btns">
-      <button class="btn-support" onclick="location.href='#'">Get Support</button>
+      <button class="btn-support" onclick="location.href='{{ route('support.create') }}'">Get Support</button>
       <button class="btn-cta" onclick="document.getElementById('orderForm').scrollIntoView({behavior:'smooth'})">
         <i class="bi bi-plus-circle"></i> Start Project
       </button>
@@ -1170,58 +1174,6 @@
   <!-- FOOTER -->
   <footer>
     <div class="footer-inner">
-      <div class="ftop">
-        <div>
-          <div class="flogo">
-            <div class="flogo-ico">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-              </svg>
-            </div>
-            Orion Technologies
-          </div>
-          <p class="fdesc">Building world-class digital products for Indian businesses since 2016.</p>
-          <div class="fsoc">
-            <div class="socbtn"><i class="bi bi-linkedin"></i></div>
-            <div class="socbtn"><i class="bi bi-twitter-x"></i></div>
-            <div class="socbtn"><i class="bi bi-instagram"></i></div>
-            <div class="socbtn"><i class="bi bi-github"></i></div>
-            <div class="socbtn"><i class="bi bi-whatsapp"></i></div>
-          </div>
-        </div>
-        <div>
-          <div class="fch">Services</div>
-          <div class="fclinks">
-            <a class="fclink" href="#">Web Development</a>
-            <a class="fclink" href="#">Mobile Apps</a>
-            <a class="fclink" href="#">E-Commerce</a>
-            <a class="fclink" href="#">Custom Software</a>
-            <a class="fclink" href="#">UI/UX Design</a>
-          </div>
-        </div>
-        <div>
-          <div class="fch">Company</div>
-          <div class="fclinks">
-            <a class="fclink" href="#">About Us</a>
-            <a class="fclink" href="#">Portfolio</a>
-            <a class="fclink" href="#">Careers</a>
-            <a class="fclink" href="#">Blog</a>
-            <a class="fclink" href="#">Contact</a>
-          </div>
-        </div>
-        <div>
-          <div class="fch">Contact</div>
-          <div class="fclinks">
-            <a class="fclink" href="#"><i class="bi bi-telephone-fill"></i> +91 98765 43210</a>
-            <a class="fclink" href="#"><i class="bi bi-envelope-fill"></i> hello@oriontech.in</a>
-            <a class="fclink" href="#"><i class="bi bi-whatsapp"></i> WhatsApp Chat</a>
-            <a class="fclink" href="#">Privacy Policy</a>
-            <a class="fclink" href="#">Terms of Service</a>
-          </div>
-        </div>
-      </div>
-
       <!-- PANEL LOGIN STRIP -->
       <div class="pstrip">
         <div class="pslabel">Team Portal Access</div>
@@ -1252,12 +1204,6 @@
           </button>
         </div>
       </div>
-
-      <div class="fbot">
-        <div>© 2025 Orion Technologies Pvt. Ltd. · Made in India 🇮🇳</div>
-        <div style="display:flex;gap:18px"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">GST:
-            27AABCO1234F1Z5</a></div>
-      </div>
     </div>
   </footer>
 
@@ -1286,11 +1232,6 @@
             <label class="f-label">Password</label>
             <input type="password" name="password" class="f-input" id="lpass" placeholder="Enter your password"
               required>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;font-size:13px">
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox"
-                name="remember"> Remember me</label>
-            <a style="color:var(--accent);font-weight:600" href="#">Forgot?</a>
           </div>
           <button type="submit" class="lsubmit" id="lbtn">
             <span id="lbtntxt">Sign In</span>
@@ -1545,15 +1486,4 @@
     </div>
   </div>
 </body>
-
-</html>background = c.bb
-      document.getElementById('lbtntxt').textContent = c.bt
-      document.getElementById('loginForm').action = c.action
-      document.getElementById('lmodal').classList.add('open')
-    }
-    function closeL() { document.getElementById('lmodal').classList.remove('open') }
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeL() })
-  </script>
-</body>
-
 </html>

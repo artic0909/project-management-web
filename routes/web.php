@@ -13,6 +13,9 @@ Route::get('/', function () {
 
 Route::post('/order-inquiry', [OrderInquiryController::class, 'store'])->name('order.inquiry.store');
 
+Route::get('/support', [\App\Http\Controllers\SupportController::class, 'create'])->name('support.create');
+Route::post('/support', [\App\Http\Controllers\SupportController::class, 'store'])->name('support.store');
+
 // Admin Inquiry Routes
 Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/inquiries', [OrderInquiryController::class, 'index'])->name('inquiry.index');
@@ -22,6 +25,13 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::put('/inquiries/{id}', [OrderInquiryController::class, 'update'])->name('inquiry.update');
     Route::delete('/inquiries/{id}', [OrderInquiryController::class, 'destroy'])->name('inquiry.destroy');
     Route::post('/inquiries/{id}/status', [OrderInquiryController::class, 'updateStatus'])->name('inquiry.status');
+
+    // Support Ticket Routes
+    Route::get('/supports', [\App\Http\Controllers\SupportController::class, 'adminIndex'])->name('supports.index');
+    Route::get('/supports/{id}', [\App\Http\Controllers\SupportController::class, 'adminShow'])->name('supports.show');
+    Route::post('/supports/{id}/reply', [\App\Http\Controllers\SupportController::class, 'adminReply'])->name('supports.reply');
+    Route::patch('/supports/{id}/status', [\App\Http\Controllers\SupportController::class, 'adminStatusUpdate'])->name('supports.status');
+    Route::delete('/supports/{id}', [\App\Http\Controllers\SupportController::class, 'destroy'])->name('supports.destroy');
 });
 
 Route::post('/admin/login', [\App\Http\Controllers\Auth\LoginController::class, 'adminLogin'])->name('admin.login.post');

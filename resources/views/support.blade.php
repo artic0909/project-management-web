@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Center — Orion Technologies</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --ink: #07080c;
+            --paper: #fcfcfa;
+            --paper2: #f5f4ef;
+            --accent: #ff4d1c;
+            --t1: #07080c;
+            --t2: #3a3d4a;
+            --t3: #6b6f82;
+            --border: rgba(7, 8, 12, .08);
+            --r-lg: 24px;
+            --fd: 'Clash Display', sans-serif;
+            --fb: 'Instrument Sans', sans-serif;
+        }
+
+        body {
+            font-family: var(--fb);
+            background-color: var(--paper);
+            background-image: 
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 40px 40px;
+            color: var(--t1);
+            margin: 0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .support-container {
+            max-width: 900px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .support-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .support-header h1 {
+            font-family: var(--fd);
+            font-size: clamp(32px, 8vw, 48px);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+
+        .support-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: clamp(24px, 5vw, 48px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--t2);
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background-color: var(--paper2);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(255, 77, 28, 0.1);
+            background-color: #fff;
+        }
+
+        .submit-btn {
+            background: var(--ink);
+            color: #fff;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.2s;
+            width: auto;
+        }
+
+        .submit-btn:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 77, 28, 0.2);
+        }
+
+        /* Error Styling matching Bootstrap */
+        .error-message {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 5px;
+            display: block;
+            font-weight: 500;
+        }
+        
+        input.error, select.error, textarea.error {
+            border-color: #dc3545 !important;
+        }
+
+        label.error {
+            color: #dc3545;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .support-container { margin: 40px auto; }
+            .support-card { padding: 24px; }
+            .submit-btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="support-container">
+        <div class="support-header">
+            <span class="badge rounded-pill mb-2" style="background: rgba(255, 77, 28, 0.1); color: var(--accent); padding: 8px 16px; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">Help Center</span>
+            <h1>Support & Help</h1>
+            <p class="text-muted">Need technical assistance? Submit a ticket below.</p>
+        </div>
+
+        @if(session('success'))
+            <div class="alert alert-success border-0 shadow-sm mb-4 py-3" style="border-radius: 16px;">
+                <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+            </div>
+        @endif
+
+        <div class="support-card">
+            <form action="{{ route('support.store') }}" method="POST" enctype="multipart/form-data" id="supportForm" novalidate>
+                @csrf
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label">Company Name <span class="text-danger">*</span></label>
+                        <input type="text" name="company_name" class="form-control @error('company_name') is-invalid @enderror" placeholder="Your organization" required value="{{ old('company_name') }}">
+                        @error('company_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                        <input type="text" name="your_name" class="form-control @error('your_name') is-invalid @enderror" placeholder="John Doe" required value="{{ old('your_name') }}">
+                        @error('your_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                        <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="name@company.com" required value="{{ old('email') }}">
+                        @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                        <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="+1 (555) 000-0000" required value="{{ old('phone') }}">
+                        @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Domain Name</label>
+                        <input type="text" name="domain_name" class="form-control" placeholder="example.com" value="{{ old('domain_name') }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Subject <span class="text-danger">*</span></label>
+                        <input type="text" name="subject" class="form-control @error('subject') is-invalid @enderror" placeholder="Billing Issue" required value="{{ old('subject') }}">
+                        @error('subject') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Priority <span class="text-danger">*</span></label>
+                        <select name="priority" class="form-select" required>
+                            <option value="low" {{ old('priority') == 'low' ? 'selected' : '' }}>Low Priority</option>
+                            <option value="medium" {{ old('priority') == 'medium' ? 'selected' : 'default selected' }}>Medium Priority</option>
+                            <option value="high" {{ old('priority') == 'high' ? 'selected' : '' }}>High Priority</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Attachment (Optional)</label>
+                        <input type="file" name="attachment" class="form-control @error('attachment') is-invalid @enderror" accept="image/*">
+                        @error('attachment') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Detail Message <span class="text-danger">*</span></label>
+                        <textarea name="message" class="form-control @error('message') is-invalid @enderror" rows="5" placeholder="How can we help you?" required>{{ old('message') }}</textarea>
+                        @error('message') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="submit-btn mt-2">Submit Support Ticket</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#supportForm").validate({
+                rules: {
+                    company_name: "required",
+                    your_name: "required",
+                    email: { required: true, email: true },
+                    phone: "required",
+                    subject: "required",
+                    message: { required: true, minlength: 10 }
+                },
+                messages: {
+                    company_name: "Company name is required",
+                    your_name: "Please enter your name",
+                    email: "Enter a valid email address",
+                    phone: "Phone number is required",
+                    subject: "Subject cannot be empty",
+                    message: {
+                        required: "Please describe your request",
+                        minlength: "Message must be at least 10 characters"
+                    }
+                },
+                errorElement: "div",
+                errorClass: "error-message",
+                highlight: function(element) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function(element) {
+                    $(element).removeClass('is-invalid');
+                },
+                errorPlacement: function(error, element) {
+                    error.insertAfter(element);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
