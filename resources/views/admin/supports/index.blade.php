@@ -70,7 +70,6 @@
                                 <td>
                                     <div class="ln">{{ $ticket->company_name }}</div>
                                     <div class="ls">{{ $ticket->your_name }}</div>
-                                    <div class="ls" style="font-size:10px; color:var(--accent);">{{ $ticket->email }} | {{ $ticket->phone }}</div>
                                 </td>
                                 <td>
                                     <div class="ln">{{ $ticket->subject }}</div>
@@ -96,6 +95,13 @@
                                 </td>
                                 <td>
                                     <div class="row-actions">
+                                        <a href="tel:{{ $ticket->phone }}" class="ra-btn phone" title="Call: {{ $ticket->phone }}">
+                                            <i class="bi bi-telephone-fill"></i>
+                                        </a>
+                                        <a href="mailto:{{ $ticket->email }}" class="ra-btn email" title="Email: {{ $ticket->email }}">
+                                            <i class="bi bi-envelope-fill"></i>
+                                        </a>
+
                                         <a href="{{ route('admin.supports.show', $ticket->id) }}" class="ra-btn" title="View & Reply"><i class="bi bi-eye-fill"></i></a>
                                         <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route('admin.supports.destroy', $ticket->id) }}')"><i class="bi bi-trash-fill"></i></button>
                                     </div>
@@ -153,6 +159,14 @@
         const form = document.getElementById('deleteForm');
         form.action = url;
         openModal('deleteModal');
+    }
+
+    // Modal Helpers
+    function openModal(id) {
+        document.getElementById(id).classList.add('open');
+    }
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('open');
     }
 </script>
 
