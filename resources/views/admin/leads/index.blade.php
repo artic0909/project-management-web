@@ -1592,13 +1592,16 @@
             e.preventDefault();
             e.stopPropagation();
 
-            if (!options || options.length === 0) {
+            if (!options || (Array.isArray(options) && options.length === 0)) {
                 alert('No contact details available');
                 return;
             }
 
-            if (options.length === 1) {
-                window.location.href = protocol + ':' + options[0];
+            // Ensure options is an array (handles JSON objects from PHP associative arrays)
+            const optArr = (typeof options === 'object' && !Array.isArray(options)) ? Object.values(options) : options;
+
+            if (optArr.length === 1) {
+                window.location.href = protocol + ':' + optArr[0];
                 return;
             }
 
@@ -1606,10 +1609,12 @@
             const optionsGroup = document.getElementById('contactSelectionOptions');
             const titleEl = document.getElementById('contactSelectionModalLabel');
 
+            if (!modalEl || !optionsGroup || !titleEl) return;
+
             titleEl.textContent = 'Select ' + (protocol === 'tel' ? 'Phone Number' : 'Email Address');
             optionsGroup.innerHTML = '';
 
-            options.forEach(opt => {
+            optArr.forEach(opt => {
                 const item = document.createElement('a');
                 item.className = 'list-group-item list-group-item-action d-flex align-items-center gap-3 py-3 border-bottom-0';
                 item.style.cssText = 'background: transparent; color: var(--t2); border-bottom: 1px solid var(--b1) !important;';
@@ -1629,6 +1634,7 @@
                 optionsGroup.appendChild(item);
             });
 
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
             modal.show();
         }
 
