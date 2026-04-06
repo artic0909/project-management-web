@@ -112,7 +112,7 @@ class PaymentController extends Controller
 
         Payment::create($data);
         $routePrefix = 'admin';
-        return redirect()->route($routePrefix . '.payment.index')->with('success', 'Payment recorded successfully.');
+        return redirect()->route($routePrefix . '.payments.index')->with('success', 'Payment recorded successfully.');
     }
 
     public function destroy($id)
