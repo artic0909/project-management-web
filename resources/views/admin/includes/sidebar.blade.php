@@ -72,6 +72,7 @@
         <span class="nav-count">{{ $orderCount }}</span>
       </a>
 
+
       <a class="nav-item {{ request()->routeIs($routePrefix . 'payments*') ? 'active' : '' }}"
         href="{{ route($routePrefix . 'payments.index') }}">
         <i class="bi bi-wallet2"></i><span>Payments</span>
@@ -123,9 +124,13 @@
           <i class="bi bi-headset"></i><span>Support</span>
         </a>
 
-        <a class="nav-item " href="#">
-          <i class="bi bi-browser-chrome"></i><span>Inquiries</span>
-        </a>
+
+   
+      <a class="nav-item {{ request()->routeIs('admin.inquiry*') ? 'active' : '' }}"
+        href="{{ route('admin.inquiry.index') }}">
+        <i class="bi bi-chat-left-text-fill"></i><span>Inquiries</span>
+      </a>
+
       @endif
 
       <a class="nav-item {{ request()->routeIs($routePrefix . 'account-settings*') ? 'active' : '' }}"
