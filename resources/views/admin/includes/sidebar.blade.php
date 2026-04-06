@@ -97,7 +97,7 @@
         <span class="nav-count">{{ $meetingCount }}</span>
       </a>
 
-      <div class="nav-section-label">People</div>
+      <div class="nav-section-label">Team Members</div>
       @if($guard === 'admin')
         <a class="nav-item {{ request()->routeIs('admin.sales-person*') ? 'active' : '' }}"
           href="{{ route('admin.sales-person') }}">
@@ -105,11 +105,6 @@
           <span class="nav-count">{{ $salesPersonCount }}</span>
         </a>
       @endif
-      <a class="nav-item {{ request()->routeIs($routePrefix . 'attendance*') ? 'active' : '' }}"
-        href="{{ route($routePrefix . 'attendance.index') }}">
-        <i class="bi bi-clock-history"></i><span>{{ $guard === 'admin' ? 'Attendances' : 'My Attendances' }}</span>
-        <div class="nav-dot green"></div>
-      </a>
       @if($guard === 'admin' || $guard === 'sale')
       <a class="nav-item {{ request()->routeIs($routePrefix . 'developer*') ? 'active' : '' }}"
         href="{{ route($routePrefix . 'developer') }}">
@@ -117,6 +112,24 @@
         <span class="nav-count">{{ $developerCount }}</span>
       </a>
       @endif
+      @if ($guard === 'admin')
+        <div class="nav-section-label">Attendance</div>
+        <a class="nav-item {{ request()->routeIs('admin.attendance.sale-index') ? 'active' : '' }}"
+          href="{{ route('admin.attendance.sale-index') }}">
+          <i class="bi bi-person-badge-fill"></i><span>Sale Attendance</span>
+        </a>
+        <a class="nav-item {{ request()->routeIs('admin.attendance.dev-index') ? 'active' : '' }}"
+          href="{{ route('admin.attendance.dev-index') }}">
+          <i class="bi bi-person-workspace"></i><span>Dev Attendance</span>
+        </a>
+      @else
+        <a class="nav-item {{ request()->routeIs($routePrefix . 'attendance*') ? 'active' : '' }}"
+          href="{{ route($routePrefix . 'attendance.index') }}">
+          <i class="bi bi-clock-history"></i><span>My Attendances</span>
+          <div class="nav-dot green"></div>
+        </a>
+      @endif
+      
 
       <div class="nav-section-label">Others</div>
       @if($guard === 'admin')

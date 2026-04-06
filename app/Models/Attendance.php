@@ -17,8 +17,8 @@ class Attendance extends Model
         'status',
         'is_checked_in',
         'note',
-        'late_minutes',
-        'total_minutes',
+        'late_seconds',
+        'total_seconds',
         'ip_address',
         'user_agent'
     ];
