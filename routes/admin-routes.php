@@ -133,6 +133,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::get('/payments/create/{order_id}', [PaymentController::class, 'create'])->name('payments.create');
     Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
     Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
+    Route::get('/payments/{id}/invoice', [PaymentController::class, 'invoice'])->name('payments.invoice');
 
     // Account Settings
     Route::get('/my-account', [AccountSettingController::class, 'index'])->name('account-settings');

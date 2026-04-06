@@ -81,6 +81,7 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     Route::get('/export-payments', [PaymentController::class, 'export'])->name('payments.export');
     Route::get('/payments/create/{order_id}', [PaymentController::class, 'create'])->name('payments.create');
     Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
+    Route::get('/payments/{id}/invoice', [PaymentController::class, 'invoice'])->name('payments.invoice');
     Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
 
     // Developer

@@ -166,7 +166,11 @@
                                         </td>
                                         <td>
                                             <div class="row-actions">
-                                                <a href="{{ route($routePrefix . '.payments.create', $pay->order_id) }}"
+                                                <a href="{{ route($routePrefix . '.payments.invoice', $pay->id) }}" 
+                                                    class="ra-btn" target="_blank" title="Generate Invoice">
+                                                    <i class="bi bi-file-earmark-pdf-fill"></i>
+                                                </a>
+                                                <a href="{{ route($routePrefix . '.payments.create', $pay->id) }}"
                                                     class="ra-btn" title="View Details"><i class="bi bi-eye"></i></a>
                                                 @if($routePrefix == 'admin')
                                                     <button class="ra-btn danger"

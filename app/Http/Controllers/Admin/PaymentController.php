@@ -271,4 +271,11 @@ class PaymentController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+    public function invoice($id)
+    {
+        $payment = Payment::with(['order.status', 'order.services', 'order.sources', 'order.assignments.sale', 'status', 'createdBy'])->findOrFail($id);
+        $routePrefix = 'admin';
+        return view('admin.invoice', compact('payment', 'routePrefix'));
+    }
 }
