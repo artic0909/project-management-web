@@ -80,6 +80,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::get('/edit-lead/{id}', [LeadController::class, 'edit'])->name('leads.edit');
     Route::put('/edit-lead/{id}', [LeadController::class, 'update'])->name('leads.update');
     Route::delete('/delete-lead/{id}', [LeadController::class, 'destroy'])->name('leads.destroy');
+    Route::delete('/delete-leads', [LeadController::class, 'bulkDestroy'])->name('leads.bulk-destroy');
     Route::get('/lead-followup/{id}', [FollowupController::class, 'index'])->name('leads.followup');
     Route::post('/lead-followup/{id}', [FollowupController::class, 'store'])->name('leads.followup.store');
 

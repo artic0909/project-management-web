@@ -29,6 +29,7 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     Route::put('/edit-lead/{id}', [LeadController::class, 'update'])->name('leads.update');
     Route::patch('/update-lead-status/{id}', [LeadController::class, 'updateStatus'])->name('leads.updateStatus');
     Route::delete('/delete-lead/{id}', [LeadController::class, 'destroy'])->name('leads.destroy');
+    Route::delete('/delete-leads', [LeadController::class, 'bulkDestroy'])->name('leads.bulk-destroy');
     Route::get('/lead-followup/{id}', [FollowupController::class, 'index'])->name('leads.followup');
     Route::post('/lead-followup/{id}', [FollowupController::class, 'store'])->name('leads.followup.store');
     
