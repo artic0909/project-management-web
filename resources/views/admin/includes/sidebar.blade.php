@@ -105,7 +105,7 @@
           <span class="nav-count">{{ $salesPersonCount }}</span>
         </a>
       @endif
-      @if($guard === 'admin' || $guard === 'sale')
+      @if($guard === 'admin')
       <a class="nav-item {{ request()->routeIs($routePrefix . 'developer*') ? 'active' : '' }}"
         href="{{ route($routePrefix . 'developer') }}">
         <i class="bi bi-person-workspace"></i><span>Developers</span>
