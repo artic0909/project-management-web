@@ -108,39 +108,32 @@ class LeadController extends Controller
             ->pluck('total', 'priority')
             ->toArray();
 
-        // Status Counts
-        $statuses = Status::where('type', 'lead')->where('name', '!=', 'lost')
-            ->withCount(['leads' => function($q) use ($request) {
-                // Apply filters to status counts if needed, but usually status counters show the total per status
-                // But if search/date is active, we should show only those filtered leads.
-                if ($request->filled('q')) {
-                    $q->where(function($fq) use ($request) {
-                        $s = $request->q;
-                        $fq->where('company', 'like', "%$s%")->orWhere('contact_person', 'like', "%$s%");
-                    });
-                }
-                if ($request->filled('start_date')) {
-                    $q->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
-                }
-            }])->get();
+        // Statistics (Only for those they can see and that match current filters)
+        $statuses = Status::where('type', 'lead')->where('name', '!=', 'lost')->get();
+        foreach($statuses as $status) {
+            $status->leads_count = (clone $statsQuery)->where('status_id', $status->id)->count();
+        }
 
         $convertedLeads = $statuses->where('name', 'Booked')->first()->leads_count ?? 0;
         
-        // Similarly for Sources, Services, Campaigns
-        $sources = Source::withCount(['leads' => function($q) use ($request) {
-            if ($request->filled('q')) $q->where('company', 'like', "%{$request->q}%");
-            if ($request->filled('start_date')) $q->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
-        }])->get();
+        $sources = Source::all();
+        foreach($sources as $source) {
+            $source->leads_count = (clone $statsQuery)->whereHas('sources', function($q) use ($source) {
+                $q->where('sources.id', $source->id);
+            })->count();
+        }
 
-        $services = Service::withCount(['leads' => function($q) use ($request) {
-            if ($request->filled('q')) $q->where('company', 'like', "%{$request->q}%");
-            if ($request->filled('start_date')) $q->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
-        }])->get();
-
-        $campaigns = Campaign::withCount(['leads' => function($q) use ($request) {
-            if ($request->filled('q')) $q->where('company', 'like', "%{$request->q}%");
-            if ($request->filled('start_date')) $q->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
-        }])->get();
+        $services = Service::all();
+        foreach($services as $service) {
+            $service->leads_count = (clone $statsQuery)->whereHas('services', function($q) use ($service) {
+                $q->where('services.id', $service->id);
+            })->count();
+        }
+        
+        $campaigns = Campaign::all();
+        foreach($campaigns as $campaign) {
+            $campaign->leads_count = (clone $statsQuery)->where('campaign_id', $campaign->id)->count();
+        }
 
         $sales = Sale::all();
 

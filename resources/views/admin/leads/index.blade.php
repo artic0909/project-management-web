@@ -273,6 +273,7 @@
                 </div>
             </div>
 
+            @if(($priorityCounts['Hot 🔥'] ?? 0) > 0)
             <div class="stat-box" style="--sb-color:#ef4444;">
                 <div class="sb-icon"><i class="bi bi-fire"></i></div>
                 <div class="sb-content">
@@ -281,7 +282,9 @@
                     <div class="sb-lbl">Hot 🔥</div>
                 </div>
             </div>
+            @endif
 
+            @if(($priorityCounts['Warm'] ?? 0) > 0)
             <div class="stat-box" style="--sb-color:#f59e0b;">
                 <div class="sb-icon"><i class="bi bi-thermometer-half"></i></div>
                 <div class="sb-content">
@@ -290,7 +293,9 @@
                     <div class="sb-lbl">Warm</div>
                 </div>
             </div>
+            @endif
 
+            @if(($priorityCounts['Cold'] ?? 0) > 0)
             <div class="stat-box" style="--sb-color:#06b6d4;">
                 <div class="sb-icon"><i class="bi bi-snow"></i></div>
                 <div class="sb-content">
@@ -299,51 +304,60 @@
                     <div class="sb-lbl">Cold</div>
                 </div>
             </div>
+            @endif
 
             {{-- Row 2+: Status (Dynamic) --}}
             @foreach($statuses as $st)
-            <div class="stat-box" style="--sb-color:#6366f1;">
-                <div class="sb-icon"><i class="bi bi-hash"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#6366f1;">Status</div>
-                    <div class="sb-val">{{ $st->leads_count }}</div>
-                    <div class="sb-lbl">{{ $st->name }}</div>
+                @if($st->leads_count > 0)
+                <div class="stat-box" style="--sb-color:#6366f1;">
+                    <div class="sb-icon"><i class="bi bi-hash"></i></div>
+                    <div class="sb-content">
+                        <div class="sb-cat" style="--cat-color:#6366f1;">Status</div>
+                        <div class="sb-val">{{ $st->leads_count }}</div>
+                        <div class="sb-lbl">{{ $st->name }}</div>
+                    </div>
                 </div>
-            </div>
+                @endif
             @endforeach
 
             {{-- Additional Dynamics --}}
             @foreach($sources as $src)
-            <div class="stat-box" style="--sb-color:#8b5cf6;">
-                <div class="sb-icon"><i class="bi bi-box-arrow-in-right"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#8b5cf6;">Source</div>
-                    <div class="sb-val">{{ $src->leads_count }}</div>
-                    <div class="sb-lbl">{{ $src->name }}</div>
+                @if($src->leads_count > 0)
+                <div class="stat-box" style="--sb-color:#8b5cf6;">
+                    <div class="sb-icon"><i class="bi bi-box-arrow-in-right"></i></div>
+                    <div class="sb-content">
+                        <div class="sb-cat" style="--cat-color:#8b5cf6;">Source</div>
+                        <div class="sb-val">{{ $src->leads_count }}</div>
+                        <div class="sb-lbl">{{ $src->name }}</div>
+                    </div>
                 </div>
-            </div>
+                @endif
             @endforeach
 
             @foreach($services as $srv)
-            <div class="stat-box" style="--sb-color:#ec4899;">
-                <div class="sb-icon"><i class="bi bi-briefcase"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#ec4899;">Service</div>
-                    <div class="sb-val">{{ $srv->leads_count }}</div>
-                    <div class="sb-lbl">{{ $srv->name }}</div>
+                @if($srv->leads_count > 0)
+                <div class="stat-box" style="--sb-color:#ec4899;">
+                    <div class="sb-icon"><i class="bi bi-briefcase"></i></div>
+                    <div class="sb-content">
+                        <div class="sb-cat" style="--cat-color:#ec4899;">Service</div>
+                        <div class="sb-val">{{ $srv->leads_count }}</div>
+                        <div class="sb-lbl">{{ $srv->name }}</div>
+                    </div>
                 </div>
-            </div>
+                @endif
             @endforeach
 
             @foreach($campaigns as $cmp)
-            <div class="stat-box" style="--sb-color:#f59e0b;">
-                <div class="sb-icon"><i class="bi bi-megaphone"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#f59e0b;">Campaign</div>
-                    <div class="sb-val">{{ $cmp->leads_count }}</div>
-                    <div class="sb-lbl">{{ $cmp->name }}</div>
+                @if($cmp->leads_count > 0)
+                <div class="stat-box" style="--sb-color:#f59e0b;">
+                    <div class="sb-icon"><i class="bi bi-megaphone"></i></div>
+                    <div class="sb-content">
+                        <div class="sb-cat" style="--cat-color:#f59e0b;">Campaign</div>
+                        <div class="sb-val">{{ $cmp->leads_count }}</div>
+                        <div class="sb-lbl">{{ $cmp->name }}</div>
+                    </div>
                 </div>
-            </div>
+                @endif
             @endforeach
             
 
