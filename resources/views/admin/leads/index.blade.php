@@ -385,11 +385,6 @@
                         <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
                         <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
 
-                        <!-- {{-- Date Range Picker (replaces simple select) --}} -->
-                        <div style="position:relative;">
-                            @include('admin.includes.date-range-picker')
-                        </div>
-
                         <select name="source_id" class="filter-select" onchange="updateFilters()">
                             <option value="">Lead Source</option>
                             @foreach($sources as $source)
@@ -425,6 +420,11 @@
                         </select>
                         @endif
                     </form>
+
+                    <!-- {{-- Date Range Picker (replaces simple select) --}} -->
+                        <div style="position:relative;">
+                            @include('admin.includes.date-range-picker')
+                        </div>
                 </div>
 
                 <div id="leadsTableWrap">
