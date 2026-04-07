@@ -13,6 +13,9 @@
             </div>
 
             <div class="d-flex gap-2">
+                <button type="button" class="btn-primary-solid sm" id="bulkDeleteOrdersBtn" style="display: none; background: #dc2626; border-color: #dc2626; color: white;" onclick="bulkDeleteSelectedOrders()">
+                    <i class="bi bi-trash-fill"></i> Bulk Delete
+                </button>
                 @if($routePrefix == 'admin')
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
@@ -246,6 +249,9 @@
                     <table class="data-table" id="ordersTable">
                         <thead>
                             <tr>
+                                <th style="width: 40px; text-align: center;">
+                                    <input type="checkbox" id="selectAllOrders" onclick="toggleAllOrders(this)" style="cursor: pointer;">
+                                </th>
                                 <th>SL.</th>
                                 <th>Order ID</th>
                                 <th>Date</th>
@@ -267,6 +273,9 @@
                             <tr data-order-type="{{ $order->is_marketing ? 'marketing' : 'website' }}" 
                                 data-status="{{ strtolower($order->status->name ?? '') }}"
                                 data-service="{{ $order->service_id }}">
+                                <td style="text-align: center;">
+                                    <input type="checkbox" class="order-checkbox" name="order_ids[]" value="{{ $order->id }}" onclick="updateBulkDeleteButtonOrders()" style="cursor: pointer;">
+                                </td>
                                 <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration + ($orders->currentPage() - 1) * $orders->perPage() }}</td>
                                 <td><span class="mono">#ORD-{{ $order->id }}</span></td>
                                 <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $order->created_at->format('d M Y') }}</div></td>
@@ -401,6 +410,29 @@
                 <button class="btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
                 <button style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="document.getElementById('deleteOrderForm').submit()">
                     <i class="bi bi-trash3-fill"></i> Confirm Deletion
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BULK DELETE MODAL -->
+    <div class="modal-backdrop" id="bulkDeleteOrdersModal">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <div class="modal-hd" style="border-bottom:1px solid #fecaca;">
+                <span style="color:#dc2626;">Bulk Delete Orders</span>
+                <button class="modal-close" onclick="closeModal('bulkDeleteOrdersModal')"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-bd" style="text-align:center;padding:32px 24px;">
+                <div style="width:64px;height:64px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                    <i class="bi bi-trash3-fill" style="font-size:28px;color:#dc2626;"></i>
+                </div>
+                <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:var(--t1);">Are you sure?</h3>
+                <p style="margin:0;font-size:14px;color:var(--t3);line-height:1.6;">Are you sure you want to delete the <strong id="bulkDeleteOrdersCount">0</strong> selected orders?<br>This action <strong style="color:#dc2626;">cannot be undone.</strong></p>
+            </div>
+            <div class="modal-ft" style="border-top:1px solid #fecaca;">
+                <button class="btn-ghost" onclick="closeModal('bulkDeleteOrdersModal')">Cancel</button>
+                <button type="button" id="executeBulkDeleteOrdersBtn" onclick="executeBulkDeleteOrders()" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;">
+                    <i class="bi bi-trash3-fill"></i> Delete Orders
                 </button>
             </div>
         </div>
@@ -928,6 +960,72 @@
         }
         window.location.href = "{{ route($routePrefix . '.orders.export') }}" + params;
     };
+
+    function toggleAllOrders(source) {
+        const checkboxes = document.querySelectorAll('.order-checkbox');
+        checkboxes.forEach(cb => cb.checked = source.checked);
+        updateBulkDeleteButtonOrders();
+    }
+
+    function updateBulkDeleteButtonOrders() {
+        const checkedCount = document.querySelectorAll('.order-checkbox:checked').length;
+        const bulkBtn = document.getElementById('bulkDeleteOrdersBtn');
+        if (bulkBtn) {
+            if (checkedCount > 0) {
+                bulkBtn.style.display = 'inline-flex';
+            } else {
+                bulkBtn.style.display = 'none';
+            }
+        }
+    }
+
+    function bulkDeleteSelectedOrders() {
+        const checkedBoxes = document.querySelectorAll('.order-checkbox:checked');
+        if (checkedBoxes.length === 0) return;
+
+        document.getElementById('bulkDeleteOrdersCount').innerText = checkedBoxes.length;
+        openModal('bulkDeleteOrdersModal');
+    }
+
+    function executeBulkDeleteOrders() {
+        const checkedBoxes = document.querySelectorAll('.order-checkbox:checked');
+        if (checkedBoxes.length === 0) return;
+
+        const executeBtn = document.getElementById('executeBulkDeleteOrdersBtn');
+        if (executeBtn) {
+            executeBtn.disabled = true;
+            executeBtn.innerText = 'Deleting...';
+        }
+
+        const ids = Array.from(checkedBoxes).map(cb => cb.value);
+        
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{{ route($routePrefix . '.orders.bulk-destroy') }}";
+        
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = "{{ csrf_token() }}";
+        form.appendChild(csrfInput);
+        
+        const methodInput = document.createElement('input');
+        methodInput.type = 'hidden';
+        methodInput.name = '_method';
+        methodInput.value = 'DELETE';
+        form.appendChild(methodInput);
+
+        ids.forEach(id => {
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'ids[]';
+            idInput.value = id;
+            form.appendChild(idInput);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+    }
 </script>
 
     <!-- ── Contact Selection Modal (Bootstrap) ── -->

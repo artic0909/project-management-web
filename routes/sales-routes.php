@@ -52,6 +52,7 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     Route::put('/edit-order/{id}', [OrderController::class, 'update'])->name('orders.update');
     Route::patch('/update-order-status/{id}', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::delete('/delete-order/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
+    Route::delete('/delete-orders', [OrderController::class, 'bulkDestroy'])->name('orders.bulk-destroy');
     Route::get('/order-followup/{id}', [FollowupController::class, 'index'])->name('orders.followup');
     Route::post('/order-followup/{id}', [FollowupController::class, 'store'])->name('orders.followup.store');
     

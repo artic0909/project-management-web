@@ -223,6 +223,7 @@ class OrderController extends Controller
 
         // Detailed Payment record for Order Creation
         if ($request->input('amount') > 0) {
+            $paymentStatus = \App\Models\Status::where('type', 'payment')->where('name', 'Advance')->first();
             $paymentData = [
                 'order_id' => $order->id,
                 'transaction_date' => $request->input('transaction_date') ?? now(),
@@ -230,7 +231,7 @@ class OrderController extends Controller
                 'payment_method' => $request->input('payment_method', 'Advance'),
                 'transaction_id' => $request->input('transaction_id'),
                 'notes' => $request->input('notes') ?? 'Initial Payment at Order Creation',
-                'status_id' => 21, // Paid/Collected status
+                'status_id' => $paymentStatus ? $paymentStatus->id : null,
                 'created_by' => Auth::id(),
                 'created_by_type' => get_class(Auth::user()),
             ];
@@ -370,13 +371,14 @@ class OrderController extends Controller
 
         // Update Advance Payment Record if none exists
         if ($order->advance_payment > 0 && !$order->payments()->where('payment_method', 'Advance')->exists()) {
+            $paymentStatus = \App\Models\Status::where('type', 'payment')->where('name', 'Paid')->first();
             \App\Models\Payment::create([
                 'order_id' => $order->id,
                 'transaction_date' => now(),
                 'amount' => $order->advance_payment,
                 'payment_method' => 'Advance',
                 'notes' => 'Automated Advance Payment',
-                'status_id' => 21, // 'paid'
+                'status_id' => $paymentStatus ? $paymentStatus->id : null,
                 'created_by' => Auth::id(),
                 'created_by_type' => get_class(Auth::user()),
             ]);
@@ -397,6 +399,18 @@ class OrderController extends Controller
         $order = Order::findOrFail($id);
         $order->delete();
         return redirect()->back()->with('success', 'Order deleted successfully.');
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'exists:orders,id',
+        ]);
+
+        Order::whereIn('id', $request->ids)->delete();
+
+        return redirect()->back()->with('success', count($request->ids) . ' orders deleted successfully!');
     }
 
     public function export(Request $request)
