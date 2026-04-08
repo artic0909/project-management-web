@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Meeting;
 use App\Models\Sale;
 use App\Models\Developer;
+use App\Models\Lead;
+use App\Models\Order;
+use App\Models\Project;
 use Illuminate\Http\Request;
 
 class MeetingController extends Controller
@@ -173,6 +176,49 @@ class MeetingController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 
+    public function create(Request $request)
+    {
+        $user = auth()->guard('developer')->user();
+        $projects = $user->projects;
+        $leads = Lead::all();
+        $orders = Order::all();
+        $developers = Developer::all();
+        $sales = Sale::all();
+        
+        $routePrefix = 'developer';
+        return view('admin.meetings.create', compact('leads', 'orders', 'projects', 'developers', 'sales', 'routePrefix'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'meeting_type' => 'required|in:lead,order,project',
+            'meeting_title' => 'required|string|max:255',
+            'meeting_date' => 'required|date',
+            'meeting_time' => 'required|string',
+            'status' => 'required|string|in:pending,rescheduled,completed,canceled',
+            'meeting_description' => 'nullable|string',
+            'meeting_link' => 'nullable|url',
+        ]);
+
+        $meeting = new Meeting($request->all());
+        $meeting->created_by_id = auth()->guard('developer')->id();
+        $meeting->created_by_type = \App\Models\Developer::class;
+        $meeting->assigndev_ids = array_map('intval', (array)($request->assigndev_ids ?? []));
+        $meeting->assignsale_ids = array_map('intval', (array)($request->assignsale_ids ?? []));
+        
+        // Ensure self is assigned
+        $devId = (int)auth()->guard('developer')->id();
+        if(!in_array($devId, $meeting->assigndev_ids)) {
+            $meeting->assigndev_ids = array_merge([$devId], $meeting->assigndev_ids);
+        }
+        
+        $meeting->save();
+
+        $routePrefix = 'developer';
+        return redirect()->route($routePrefix . '.meetings.index')->with('success', 'Meeting scheduled successfully.');
+    }
+
     public function show(Meeting $meeting)
     {
         $devId = (int)auth()->guard('developer')->id();
@@ -183,6 +229,68 @@ class MeetingController extends Controller
         $meeting->load(['lead', 'order', 'project', 'createdBy']);
         $routePrefix = 'developer';
         return view('admin.meetings.show', compact('meeting', 'routePrefix'));
+    }
+
+    public function edit(Meeting $meeting)
+    {
+        $devId = (int)auth()->guard('developer')->id();
+        if (!in_array($devId, $meeting->assigndev_ids ?? [])) {
+            abort(403);
+        }
+        
+        $user = auth()->guard('developer')->user();
+        $projects = $user->projects;
+        $leads = Lead::all();
+        $orders = Order::all();
+        $developers = Developer::all();
+        $sales = Sale::all();
+        
+        $routePrefix = 'developer';
+        return view('admin.meetings.edit', compact('meeting', 'leads', 'orders', 'projects', 'developers', 'sales', 'routePrefix'));
+    }
+
+    public function update(Request $request, Meeting $meeting)
+    {
+        $devId = (int)auth()->guard('developer')->id();
+        if (!in_array($devId, $meeting->assigndev_ids ?? [])) {
+            abort(403);
+        }
+
+        $request->validate([
+            'meeting_type' => 'required|in:lead,order,project',
+            'meeting_title' => 'required|string|max:255',
+            'meeting_date' => 'required|date',
+            'meeting_time' => 'required|string',
+            'status' => 'required|string|in:pending,rescheduled,completed,canceled',
+            'meeting_description' => 'nullable|string',
+            'meeting_link' => 'nullable|url',
+        ]);
+
+        $meeting->fill($request->all());
+        $meeting->assigndev_ids = array_map('intval', (array)($request->assigndev_ids ?? []));
+        $meeting->assignsale_ids = array_map('intval', (array)($request->assignsale_ids ?? []));
+        
+        // Ensure self stays assigned
+        if(!in_array($devId, $meeting->assigndev_ids)) {
+            $meeting->assigndev_ids = array_merge([$devId], $meeting->assigndev_ids);
+        }
+        
+        $meeting->save();
+
+        $routePrefix = 'developer';
+        return redirect()->route($routePrefix . '.meetings.index')->with('success', 'Meeting updated successfully.');
+    }
+
+    public function destroy(Meeting $meeting)
+    {
+        $devId = (int)auth()->guard('developer')->id();
+        if (!in_array($devId, $meeting->assigndev_ids ?? [])) {
+            abort(403);
+        }
+        
+        $meeting->delete();
+        $routePrefix = 'developer';
+        return redirect()->route($routePrefix . '.meetings.index')->with('success', 'Meeting deleted successfully.');
     }
 
     public function updateStatus(Request $request, $id)

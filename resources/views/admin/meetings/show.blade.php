@@ -18,13 +18,11 @@
                 <h1 class="page-title">{{ $meeting->meeting_title }}</h1>
                 <p class="page-desc">Detailed meeting briefing and participants.</p>
             </div>
-            @if($routePrefix !== 'developer')
-            <div style="display:flex; gap:10px;">
+            <div>
                 <a href="{{ route($routePrefix . '.meetings.edit', $meeting->id) }}" class="btn-primary-ghost">
                     <i class="bi bi-pencil"></i> Edit Details
                 </a>
             </div>
-            @endif
         </div>
 
         <div class="dash-grid">

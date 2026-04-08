@@ -19,7 +19,7 @@
                         <i class="bi bi-file-earmark-spreadsheet"></i> Export
                     </button>
            
-                    @if($routePrefix == 'admin' || $routePrefix == 'sale')
+                    @if($routePrefix == 'admin' || $routePrefix == 'sale' || $routePrefix == 'developer')
                     <a href="{{ route($routePrefix . '.meetings.create') }}" class="btn-primary-solid">
                         <i class="bi bi-plus-lg"></i> Schedule Meeting
                     </a>
@@ -244,11 +244,11 @@
                                                 @endif
                                                 <a href="{{ route($routePrefix . '.meetings.show', $meeting->id) }}"
                                                     class="act-btn" title="View Details"><i class="bi bi-eye"></i></a>
-                                                @if($routePrefix == 'admin' || $routePrefix == 'sale')
+                                                @if($routePrefix == 'admin' || $routePrefix == 'sale' || $routePrefix == 'developer')
                                                 <a href="{{ route($routePrefix . '.meetings.edit', $meeting->id) }}"
                                                     class="act-btn" title="Edit Meeting"><i class="bi bi-pencil"></i></a>
                                                 @endif
-                                                @if($routePrefix == 'admin')
+                                                @if($routePrefix == 'admin' || $routePrefix == 'developer')
                                                     <button type="button" class="act-btn danger" title="Delete" onclick="confirmDelete('{{ route($routePrefix . '.meetings.destroy', $meeting->id) }}')">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
