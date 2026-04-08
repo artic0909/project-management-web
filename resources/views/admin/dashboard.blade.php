@@ -38,6 +38,22 @@
                     <h1 class="page-title">{{ $routePrefix == 'admin' ? 'Admin' : ($routePrefix == 'developer' ? 'Developer' : 'Sales') }} Dashboard</h1>
                     <p class="page-desc">Live overview · <span id="liveDate"></span></p>
                 </div>
+                
+                <!-- Meeting Pinned like show here -->
+                @if(isset($closestMeeting) && $closestMeeting)
+                <div class="meeting-alert" onclick="window.location.href='{{ route($routePrefix . '.meetings.show', $closestMeeting->id) }}'">
+                    <div class="ma-icon"><i class="bi bi-calendar-event-fill"></i></div>
+                    <div class="ma-content">
+                        <div class="ma-title">Upcoming Meeting</div>
+                        <div class="ma-info">
+                            <span class="ma-date"><i class="bi bi-calendar3"></i> {{ $closestMeeting->meeting_date->format('d M, Y') }}</span>
+                            <span class="ma-time"><i class="bi bi-clock"></i> {{ Carbon\Carbon::parse($closestMeeting->meeting_time)->format('h:i A') }}</span>
+                            <span class="ma-topic"><i class="bi bi-chat-dots"></i> {{ $closestMeeting->topic }}</span>
+                        </div>
+                    </div>
+                    <div class="ma-chevron"><i class="bi bi-chevron-right"></i></div>
+                </div>
+                @endif
 
                 <!-- Filters -->
                 <div class="page-actions">
@@ -98,6 +114,101 @@
                 .filter-select option {
                     background: var(--b1);
                     color: var(--t1);
+                }
+
+                /* Meeting Alert Styles */
+                .meeting-alert {
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    background: rgba(239, 68, 68, 0.08);
+                    border: 1px solid rgba(239, 68, 68, 0.2);
+                    border-radius: 12px;
+                    padding: 10px 20px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    position: relative;
+                    overflow: hidden;
+                    animation: pulse-red 2s infinite;
+                    max-width: 500px;
+                }
+
+                @keyframes pulse-red {
+                    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+                    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+                    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+                }
+
+                .meeting-alert:hover {
+                    background: rgba(239, 68, 68, 0.12);
+                    border-color: rgba(239, 68, 68, 0.4);
+                    transform: translateY(-1px);
+                }
+
+                .ma-icon {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 8px;
+                    background: #ef4444;
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 18px;
+                    flex-shrink: 0;
+                }
+
+                .ma-content {
+                    flex: 1;
+                    min-width: 0;
+                }
+
+                .ma-title {
+                    font-size: 11px;
+                    font-weight: 800;
+                    color: #ef4444;
+                    margin-bottom: 2px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.8px;
+                }
+
+                .ma-info {
+                    display: flex;
+                    gap: 12px;
+                    flex-wrap: nowrap;
+                    overflow: hidden;
+                }
+
+                .ma-info span {
+                    font-size: 12px;
+                    color: var(--t1);
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                    font-weight: 600;
+                    white-space: nowrap;
+                }
+
+                .ma-info i {
+                    color: #ef4444;
+                    font-size: 13px;
+                }
+
+                .ma-chevron {
+                    color: #ef4444;
+                    font-size: 16px;
+                    transition: transform 0.2s;
+                }
+
+                .meeting-alert:hover .ma-chevron {
+                    transform: translateX(3px);
+                }
+
+                @media (max-width: 768px) {
+                    .meeting-alert {
+                        margin-top: 15px;
+                        max-width: 100%;
+                    }
                 }
             </style>
 

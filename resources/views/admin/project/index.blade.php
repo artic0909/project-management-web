@@ -14,7 +14,7 @@
                 <p class="page-desc">Manage website and development projects</p>
             </div>
             <div class="header-actions">
-                @if($routePrefix == 'admin' || $routePrefix == 'sale' || $routePrefix == 'developer')
+                @if($routePrefix == 'admin' || $routePrefix == 'sale')
                 <button type="button" class="btn-primary-solid sm" id="bulkDeleteProjectsBtn" style="display: none; background: #dc2626; border-color: #dc2626; color: white;" onclick="bulkDeleteSelectedProjects()">
                     <i class="bi bi-trash-fill"></i> Bulk Delete
                 </button>

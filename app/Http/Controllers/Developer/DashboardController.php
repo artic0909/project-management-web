@@ -70,12 +70,24 @@ class DashboardController extends Controller
         $availableYears = range(Carbon::now()->year - 2, Carbon::now()->year + 1);
         $routePrefix = 'developer';
 
+        // Fetch closest pending meeting
+        $closestMeeting = Meeting::whereIn('status', ['pending', 'rescheduled'])
+            ->where('meeting_date', '>=', Carbon::now()->toDateString())
+            ->where(function ($q) use ($dev) {
+                $q->whereJsonContains('assigndev_ids', (int)$dev->id)
+                  ->orWhere('created_by_id', $dev->id)
+                  ->where('created_by_type', get_class($dev));
+            })
+            ->orderBy('meeting_date', 'asc')
+            ->orderBy('meeting_time', 'asc')
+            ->first();
+
         return view('admin.dashboard', compact(
             'totalRunningProjects', 'totalCompletedProjects', 
             'pendingTasks', 'completedTasks', 
             'pendingMeetings', 'completedMeetings',
             'selectedMonth', 'selectedYear', 'availableYears',
-            'routePrefix', 'totalWorkSeconds'
+            'routePrefix', 'totalWorkSeconds', 'closestMeeting'
         ));
     }
 }

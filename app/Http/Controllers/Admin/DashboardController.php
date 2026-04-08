@@ -144,11 +144,27 @@ class DashboardController extends Controller
         $marketingOrders = (clone $orderQuery)->where('is_marketing', true)->count();
         $availableYears = range(Carbon::now()->year - 2, Carbon::now()->year + 1);
 
+        // Fetch closest pending meeting
+        $meetingQuery = \App\Models\Meeting::whereIn('status', ['pending', 'rescheduled'])
+            ->where('meeting_date', '>=', Carbon::now()->toDateString());
+
+        if ($routePrefix == 'sale') {
+            $meetingQuery->where(function ($q) use ($user) {
+                $q->whereJsonContains('assignsale_ids', (int)$user->id)
+                  ->orWhere('created_by_id', $user->id)
+                  ->where('created_by_type', get_class($user));
+            });
+        }
+
+        $closestMeeting = $meetingQuery->orderBy('meeting_date', 'asc')
+            ->orderBy('meeting_time', 'asc')
+            ->first();
+
         return view('admin.dashboard', compact(
             'totalReceivedAmount', 'totalOrderValue', 'totalPending', 'totalLeads', 'totalOrders',
             'activeProjects', 'completedProjects', 'totalSalesPerson', 'totalDevelopers',
             'months', 'monthlyOrderValues', 'monthlyReceivedAmounts', 'marketingOrders',
-            'projectPipeline', 'totalProjects', 'selectedMonth', 'selectedYear', 'availableYears', 'routePrefix'
+            'projectPipeline', 'totalProjects', 'selectedMonth', 'selectedYear', 'availableYears', 'routePrefix', 'closestMeeting'
         ));
     }
 
