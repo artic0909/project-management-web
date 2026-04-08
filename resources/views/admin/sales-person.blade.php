@@ -748,7 +748,7 @@
                                 <td>
                                     <!-- Modal Btns -->
                                     <div class="row-actions">
-                                        <button class="ra-btn"><i class="bi bi-power"></i></button>
+                                        <!-- <button class="ra-btn"><i class="bi bi-power"></i></button> -->
                                         <button class="ra-btn" onclick="editSalesPerson({{ json_encode($person) }})"><i class="bi bi-pencil-fill"></i></button>
                                         <button class="ra-btn"><i class="bi bi-envelope-fill"></i></button>
                                         <button class="ra-btn danger" onclick="deleteSalesPerson({{ $person->id }})"><i class="bi bi-trash-fill"></i></button>

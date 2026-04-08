@@ -752,7 +752,7 @@
                                 <td>
                                     <!-- Modal Btns -->
                                     <div class="row-actions">
-                                        <button class="ra-btn" title="Toggle Power"><i class="bi bi-power"></i></button>
+                                        <!-- <button class="ra-btn" title="Toggle Power"><i class="bi bi-power"></i></button> -->
                                         <button class="ra-btn" title="Edit" onclick="editDeveloper({{ json_encode($developer) }})"><i class="bi bi-pencil-fill"></i></button>
                                         <button class="ra-btn" title="Send Email"><i class="bi bi-envelope-fill"></i></button>
                                         @if($routePrefix == 'admin')

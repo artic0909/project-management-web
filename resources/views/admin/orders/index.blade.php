@@ -304,7 +304,7 @@
                                 </td>
                                 <td>
                                     @foreach($order->services as $service)
-                                        <span class="src-tag">{{ $service->name }}</span>
+                                        <span class="status-pill mb-2" style="background:{{ ($service->color ?? '#6366f1') }}20; color:{{ $service->color ?? '#6366f1' }};">{{ $service->name }}</span>
                                     @endforeach
                                 </td>
                                 <td><span class="src-tag">₹{{ number_format($order->order_value, 0) }}</span></td>
