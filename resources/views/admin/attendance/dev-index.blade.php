@@ -215,11 +215,11 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <form action="{{ route('admin.attendance.destroy', $row->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this record?')" style="display:inline-block;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" style="padding: 2px 6px;"><i class="bi bi-trash"></i></button>
-                                        </form>
+                                        <div style="display:flex; gap:6px;">
+                                            <button type="button" class="btn btn-sm btn-outline-danger" style="padding: 2px 6px;" onclick="confirmSingleDelete('{{ route('admin.attendance.destroy', $row->id) }}')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -296,12 +296,77 @@
         .table th, .table td { text-align: left !important; }
     </style>
 
+    <!-- SINGLE DELETE MODAL -->
+    <div class="modal-backdrop" id="deleteModal">
+        <div class="modal-box sm-box" onclick="event.stopPropagation()">
+            <div class="modal-hd" style="border-bottom:1px solid #fecaca;">
+                <span style="color:#dc2626;">Delete Attendance</span>
+                <button class="modal-close" onclick="closeModal('deleteModal')"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-bd" style="text-align:center;padding:32px 24px;">
+                <div style="width:64px;height:64px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                    <i class="bi bi-trash3-fill" style="font-size:28px;color:#dc2626;"></i>
+                </div>
+                <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:var(--t1);">Delete Record?</h3>
+                <p style="margin:0;font-size:14px;color:var(--t3);line-height:1.6;">Are you sure you want to delete this record?<br>This action <strong style="color:#dc2626;">cannot be undone.</strong></p>
+            </div>
+            <div class="modal-ft" style="border-top:1px solid #fecaca;">
+                <button class="btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
+                <form id="deleteRecordForm" method="POST" style="display:none;">
+                    @csrf
+                    @method('DELETE')
+                </form>
+                <button style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="document.getElementById('deleteRecordForm').submit()">
+                    <i class="bi bi-trash3-fill"></i> Confirm Deletion
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BULK DELETE MODAL -->
+    <div class="modal-backdrop" id="bulkDeleteModal">
+        <div class="modal-box sm-box" onclick="event.stopPropagation()">
+            <div class="modal-hd" style="border-bottom:1px solid #fecaca;">
+                <span style="color:#dc2626;">Bulk Delete</span>
+                <button class="modal-close" onclick="closeModal('bulkDeleteModal')"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-bd" style="text-align:center;padding:32px 24px;">
+                <div style="width:64px;height:64px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                    <i class="bi bi-trash3-fill" style="font-size:28px;color:#dc2626;"></i>
+                </div>
+                <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:var(--t1);">Delete All Selected?</h3>
+                <p style="margin:0;font-size:14px;color:var(--t3);line-height:1.6;">Are you sure you want to delete the <strong id="bulkCount">0</strong> selected records?<br>This action <strong style="color:#dc2626;">cannot be undone.</strong></p>
+            </div>
+            <div class="modal-ft" style="border-top:1px solid #fecaca;">
+                <button class="btn-ghost" onclick="closeModal('bulkDeleteModal')">Cancel</button>
+                <button style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="executeBulkDelete()">
+                    <i class="bi bi-trash3-fill"></i> Confirm Bulk Deletion
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         function viewScreenshot(url, title) {
             document.getElementById('screenshotImg').src = url;
             document.getElementById('screenshotModalTitle').innerText = title;
             const modal = new bootstrap.Modal(document.getElementById('screenshotModal'));
             modal.show();
+        }
+
+        function confirmSingleDelete(url) {
+            document.getElementById('deleteRecordForm').action = url;
+            const m = document.getElementById('deleteModal');
+            m.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(id) {
+            const m = document.getElementById(id);
+            if(m) {
+                m.classList.remove('open');
+                document.body.style.overflow = 'auto';
+            }
         }
 
         function toggleAll(source) {
@@ -315,43 +380,49 @@
         function updateBulkDeleteButton() {
             const checkboxes = document.getElementsByClassName('record-checkbox');
             let anyChecked = false;
+            let count = 0;
             for (let i = 0; i < checkboxes.length; i++) {
                 if (checkboxes[i].checked) {
                     anyChecked = true;
-                    break;
+                    count++;
                 }
             }
             document.getElementById('bulkDeleteBtn').style.display = anyChecked ? 'inline-block' : 'none';
+            document.getElementById('bulkCount').innerText = count;
         }
 
         function bulkDeleteSelected() {
-            if (confirm('Are you sure you want to delete selected records?')) {
-                const checkboxes = document.getElementsByClassName('record-checkbox');
-                const selectedIds = [];
-                for (let i = 0; i < checkboxes.length; i++) {
-                    if (checkboxes[i].checked) {
-                        selectedIds.push(checkboxes[i].value);
-                    }
-                }
+            const m = document.getElementById('bulkDeleteModal');
+            m.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
 
-                if (selectedIds.length > 0) {
-                    fetch("{{ route('admin.attendance.bulk-destroy') }}", {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({ ids: selectedIds })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            alert('Failed to delete records.');
-                        }
-                    });
+        function executeBulkDelete() {
+            const checkboxes = document.getElementsByClassName('record-checkbox');
+            const selectedIds = [];
+            for (let i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    selectedIds.push(checkboxes[i].value);
                 }
+            }
+
+            if (selectedIds.length > 0) {
+                fetch("{{ route('admin.attendance.bulk-destroy') }}", {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ ids: selectedIds })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Failed to delete records.');
+                    }
+                });
             }
         }
     </script>
