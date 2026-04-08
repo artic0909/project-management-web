@@ -410,6 +410,18 @@ class ProjectController extends Controller
         return redirect()->back()->with('success', 'Project deleted successfully!');
     }
 
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'exists:projects,id',
+        ]);
+
+        $this->getFilteredProjects()->whereIn('id', $request->ids)->delete();
+
+        return redirect()->back()->with('success', count($request->ids) . ' projects deleted successfully!');
+    }
+
     public function export(Request $request)
     {
         $query = $this->getFilteredProjects()->with(['projectStatus', 'paymentStatus', 'developers', 'salesPersons', 'createdBy', 'order.assignments.sale', 'order.createdBy', 'services', 'sources']);

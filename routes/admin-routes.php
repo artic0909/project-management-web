@@ -123,6 +123,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::put('/project/update/{id}', [ProjectController::class, 'update'])->name('projects.update');
     Route::post('/project/quick-update/{id}', [ProjectController::class, 'quickUpdate'])->name('projects.quickUpdate');
     Route::delete('/project/delete/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
+    Route::delete('/project/bulk-delete', [ProjectController::class, 'bulkDestroy'])->name('projects.bulk-destroy');
     Route::get('/project/{project}/tasks', [ProjectTaskController::class, 'index'])->name('projects.tasks');
     Route::post('/project/{project}/tasks', [ProjectTaskController::class, 'store'])->name('projects.tasks.store');
 

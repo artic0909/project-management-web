@@ -16,11 +16,11 @@
                 <button type="button" class="btn-primary-solid sm" id="bulkDeleteOrdersBtn" style="display: none; background: #dc2626; border-color: #dc2626; color: white;" onclick="bulkDeleteSelectedOrders()">
                     <i class="bi bi-trash-fill"></i> Bulk Delete
                 </button>
-                @if($routePrefix == 'admin')
+                
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
-                @endif
+              
 
                 <button class="btn-primary-solid sm" onclick="exportOrders()">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export

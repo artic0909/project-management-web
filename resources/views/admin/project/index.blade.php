@@ -14,17 +14,18 @@
                 <p class="page-desc">Manage website and development projects</p>
             </div>
             <div class="header-actions">
-                @if($routePrefix == 'admin')
+                @if($routePrefix == 'admin' || $routePrefix == 'sale' || $routePrefix == 'developer')
+                <button type="button" class="btn-primary-solid sm" id="bulkDeleteProjectsBtn" style="display: none; background: #dc2626; border-color: #dc2626; color: white;" onclick="bulkDeleteSelectedProjects()">
+                    <i class="bi bi-trash-fill"></i> Bulk Delete
+                </button>
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
-                @endif
-                @if($routePrefix == 'admin' || $routePrefix == 'sale' || $routePrefix == 'developer')
                 <button type="button" class="btn-primary-solid sm" onclick="exportProjects()">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
                 @endif
-                @if($routePrefix == 'admin')
+                @if($routePrefix == 'admin' || $routePrefix == 'sale')
                 <a href="{{ route($routePrefix . '.projects.create') }}" class="btn-primary-solid">
                     <i class="bi bi-plus-lg"></i> Add Project
                 </a>
@@ -188,6 +189,9 @@
                     <table class="data-table" id="projectsTable">
                         <thead>
                             <tr>
+                                <th style="width: 40px; text-align: center;">
+                                    <input type="checkbox" id="selectAllProjects" onclick="toggleAllProjects(this)" style="cursor: pointer;">
+                                </th>
                                 <th>SL.</th>
                                 <th>Project ID</th>
                                 <th>Project / Domain</th>
@@ -212,6 +216,9 @@
                         <tbody>
                         @forelse($projects as $project)
                             <tr>
+                                <td style="text-align: center;">
+                                    <input type="checkbox" class="project-checkbox" name="project_ids[]" value="{{ $project->id }}" onclick="updateBulkDeleteButtonProjects()" style="cursor: pointer;">
+                                </td>
                                 <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration + ($projects->currentPage() - 1) * $projects->perPage() }}</td>
                                 <td><span class="mono">#PRJ-{{ str_pad($project->id, 4, '0', STR_PAD_LEFT) }}</span></td>
                                 <td>
@@ -380,7 +387,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="13" style="text-align:center;padding:40px;color:var(--t4);">No projects found matching your criteria.</td>
+                                <td colspan="14" style="text-align:center;padding:40px;color:var(--t4);">No projects found matching your criteria.</td>
                             </tr>
                         @endforelse
                         </tbody>
@@ -516,17 +523,17 @@
     </div>
 
 
-    <!-- ── Delete Project Modal (Bootstrap) ── -->
+    <!-- SINGLE DELETE MODAL -->
     <div class="modal fade" id="deleteProjectModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
             <div class="modal-content" style="background: var(--bg2); border-color: var(--b1); border-radius: 12px; border-bottom: 2px solid #ef4444;">
                 <div class="modal-body p-4 text-center">
                     <div style="background: rgba(239, 68, 68, 0.1); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-                        <i class="bi bi-exclamation-triangle-fill" style="color: #ef4444; font-size: 24px;"></i>
+                        <i class="bi bi-trash3-fill" style="color: #ef4444; font-size: 24px;"></i>
                     </div>
                     <h5 style="color: var(--t1); font-weight: 700; margin-bottom: 8px;">Delete Project?</h5>
                     <p style="color: var(--t3); font-size: 13.5px; line-height: 1.5; margin-bottom: 24px;">
-                        Are you sure you want to delete this project? This action cannot be undone and all associated data will be lost.
+                        Are you sure you want to delete this project? This action cannot be undone.
                     </p>
                     <div class="d-flex gap-2">
                         <button type="button" class="btn btn-ghost" data-bs-dismiss="modal" style="border: 1px solid var(--b1); color: var(--t3); font-weight: 600;">Cancel</button>
@@ -537,6 +544,29 @@
                                 Delete Forever
                             </button>
                         </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BULK DELETE MODAL -->
+    <div class="modal fade" id="bulkDeleteProjectsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+            <div class="modal-content" style="background: var(--bg2); border-color: var(--b1); border-radius: 12px; border-bottom: 2px solid #ef4444;">
+                <div class="modal-body p-4 text-center">
+                    <div style="background: rgba(239, 68, 68, 0.1); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                        <i class="bi bi-trash3-fill" style="color: #ef4444; font-size: 24px;"></i>
+                    </div>
+                    <h5 style="color: var(--t1); font-weight: 700; margin-bottom: 8px;">Bulk Delete?</h5>
+                    <p style="color: var(--t3); font-size: 13.5px; line-height: 1.5; margin-bottom: 24px;">
+                        Are you sure you want to delete the <strong id="bulkDeleteProjectsCount">0</strong> selected projects? This action cannot be undone.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-ghost" data-bs-dismiss="modal" style="border: 1px solid var(--b1); color: var(--t3); font-weight: 600;">Cancel</button>
+                        <button type="button" id="executeBulkDeleteProjectsBtn" onclick="executeBulkDeleteProjects()" class="btn btn-danger w-100" style="background: #ef4444; border: none; font-weight: 600; padding: 10px;">
+                            Delete Selected
+                        </button>
                     </div>
                 </div>
             </div>
@@ -942,6 +972,73 @@
             const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
             modal.show();
         }
+        function toggleAllProjects(source) {
+            const checkboxes = document.querySelectorAll('.project-checkbox');
+            checkboxes.forEach(cb => cb.checked = source.checked);
+            updateBulkDeleteButtonProjects();
+        }
+
+        function updateBulkDeleteButtonProjects() {
+            const checkedCount = document.querySelectorAll('.project-checkbox:checked').length;
+            const bulkBtn = document.getElementById('bulkDeleteProjectsBtn');
+            if (bulkBtn) {
+                if (checkedCount > 0) {
+                    bulkBtn.style.display = 'inline-flex';
+                } else {
+                    bulkBtn.style.display = 'none';
+                }
+            }
+        }
+
+        function bulkDeleteSelectedProjects() {
+            const checkedBoxes = document.querySelectorAll('.project-checkbox:checked');
+            if (checkedBoxes.length === 0) return;
+
+            document.getElementById('bulkDeleteProjectsCount').innerText = checkedBoxes.length;
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('bulkDeleteProjectsModal'));
+            modal.show();
+        }
+
+        function executeBulkDeleteProjects() {
+            const checkedBoxes = document.querySelectorAll('.project-checkbox:checked');
+            if (checkedBoxes.length === 0) return;
+
+            const executeBtn = document.getElementById('executeBulkDeleteProjectsBtn');
+            if (executeBtn) {
+                executeBtn.disabled = true;
+                executeBtn.innerText = 'Deleting...';
+            }
+
+            const ids = Array.from(checkedBoxes).map(cb => cb.value);
+            
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = "{{ route($routePrefix . '.projects.bulk-destroy') }}";
+            
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = "{{ csrf_token() }}";
+            form.appendChild(csrfInput);
+            
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(methodInput);
+
+            ids.forEach(id => {
+                const idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.name = 'ids[]';
+                idInput.value = id;
+                form.appendChild(idInput);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
         function exportProjects() {
             const form = document.querySelector('.card-actions form');
             if(form) {
