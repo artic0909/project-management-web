@@ -133,17 +133,14 @@
 
       <div class="nav-section-label">Others</div>
       @if($guard === 'admin')
+      <a class="nav-item {{ request()->routeIs('admin.inquiry*') ? 'active' : '' }}"
+        href="{{ route('admin.inquiry.index') }}">
+        <i class="bi bi-chat-left-text-fill"></i><span>Order Inquiries</span>
+      </a>
+
         <a class="nav-item {{ request()->routeIs('admin.supports*') ? 'active' : '' }}" href="{{ route('admin.supports.index') }}">
           <i class="bi bi-headset"></i><span>Support</span>
         </a>
-
-
-   
-      <a class="nav-item {{ request()->routeIs('admin.inquiry*') ? 'active' : '' }}"
-        href="{{ route('admin.inquiry.index') }}">
-        <i class="bi bi-chat-left-text-fill"></i><span>Inquiries</span>
-      </a>
-
       @endif
 
       <a class="nav-item {{ request()->routeIs($routePrefix . 'account-settings*') ? 'active' : '' }}"
