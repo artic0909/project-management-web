@@ -20,16 +20,13 @@
                 <p class="page-desc">Viewing request from <strong>{{ $inquiry->company_name }}</strong></p>
             </div>
             <div style="display:flex; gap:10px; align-items:center;">
-                <!-- @if($inquiry->status != 'converted')
+                @if(auth('admin')->check() && $inquiry->status != 'converted')
                     <div class="conv-btn-wrap">
-                        <a href="{{ route('admin.leads.create', ['inquiry_id' => $inquiry->id]) }}" class="conv-btn lead">
-                            <i class="bi bi-person-plus-fill"></i> <span>Convert to Lead</span>
-                        </a>
                         <a href="{{ route('admin.orders.create', ['inquiry_id' => $inquiry->id]) }}" class="conv-btn order">
                             <i class="bi bi-check-circle-fill"></i> <span>Convert to Order</span>
                         </a>
                     </div>
-                @endif -->
+                @endif
                 <a href="{{ route('admin.inquiry.edit', $inquiry->id) }}" class="btn-ghost sm">
                     <i class="bi bi-pencil-square"></i>Edit Inquiry
                 </a>

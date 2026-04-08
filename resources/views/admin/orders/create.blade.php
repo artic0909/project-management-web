@@ -16,7 +16,7 @@
                         <i class="bi bi-arrow-left"></i> All Orders
                     </a>
                 </div>
-                <h1 class="page-title">Convert Lead to Order</h1>
+                <h1 class="page-title">{{ $lead ? 'Convert Lead to Order' : ($inquiry ? 'Convert Inquiry to Order' : 'Create New Order') }}</h1>
                 <p class="page-desc">Finalize contract details and initiate delivery workflow</p>
             </div>
         </div>
@@ -25,6 +25,8 @@
             @csrf
             @if($lead)
                 <input type="hidden" name="lead_id" value="{{ $lead->id }}">
+            @elseif($inquiry)
+                <input type="hidden" name="inquiry_id" value="{{ $inquiry->id }}">
             @endif
 
             <div class="dash-grid">
@@ -36,18 +38,18 @@
                     <div class="dash-card">
                         <div class="card-head">
                             <div class="card-title"><i class="bi bi-bag-fill" style="color:var(--accent);margin-right:6px;"></i>Order Information</div>
-                            <div class="card-sub">Client details and order specifics inherited from Lead</div>
+                            <div class="card-sub">Client details and order specifics inherited from {{ $lead ? 'Lead' : ($inquiry ? 'Inquiry' : 'System') }}</div>
                         </div>
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row">
                                     <label class="form-lbl">Company Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
-                                    <input type="text" name="company_name" class="form-inp @error('company_name') is-invalid @enderror" value="{{ old('company_name', $lead->company ?? '') }}" placeholder="Company name">
+                                    <input type="text" name="company_name" class="form-inp @error('company_name') is-invalid @enderror" value="{{ old('company_name', $lead->company ?? ($inquiry->company_name ?? '')) }}" placeholder="Company name">
                                     @error('company_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Client Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
-                                    <input type="text" name="client_name" class="form-inp @error('client_name') is-invalid @enderror" value="{{ old('client_name', $lead->contact_person ?? '') }}" placeholder="Full name">
+                                    <input type="text" name="client_name" class="form-inp @error('client_name') is-invalid @enderror" value="{{ old('client_name', $lead->contact_person ?? ($inquiry->client_name ?? '')) }}" placeholder="Full name">
                                     @error('client_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
@@ -64,12 +66,14 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Domain Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
-                                    <input type="text" name="domain_name" class="form-inp @error('domain_name') is-invalid @enderror" value="{{ old('domain_name') }}" placeholder="example.com">
+                                    <input type="text" name="domain_name" class="form-inp @error('domain_name') is-invalid @enderror" value="{{ old('domain_name', $inquiry->domain_name ?? '') }}" placeholder="example.com">
                                     @error('domain_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Service / Product <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
-                                    @php $leadServiceIds = isset($lead) ? $lead->services->pluck('id')->toArray() : []; @endphp
+                                    @php 
+                                        $leadServiceIds = isset($lead) ? $lead->services->pluck('id')->toArray() : (isset($inquiry) ? (array)$inquiry->service_ids : []); 
+                                    @endphp
                                     <div class="ms-wrap" id="serviceWrap">
                                         <div class="ms-trigger" onclick="toggleMs('serviceWrap')">
                                             <div class="ms-pills" id="servicePills">
@@ -102,7 +106,9 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Lead Sources <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
-                                    @php $leadSourceIds = isset($lead) ? $lead->sources->pluck('id')->toArray() : []; @endphp
+                                    @php 
+                                        $leadSourceIds = isset($lead) ? $lead->sources->pluck('id')->toArray() : (isset($inquiry) ? (array)$inquiry->source_ids : []); 
+                                    @endphp
                                     <div class="ms-wrap" id="sourceWrap">
                                         <div class="ms-trigger" onclick="toggleMs('sourceWrap')">
                                             <div class="ms-pills" id="sourcePills">
@@ -135,7 +141,7 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Order Value <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
-                                    <input type="number" name="order_value" class="form-inp @error('order_value') is-invalid @enderror" value="{{ old('order_value') }}" placeholder="₹ Amount">
+                                    <input type="number" name="order_value" class="form-inp @error('order_value') is-invalid @enderror" value="{{ old('order_value', $inquiry->order_value ?? '') }}" placeholder="₹ Amount">
                                     @error('order_value')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
@@ -219,22 +225,22 @@
                             <div class="form-grid">
                                 <div class="form-row">
                                     <label class="form-lbl">City <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
-                                    <input type="text" name="city" class="form-inp @error('city') is-invalid @enderror" value="{{ old('city') }}" placeholder="City">
+                                    <input type="text" name="city" class="form-inp @error('city') is-invalid @enderror" value="{{ old('city', $inquiry->city ?? '') }}" placeholder="City">
                                     @error('city')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Region / State <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
-                                    <input type="text" name="state" class="form-inp @error('state') is-invalid @enderror" value="{{ old('state') }}" placeholder="State or Province">
+                                    <input type="text" name="state" class="form-inp @error('state') is-invalid @enderror" value="{{ old('state', $inquiry->state ?? '') }}" placeholder="State or Province">
                                     @error('state')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Zip Code <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
-                                    <input type="number" name="zip_code" class="form-inp @error('zip_code') is-invalid @enderror" value="{{ old('zip_code') }}" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits">
+                                    <input type="number" name="zip_code" class="form-inp @error('zip_code') is-invalid @enderror" value="{{ old('zip_code', $inquiry->zip_code ?? '') }}" placeholder="6-digit ZIP" pattern="\d{6}" title="Please enter exactly 6 digits">
                                     @error('zip_code')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Full Address <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
-                                    <textarea name="full_address" class="form-inp @error('full_address') is-invalid @enderror" rows="2" placeholder="Street address…">{{ old('full_address', $lead->address ?? '') }}</textarea>
+                                    <textarea name="full_address" class="form-inp @error('full_address') is-invalid @enderror" rows="2" placeholder="Street address…">{{ old('full_address', $lead->address ?? ($inquiry->full_address ?? '')) }}</textarea>
                                     @error('full_address')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                             </div>
@@ -389,7 +395,7 @@
                                 <button type="submit" class="btn-primary-solid" style="width:100%;justify-content:center;padding:11px;">
                                     <i class="bi bi-check-all"></i> Finalize Order
                                 </button>
-                                <a href="{{ route($routePrefix . '.leads.show', $lead->id ?? 0) }}" class="btn-ghost" style="width:100%;justify-content:center;padding:10px;text-decoration:none;">
+                                <a href="{{ $lead ? route($routePrefix . '.leads.show', $lead->id) : ($inquiry ? route($routePrefix . '.inquiry.show', $inquiry->id) : route($routePrefix . '.orders.index')) }}" class="btn-ghost" style="width:100%;justify-content:center;padding:10px;text-decoration:none;">
                                     Cancel
                                 </a>
                             </div>
@@ -455,16 +461,16 @@
         checkServiceType(); // Check initially
 
         // Hydrate Emails/Phones
-        const leadEmails = @json($lead->emails ?? []);
-        const leadPhones = @json($lead->phones ?? []);
+        const leadEmails = @json($lead->emails ?? ($inquiry->emails ?? []));
+        const leadPhones = @json($lead->phones ?? ($inquiry->phones ?? []));
 
-        if (leadEmails.length > 0) {
+        if (leadEmails && leadEmails.length > 0) {
             leadEmails.forEach(email => addEmailRow('order-email-list', email));
         } else {
             addEmailRow('order-email-list');
         }
 
-        if (leadPhones.length > 0) {
+        if (leadPhones && leadPhones.length > 0) {
             leadPhones.forEach(phone => addPhoneRow('order-phone-list', phone.number, phone.code_idx));
         } else {
             addPhoneRow('order-phone-list');

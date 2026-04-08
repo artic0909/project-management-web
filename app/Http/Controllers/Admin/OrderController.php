@@ -10,6 +10,7 @@ use App\Models\Status;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Models\OrderAssign;
+use App\Models\OrderInquiry;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -136,7 +137,15 @@ class OrderController extends Controller
     public function create($lead_id = null)
     {
         $routePrefix = 'admin';
-        $lead = $lead_id ? Lead::with(['status', 'sources', 'services', 'assignments'])->find($lead_id) : null;
+        $lead = null;
+        $inquiry = null;
+
+        if ($lead_id) {
+            $lead = Lead::with(['status', 'sources', 'services', 'assignments'])->find($lead_id);
+        } elseif (request()->has('inquiry_id')) {
+            $inquiry = OrderInquiry::find(request('inquiry_id'));
+        }
+
         $services = Service::all();
         $sources = \App\Models\Source::all();
         $sales = Sale::all();
@@ -144,8 +153,7 @@ class OrderController extends Controller
         $paymentStatuses = Status::where('type', 'payment')->get();
         $plans = \App\Models\Plan::all();
         
-        $routePrefix = 'admin';
-        return view('admin.orders.create', compact('lead', 'services', 'sources', 'sales', 'orderStatuses', 'paymentStatuses', 'plans', 'routePrefix'));
+        return view('admin.orders.create', compact('lead', 'inquiry', 'services', 'sources', 'sales', 'orderStatuses', 'paymentStatuses', 'plans', 'routePrefix'));
     }
 
     public function store(Request $request)
@@ -199,7 +207,7 @@ class OrderController extends Controller
         }
 
         $orderData = $request->only([
-            'lead_id', 'company_name', 'client_name', 'domain_name',
+            'lead_id', 'inquiry_id', 'company_name', 'client_name', 'domain_name',
             'order_value', 'discount', 'payment_terms_id', 'delivery_date', 'city', 'state',
             'zip_code', 'full_address', 'status_id',
             'mkt_payment_status_id', 'mkt_starting_date', 'mkt_username', 'mkt_password'
@@ -267,6 +275,14 @@ class OrderController extends Controller
                 if ($convertedStatus) {
                     $lead->update(['status_id' => $convertedStatus->id]);
                 }
+            }
+        }
+
+        // Optional: Update Inquiry Status if converted
+        if ($request->filled('inquiry_id')) {
+            $inquiry = OrderInquiry::find($request->inquiry_id);
+            if ($inquiry) {
+                $inquiry->update(['status' => 'converted']);
             }
         }
 
