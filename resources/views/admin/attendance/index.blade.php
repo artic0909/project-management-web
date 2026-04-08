@@ -51,7 +51,7 @@
         </div>
 
         <!-- Attendance Stats -->
-        <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="kpi-grid" style="grid-template-columns: repeat(5, 1fr);">
              <div class="kpi-card" style="--kpi-accent:#6366f1">
                 <div class="kpi-top">
                     <div class="kpi-icon" style="background:rgba(99,102,241,.15);color:#6366f1"><i class="bi bi-calendar-check"></i></div>
@@ -72,6 +72,13 @@
                 </div>
                 <div class="kpi-value">{{ $attendances->where('status', 'Late')->count() }}</div>
                 <div class="kpi-label">Late Days</div>
+            </div>
+            <div class="kpi-card" style="--kpi-accent:#ef4444">
+                <div class="kpi-top">
+                    <div class="kpi-icon" style="background:rgba(239,68,68,.15);color:#ef4444"><i class="bi bi-x-circle"></i></div>
+                </div>
+                <div class="kpi-value">{{ $totalAbsentDays ?? 0 }}</div>
+                <div class="kpi-label">Total Absents</div>
             </div>
             <div class="kpi-card" style="--kpi-accent:#0ea5e9">
                 <div class="kpi-top">
@@ -112,7 +119,7 @@
                                     <td>{{ $attendances->firstItem() + $index }}</td>
                                     <td style="font-weight:600;">{{ $row->date?->format('d M, Y') ?? 'N/A' }}</td>
                                     <td>
-                                        <span class="badge {{ ($row->status ?? 'Present') == 'Present' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }}" style="font-weight:700;">
+                                        <span class="badge {{ ($row->status ?? 'Present') == 'Present' ? 'bg-success-subtle text-success' : (($row->status ?? 'Present') == 'Late' ? 'bg-warning-subtle text-warning' : 'bg-danger-subtle text-danger') }}" style="font-weight:700;">
                                             {{ strtoupper($row->status ?? 'Present') }}
                                         </span>
                                     </td>
@@ -129,7 +136,9 @@
                                         </div>
                                     </td>
                                     <td>
-                                        @if(($row->late_seconds ?? 0) > 0)
+                                        @if(($row->status ?? 'Present') == 'Absent')
+                                            <span class="text-muted">--</span>
+                                        @elseif(($row->late_seconds ?? 0) > 0)
                                             <span class="text-danger fw-bold">
                                                 {{ formatDuration($row->late_seconds) }} Late
                                             </span>
@@ -152,7 +161,7 @@
                                                 {{ formatDuration(abs($displaySeconds)) }}
                                             </span>
                                         @else
-                                            <span class="text-muted small">Active...</span>
+                                            <span class="text-muted small">{{ $row->status == 'Absent' ? '--' : 'Active...' }}</span>
                                         @endif
                                     </td>
                                     <td>

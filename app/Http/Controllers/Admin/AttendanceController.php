@@ -72,7 +72,10 @@ class AttendanceController extends Controller
                 ->first();
         }
 
-        return view('admin.attendance.index', compact('attendances', 'settings', 'routePrefix', 'todayAttendance', 'totalWorkSeconds'));
+        $absentCountQuery = clone $query;
+        $totalAbsentDays = $absentCountQuery->where('status', 'Absent')->count();
+
+        return view('admin.attendance.index', compact('attendances', 'settings', 'routePrefix', 'todayAttendance', 'totalWorkSeconds', 'totalAbsentDays'));
     }
 
     public function saleIndex(Request $request)
@@ -91,7 +94,10 @@ class AttendanceController extends Controller
         $settings = AttendanceSetting::first();
         $allSales = Sale::all();
         
-        return view('admin.attendance.sale-index', compact('attendances', 'settings', 'routePrefix', 'allSales', 'totalWorkSeconds'));
+        $absentCountQuery = clone $query;
+        $totalAbsentDays = $absentCountQuery->where('status', 'Absent')->count();
+
+        return view('admin.attendance.sale-index', compact('attendances', 'settings', 'routePrefix', 'allSales', 'totalWorkSeconds', 'totalAbsentDays'));
     }
 
     public function devIndex(Request $request)
@@ -110,7 +116,10 @@ class AttendanceController extends Controller
         $settings = AttendanceSetting::first();
         $allDevelopers = Developer::all();
         
-        return view('admin.attendance.dev-index', compact('attendances', 'settings', 'routePrefix', 'allDevelopers', 'totalWorkSeconds'));
+        $absentCountQuery = clone $query;
+        $totalAbsentDays = $absentCountQuery->where('status', 'Absent')->count();
+
+        return view('admin.attendance.dev-index', compact('attendances', 'settings', 'routePrefix', 'allDevelopers', 'totalWorkSeconds', 'totalAbsentDays'));
     }
 
     private function applyFilters($query, Request $request)
@@ -171,6 +180,48 @@ class AttendanceController extends Controller
 
         if (!$attendance) {
             // Check-in
+            
+            // --- AUTO ABSENT RECORDS ---
+            $lastAttendance = Attendance::where('user_id', $user->id)
+                ->where('user_type', $userType)
+                ->where('date', '<', $dateStr)
+                ->orderBy('date', 'desc')
+                ->first();
+            
+            if ($lastAttendance) {
+                // Determine last record date
+                $lastDate = ($lastAttendance->date instanceof Carbon) 
+                    ? $lastAttendance->date->copy() 
+                    : Carbon::parse($lastAttendance->date);
+                
+                $todayDate = Carbon::parse($dateStr);
+                $diff = $lastDate->diffInDays($todayDate);
+                
+                if ($diff > 1) {
+                    for ($i = 1; $i < $diff; $i++) {
+                        $absentDateObj = $lastDate->copy()->addDays($i);
+                        $absentDateStr = $absentDateObj->toDateString();
+                        
+                        $exists = Attendance::where('user_id', $user->id)
+                            ->where('user_type', $userType)
+                            ->where('date', $absentDateStr)
+                            ->exists();
+                        
+                        if (!$exists) {
+                            Attendance::create([
+                                'user_id' => $user->id,
+                                'user_type' => $userType,
+                                'date' => $absentDateStr,
+                                'status' => 'Absent',
+                                'is_checked_in' => false,
+                                'note' => 'System Auto Absent',
+                            ]);
+                        }
+                    }
+                }
+            }
+            // --- END AUTO ABSENT ---
+
             $settings = AttendanceSetting::first();
             $targetTimeStr = $guard === 'developer' ? $settings->dev_checkin_time : $settings->sale_checkin_time;
             
@@ -221,6 +272,24 @@ class AttendanceController extends Controller
                 return response()->json(['success' => false, 'message' => 'You have already checked out for today.']);
             }
         }
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $this->authorizeAdmin();
+        $ids = $request->ids;
+        if (is_array($ids) && count($ids) > 0) {
+            Attendance::whereIn('id', $ids)->delete();
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false]);
+    }
+
+    public function destroy($id)
+    {
+        $this->authorizeAdmin();
+        Attendance::findOrFail($id)->delete();
+        return back()->with('success', 'Attendance record deleted successfully.');
     }
 
     private function getGuard()

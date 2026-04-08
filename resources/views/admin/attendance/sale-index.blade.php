@@ -12,6 +12,9 @@
             </div>
 
             <div class="page-actions">
+                <button type="button" class="btn-primary-solid sm" id="bulkDeleteBtn" style="display: none; background: #dc2626; border-color: #dc2626; color: white;" onclick="bulkDeleteSelected()">
+                    <i class="bi bi-trash-fill"></i> Bulk Delete
+                </button>
                 <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#settingsModal">
                     <i class="bi bi-gear-fill me-2"></i> Shift Settings
                 </button>
@@ -29,7 +32,7 @@
         @endphp
 
         <!-- Attendance Stats -->
-        <div class="kpi-grid mb-4" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:20px;">
+        <div class="kpi-grid mb-4" style="display:grid; grid-template-columns: repeat(5, 1fr); gap:20px;">
              <div class="kpi-card" style="--kpi-accent:#6366f1">
                 <div class="kpi-top">
                     <div class="kpi-icon" style="background:rgba(99,102,241,.15);color:#6366f1"><i class="bi bi-people-fill"></i></div>
@@ -50,6 +53,13 @@
                 </div>
                 <div class="kpi-value">{{ $attendances->where('status', 'Late')->count() }}</div>
                 <div class="kpi-label">Late</div>
+            </div>
+            <div class="kpi-card" style="--kpi-accent:#ef4444">
+                <div class="kpi-top">
+                    <div class="kpi-icon" style="background:rgba(239,68,68,.15);color:#ef4444"><i class="bi bi-x-circle-fill"></i></div>
+                </div>
+                <div class="kpi-value">{{ $totalAbsentDays ?? 0 }}</div>
+                <div class="kpi-label">Total Absents</div>
             </div>
             <div class="kpi-card" style="--kpi-accent:#0ea5e9">
                 <div class="kpi-top">
@@ -120,20 +130,28 @@
                     <table class="table">
                         <thead>
                             <tr>
+                                <th style="width: 40px; text-align: center;">
+                                    <input type="checkbox" id="selectAll" onclick="toggleAll(this)" style="cursor: pointer;">
+                                </th>
                                 <th>SL</th>
                                 <th>Staff Name</th>
                                 <th>Date</th>
+                                <th>Status</th>
                                 <th>Check-in</th>
                                 <th>Check-out</th>
                                 <th>Late Hours</th>
                                 <th>Total Hours</th>
                                 <th>Check-in Photo</th>
                                 <th>Check-out Photo</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($attendances as $index => $row)
                                 <tr>
+                                    <td style="text-align: center;">
+                                        <input type="checkbox" class="record-checkbox" name="ids[]" value="{{ $row->id }}" onclick="updateBulkDeleteButton()" style="cursor: pointer;">
+                                    </td>
                                     <td>{{ ($attendances ?? null) ? $attendances->firstItem() + $index : ($index + 1) }}</td>
                                     <td>
                                         <div class="user-info" style="align-items: center; gap: 8px;">
@@ -144,13 +162,22 @@
                                         </div>
                                     </td>
                                     <td>{{ $row->date?->format('d M, Y') ?? 'N/A' }}</td>
+                                    <td>
+                                        <span class="badge {{ $row->status == 'Present' ? 'bg-success-subtle text-success' : ($row->status == 'Late' ? 'bg-warning-subtle text-warning' : 'bg-danger-subtle text-danger') }}" style="font-weight:700;">
+                                            {{ strtoupper($row->status ?? 'Present') }}
+                                        </span>
+                                    </td>
                                     <td>{{ $row->check_in_time ? \Carbon\Carbon::parse($row->check_in_time)->format('h:i A') : '--:--' }}</td>
                                     <td>{{ $row->check_out_time ? \Carbon\Carbon::parse($row->check_out_time)->format('h:i A') : '--:--' }}</td>
                                     <td>
-                                        @if(($row->late_seconds ?? 0) > 0)
-                                            <span class="text-danger fw-bold">{{ formatDuration($row->late_seconds) }} Late</span>
+                                        @if(($row->status ?? 'Present') == 'Absent')
+                                            <span class="text-muted">--</span>
+                                        @elseif(($row->late_seconds ?? 0) > 0)
+                                            <span class="text-danger fw-bold">
+                                                {{ formatDuration($row->late_seconds) }} Late
+                                            </span>
                                         @else
-                                            <span class="text-success small">On-time</span>
+                                            <span class="text-success fw-bold">On-time</span>
                                         @endif
                                     </td>
                                     <td>
@@ -166,7 +193,7 @@
                                             @endphp
                                             <span class="fw-bold">{{ formatDuration(abs($displaySeconds)) }}</span>
                                         @else
-                                             <span class="text-muted small">Active...</span>
+                                             <span class="text-muted small">{{ $row->status == 'Absent' ? '--' : 'Active...' }}</span>
                                         @endif
                                     </td>
                                     <td>
@@ -187,9 +214,16 @@
                                             <span class="text-muted small">--</span>
                                         @endif
                                     </td>
+                                    <td>
+                                        <form action="{{ route('admin.attendance.destroy', $row->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this record?')" style="display:inline-block;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" style="padding: 2px 6px;"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="9" class="text-center py-4">No records found.</td></tr>
+                                <tr><td colspan="12" class="text-center py-4">No records found.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -268,6 +302,57 @@
             document.getElementById('screenshotModalTitle').innerText = title;
             const modal = new bootstrap.Modal(document.getElementById('screenshotModal'));
             modal.show();
+        }
+
+        function toggleAll(source) {
+            const checkboxes = document.getElementsByClassName('record-checkbox');
+            for (let i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = source.checked;
+            }
+            updateBulkDeleteButton();
+        }
+
+        function updateBulkDeleteButton() {
+            const checkboxes = document.getElementsByClassName('record-checkbox');
+            let anyChecked = false;
+            for (let i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    anyChecked = true;
+                    break;
+                }
+            }
+            document.getElementById('bulkDeleteBtn').style.display = anyChecked ? 'inline-block' : 'none';
+        }
+
+        function bulkDeleteSelected() {
+            if (confirm('Are you sure you want to delete selected records?')) {
+                const checkboxes = document.getElementsByClassName('record-checkbox');
+                const selectedIds = [];
+                for (let i = 0; i < checkboxes.length; i++) {
+                    if (checkboxes[i].checked) {
+                        selectedIds.push(checkboxes[i].value);
+                    }
+                }
+
+                if (selectedIds.length > 0) {
+                    fetch("{{ route('admin.attendance.bulk-destroy') }}", {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ ids: selectedIds })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert('Failed to delete records.');
+                        }
+                    });
+                }
+            }
         }
     </script>
 @endsection
