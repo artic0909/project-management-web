@@ -1,16 +1,17 @@
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-header">
     <div class="brand">
-      <div class="brand-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+     
+        <img src="{{ asset('logo.png') }}" alt="Logo" class="brand-logo" width="125">
+        <!-- <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
           <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </div>
-      <div class="brand-text">
-        <span class="brand-name">Orion</span>
+        </svg> -->
+      
+      <!-- <div class="brand-text">
+        <span class="brand-name">StandsWeb</span>
         <span class="brand-sub">ERP Platform</span>
-      </div>
+      </div> -->
     </div>
     <button class="sidebar-collapse-btn" onclick="toggleSidebar()" id="sidebarToggle">
       <i class="bi bi-layout-sidebar-reverse"></i>

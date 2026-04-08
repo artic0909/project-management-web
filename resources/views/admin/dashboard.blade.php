@@ -1,6 +1,6 @@
 @extends('admin.layout.app')
 
-@section('title', 'Admin Dashboard')
+@section('title', ($routePrefix == 'admin' ? 'Admin' : ($routePrefix == 'developer' ? 'Developer' : 'Sales')) . ' Dashboard')
 
 @section('content')
 

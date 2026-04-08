@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Orion Technologies — Start Your Project</title>
+  <title>StandsWeb — Start Your Project</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
     href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
@@ -12,6 +12,10 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <!-- Select2 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+  <!-- favicon png -->
+  <link rel="icon" type="image/png" href="{{ asset('./logo.png') }}">
+    
   <style>
     :root {
       --ink: #07080c;
@@ -989,13 +993,12 @@
   <!-- NAVBAR -->
   <nav id="nav">
     <div class="nbrand">
-      <div class="nlogo">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"
+
+        <img src="{{ asset('./logo.png') }}" alt="Logo" class="brand-logo" width="195">
+        <!-- <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"
           stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-        </svg>
-      </div>
-      CRM
+        </svg> -->
     </div>
     <div class="nav-btns">
       <button class="btn-support" onclick="location.href='{{ route('support.create') }}'">Get Support</button>
