@@ -149,5 +149,6 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::post('/attendance/give', [\App\Http\Controllers\Admin\AttendanceController::class, 'giveAttendance'])->name('attendance.give');
 
     // Meetings
+    Route::patch('/meetings/{id}/status', [MeetingController::class, 'updateStatus'])->name('meetings.updateStatus');
     Route::resource('meetings', \App\Http\Controllers\Admin\MeetingController::class);
 });

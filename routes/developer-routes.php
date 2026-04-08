@@ -26,9 +26,11 @@ Route::middleware(['auth:developer'])->prefix('developer')->name('developer.')->
     Route::get('/my-account', [AccountSettingController::class, 'index'])->name('account-settings');
     Route::post('/my-account/update', [AccountSettingController::class, 'update'])->name('account-settings.update');
     // Meetings
+    Route::patch('/meetings/{id}/status', [\App\Http\Controllers\Developer\MeetingController::class, 'updateStatus'])->name('meetings.updateStatus');
     Route::get('/meetings', [\App\Http\Controllers\Developer\MeetingController::class, 'index'])->name('meetings.index');
     Route::get('/meetings/export', [\App\Http\Controllers\Developer\MeetingController::class, 'export'])->name('meetings.export');
     Route::get('/meetings/{meeting}', [\App\Http\Controllers\Developer\MeetingController::class, 'show'])->name('meetings.show');
+    Route::resource('meetings', \App\Http\Controllers\Admin\MeetingController::class);
     // Attendance
     Route::get('/attendance', [\App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance/give', [\App\Http\Controllers\Admin\AttendanceController::class, 'giveAttendance'])->name('attendance.give');

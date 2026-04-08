@@ -39,6 +39,11 @@
                     <p class="page-desc">Live overview · <span id="liveDate"></span></p>
                 </div>
                 
+                
+
+                <!-- Filters -->
+                <div class="page-actions d-flex align-items-center gap-3">
+
                 <!-- Meeting Pinned like show here -->
                 @if(isset($closestMeeting) && $closestMeeting)
                 <div class="meeting-alert" onclick="window.location.href='{{ route($routePrefix . '.meetings.show', $closestMeeting->id) }}'">
@@ -55,8 +60,8 @@
                 </div>
                 @endif
 
-                <!-- Filters -->
-                <div class="page-actions">
+
+
                     <form action="{{ route($routePrefix . '.dashboard') }}" method="GET" class="filter-form" id="filterForm">
                         <div class="filter-group">
                             <select name="month" class="filter-select" onchange="this.form.submit()">

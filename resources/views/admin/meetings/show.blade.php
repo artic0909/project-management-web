@@ -100,6 +100,33 @@
             </div>
 
             <div class="span-4">
+                {{-- Quick Status Update --}}
+                <div class="dash-card" style="margin-bottom:16px; border-top: 4px solid var(--accent);">
+                    <div class="card-head" style="padding:16px 20px;">
+                        <div class="card-title">Quick Status Update</div>
+                    </div>
+                    <div class="card-body" style="padding:20px;">
+                        <form action="{{ route($routePrefix . '.meetings.updateStatus', $meeting->id) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <div class="status-btn-group">
+                                <button type="submit" name="status" value="completed" class="status-btn completed {{ $meeting->status == 'completed' ? 'active' : '' }}">
+                                    <i class="bi bi-check-circle-fill"></i> Mark Completed
+                                </button>
+                                <button type="submit" name="status" value="canceled" class="status-btn canceled {{ $meeting->status == 'canceled' ? 'active' : '' }}">
+                                    <i class="bi bi-x-circle-fill"></i> Mark Canceled
+                                </button>
+                                <!-- <button type="submit" name="status" value="rescheduled" class="status-btn rescheduled {{ $meeting->status == 'rescheduled' ? 'active' : '' }}">
+                                    <i class="bi bi-calendar2-range-fill"></i> Rescheduled
+                                </button> -->
+                                <button type="submit" name="status" value="pending" class="status-btn pending {{ $meeting->status == 'pending' ? 'active' : '' }}">
+                                    <i class="bi bi-hourglass-split"></i> Still Pending
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
                 {{-- Participants Card --}}
                 <div class="dash-card" style="margin-bottom:16px;">
                     <div class="card-head" style="padding:16px 20px;">
@@ -181,6 +208,18 @@
     .p-ava { width: 26px; height: 26px; border-radius: 6px; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: var(--t2); }
     .p-name { font-size: 13px; font-weight: 700; color: var(--t1); }
     .p-none { font-size: 12px; font-style: italic; color: var(--t4); }
+
+    .status-btn-group { display: flex; flex-direction: column; gap: 8px; }
+    .status-btn { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--b1); background: var(--bg3); color: var(--t2); font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; text-align: left; width: 100%; }
+    .status-btn i { font-size: 16px; }
+    .status-btn:hover { transform: translateY(-2px); border-color: var(--accent); }
+    
+    .status-btn.completed:hover, .status-btn.completed.active { background: #d1fae5; color: #065f46; border-color: #34d399; }
+    .status-btn.canceled:hover, .status-btn.canceled.active { background: #fee2e2; color: #991b1b; border-color: #f87171; }
+    .status-btn.rescheduled:hover, .status-btn.rescheduled.active { background: #fef3c7; color: #92400e; border-color: #fbbf24; }
+    .status-btn.pending:hover, .status-btn.pending.active { background: #e0e7ff; color: #3730a3; border-color: #818cf8; }
+    
+    .status-btn.active { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 </style>
 
 @endsection

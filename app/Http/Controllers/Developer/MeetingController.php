@@ -184,4 +184,24 @@ class MeetingController extends Controller
         $routePrefix = 'developer';
         return view('admin.meetings.show', compact('meeting', 'routePrefix'));
     }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $meeting = Meeting::findOrFail($id);
+        $devId = (int)auth()->guard('developer')->id();
+
+        if (!in_array($devId, $meeting->assigndev_ids ?? [])) {
+            abort(403);
+        }
+
+        $request->validate([
+            'status' => 'required|string|in:pending,rescheduled,completed,canceled',
+        ]);
+
+        $meeting->update([
+            'status' => $request->status,
+        ]);
+
+        return redirect()->back()->with('success', 'Meeting status updated successfully.');
+    }
 }

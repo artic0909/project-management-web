@@ -104,6 +104,7 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     Route::post('/attendance/give', [\App\Http\Controllers\Admin\AttendanceController::class, 'giveAttendance'])->name('attendance.give');
 
     // Meetings
+    Route::patch('/meetings/{id}/status', [MeetingController::class, 'updateStatus'])->name('meetings.updateStatus');
     Route::get('/export-meetings', [MeetingController::class, 'export'])->name('meetings.export');
     Route::resource('meetings', \App\Http\Controllers\Sale\MeetingController::class);
 });

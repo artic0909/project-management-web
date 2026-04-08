@@ -367,9 +367,9 @@
                                            onclick="handleContactClick(event, 'mailto', {{ json_encode($emailList) }})" title="Email Client">
                                             <i class="bi bi-envelope-fill"></i>
                                         </a>
-                                        @if($routePrefix == 'admin' || $routePrefix == 'sale')
+                                        
                                         <a href="{{ route($routePrefix . '.meetings.create', ['project_id' => $project->id]) }}" class="ra-btn" title="Meeting"><i class="bi bi-camera-video-fill"></i></a>
-                                        @endif
+                                     
                                         <a href="{{ route($routePrefix . '.projects.tasks', $project->id) }}" class="ra-btn" title="Tasks" style="color:#6366f1;background:rgba(99,102,241,0.1);"><i class="bi bi-list-task"></i></a>
                                         <a href="{{ route($routePrefix . '.projects.show', $project->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
                                         @if($routePrefix == 'admin')

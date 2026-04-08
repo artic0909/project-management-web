@@ -237,6 +237,26 @@ class MeetingController extends Controller
         return redirect()->route($routePrefix . '.meetings.index')->with('success', 'Meeting updated successfully.');
     }
 
+    public function updateStatus(Request $request, $id)
+    {
+        $meeting = Meeting::findOrFail($id);
+        $saleId = (int)auth()->guard('sale')->id();
+
+        if (!in_array($saleId, $meeting->assignsale_ids ?? [])) {
+            abort(403);
+        }
+
+        $request->validate([
+            'status' => 'required|string|in:pending,rescheduled,completed,canceled',
+        ]);
+
+        $meeting->update([
+            'status' => $request->status,
+        ]);
+
+        return redirect()->back()->with('success', 'Meeting status updated successfully.');
+    }
+
     public function destroy(Meeting $meeting)
     {
         $saleId = auth()->guard('sale')->id();
