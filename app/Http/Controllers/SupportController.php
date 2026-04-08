@@ -23,7 +23,7 @@ class SupportController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'company_name' => 'required|string|max:255',
+            'company_name' => 'nullable|string|max:255',
             'your_name'    => 'required|string|max:255',
             'email'        => 'required|email|max:255',
             'phone'        => 'required|string|max:20',

@@ -128,6 +128,71 @@
             .support-card { padding: 24px; }
             .submit-btn { width: 100%; }
         }
+
+        /* ── CUSTOM FILE INPUT ── */
+        .file-upload-wrapper {
+            position: relative;
+            background: var(--paper2);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .file-upload-wrapper:hover {
+            border-color: var(--accent);
+            background: rgba(255, 77, 28, 0.02);
+        }
+        .file-upload-wrapper input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .file-upload-content i {
+            font-size: 24px;
+            color: var(--t3);
+            margin-bottom: 8px;
+            display: block;
+        }
+        .file-upload-content span {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--t2);
+        }
+        .file-name-display {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 600;
+            display: none;
+        }
+    </style>
+    <!-- CKEditor 5 -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+    <style>
+        .ck-editor__editable {
+            min-height: 200px;
+            background-color: var(--paper2) !important;
+            border-radius: 0 0 12px 12px !important;
+        }
+        .ck-toolbar {
+            border-radius: 12px 12px 0 0 !important;
+            background-color: #fff !important;
+            border: 1px solid var(--border) !important;
+        }
+        .ck-content {
+            border: 1px solid var(--border) !important;
+            transition: all 0.2s;
+        }
+        .ck-focused {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 0 4px rgba(255, 77, 28, 0.1) !important;
+        }
     </style>
 </head>
 <body>
@@ -149,8 +214,8 @@
                 @csrf
                 <div class="row g-4">
                     <div class="col-md-6">
-                        <label class="form-label">Company Name <span class="text-danger">*</span></label>
-                        <input type="text" name="company_name" class="form-control @error('company_name') is-invalid @enderror" placeholder="Your organization" required value="{{ old('company_name') }}">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" name="company_name" class="form-control @error('company_name') is-invalid @enderror" placeholder="Your organization" value="{{ old('company_name') }}">
                         @error('company_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-md-6">
@@ -172,31 +237,46 @@
                         <label class="form-label">Domain Name</label>
                         <input type="text" name="domain_name" class="form-control" placeholder="example.com" value="{{ old('domain_name') }}">
                     </div>
+
                     <div class="col-md-6">
+                        <label class="form-label">Priority <span class="text-danger">*</span></label>
+                        <select name="priority" class="form-select" required>
+                            <option value="low" {{ old('priority') == 'low' ? 'selected' : '' }}>Low</option>
+                            <option value="medium" {{ old('priority') == 'medium' ? 'selected' : 'default selected' }}>Medium</option>
+                            <option value="high" {{ old('priority') == 'high' ? 'selected' : '' }}>High</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-12">
                         <label class="form-label">Subject <span class="text-danger">*</span></label>
                         <input type="text" name="subject" class="form-control @error('subject') is-invalid @enderror" placeholder="Billing Issue" required value="{{ old('subject') }}">
                         @error('subject') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Priority <span class="text-danger">*</span></label>
-                        <select name="priority" class="form-select" required>
-                            <option value="low" {{ old('priority') == 'low' ? 'selected' : '' }}>Low Priority</option>
-                            <option value="medium" {{ old('priority') == 'medium' ? 'selected' : 'default selected' }}>Medium Priority</option>
-                            <option value="high" {{ old('priority') == 'high' ? 'selected' : '' }}>High Priority</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Attachment (Optional)</label>
-                        <input type="file" name="attachment" class="form-control @error('attachment') is-invalid @enderror" accept="image/*">
-                        @error('attachment') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
                     <div class="col-12">
                         <label class="form-label">Detail Message <span class="text-danger">*</span></label>
-                        <textarea name="message" class="form-control @error('message') is-invalid @enderror" rows="5" placeholder="How can we help you?" required>{{ old('message') }}</textarea>
+                        <div style="background:#fff; border-radius:12px; overflow:hidden;">
+                            <textarea name="message" id="editor" class="form-control @error('message') is-invalid @enderror" rows="8" placeholder="How can we help you?">{{ old('message') }}</textarea>
+                        </div>
                         @error('message') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-12">
-                        <button type="submit" class="submit-btn mt-2">Submit Support Ticket</button>
+                        <label class="form-label">Attachment (Optional)</label>
+                        <div class="file-upload-wrapper" id="fileWrapper">
+                            <div class="file-upload-content">
+                                <i class="bi bi-cloud-arrow-up"></i>
+                                <span>Click or Drag & Drop proof/screenshot</span>
+                                <p class="text-muted small mb-0 mt-1">Accepts images (JPG, PNG, GIF) up to 2MB</p>
+                            </div>
+                            <input type="file" name="attachment" id="fileInput" accept="image/*" onchange="handleFileSelect(this)">
+                            <div class="file-name-display" id="fileName">No file selected</div>
+                        </div>
+                        @error('attachment') <div class="error-message" style="margin-top: 8px;">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="col-12 pt-2">
+                        <button type="submit" class="submit-btn" style="height: 54px; min-width: 240px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                            <span>Submit Support Ticket</span>
+                            <i class="bi bi-send-fill" style="opacity: 0.8;"></i>
+                        </button>
                     </div>
                 </div>
             </form>
@@ -208,17 +288,52 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
     <script>
         $(document).ready(function() {
+            // Initialize CKEditor
+            ClassicEditor
+                .create(document.querySelector('#editor'), {
+                    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo'],
+                })
+                .then(editor => {
+                    // Update validation on change
+                    editor.model.document.on('change:data', () => {
+                        $('#editor').val(editor.getData());
+                    });
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+
+            window.handleFileSelect = function(input) {
+                const fileName = document.getElementById('fileName');
+                const wrapper = document.getElementById('fileWrapper');
+                if (input.files && input.files[0]) {
+                    fileName.innerText = "Selected: " + input.files[0].name;
+                    fileName.style.display = "block";
+                    wrapper.style.borderColor = "var(--accent)";
+                    wrapper.style.background = "rgba(255, 77, 28, 0.04)";
+                } else {
+                    fileName.style.display = "none";
+                    wrapper.style.borderColor = "var(--border)";
+                    wrapper.style.background = "var(--paper2)";
+                }
+            };
+
             $("#supportForm").validate({
+                ignore: [], // Don't ignore hidden fields (CKEditor replaces original textarea)
                 rules: {
-                    company_name: "required",
                     your_name: "required",
                     email: { required: true, email: true },
                     phone: "required",
                     subject: "required",
-                    message: { required: true, minlength: 10 }
+                    message: {
+                        required: function() {
+                            // Custom check for CKEditor content
+                            return document.querySelector('#editor').value.trim() === '';
+                        },
+                        minlength: 10
+                    }
                 },
                 messages: {
-                    company_name: "Company name is required",
                     your_name: "Please enter your name",
                     email: "Enter a valid email address",
                     phone: "Phone number is required",
@@ -237,7 +352,11 @@
                     $(element).removeClass('is-invalid');
                 },
                 errorPlacement: function(error, element) {
-                    error.insertAfter(element);
+                    if (element.attr("name") == "message") {
+                        error.insertAfter(".ck-editor");
+                    } else {
+                        error.insertAfter(element);
+                    }
                 }
             });
         });

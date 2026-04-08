@@ -82,18 +82,25 @@
                             </div>
                         </div>
                         <div class="detail-row">
+                            <div class="detail-icon" style="background:rgba(16, 185, 129, 0.1); color:#10b981;"><i class="bi bi-envelope-fill"></i></div>
+                            <a href="mailto:{{ $ticket->email }}">
+                                <div class="detail-lbl">Email Address</div>
+                                <div class="detail-val">{{ $ticket->email }}</div>
+                            </a>
+                        </div>
+                        <div class="detail-row">
                             <div class="detail-icon" style="background:rgba(16, 185, 129, 0.1); color:#10b981;"><i class="bi bi-telephone-fill"></i></div>
-                            <div>
+                            <a href="tel:{{ $ticket->phone }}">
                                 <div class="detail-lbl">Phone Number</div>
                                 <div class="detail-val">{{ $ticket->phone }}</div>
-                            </div>
+                            </a>
                         </div>
                         <div class="detail-row">
                             <div class="detail-icon" style="background:rgba(14, 165, 233, 0.1); color:#0ea5e9;"><i class="bi bi-globe"></i></div>
-                            <div>
+                            <a href="{{ $ticket->domain_name }}" target="_blank">
                                 <div class="detail-lbl">Domain / URL</div>
                                 <div class="detail-val">{{ $ticket->domain_name ?? 'N/A' }}</div>
-                            </div>
+                            </a>
                         </div>
                         <div class="detail-row">
                             <div class="detail-icon" style="background:rgba(245, 158, 11, 0.1); color:#f59e0b;"><i class="bi bi-geo-alt-fill"></i></div>
@@ -148,7 +155,7 @@
                     </div>
                     <div class="card-body" style="padding:18px;">
                         <div style="font-size:15px; font-weight:700; color:var(--t1); margin-bottom:10px;">Subject: {{ $ticket->subject }}</div>
-                        <div style="font-size:14px; line-height:1.7; color:var(--t2); background:var(--bg3); padding:20px; border-radius:12px; border:1px solid var(--b2); white-space:pre-wrap;">{{ $ticket->message }}</div>
+                        <div style="font-size:14px; line-height:1.7; color:var(--t2); background:var(--bg3); padding:20px; border-radius:12px; border:1px solid var(--b2); white-space:pre-wrap;">{!! $ticket->message !!}</div>
                         
                         @if($ticket->attachment)
                         <div style="margin-top:20px; display:flex; align-items:center; gap:15px; background:var(--bg3); padding:12px; border-radius:12px; border:1px dashed var(--b2);">
