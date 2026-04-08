@@ -202,9 +202,11 @@
                 <h1 class="page-title">Losted Leads</h1>
             </div>
             <div class="d-flex gap-2">
-                <!-- <button class="btn-primary-solid sm">
-                    <i class="bi bi-file-earmark-plus-fill"></i> Import
-                </button> -->
+                @if($routePrefix == 'admin' || $routePrefix == 'sale')
+                <button type="button" class="btn-primary-solid sm" id="bulkDeleteLeadsBtn" style="display: none; background: #dc2626; border-color: #dc2626; color: white;" onclick="bulkDeleteSelectedLeads()">
+                    <i class="bi bi-trash-fill"></i> Bulk Delete
+                </button>
+                @endif
                 <button type="button" class="btn-primary-solid sm" onclick="exportLostedLeads()">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
@@ -274,6 +276,9 @@
                     <table class="data-table">
                         <thead>
                             <tr>
+                                <th style="width: 40px; text-align: center;">
+                                    <input type="checkbox" id="selectAllLeads" onclick="toggleAllLeads(this)" style="cursor: pointer;">
+                                </th>
                                 <th>SL</th>
                                 <th>Lead</th>
                                 <th>Source</th>
@@ -289,6 +294,9 @@
                         <tbody>
                             @forelse($leads as $index => $lead)
                             <tr>
+                                <td style="text-align: center;">
+                                    <input type="checkbox" class="lead-checkbox" name="lead_ids[]" value="{{ $lead->id }}" onclick="updateBulkDeleteButtonLeads()" style="cursor: pointer;">
+                                </td>
                                 <td>{{ $index + 1 }}</td>
                                 <td>
                                     <div class="lead-cell">
@@ -344,7 +352,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="10" style="text-align:center;padding:40px;color:var(--t4);">No lost leads found.</td>
+                                <td colspan="11" style="text-align:center;padding:40px;color:var(--t4);">No lost leads found.</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -638,7 +646,30 @@
 
 </main>
 
-{{-- DELETE MODAL --}}
+<!-- BULK DELETE MODAL -->
+<div class="modal-backdrop" id="bulkDeleteLeadsModal">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-hd" style="border-bottom:1px solid #fecaca;">
+            <span style="color:#dc2626;">Bulk Delete Leads</span>
+            <button class="modal-close" onclick="closeModal('bulkDeleteLeadsModal')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-bd" style="text-align:center;padding:32px 24px;">
+            <div style="width:64px;height:64px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                <i class="bi bi-trash3-fill" style="font-size:28px;color:#dc2626;"></i>
+            </div>
+            <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:var(--t1);">Delete Selected Leads?</h3>
+            <p style="margin:0;font-size:14px;color:var(--t3);line-height:1.6;">Are you sure you want to delete <strong id="bulkDeleteLeadsCount">0</strong> selected leads?<br>This action <strong style="color:#dc2626;">cannot be undone.</strong></p>
+        </div>
+        <div class="modal-ft" style="border-top:1px solid #fecaca;">
+            <button class="btn-ghost" onclick="closeModal('bulkDeleteLeadsModal')">Cancel</button>
+            <button id="executeBulkDeleteLeadsBtn" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="executeBulkDeleteLeads()">
+                <i class="bi bi-trash3-fill"></i> Confirm Bulk Deletion
+            </button>
+        </div>
+    </div>
+</div>
+
+{{-- SINGLE DELETE MODAL --}}
 <div class="modal-backdrop" id="deleteModal">
     <div class="modal-box" onclick="event.stopPropagation()">
         <div class="modal-hd" style="border-bottom:1px solid #fecaca;">
@@ -671,6 +702,72 @@
         const form = document.getElementById('deleteLeadForm');
         form.action = url;
         openModal('deleteModal');
+    }
+
+    function toggleAllLeads(source) {
+        const checkboxes = document.querySelectorAll('.lead-checkbox');
+        checkboxes.forEach(cb => cb.checked = source.checked);
+        updateBulkDeleteButtonLeads();
+    }
+
+    function updateBulkDeleteButtonLeads() {
+        const checkedCount = document.querySelectorAll('.lead-checkbox:checked').length;
+        const bulkBtn = document.getElementById('bulkDeleteLeadsBtn');
+        if (bulkBtn) {
+            if (checkedCount > 0) {
+                bulkBtn.style.display = 'inline-flex';
+            } else {
+                bulkBtn.style.display = 'none';
+            }
+        }
+    }
+
+    function bulkDeleteSelectedLeads() {
+        const checkedBoxes = document.querySelectorAll('.lead-checkbox:checked');
+        if (checkedBoxes.length === 0) return;
+
+        document.getElementById('bulkDeleteLeadsCount').innerText = checkedBoxes.length;
+        openModal('bulkDeleteLeadsModal');
+    }
+
+    function executeBulkDeleteLeads() {
+        const checkedBoxes = document.querySelectorAll('.lead-checkbox:checked');
+        if (checkedBoxes.length === 0) return;
+
+        const executeBtn = document.getElementById('executeBulkDeleteLeadsBtn');
+        if (executeBtn) {
+            executeBtn.disabled = true;
+            executeBtn.innerText = 'Deleting...';
+        }
+
+        const ids = Array.from(checkedBoxes).map(cb => cb.value);
+        
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{{ route($routePrefix . '.leads.bulk-destroy') }}";
+        
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = "{{ csrf_token() }}";
+        form.appendChild(csrfInput);
+        
+        const methodInput = document.createElement('input');
+        methodInput.type = 'hidden';
+        methodInput.name = '_method';
+        methodInput.value = 'DELETE';
+        form.appendChild(methodInput);
+
+        ids.forEach(id => {
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'ids[]';
+            idInput.value = id;
+            form.appendChild(idInput);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
     }
 
     // DATE RANGE LISTENER
