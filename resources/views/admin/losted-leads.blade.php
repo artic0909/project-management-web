@@ -202,7 +202,7 @@
                 <h1 class="page-title">Losted Leads</h1>
             </div>
             <div class="d-flex gap-2">
-                @if($routePrefix == 'admin' || $routePrefix == 'sale')
+                @if($routePrefix == 'admin')
                 <button type="button" class="btn-primary-solid sm" id="bulkDeleteLeadsBtn" style="display: none; background: #dc2626; border-color: #dc2626; color: white;" onclick="bulkDeleteSelectedLeads()">
                     <i class="bi bi-trash-fill"></i> Bulk Delete
                 </button>
@@ -267,6 +267,13 @@
                                      <option value="{{ $sale->id }}" {{ request('assigned_to') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
                                  @endforeach
                              </select>
+                             <select name="per_page" class="filter-select" onchange="updateFilters()">
+                                <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Rows</option>
+                                <option value="20" {{ (request('per_page') == 20 || !request('per_page')) ? 'selected' : '' }}>20 Rows</option>
+                                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Rows</option>
+                                <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 Rows</option>
+                                <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>All Rows</option>
+                             </select>
                         </form>
                     </div>
                 </div>
@@ -277,7 +284,11 @@
                         <thead>
                             <tr>
                                 <th style="width: 40px; text-align: center;">
+                                    @if($routePrefix == 'admin')
                                     <input type="checkbox" id="selectAllLeads" onclick="toggleAllLeads(this)" style="cursor: pointer;">
+                                    @else
+                                    #
+                                    @endif
                                 </th>
                                 <th>SL</th>
                                 <th>Lead</th>
@@ -295,7 +306,11 @@
                             @forelse($leads as $index => $lead)
                             <tr>
                                 <td style="text-align: center;">
+                                    @if($routePrefix == 'admin')
                                     <input type="checkbox" class="lead-checkbox" name="lead_ids[]" value="{{ $lead->id }}" onclick="updateBulkDeleteButtonLeads()" style="cursor: pointer;">
+                                    @else
+                                    {{ $index + 1 }}
+                                    @endif
                                 </td>
                                 <td>{{ $index + 1 }}</td>
                                 <td>

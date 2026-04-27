@@ -96,7 +96,11 @@ class LeadController extends Controller
         $totalLeads = $statsQuery->count();
 
         // Paginated results
-        $leads = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
+        $perPage = $request->get('per_page', 20);
+        if ($perPage === 'all') {
+            $perPage = $totalLeads ?: 20;
+        }
+        $leads = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
 
         // Total Followups for filtered salesperson
         $totalCallingFollowupsFiltered = 0;
@@ -415,7 +419,11 @@ class LeadController extends Controller
         }
 
         $totalLostLeads = $query->count();
-        $leads = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
+        $perPage = $request->get('per_page', 20);
+        if ($perPage === 'all') {
+            $perPage = $totalLostLeads ?: 20;
+        }
+        $leads = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
 
         $sources = Source::all();
         $services = Service::all();

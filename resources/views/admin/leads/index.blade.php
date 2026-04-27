@@ -197,9 +197,11 @@
                 <h1 class="page-title">Your All Leads</h1>
             </div>
             <div class="d-flex gap-2">
+                @if($routePrefix == 'admin')
                 <button type="button" class="btn-primary-solid sm" id="bulkDeleteBtn" style="display: none; background: #dc2626; border-color: #dc2626; color: white;" onclick="bulkDeleteSelected()">
                     <i class="bi bi-trash-fill"></i> Bulk Delete
                 </button>
+                @endif
                 <button type="button" class="btn-primary-solid sm" onclick="openImportModal()">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
@@ -428,6 +430,13 @@
                                 <option value="{{ $status->id }}" {{ request('status_id') == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
                             @endforeach
                         </select>
+                        <select name="per_page" class="filter-select" onchange="updateFilters()">
+                            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Rows</option>
+                            <option value="20" {{ (request('per_page') == 20 || !request('per_page')) ? 'selected' : '' }}>20 Rows</option>
+                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Rows</option>
+                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 Rows</option>
+                            <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>All Rows</option>
+                        </select>
                         @if($routePrefix == 'admin')
                         <select name="assigned_to" class="filter-select" onchange="updateFilters()">
                             <option value="">Sales Person</option>
@@ -450,7 +459,11 @@
                         <thead>
                             <tr>
                                 <th style="width: 40px; text-align: center;">
+                                    @if($routePrefix == 'admin')
                                     <input type="checkbox" id="selectAllLeads" onclick="toggleAllLeads(this)" style="cursor: pointer;">
+                                    @else
+                                    #
+                                    @endif
                                 </th>
                                 <th>SL</th>
                                 <th>Date</th>
@@ -474,7 +487,11 @@
                             @forelse($leads as $index => $lead)
                             <tr>
                                 <td style="text-align: center;">
+                                    @if($routePrefix == 'admin')
                                     <input type="checkbox" class="lead-checkbox" name="lead_ids[]" value="{{ $lead->id }}" onclick="updateBulkDeleteButton()" style="cursor: pointer;">
+                                    @else
+                                    {{ $index + 1 }}
+                                    @endif
                                 </td>
                                 <td>{{ $leads->firstItem() + $index }}</td>
                                 <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $lead->created_at->format('d M Y') }}</div></td>
@@ -573,7 +590,9 @@
                                         <a href="{{ route($routePrefix . '.leads.followup', $lead->id) }}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
                                         <a class="ra-btn" title="Edit" href="{{ route($routePrefix . '.leads.edit', $lead->id) }}"><i class="bi bi-pencil-fill"></i></a>
                                       
+                                        @if($routePrefix == 'admin')
                                         <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route($routePrefix . '.leads.destroy', $lead->id) }}')"><i class="bi bi-trash-fill"></i></button>
+                                        @endif
                                        
                                     </div>
                                 </td>
