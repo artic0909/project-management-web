@@ -1425,7 +1425,7 @@
         }
 
         // AJAX SUBMISSION
-        const submitBtn = $('.s-btn');
+        const submitBtn = $('#mainOrder .s-btn');
         const originalText = submitBtn.html();
         submitBtn.prop('disabled', true).html('<i class="bi bi-hourglass-split"></i> Processing...');
 

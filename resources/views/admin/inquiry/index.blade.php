@@ -83,6 +83,7 @@
                         <thead>
                             <tr>
                                 <th>SL.</th>
+                                <th>Inq ID</th>
                                 <th>Date</th>
                                 <th>Company</th>
                                 <th>Contact Person</th>
@@ -90,12 +91,13 @@
                                 <th>City/State</th>
                                 <th>Status</th>
                                 <th>Action</th>
-                            </tr>
+                            </tr>`
                         </thead>
                         <tbody>
                             @forelse($inquiries as $in)
                             <tr>
                                 <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration + ($inquiries->currentPage() - 1) * $inquiries->perPage() }}</td>
+                                <td style="font-size:12px; font-weight:600;">#ORD-INQ-{{ $in->id }}</td>
                                 <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $in->created_at->format('d M Y') }}</div><div class="ls" style="font-size:10px;">{{ $in->created_at->format('h:i A') }}</div></td>
                                 <td>
                                     <div class="lead-cell">
