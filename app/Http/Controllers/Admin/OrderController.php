@@ -88,8 +88,14 @@ class OrderController extends Controller
         }
 
         $aggQuery = clone $query;
+        $totalOrdersCount = (clone $aggQuery)->count();
+        $perPage = $request->get('per_page', 20);
+        if ($perPage === 'all') {
+            $perPage = $totalOrdersCount ?: 20;
+        }
+
         $query->with(['status', 'services', 'sources', 'plans', 'assignments.sale', 'createdBy'])->withCount('followups');
-        $orders = $query->latest()->paginate(20)->withQueryString();
+        $orders = $query->latest()->paginate($perPage)->withQueryString();
         
         // Total Followups for filtered salesperson
         $totalCallingFollowupsFiltered = 0;
