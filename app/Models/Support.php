@@ -25,4 +25,8 @@ class Support extends Model
     {
         return $this->hasMany(Reply::class);
     }
+
+    protected $casts = [
+        'attachment' => 'array',
+    ];
 }

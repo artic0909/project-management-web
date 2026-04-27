@@ -157,18 +157,23 @@
                         <div style="font-size:15px; font-weight:700; color:var(--t1); margin-bottom:10px;">Subject: {{ $ticket->subject }}</div>
                         <div style="font-size:14px; line-height:1.7; color:var(--t2); background:var(--bg3); padding:20px; border-radius:12px; border:1px solid var(--b2); white-space:pre-wrap;">{!! $ticket->message !!}</div>
                         
-                        @if($ticket->attachment)
-                        <div style="margin-top:20px; display:flex; align-items:center; gap:15px; background:var(--bg3); padding:12px; border-radius:12px; border:1px dashed var(--b2);">
-                            <div style="width:60px; height:60px; border-radius:8px; overflow:hidden; border:1px solid var(--b1);">
-                                <img src="{{ asset('storage/' . $ticket->attachment) }}" style="width:100%; height:100%; object-fit:cover; cursor:pointer;" onclick="window.open(this.src, '_blank')">
+                        @if($ticket->attachment && is_array($ticket->attachment))
+                            <div style="margin-top:20px; font-size:13px; font-weight:700; color:var(--t1); margin-bottom:8px;">Attachments Included</div>
+                            <div style="display:flex; flex-direction:column; gap:10px;">
+                                @foreach($ticket->attachment as $attach)
+                                <div style="display:flex; align-items:center; gap:15px; background:var(--bg3); padding:12px; border-radius:12px; border:1px dashed var(--b2);">
+                                    <div style="width:60px; height:60px; border-radius:8px; overflow:hidden; border:1px solid var(--b1);">
+                                        <img src="{{ asset('storage/' . $attach) }}" style="width:100%; height:100%; object-fit:cover; cursor:pointer;" onclick="window.open(this.src, '_blank')">
+                                    </div>
+                                    <div>
+                                        <div style="font-size:13px; font-weight:700; color:var(--t1);">Screenshot/Image {{ $loop->iteration }}</div>
+                                        <a href="{{ asset('storage/' . $attach) }}" download style="font-size:12px; font-weight:600; color:var(--accent); text-decoration:none;">
+                                            <i class="bi bi-download"></i> Download Image
+                                        </a>
+                                    </div>
+                                </div>
+                                @endforeach
                             </div>
-                            <div>
-                                <div style="font-size:13px; font-weight:700; color:var(--t1);">Attachment Included</div>
-                                <a href="{{ asset('storage/' . $ticket->attachment) }}" download style="font-size:12px; font-weight:600; color:var(--accent); text-decoration:none;">
-                                    <i class="bi bi-download"></i> Download Image
-                                </a>
-                            </div>
-                        </div>
                         @endif
                     </div>
                 </div>

@@ -296,16 +296,34 @@
                     </div>
                     <div class="col-12">
                         <label class="form-label">Attachment (Optional)</label>
-                        <div class="file-upload-wrapper" id="fileWrapper">
-                            <div class="file-upload-content">
+                        
+                        <!-- Hidden true form input -->
+                        <input type="file" name="attachment[]" id="formFileInput" accept="image/*" multiple style="display:none;">
+                        
+                        <!-- Hidden file picker -->
+                        <input type="file" id="hiddenFilePicker" accept="image/*" multiple style="display:none;" onchange="handleFiles(this.files); this.value=null;">
+                        
+                        <div class="file-upload-wrapper" id="mainFileWrapper" style="padding:0; overflow:hidden;">
+                            <!-- Initial Upload Prompt -->
+                            <div class="file-upload-content" id="uploadPrompt" onclick="document.getElementById('hiddenFilePicker').click()" style="padding: 32px 20px; cursor: pointer;">
                                 <i class="bi bi-cloud-arrow-up"></i>
                                 <span>Click or Drag & Drop proof/screenshot</span>
                                 <p class="text-muted small mb-0 mt-1">Accepts images (JPG, PNG, GIF) up to 2MB</p>
                             </div>
-                            <input type="file" name="attachment" id="fileInput" accept="image/*" onchange="handleFileSelect(this)">
-                            <div class="file-name-display" id="fileName">No file selected</div>
+                            
+                            <!-- Selected Files List -->
+                            <div id="fileListContainer" style="display:none; padding:16px; flex-direction:column; gap:10px; width:100%;">
+                                <!-- Files will be injected here via JS -->
+                            </div>
                         </div>
+
+                        <!-- Add More Button (hidden initially) -->
+                        <button type="button" id="addMoreBtn" onclick="document.getElementById('hiddenFilePicker').click()" style="display:none; margin-top:12px; background:transparent; border:1.5px dashed var(--accent); color:var(--accent); border-radius:8px; padding:8px 16px; font-weight:600; font-size:13px; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s;" onmouseover="this.style.background='rgba(255, 77, 28, 0.05)'" onmouseout="this.style.background='transparent'">
+                            <i class="bi bi-plus-circle"></i> Add More
+                        </button>
+                        
                         @error('attachment') <div class="error-message" style="margin-top: 8px;">{{ $message }}</div> @enderror
+                        @error('attachment.*') <div class="error-message" style="margin-top: 8px;">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-12 pt-2">
                         <button type="submit" class="submit-btn" style="height: 54px; min-width: 240px; display: flex; align-items: center; justify-content: center; gap: 10px;">
@@ -338,20 +356,77 @@
                     console.error(error);
                 });
 
-            window.handleFileSelect = function(input) {
-                const fileName = document.getElementById('fileName');
-                const wrapper = document.getElementById('fileWrapper');
-                if (input.files && input.files[0]) {
-                    fileName.innerText = "Selected: " + input.files[0].name;
-                    fileName.style.display = "block";
-                    wrapper.style.borderColor = "var(--accent)";
-                    wrapper.style.background = "rgba(255, 77, 28, 0.04)";
-                } else {
-                    fileName.style.display = "none";
-                    wrapper.style.borderColor = "var(--border)";
-                    wrapper.style.background = "var(--paper2)";
+            let dt = new DataTransfer();
+
+            window.handleFiles = function(files) {
+                for (let i = 0; i < files.length; i++) {
+                    dt.items.add(files[i]);
                 }
+                updateFileUI();
             };
+
+            window.removeFile = function(index) {
+                dt.items.remove(index);
+                updateFileUI();
+            };
+
+            function updateFileUI() {
+                const formInput = document.getElementById('formFileInput');
+                formInput.files = dt.files;
+                
+                const container = document.getElementById('fileListContainer');
+                const prompt = document.getElementById('uploadPrompt');
+                const addMoreBtn = document.getElementById('addMoreBtn');
+                
+                container.innerHTML = '';
+                
+                if (dt.files.length > 0) {
+                    prompt.style.display = 'none';
+                    container.style.display = 'flex';
+                    addMoreBtn.style.display = 'inline-flex';
+                    
+                    for (let i = 0; i < dt.files.length; i++) {
+                        const file = dt.files[i];
+                        const itemHTML = `
+                            <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(255, 77, 28, 0.04); padding:10px 14px; border-radius:8px; border:1px solid rgba(255, 77, 28, 0.2);">
+                                <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
+                                    <i class="bi bi-image" style="color:var(--accent); flex-shrink:0;"></i>
+                                    <span style="font-size:13px; font-weight:600; color:var(--accent); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${file.name}</span>
+                                </div>
+                                <button type="button" onclick="removeFile(${i})" style="background:none; border:none; color:#dc2626; cursor:pointer; padding:4px; flex-shrink:0;">
+                                    <i class="bi bi-x-circle-fill" style="font-size:16px;"></i>
+                                </button>
+                            </div>
+                        `;
+                        container.insertAdjacentHTML('beforeend', itemHTML);
+                    }
+                } else {
+                    prompt.style.display = 'block';
+                    container.style.display = 'none';
+                    addMoreBtn.style.display = 'none';
+                }
+            }
+
+            // Drag and Drop support
+            const wrapper = document.getElementById('mainFileWrapper');
+            wrapper.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                wrapper.style.borderColor = "var(--accent)";
+                wrapper.style.background = "rgba(255, 77, 28, 0.04)";
+            });
+            wrapper.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                wrapper.style.borderColor = "var(--border)";
+                wrapper.style.background = "var(--paper2)";
+            });
+            wrapper.addEventListener('drop', function(e) {
+                e.preventDefault();
+                wrapper.style.borderColor = "var(--border)";
+                wrapper.style.background = "var(--paper2)";
+                if (e.dataTransfer.files.length > 0) {
+                    window.handleFiles(e.dataTransfer.files);
+                }
+            });
 
             $("#supportForm").validate({
                 ignore: [], // Don't ignore hidden fields (CKEditor replaces original textarea)

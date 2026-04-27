@@ -33,7 +33,8 @@ class SupportController extends Controller
             'subject'      => 'required|string|max:255',
             'priority'     => 'required|in:high,medium,low',
             'message'      => 'required|string',
-            'attachment'   => 'nullable|image|max:2048',
+            'attachment'   => 'nullable|array',
+            'attachment.*' => 'image|max:2048',
         ]);
 
         $data = $request->all();
@@ -41,7 +42,11 @@ class SupportController extends Controller
         $data['status'] = 'pending';
 
         if ($request->hasFile('attachment')) {
-            $data['attachment'] = $request->file('attachment')->store('support_attachments', 'public');
+            $attachments = [];
+            foreach ($request->file('attachment') as $file) {
+                $attachments[] = $file->store('support_attachments', 'public');
+            }
+            $data['attachment'] = $attachments;
         }
 
         $data['ticket_no'] = 'TKT-' . strtoupper(Str::random(8));
@@ -139,8 +144,10 @@ class SupportController extends Controller
     public function destroy($id)
     {
         $ticket = Support::findOrFail($id);
-        if ($ticket->attachment) {
-            Storage::disk('public')->delete($ticket->attachment);
+        if ($ticket->attachment && is_array($ticket->attachment)) {
+            foreach ($ticket->attachment as $path) {
+                Storage::disk('public')->delete($path);
+            }
         }
         $ticket->delete();
 
@@ -158,8 +165,10 @@ class SupportController extends Controller
 
         $tickets = Support::whereIn('id', $request->ids)->get();
         foreach ($tickets as $ticket) {
-            if ($ticket->attachment) {
-                Storage::disk('public')->delete($ticket->attachment);
+            if ($ticket->attachment && is_array($ticket->attachment)) {
+                foreach ($ticket->attachment as $path) {
+                    Storage::disk('public')->delete($path);
+                }
             }
             $ticket->delete();
         }
