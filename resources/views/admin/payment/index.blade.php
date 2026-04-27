@@ -75,7 +75,7 @@
                     <div class="card-head">
                         <div>
                             <div class="card-title">All Transactions</div>
-                            <div class="card-sub" id="paymentTableSub">Total {{ $payments->count() }} transaction entries</div>
+                            <div class="card-sub" id="paymentTableSub">Total {{ $payments->total() }} transaction entries</div>
                         </div>
                         <div class="card-actions mb-2">
                             <form action="{{ route($routePrefix . '.payments.index') }}" method="GET"
@@ -93,6 +93,13 @@
                                 </button>
                                 <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
                                 <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
+                                <select name="per_page" class="filter-select" onchange="updateFilters()">
+                                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Rows</option>
+                                    <option value="20" {{ (request('per_page') == 20 || !request('per_page')) ? 'selected' : '' }}>20 Rows</option>
+                                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Rows</option>
+                                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 Rows</option>
+                                    <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>All Rows</option>
+                                </select>
                             </form>
                             <div style="position:relative;">
                                 @include('admin.includes.date-range-picker')
@@ -121,7 +128,7 @@
                             <tbody>
                                 @foreach($payments as $pay)
                                     <tr>
-                                        <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration }}</td>
+                                    <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration + ($payments->currentPage() - 1) * $payments->perPage() }}</td>
                                         <td>
                                             <div class="ls">{{ $pay->transaction_date->format('d M Y') }}</div>
                                         </td>
@@ -190,7 +197,10 @@
                     </div>
 
                     <div class="table-footer">
-                        <span class="tf-info">Total Transactions: {{ $payments->count() }}</span>
+                        <span class="tf-info">Showing {{ $payments->firstItem() ?? 0 }} to {{ $payments->lastItem() ?? 0 }} of {{ $payments->total() }} Transactions</span>
+                        <div class="tf-pagination">
+                            {{ $payments->links('pagination::bootstrap-4') }}
+                        </div>
                     </div>
                     </div>
                 </div>

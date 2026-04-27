@@ -68,7 +68,13 @@ class PaymentController extends Controller
         }
 
         $aggQuery = clone $query;
-        $payments = $query->latest()->get();
+        $totalPaymentsCount = (clone $aggQuery)->count();
+        $perPage = $request->get('per_page', 20);
+        if ($perPage === 'all') {
+            $perPage = $totalPaymentsCount ?: 20;
+        }
+
+        $payments = $query->latest()->paginate($perPage)->withQueryString();
 
         // Summaries
         $totalCollected = (clone $aggQuery)->sum('amount');
