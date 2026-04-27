@@ -55,7 +55,7 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Project Budget (₹)</label>
-                                    <input type="number" name="order_value" value="{{ old('order_value', $inquiry->order_value) }}" class="form-inp" required>
+                                    <input type="number" name="order_value" value="{{ old('order_value', $inquiry->order_value) }}" class="form-inp">
                                 </div>
                             </div>
 
@@ -73,7 +73,7 @@
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row">
-                                    <label class="form-lbl">Services Interested In <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Services Interested In</label>
                                     @php $selectedServices = (array)old('service_ids', $inquiry->service_ids); @endphp
                                     <div class="ms-wrap" id="serviceWrap">
                                         <div class="ms-trigger" onclick="toggleMs('serviceWrap')" data-placeholder="Select services…">

@@ -112,7 +112,7 @@
                                     <div class="ln">{{ $in->client_name }}</div>
                                     <div class="ls">{{ $in->emails[0] ?? 'N/A' }}</div>
                                 </td>
-                                <td><span class="src-tag">₹{{ number_format($in->order_value, 0) }}</span></td>
+                                <td><span class="src-tag">₹{{ number_format($in->order_value ?? 0, 0) }}</span></td>
                                 <td>
                                     <div class="ln">{{ $in->city }}</div>
                                     <div class="ls">{{ $in->state }}</div>

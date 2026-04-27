@@ -114,7 +114,7 @@
                     <div class="card-body">
                         <div class="detail-kpis">
                             <div class="dk-item">
-                                <div class="dk-val">₹{{ number_format($inquiry->order_value, 0) }}</div>
+                                <div class="dk-val">₹{{ number_format($inquiry->order_value ?? 0, 0) }}</div>
                                 <div class="dk-lbl">Budget</div>
                             </div>
                             <div class="dk-item">

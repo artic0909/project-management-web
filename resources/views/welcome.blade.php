@@ -1099,20 +1099,20 @@
                   <label class="f-label req">Domain Name / URL</label>
                   <input type="text" name="domain_name" class="f-input" placeholder="example.com" required>
                 </div>
-                <div class="f-group">
+                <!-- <div class="f-group">
                   <label class="f-label req">Budget (₹)</label>
                   <input type="number" name="order_value" class="f-input" placeholder="Amount in INR" required>
-                </div>
-                <div class="f-group">
+                </div> -->
+                <!-- <div class="f-group">
                   <label class="f-label req">Lead Sources</label>
                   <select name="source_ids[]" class="f-select select2-sources" multiple="multiple" style="width: 100%">
                     @foreach($sources as $source)
                       <option value="{{ $source->id }}">{{ $source->name }}</option>
                     @endforeach
                   </select>
-                </div>
+                </div> -->
 
-                <div class="f-group">
+                <!-- <div class="f-group">
                   <label class="f-label req">Select Services</label>
                   <select name="service_ids[]" class="f-select select2-services" multiple="multiple" style="width: 100%"
                     required>
@@ -1120,7 +1120,7 @@
                       <option value="{{ $service->id }}">{{ $service->name }}</option>
                     @endforeach
                   </select>
-                </div>
+                </div> -->
               </div>
             </div>
 
@@ -1374,8 +1374,10 @@
 
         requiredFields.forEach(f => {
           const el = $(`[name="${f.name}"]`);
-          if (!el.val() || el.val().trim() === '') {
-            markError(el[0], `${f.label} is required.`);
+          if (el.length > 0) {
+            if (!el.val() || el.val().trim() === '') {
+              markError(el[0], `${f.label} is required.`);
+            }
           }
         });
 
@@ -1409,8 +1411,10 @@
         if (!hasValidPhone && phones.length > 0) markError(phones[0], 'At least one phone number is required.');
 
         const services = $('.select2-services');
-        if (services.val() === null || services.val().length === 0) {
-          markError(services[0], 'Please select at least one service.');
+        if (services.length > 0) {
+          if (services.val() === null || services.val().length === 0) {
+            markError(services[0], 'Please select at least one service.');
+          }
         }
 
         const zipField = $('input[name="zip_code"]');
