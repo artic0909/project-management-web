@@ -3059,13 +3059,13 @@
                 </div>
             </div>
 
-            <div class="topbar-center">
+            <!-- <div class="topbar-center">
                 <div class="global-search">
                     <i class="bi bi-search"></i>
                     <input type="text" placeholder="Search projects, leads, orders, team…" id="globalSearch">
                     <kbd>⌘K</kbd>
                 </div>
-            </div>
+            </div> -->
 
             <div class="topbar-right">
                 <!-- <div class="tb-btn" onclick="showToast('info','Syncing data...','bi-arrow-clockwise')" data-tooltip="Sync">
