@@ -99,7 +99,7 @@
             </div>
             <div class="card-body">
                 <div class="table-wrap">
-                    <table class="table">
+                    <table class="data-table">
                         <thead>
                             <tr>
                                 <th>SL</th>
@@ -119,8 +119,19 @@
                                     <td>{{ $attendances->firstItem() + $index }}</td>
                                     <td style="font-weight:600;">{{ $row->date?->format('d M, Y') ?? 'N/A' }}</td>
                                     <td>
-                                        <span class="badge {{ ($row->status ?? 'Present') == 'Present' ? 'bg-success-subtle text-success' : (($row->status ?? 'Present') == 'Late' ? 'bg-warning-subtle text-warning' : 'bg-danger-subtle text-danger') }}" style="font-weight:700;">
-                                            {{ strtoupper($row->status ?? 'Present') }}
+                                        @php
+                                            $status = $row->status ?? 'Present';
+                                            $badgeStyle = '';
+                                            if($status == 'Present') {
+                                                $badgeStyle = 'background:rgba(16,185,129,0.15); color:#10b981;';
+                                            } elseif($status == 'Late') {
+                                                $badgeStyle = 'background:rgba(245,158,11,0.15); color:#f59e0b;';
+                                            } else {
+                                                $badgeStyle = 'background:rgba(239,68,68,0.15); color:#ef4444;';
+                                            }
+                                        @endphp
+                                        <span class="status-pill" style="{{ $badgeStyle }} font-weight:700;">
+                                            {{ strtoupper($status) }}
                                         </span>
                                     </td>
                                     <td>
@@ -196,7 +207,7 @@
                     </table>
                 </div>
                 <div class="mt-4">
-                    {{ $attendances->links() }}
+                    {{ $attendances->links('admin.includes.pagination') }}
                 </div>
             </div>
         </div>
@@ -211,11 +222,27 @@
         .verification-actions { display: flex; align-items: center; justify-content: flex-start; }
         .v-link { font-size: 20px; line-height: 1; transition: 0.2s; }
         .v-link.in { color: var(--accent); }
-        .v-link.out { color: var(--red); }
+        .v-link.out { color: #ef4444; }
         .v-link:hover { transform: translateY(-2px); }
 
         /* Ensure table data is left aligned */
-        .table th, .table td { text-align: left !important; }
+        .data-table th, .data-table td { text-align: left !important; }
+        
+        /* Dark mode overrides for table background */
+        [data-theme="dark"] .data-table {
+            background: transparent !important;
+        }
+        [data-theme="dark"] .data-table tbody tr {
+            background: transparent !important;
+        }
+        [data-theme="dark"] .data-table tbody td {
+            background: transparent !important;
+            color: var(--t2);
+        }
+        [data-theme="dark"] .data-table thead th {
+            background: var(--bg3) !important;
+            color: var(--t3);
+        }
     </style>
 
     <!-- Screenshot Modal -->
