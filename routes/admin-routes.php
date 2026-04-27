@@ -28,12 +28,14 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::post('/add-sales-person', [SalesPersonController::class, 'store'])->name('sales-person.store');
     Route::put('/add-sales-person/{id}', [SalesPersonController::class, 'edit'])->name('sales-person.update');
     Route::delete('/add-sales-person/{id}', [SalesPersonController::class, 'delete'])->name('sales-person.destroy');
+    Route::post('/add-sales-person/bulk-destroy', [SalesPersonController::class, 'bulkDestroy'])->name('sales-person.bulk-destroy');
 
     // Developer
     Route::get('/add-developer', [DeveloperController::class, 'index'])->name('developer');
     Route::post('/add-developer', [DeveloperController::class, 'store'])->name('developer.store');
     Route::put('/add-developer/{id}', [DeveloperController::class, 'edit'])->name('developer.update');
     Route::delete('/add-developer/{id}', [DeveloperController::class, 'delete'])->name('developer.destroy');
+    Route::post('/add-developer/bulk-destroy', [DeveloperController::class, 'bulkDestroy'])->name('developer.bulk-destroy');
 
     // Sources
     Route::get('/sources', [SourceController::class, 'index'])->name('sources.index');

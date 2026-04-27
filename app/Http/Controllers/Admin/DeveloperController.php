@@ -81,4 +81,16 @@ class DeveloperController extends Controller
 
         return redirect()->back()->with('success', 'Developer deleted successfully!');
     }
+
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:developers,id',
+        ]);
+
+        Developer::whereIn('id', $request->ids)->delete();
+
+        return back()->with('success', 'Selected Developers deleted successfully!');
+    }
 }

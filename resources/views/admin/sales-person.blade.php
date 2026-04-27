@@ -712,6 +712,12 @@
                         <div class="card-sub">{{ $salesPeople->count() }} total</div>
                     </div>
                     <div class="card-actions">
+                        <div id="bulkActions" style="display: none; align-items: center; gap: 10px; margin-right: 15px;">
+                            <span id="selectedCount" style="font-size: 13px; font-weight: 600; color: var(--accent);">0 selected</span>
+                            <button type="button" class="btn-primary-solid sm" style="background: #ef4444; border-color: #ef4444;" onclick="bulkDelete()">
+                                <i class="bi bi-trash"></i> Delete Selected
+                            </button>
+                        </div>
                         <form class="global-search">
                             <i class="bi bi-search"></i>
                             <input type="text" placeholder="Search...">
@@ -723,6 +729,9 @@
                     <table class="data-table">
                         <thead>
                             <tr>
+                                <th style="width: 40px; padding-left: 20px;">
+                                    <input type="checkbox" id="selectAll" class="custom-checkbox" onchange="toggleAll(this)">
+                                </th>
                                 <th>SL</th>
                                 <th>Name</th>
                                 <th>Email</th>
@@ -732,6 +741,9 @@
                         <tbody>
                             @foreach ($salesPeople as $index => $person)
                             <tr>
+                                <td style="padding-left: 20px;">
+                                    <input type="checkbox" class="row-checkbox custom-checkbox" value="{{ $person->id }}" onchange="updateBulkActionState()">
+                                </td>
                                 <td>{{ $salesPeople->firstItem() + $index }}</td>
                                 <td>
                                     <div class="lead-cell">
@@ -887,8 +899,63 @@
             document.getElementById('deleteSalesPersonForm').action = `{{ url($routePrefix . '/add-sales-person') }}/${id}`;
             openModal('deleteSalesPersonModal');
         }
+
+        function toggleAll(source) {
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(cb => cb.checked = source.checked);
+            updateBulkActionState();
+        }
+
+        function updateBulkActionState() {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            const bulkActions = document.getElementById('bulkActions');
+            const selectedCount = document.getElementById('selectedCount');
+            const selectAll = document.getElementById('selectAll');
+            const allCheckboxes = document.querySelectorAll('.row-checkbox');
+
+            if (checkboxes.length > 0) {
+                bulkActions.style.display = 'flex';
+                selectedCount.innerText = checkboxes.length + ' selected';
+            } else {
+                bulkActions.style.display = 'none';
+            }
+
+            if (checkboxes.length === allCheckboxes.length && allCheckboxes.length > 0) {
+                selectAll.checked = true;
+            } else {
+                selectAll.checked = false;
+            }
+        }
+
+        function bulkDelete() {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            if (checkboxes.length === 0) return;
+
+            if (confirm(`Are you sure you want to delete ${checkboxes.length} Sales Persons?`)) {
+                const ids = Array.from(checkboxes).map(cb => cb.value);
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `{{ route($routePrefix . '.sales-person.bulk-destroy') }}`;
+
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = '{{ csrf_token() }}';
+                form.appendChild(csrf);
+
+                ids.forEach(id => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'ids[]';
+                    input.value = id;
+                    form.appendChild(input);
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
     </script>
 </main>
-
 
 @endsection

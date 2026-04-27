@@ -77,4 +77,16 @@ class SalesPersonController extends Controller
 
         return redirect()->back()->with('success', 'Sales Person deleted successfully!');
     }
+
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:sales,id',
+        ]);
+
+        Sale::whereIn('id', $request->ids)->delete();
+
+        return back()->with('success', 'Selected Sales Persons deleted successfully!');
+    }
 }

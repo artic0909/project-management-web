@@ -714,6 +714,14 @@
                         <div class="card-sub">{{ $developers->count() }} total</div>
                     </div>
                     <div class="card-actions">
+                        @if($routePrefix == 'admin')
+                        <div id="bulkActions" style="display: none; align-items: center; gap: 10px; margin-right: 15px;">
+                            <span id="selectedCount" style="font-size: 13px; font-weight: 600; color: var(--accent);">0 selected</span>
+                            <button type="button" class="btn-primary-solid sm" style="background: #ef4444; border-color: #ef4444;" onclick="bulkDelete()">
+                                <i class="bi bi-trash"></i> Delete Selected
+                            </button>
+                        </div>
+                        @endif
                         <form class="global-search">
                             <i class="bi bi-search"></i>
                             <input type="text" placeholder="Search...">
@@ -725,6 +733,11 @@
                     <table class="data-table">
                         <thead>
                             <tr>
+                                @if($routePrefix == 'admin')
+                                <th style="width: 40px; padding-left: 20px;">
+                                    <input type="checkbox" id="selectAll" class="custom-checkbox" onchange="toggleAll(this)">
+                                </th>
+                                @endif
                                 <th>SL</th>
                                 <th>Name</th>
                                 <th>Designation</th>
@@ -735,6 +748,11 @@
                         <tbody>
                             @foreach ($developers as $index => $developer)
                             <tr>
+                                @if($routePrefix == 'admin')
+                                <td style="padding-left: 20px;">
+                                    <input type="checkbox" class="row-checkbox custom-checkbox" value="{{ $developer->id }}" onchange="updateBulkActionState()">
+                                </td>
+                                @endif
                                 <td>{{ $developers->firstItem() + $index }}</td>
                                 <td>
                                     <div class="lead-cell">
@@ -902,9 +920,64 @@
             document.getElementById('deleteForm').action = `{{ url($routePrefix . '/add-developer') }}/${id}`;
             openModal('deleteModal');
         }
+
+        function toggleAll(source) {
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(cb => cb.checked = source.checked);
+            updateBulkActionState();
+        }
+
+        function updateBulkActionState() {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            const bulkActions = document.getElementById('bulkActions');
+            const selectedCount = document.getElementById('selectedCount');
+            const selectAll = document.getElementById('selectAll');
+            const allCheckboxes = document.querySelectorAll('.row-checkbox');
+
+            if (checkboxes.length > 0) {
+                bulkActions.style.display = 'flex';
+                selectedCount.innerText = checkboxes.length + ' selected';
+            } else {
+                bulkActions.style.display = 'none';
+            }
+
+            if (checkboxes.length === allCheckboxes.length && allCheckboxes.length > 0) {
+                if (selectAll) selectAll.checked = true;
+            } else {
+                if (selectAll) selectAll.checked = false;
+            }
+        }
+
+        function bulkDelete() {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            if (checkboxes.length === 0) return;
+
+            if (confirm(`Are you sure you want to delete ${checkboxes.length} Developers?`)) {
+                const ids = Array.from(checkboxes).map(cb => cb.value);
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `{{ route($routePrefix . '.developer.bulk-destroy') }}`;
+
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = '{{ csrf_token() }}';
+                form.appendChild(csrf);
+
+                ids.forEach(id => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'ids[]';
+                    input.value = id;
+                    form.appendChild(input);
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
     </script>
 
 </main>
-
 
 @endsection
