@@ -98,7 +98,14 @@
         <div class="dash-card">
             <div class="card-head">
                 <div class="card-title">My Presence History</div>
-                <form action="{{ route($routePrefix . '.attendance.index') }}" method="GET" class="filter-form">
+                <form action="{{ route($routePrefix . '.attendance.index') }}" method="GET" class="filter-form" style="display:flex; gap:10px;">
+                    <select name="per_page" class="filter-select" onchange="this.form.submit()">
+                        <option value="10" {{ request('per_page') == '10' ? 'selected' : '' }}>10 Rows</option>
+                        <option value="20" {{ request('per_page') == '20' ? 'selected' : '' }}>20 Rows</option>
+                        <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50 Rows</option>
+                        <option value="100" {{ request('per_page') == '100' ? 'selected' : '' }}>100 Rows</option>
+                        <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>All</option>
+                    </select>
                     <input type="date" name="date" class="filter-select" value="{{ request('date') }}" onchange="this.form.submit()">
                 </form>
             </div>

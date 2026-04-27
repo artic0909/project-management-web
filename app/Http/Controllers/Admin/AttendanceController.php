@@ -54,7 +54,9 @@ class AttendanceController extends Controller
         // Sum of all filtered results (using ABS to handle any lingering negatives)
         $totalWorkSeconds = $query->sum(DB::raw('ABS(total_seconds)'));
 
-        $attendances = $query->latest('date')->latest('check_in_time')->paginate(20)->withQueryString();
+        $perPage = $request->input('per_page', 10);
+        $perPage = $perPage === 'all' ? ($query->count() > 0 ? $query->count() : 10) : (int) $perPage;
+        $attendances = $query->latest('date')->latest('check_in_time')->paginate($perPage)->withQueryString();
         
         $settings = AttendanceSetting::first() ?? AttendanceSetting::create([
             'dev_checkin_time' => '10:00:00',
@@ -90,7 +92,9 @@ class AttendanceController extends Controller
         // Sum of all filtered results
         $totalWorkSeconds = $query->sum(DB::raw('ABS(total_seconds)'));
 
-        $attendances = $query->latest('date')->latest('check_in_time')->paginate(20)->withQueryString();
+        $perPage = $request->input('per_page', 10);
+        $perPage = $perPage === 'all' ? ($query->count() > 0 ? $query->count() : 10) : (int) $perPage;
+        $attendances = $query->latest('date')->latest('check_in_time')->paginate($perPage)->withQueryString();
         $settings = AttendanceSetting::first();
         $allSales = Sale::all();
         
@@ -112,7 +116,9 @@ class AttendanceController extends Controller
         // Sum of all filtered results
         $totalWorkSeconds = $query->sum(DB::raw('ABS(total_seconds)'));
 
-        $attendances = $query->latest('date')->latest('check_in_time')->paginate(20)->withQueryString();
+        $perPage = $request->input('per_page', 10);
+        $perPage = $perPage === 'all' ? ($query->count() > 0 ? $query->count() : 10) : (int) $perPage;
+        $attendances = $query->latest('date')->latest('check_in_time')->paginate($perPage)->withQueryString();
         $settings = AttendanceSetting::first();
         $allDevelopers = Developer::all();
         

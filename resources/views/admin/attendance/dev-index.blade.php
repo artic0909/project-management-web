@@ -81,6 +81,14 @@
                 <div style="display: flex; align-items: center; gap: 10px; margin-left: auto; flex-wrap: wrap;">
                     <form action="{{ route('admin.attendance.dev-index') }}" method="GET" class="card-actions mb-0" id="filterForm" style="display:flex; align-items:center; gap:8px;">
                         
+                        <select name="per_page" class="filter-select" onchange="document.getElementById('filterForm').submit()" style="height:38px;">
+                            <option value="10" {{ request('per_page') == '10' ? 'selected' : '' }}>10 Rows</option>
+                            <option value="20" {{ request('per_page') == '20' ? 'selected' : '' }}>20 Rows</option>
+                            <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50 Rows</option>
+                            <option value="100" {{ request('per_page') == '100' ? 'selected' : '' }}>100 Rows</option>
+                            <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>All</option>
+                        </select>
+
                         <select name="user_id" class="filter-select" onchange="document.getElementById('filterForm').submit()" style="height:38px; min-width:160px;">
                             <option value="">All Developers Staff</option>
                             @foreach($allDevelopers as $dev)
