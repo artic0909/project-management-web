@@ -191,10 +191,11 @@
                                 <div class="form-row mb-0">
                                     <label class="form-lbl">Set New Ticket Status</label>
                                     <select name="status" class="form-inp">
+                                        <option value="active" {{ $ticket->status == 'active' ? 'selected' : '' }}>Active</option>
                                         <option value="replied" {{ $ticket->status == 'replied' ? 'selected' : '' }}>Replied</option>
                                         <option value="review" {{ $ticket->status == 'review' ? 'selected' : '' }}>Review</option>
-                                        <option value="closed" {{ $ticket->status == 'closed' ? 'selected' : '' }}>Closed</option>
                                         <option value="pending" {{ $ticket->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                        <option value="closed" {{ $ticket->status == 'closed' ? 'selected' : '' }}>Closed</option>
                                     </select>
                                 </div>
                                 <button type="submit" class="btn-primary-solid" style="height:44px; width:100%;">

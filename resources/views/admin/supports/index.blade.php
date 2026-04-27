@@ -31,6 +31,7 @@
                             <select name="status" class="filter-select" onchange="this.form.submit()">
                                 <option value="">All Status</option>
                                 <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
                                 <option value="review" {{ request('status') == 'review' ? 'selected' : '' }}>Review</option>
                                 <option value="replied" {{ request('status') == 'replied' ? 'selected' : '' }}>Replied</option>
                                 <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>Closed</option>
