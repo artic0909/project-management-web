@@ -204,8 +204,43 @@
         </div>
 
         @if(session('success'))
-            <div class="alert alert-success border-0 shadow-sm mb-4 py-3" style="border-radius: 16px;">
-                <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+            <style>
+                .tkt-modal-overlay {
+                    position: fixed; inset: 0; background: rgba(7, 8, 12, 0.75); backdrop-filter: blur(8px);
+                    z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;
+                }
+                .tkt-modal-box {
+                    background: #fff; border-radius: 24px; width: 100%; max-width: 440px;
+                    padding: 40px; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+                    animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;
+                }
+                @keyframes scaleUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+                .tkt-close {
+                    position: absolute; top: 20px; right: 20px; width: 32px; height: 32px;
+                    background: var(--paper2); border-radius: 50%; display: flex; align-items: center; justify-content: center;
+                    cursor: pointer; color: var(--t3); transition: all 0.2s; border: none;
+                }
+                .tkt-close:hover { background: #fee2e2; color: #dc3545; }
+                .tkt-icon {
+                    width: 80px; height: 80px; background: rgba(0, 195, 127, 0.1); color: #00c37f;
+                    border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 24px;
+                }
+                .tkt-number {
+                    background: rgba(26, 86, 255, 0.08); border: 1.5px dashed rgba(26, 86, 255, 0.3);
+                    color: var(--blue); font-size: 24px; font-weight: 800; padding: 12px 24px; border-radius: 12px;
+                    display: inline-block; margin: 20px 0; letter-spacing: 1px; font-family: var(--fd);
+                }
+            </style>
+            <div class="tkt-modal-overlay" id="tktSuccessModal">
+                <div class="tkt-modal-box">
+                    <button class="tkt-close" onclick="document.getElementById('tktSuccessModal').style.display='none'"><i class="bi bi-x-lg"></i></button>
+                    <div class="tkt-icon"><i class="bi bi-check2"></i></div>
+                    <h3 style="font-family: var(--fd); font-weight: 700; color: var(--t1);">Ticket Submitted!</h3>
+                    <p style="color: var(--t3); font-size: 15px; margin-top: 8px;">{{ session('success') }}</p>
+                    <div class="tkt-number">{{ session('ticket_no') }}</div>
+                    <p style="color: var(--t4); font-size: 13px;">Please save this ticket number for future reference.</p>
+                    <button class="submit-btn" style="width: 100%; margin-top: 10px;" onclick="document.getElementById('tktSuccessModal').style.display='none'">Got it, Thanks!</button>
+                </div>
             </div>
         @endif
 

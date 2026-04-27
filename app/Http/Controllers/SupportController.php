@@ -7,6 +7,8 @@ use App\Models\Reply;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
+use Illuminate\Support\Str;
+
 class SupportController extends Controller
 {
     /**
@@ -42,9 +44,11 @@ class SupportController extends Controller
             $data['attachment'] = $request->file('attachment')->store('support_attachments', 'public');
         }
 
-        Support::create($data);
+        $data['ticket_no'] = 'TKT-' . strtoupper(Str::random(8));
 
-        return back()->with('success', 'Your support ticket has been submitted successfully!');
+        $support = Support::create($data);
+
+        return back()->with('success', 'Your support ticket has been submitted successfully!')->with('ticket_no', $support->ticket_no);
     }
 
     /**
@@ -73,7 +77,13 @@ class SupportController extends Controller
 
         $tickets = $query->latest()->paginate(15);
 
-        return view('admin.supports.index', compact('tickets'));
+        // Stats for boxes
+        $total = Support::count();
+        $active = Support::where('status', 'active')->count();
+        $closed = Support::where('status', 'closed')->count();
+        $pending = Support::where('status', 'pending')->count();
+
+        return view('admin.supports.index', compact('tickets', 'total', 'active', 'closed', 'pending'));
     }
 
     /**
@@ -92,7 +102,7 @@ class SupportController extends Controller
     {
         $request->validate([
             'message_reply' => 'required|string',
-            'status'        => 'required|in:pending,review,replied,closed',
+            'status'        => 'required|in:active,pending,review,replied,closed',
         ]);
 
         $ticket = Support::findOrFail($id);
@@ -114,7 +124,7 @@ class SupportController extends Controller
     public function adminStatusUpdate(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:pending,review,replied,closed',
+            'status' => 'required|in:active,pending,review,replied,closed',
         ]);
 
         $ticket = Support::findOrFail($id);
@@ -134,6 +144,26 @@ class SupportController extends Controller
         }
         $ticket->delete();
 
-        return back()->with('success', 'Ticket deleted successfully!');
+    }
+
+    /**
+     * Admin: Bulk delete tickets.
+     */
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'ids'   => 'required|array',
+            'ids.*' => 'exists:supports,id',
+        ]);
+
+        $tickets = Support::whereIn('id', $request->ids)->get();
+        foreach ($tickets as $ticket) {
+            if ($ticket->attachment) {
+                Storage::disk('public')->delete($ticket->attachment);
+            }
+            $ticket->delete();
+        }
+
+        return back()->with('success', 'Selected tickets deleted successfully!');
     }
 }

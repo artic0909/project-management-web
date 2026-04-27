@@ -31,6 +31,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::get('/supports/{id}', [\App\Http\Controllers\SupportController::class, 'adminShow'])->name('supports.show');
     Route::post('/supports/{id}/reply', [\App\Http\Controllers\SupportController::class, 'adminReply'])->name('supports.reply');
     Route::patch('/supports/{id}/status', [\App\Http\Controllers\SupportController::class, 'adminStatusUpdate'])->name('supports.status');
+    Route::post('/supports/bulk-destroy', [\App\Http\Controllers\SupportController::class, 'bulkDestroy'])->name('supports.bulk-destroy');
     Route::delete('/supports/{id}', [\App\Http\Controllers\SupportController::class, 'destroy'])->name('supports.destroy');
 });
 

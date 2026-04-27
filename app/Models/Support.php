@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Support extends Model
 {
     protected $fillable = [
+        'ticket_no',
         'company_name',
         'your_name',
         'email',

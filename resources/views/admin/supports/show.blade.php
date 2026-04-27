@@ -1,6 +1,6 @@
 @extends('admin.layout.app')
 
-@section('title', 'Ticket Details - #' . $ticket->id)
+@section('title', 'Ticket Details - ' . ($ticket->ticket_no ?? '#' . $ticket->id))
 
 @section('content')
 
@@ -45,8 +45,8 @@
                         <i class="bi bi-arrow-left"></i> All Tickets
                     </a>
                 </div>
-                <h1 class="page-title">Support Ticket Details</h1>
-                <p class="page-desc">Viewing request from <strong>{{ $ticket->company_name }}</strong></p>
+                <h1 class="page-title">Ticket {{ $ticket->ticket_no }}</h1>
+                <p class="page-desc">Viewing request from <strong>{{ $ticket->company_name ?? $ticket->your_name }}</strong></p>
             </div>
             <div style="display:flex;gap:10px;">
                 <button class="btn-primary-solid danger sm" onclick="confirmDelete('{{ route('admin.supports.destroy', $ticket->id) }}')">
@@ -121,7 +121,7 @@
                     <div class="card-body">
                         <div class="detail-kpis">
                             <div class="dk-item">
-                                <div class="dk-val" style="color:var(--t1);">#{{ $ticket->id }}</div>
+                                <div class="dk-val" style="color:var(--t1);">{{ $ticket->ticket_no }}</div>
                                 <div class="dk-lbl">Ticket ID</div>
                             </div>
                             <div class="dk-item">
@@ -134,7 +134,7 @@
                             </div>
                             <div class="dk-item">
                                 @php
-                                    $sClr = ['pending' => '#f59e0b', 'review' => '#0ea5e9', 'replied' => '#10b981', 'closed' => '#6b7280'];
+                                    $sClr = ['active' => '#10b981', 'pending' => '#f59e0b', 'review' => '#0ea5e9', 'replied' => '#10b981', 'closed' => '#6b7280'];
                                     $sclr = $sClr[$ticket->status] ?? '#6366f1';
                                 @endphp
                                 <div class="dk-val" style="color:{{ $sclr }};">{{ ucfirst($ticket->status) }}</div>
