@@ -14,7 +14,7 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-        if (\Illuminate\Support\Facades\Auth::guard('admin')->attempt($credentials)) {
+        if (\Illuminate\Support\Facades\Auth::guard('admin')->attempt($credentials, $request->has('remember'))) {
             $request->session()->regenerate();
             return redirect()->intended(route('admin.dashboard'));
         }
@@ -31,7 +31,7 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-        if (\Illuminate\Support\Facades\Auth::guard('sale')->attempt($credentials)) {
+        if (\Illuminate\Support\Facades\Auth::guard('sale')->attempt($credentials, $request->has('remember'))) {
             $request->session()->regenerate();
             return redirect()->intended(route('sale.dashboard'));
         }
@@ -48,7 +48,7 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-        if (\Illuminate\Support\Facades\Auth::guard('developer')->attempt($credentials)) {
+        if (\Illuminate\Support\Facades\Auth::guard('developer')->attempt($credentials, $request->has('remember'))) {
             $request->session()->regenerate();
             return redirect()->intended(route('developer.dashboard'));
         }

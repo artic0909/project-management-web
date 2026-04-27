@@ -1236,6 +1236,10 @@
             <input type="password" name="password" class="f-input" id="lpass" placeholder="Enter your password"
               required>
           </div>
+          <div style="margin-bottom:20px; display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" name="remember" id="remember" style="width:16px; height:16px; accent-color:var(--ink); cursor:pointer;">
+            <label for="remember" style="font-size:13px; font-weight:600; color:var(--t2); cursor:pointer;">Remember Me</label>
+          </div>
           <button type="submit" class="lsubmit" id="lbtn">
             <span id="lbtntxt">Sign In</span>
           </button>
