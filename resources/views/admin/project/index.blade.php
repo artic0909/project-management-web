@@ -15,9 +15,11 @@
             </div>
             <div class="header-actions">
                 @if($routePrefix == 'admin' || $routePrefix == 'sale')
+                @if($routePrefix == 'admin')
                 <button type="button" class="btn-primary-solid sm" id="bulkDeleteProjectsBtn" style="display: none; background: #dc2626; border-color: #dc2626; color: white;" onclick="bulkDeleteSelectedProjects()">
                     <i class="bi bi-trash-fill"></i> Bulk Delete
                 </button>
+                @endif
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
@@ -176,6 +178,13 @@
                                 @endforeach
                             </select>
                             @endif
+                            <select name="per_page" class="filter-select" onchange="updateFilters()">
+                                <option value="10" {{ (request('per_page') == 10 || !request('per_page')) ? 'selected' : '' }}>10 Rows</option>
+                                <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20 Rows</option>
+                                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Rows</option>
+                                <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 Rows</option>
+                                <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>All Rows</option>
+                            </select>
                         </form>
 
                         <div style="position:relative;">
@@ -190,7 +199,11 @@
                         <thead>
                             <tr>
                                 <th style="width: 40px; text-align: center;">
+                                    @if($routePrefix == 'admin')
                                     <input type="checkbox" id="selectAllProjects" onclick="toggleAllProjects(this)" style="cursor: pointer;">
+                                    @else
+                                    #
+                                    @endif
                                 </th>
                                 <th>SL.</th>
                                 <th>Project ID</th>
@@ -217,7 +230,11 @@
                         @forelse($projects as $project)
                             <tr>
                                 <td style="text-align: center;">
+                                    @if($routePrefix == 'admin')
                                     <input type="checkbox" class="project-checkbox" name="project_ids[]" value="{{ $project->id }}" onclick="updateBulkDeleteButtonProjects()" style="cursor: pointer;">
+                                    @else
+                                    {{ $loop->iteration + ($projects->currentPage() - 1) * $projects->perPage() }}
+                                    @endif
                                 </td>
                                 <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration + ($projects->currentPage() - 1) * $projects->perPage() }}</td>
                                 <td><span class="mono">#PRJ-{{ str_pad($project->id, 4, '0', STR_PAD_LEFT) }}</span></td>

@@ -105,7 +105,13 @@ class ProjectController extends Controller
         }
 
         $aggQuery = clone $query;
-        $projects = $query->latest()->paginate(10)->withQueryString();
+        $totalProjectsCount = (clone $aggQuery)->count();
+        $perPage = $request->get('per_page', 10);
+        if ($perPage === 'all') {
+            $perPage = $totalProjectsCount ?: 10;
+        }
+
+        $projects = $query->latest()->paginate($perPage)->withQueryString();
         
         // Accurate Counts (dynamically reflect filters)
         $totalProjects = (clone $aggQuery)->count();
