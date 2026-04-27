@@ -12,5 +12,7 @@ class AttendanceSetting extends Model
         'sale_checkin_time',
         'sale_checkout_time',
         'grace_period_minutes',
+        'lunch_time',
+        'lunch_time_unit',
     ];
 }

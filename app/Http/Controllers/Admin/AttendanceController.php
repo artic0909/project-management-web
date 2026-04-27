@@ -142,6 +142,9 @@ class AttendanceController extends Controller
             'dev_checkout_time' => 'required',
             'sale_checkin_time' => 'required',
             'sale_checkout_time' => 'required',
+            'grace_period_minutes' => 'nullable|integer',
+            'lunch_time' => 'nullable|numeric',
+            'lunch_time_unit' => 'nullable|in:minutes,hours',
         ]);
 
         $settings = AttendanceSetting::first() ?? new AttendanceSetting();

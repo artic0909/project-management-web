@@ -9,6 +9,11 @@
             <div>
                 <h1 class="page-title">Sales Team Attendance</h1>
                 <p class="page-desc">Comprehensive log of all work presence for the sales department.</p>
+                <div class="mt-2">
+                    <span class="badge bg-info text-dark" style="font-size: 13px;">
+                        <i class="bi bi-cup-hot-fill me-1"></i> Lunch Time: {{ $settings->lunch_time ?? 0 }} {{ ucfirst($settings->lunch_time_unit ?? 'minutes') }}
+                    </span>
+                </div>
             </div>
 
             <div class="page-actions">
@@ -228,7 +233,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-4">{{ $attendances->links() }}</div>
+                <div class="mt-4">{{ $attendances->links('admin.includes.pagination') }}</div>
             </div>
         </div>
     </main>
@@ -274,6 +279,17 @@
                             <div class="col-12">
                                 <label class="form-label text-muted small fw-bold">Grace Period (Minutes)</label>
                                 <input type="number" name="grace_period_minutes" class="form-control" value="{{ $settings->grace_period_minutes }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Lunch Time</label>
+                                <input type="number" name="lunch_time" class="form-control" value="{{ $settings->lunch_time }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Lunch Unit</label>
+                                <select name="lunch_time_unit" class="form-select">
+                                    <option value="minutes" {{ ($settings->lunch_time_unit ?? 'minutes') == 'minutes' ? 'selected' : '' }}>Minutes</option>
+                                    <option value="hours" {{ ($settings->lunch_time_unit ?? 'minutes') == 'hours' ? 'selected' : '' }}>Hours</option>
+                                </select>
                             </div>
                         </div>
                     </div>

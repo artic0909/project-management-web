@@ -9,6 +9,11 @@
             <div>
                 <h1 class="page-title">Attendance Tracking</h1>
                 <p class="page-desc">Manage your presence and daily work logs.</p>
+                <div class="mt-2">
+                    <span class="badge bg-info text-dark" style="font-size: 13px;">
+                        <i class="bi bi-cup-hot-fill me-1"></i> Lunch Time: {{ $settings->lunch_time ?? 0 }} {{ ucfirst($settings->lunch_time_unit ?? 'minutes') }}
+                    </span>
+                </div>
             </div>
 
             <div class="page-actions">
