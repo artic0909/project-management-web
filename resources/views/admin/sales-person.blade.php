@@ -824,10 +824,10 @@
     <div class="modal-backdrop" id="editSalesPersonModal">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-hd"><span>Update Sales Person</span><button class="modal-close" onclick="closeModal('editSalesPersonModal')"><i class="bi bi-x-lg"></i></button></div>
-            <form id="editSalesPersonForm" method="POST">
+            <form id="editSalesPersonForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
-                <div class="modal-bd">
+                <div class="modal-bd" style="max-height: 70vh; overflow-y: auto;">
                     <div class="form-grid">
                         <div class="form-row">
                             <label class="form-lbl">Sales Person *</label>
@@ -844,6 +844,50 @@
                         <div class="form-row">
                             <label class="form-lbl">Confirm Password</label>
                             <input type="password" name="password_confirmation" class="form-inp" autocomplete="new-password">
+                        </div>
+
+                        <div class="form-row" style="grid-column: 1 / -1;">
+                            <hr style="border: 0; border-top: 1px solid var(--b2); margin: 10px 0;">
+                            <h4 style="font-size: 14px; font-weight: 600; color: var(--t1); margin-bottom: 8px;">KYC & Additional Details</h4>
+                        </div>
+
+                        <div class="form-row">
+                            <label class="form-lbl">Phone Number</label>
+                            <input type="text" name="phone" id="edit_phone" class="form-inp" placeholder="Phone Number">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-lbl">Address</label>
+                            <textarea name="address" id="edit_address" class="form-inp" rows="2" placeholder="Address"></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label class="form-lbl">Profile Image</label>
+                            <input type="file" name="profile_image" class="form-inp" accept="image/*">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-lbl">Aadhar Card Document</label>
+                            <input type="file" name="aadhar_card" class="form-inp">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-lbl">PAN Card Document</label>
+                            <input type="file" name="pan_card" class="form-inp">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-lbl">Voter Card Document</label>
+                            <input type="file" name="voter_card" class="form-inp">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-lbl">Bank Account Proof</label>
+                            <input type="file" name="bank_account_pic" class="form-inp">
+                        </div>
+                        
+                        <div class="form-row">
+                            <label class="form-lbl">Qualification/Experience Details</label>
+                            <textarea name="qualification_details" id="edit_qualification_details" class="form-inp" rows="2"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <label class="form-lbl">Qualification Attachments (Multiple)</label>
+                            <input type="file" name="qualification_attachments[]" class="form-inp" multiple accept="image/*,.pdf">
                         </div>
                     </div>
                 </div>
@@ -889,6 +933,9 @@
             document.getElementById('editSalesPersonForm').action = `{{ url($routePrefix . '/add-sales-person') }}/${person.id}`;
             document.getElementById('edit_name').value = person.name;
             document.getElementById('edit_email').value = person.email;
+            document.getElementById('edit_phone').value = person.phone || '';
+            document.getElementById('edit_address').value = person.address || '';
+            document.getElementById('edit_qualification_details').value = person.qualification_details || '';
             // Clear password fields on open
             document.querySelector('#editSalesPersonForm [name="password"]').value = '';
             document.querySelector('#editSalesPersonForm [name="password_confirmation"]').value = '';

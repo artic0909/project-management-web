@@ -22,6 +22,16 @@ class Developer extends Authenticatable
         'password',
         'created_by',
         'created_by_type',
+        'phone',
+        'address',
+        'profile_image',
+        'aadhar_card',
+        'pan_card',
+        'voter_card',
+        'bank_account_pic',
+        'qualification_details',
+        'qualification_attachments',
+        'kyc_submitted',
     ];
 
     public function createdBy()
@@ -51,6 +61,8 @@ class Developer extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'qualification_attachments' => 'array',
+            'kyc_submitted' => 'boolean',
         ];
     }
     public function attendances()

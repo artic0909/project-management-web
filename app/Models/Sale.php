@@ -19,6 +19,16 @@ class Sale extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'address',
+        'profile_image',
+        'aadhar_card',
+        'pan_card',
+        'voter_card',
+        'bank_account_pic',
+        'qualification_details',
+        'qualification_attachments',
+        'kyc_submitted',
     ];
 
     protected $hidden = [
@@ -33,6 +43,8 @@ class Sale extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'qualification_attachments' => 'array',
+            'kyc_submitted' => 'boolean',
         ];
     }
 

@@ -113,11 +113,46 @@ class LoginController extends Controller
             'email' => 'required|email|unique:sales,email,' . $sale->id,
             'current_password' => 'nullable|required_with:new_password',
             'new_password' => 'nullable|min:6|required_with:current_password|confirmed',
+            'profile_image' => 'nullable|image|max:2048',
+            'aadhar_card' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
+            'pan_card' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
+            'voter_card' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
+            'bank_account_pic' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
+            'qualification_attachments.*' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
         ]);
 
         // Profile Update
         $sale->name = $request->name;
         $sale->email = $request->email;
+
+        if ($request->hasFile('profile_image')) {
+            $sale->profile_image = $request->file('profile_image')->store('profile_images', 'public');
+        }
+
+        if (!$sale->kyc_submitted) {
+            $kycSubmitted = false;
+            if ($request->hasFile('aadhar_card')) { $sale->aadhar_card = $request->file('aadhar_card')->store('kyc_docs', 'public'); $kycSubmitted = true; }
+            if ($request->hasFile('pan_card')) { $sale->pan_card = $request->file('pan_card')->store('kyc_docs', 'public'); $kycSubmitted = true; }
+            if ($request->hasFile('voter_card')) { $sale->voter_card = $request->file('voter_card')->store('kyc_docs', 'public'); $kycSubmitted = true; }
+            if ($request->hasFile('bank_account_pic')) { $sale->bank_account_pic = $request->file('bank_account_pic')->store('kyc_docs', 'public'); $kycSubmitted = true; }
+            
+            if ($request->hasFile('qualification_attachments')) {
+                $paths = [];
+                foreach ($request->file('qualification_attachments') as $file) {
+                    $paths[] = $file->store('kyc_docs', 'public');
+                }
+                $sale->qualification_attachments = $paths;
+                $kycSubmitted = true;
+            }
+            
+            if ($request->filled('phone')) { $sale->phone = $request->phone; $kycSubmitted = true; }
+            if ($request->filled('address')) { $sale->address = $request->address; $kycSubmitted = true; }
+            if ($request->filled('qualification_details')) { $sale->qualification_details = $request->qualification_details; $kycSubmitted = true; }
+            
+            if ($kycSubmitted) {
+                $sale->kyc_submitted = true;
+            }
+        }
 
         // Password Update
         if ($request->filled('new_password')) {
@@ -129,6 +164,6 @@ class LoginController extends Controller
 
         $sale->save();
 
-        return back()->with('success', 'Profile and password updated successfully!');
+        return back()->with('success', 'Profile and settings updated successfully!');
     }
 }
