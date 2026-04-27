@@ -3,309 +3,376 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice - #PAY-{{ $payment->id }}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <title>Invoice - #PAY-{{ str_pad($payment->id, 5, '0', STR_PAD_LEFT) }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         :root {
-            --primary: #6366f1;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --border: #e2e8f0;
-            --text-main: #334155;
-            --text-muted: #64748b;
+            --navy: #00112c;
+            --blue: #0056b3;
+            --light-blue: #cce5ff;
+            --grey: #f8f9fa;
+            --border: #dee2e6;
+            --text: #333;
+            --text-muted: #666;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-            background-color: #f1f5f9;
-            color: var(--text-main);
-            line-height: 1.5;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f0f2f5;
+            color: var(--text);
+            line-height: 1.4;
+            padding: 40px 0;
             -webkit-print-color-adjust: exact;
         }
 
-        .invoice-container {
-            max-width: 850px;
-            margin: 40px auto;
-            background: white;
-            padding: 50px;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.05);
-            border-radius: 12px;
+        .invoice-card {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
             position: relative;
             overflow: hidden;
+            min-height: 1120px; /* A4-ish height */
         }
 
-        /* Watermark */
-        .invoice-container::before {
-            content: 'PAID';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 15rem;
-            font-weight: 900;
-            color: rgba(16, 185, 129, 0.05);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 50px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .brand-logo {
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--primary);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .invoice-title {
-            text-align: right;
-        }
-
-        .invoice-title h1 {
-            font-size: 32px;
-            font-weight: 900;
-            color: var(--dark);
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-
-        .invoice-meta {
-            margin-bottom: 40px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .meta-section h3 {
-            font-size: 12px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-            border-bottom: 2px solid var(--primary);
-            display: inline-block;
-        }
-
-        .meta-content p {
-            margin-bottom: 4px;
-            font-size: 14px;
-        }
-
-        .meta-content strong { color: var(--dark); }
-
-        .items-table {
+        /* Static Header Image */
+        .header-image {
             width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
-            position: relative;
-            z-index: 1;
+            display: block;
         }
 
-        .items-table th {
-            text-align: left;
-            padding: 15px;
-            background: var(--light);
-            font-size: 12px;
+        /* Content Area */
+        .content {
+            padding: 30px 40px;
+            position: relative;
+            z-index: 2;
+            margin-top: -120px;
+        }
+
+        /* Company Info */
+        .sender-info {
+            margin-bottom: 25px;
+        }
+        .sender-info h2 {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 5px;
             text-transform: uppercase;
+        }
+        .sender-info p {
+            font-size: 12px;
             color: var(--text-muted);
-            border-bottom: 1px solid var(--border);
+            max-width: 350px;
+            line-height: 1.5;
         }
 
-        .items-table td {
-            padding: 20px 15px;
-            border-bottom: 1px solid var(--border);
-            font-size: 14px;
+        /* Meta Area */
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 40px;
+            margin-bottom: 30px;
         }
 
-        .total-section {
-            display: flex;
-            justify-content: flex-end;
-            position: relative;
-            z-index: 1;
-        }
-
-        .total-box {
-            width: 300px;
-            background: var(--light);
-            padding: 20px;
-            border-radius: 8px;
-        }
-
-        .total-row {
-            display: flex;
-            justify-content: space-between;
+        .bill-to h3, .invoice-meta h3 {
+            font-size: 15px;
+            font-weight: 800;
             margin-bottom: 10px;
         }
 
-        .total-row.grand-total {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 2px solid var(--border);
-            font-size: 20px;
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+        .meta-label { font-weight: 700; color: #000; width: 120px; flex-shrink: 0; }
+        .meta-value { flex: 1; text-align: left; }
+        .dots { border-bottom: 1px solid #999; flex: 1; height: 14px; margin-left: 5px; }
+
+        /* Table */
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .invoice-table th {
+            background: #e2e8f0;
+            padding: 10px 15px;
+            text-align: left;
+            font-size: 12px;
             font-weight: 800;
-            color: var(--primary);
+            border: 1px solid #ccc;
+        }
+        .invoice-table td {
+            padding: 10px 15px;
+            font-size: 13px;
+            border: 1px solid #ccc;
+            height: 35px;
         }
 
-        .footer {
-            margin-top: 100px;
-            text-align: center;
-            color: var(--text-muted);
+        /* Summary Area */
+        .bottom-section {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 40px;
+        }
+
+        .summary-box {
+            font-size: 14px;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            align-items: flex-end;
+        }
+        .summary-label { font-weight: 800; min-width: 100px; }
+        .summary-value { border-bottom: 1px solid #999; flex: 1; text-align: right; font-weight: 700; padding: 0 5px; }
+
+        .notes-section, .bank-section {
+            margin-bottom: 25px;
+        }
+        .section-title { font-size: 14px; font-weight: 800; margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+        .notes-list { list-style: none; font-size: 12px; color: var(--text-muted); }
+        .notes-list li { margin-bottom: 4px; display: flex; gap: 8px; }
+
+        .bank-details { font-size: 12px; }
+        .bank-row { display: flex; margin-bottom: 4px; align-items: flex-end; }
+        .bank-label { font-weight: 700; width: 100px; }
+        .bank-line { border-bottom: 1px solid #ccc; flex: 1; height: 14px; }
+
+        /* Footer */
+        .invoice-footer {
+            background: var(--navy);
+            color: #fff;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-size: 12px;
-            border-top: 1px solid var(--border);
-            padding-top: 30px;
-            position: relative;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+        .footer-item { display: flex; align-items: center; gap: 8px; }
+        .footer-item i { color: var(--light-blue); font-size: 16px; }
+
+        /* Watermark */
+        .watermark {
+            position: absolute;
+            bottom: 60px;
+            right: 40px;
+            width: 200px;
+            opacity: 0.05;
+            pointer-events: none;
             z-index: 1;
         }
 
-        /* Floating Print Button */
+        /* Print Styles */
+        @media print {
+            body { padding: 0; background: none; }
+            .invoice-card { box-shadow: none; margin: 0; width: 100%; max-width: 100%; }
+            .no-print { display: none; }
+        }
+
         .print-btn {
             position: fixed;
-            bottom: 40px;
-            right: 40px;
-            background: var(--primary);
-            color: white;
+            bottom: 30px;
+            right: 30px;
+            background: var(--navy);
+            color: #fff;
             border: none;
-            padding: 15px 25px;
-            border-radius: 50px;
+            padding: 12px 24px;
+            border-radius: 30px;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             display: flex;
             align-items: center;
             gap: 10px;
-            transition: 0.3s;
-            z-index: 1000;
-        }
-
-        .print-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.5);
-        }
-
-        @media print {
-            .print-btn { display: none !important; }
-            body { background: white; }
-            .invoice-container { 
-                margin: 0; 
-                box-shadow: none; 
-                padding: 30px;
-                width: 100%;
-                max-width: 100%;
-            }
+            z-index: 100;
         }
     </style>
 </head>
 <body>
 
-    <button class="print-btn" onclick="window.print()">
-        <i class="bi bi-printer-fill"></i> Print Now
+    <button class="print-btn no-print" onclick="window.print()">
+        <i class="bi bi-printer-fill"></i> Print Invoice
     </button>
 
-    <div class="invoice-container">
-        <!-- Decoration side color -->
-        <div style="position:absolute; top:0; left:0; width:6px; height:100%; background:var(--primary);"></div>
+    <div class="invoice-card">
+        <!-- Header Image -->
+        <img src="{{ asset('invtop.png') }}" alt="Header" class="header-image">
 
-        <div class="header">
-            <div class="brand">
-                <a href="#" class="brand-logo">
-                    <i class="bi bi-shield-lock-fill"></i> CRM
-                </a>
-                <p style="margin-top:10px; font-size:12px; color:var(--text-muted);">
-                    ERP Platform for Modern Teams<br>
-                    123 Business Avenue, Suite 500<br>
-                    New York, NY 10001
+        <div class="content">
+            <!-- Sender -->
+            <div class="sender-info">
+                <h2>StandsWeb</h2>
+                <p>
+                    KannamangalaPost, Whitefield Main Road, Bengaluru Rural<br>
+                    Karnataka 560067 GSTIN: 29JTKPS5068C1Z1 Contact: +91 86606 32597 | Email: zentrics@gmail.com
                 </p>
             </div>
-            <div class="invoice-title">
-                <h1>Invoice</h1>
-                <p style="color:var(--text-muted); font-weight:600;">#PAY-{{ str_pad($payment->id, 5, '0', STR_PAD_LEFT) }}</p>
-                <p style="margin-top:15px; font-size:14px;">Date: <strong>{{ $payment->transaction_date->format('M d, Y') }}</strong></p>
-            </div>
-        </div>
 
-        <div class="invoice-meta">
-            <div class="meta-section">
-                <h3>Bill To</h3>
-                <div class="meta-content" style="margin-top: 15px;">
-                    <p style="font-size: 18px; font-weight: 700; color: var(--dark);">{{ $payment->order->client_name }}</p>
-                    <p><strong>{{ $payment->order->company_name }}</strong></p>
-                    <p>{{ $payment->order->emails[0] ?? '' }}</p>
-                    <p>{{ $payment->order->phones[0]['number'] ?? '' }}</p>
+            <!-- Meta & Client -->
+            <div class="meta-grid">
+                <div class="bill-to">
+                    <h3>Bill To:</h3>
+                    <div class="meta-row">
+                        <span class="meta-label">Client Name:</span>
+                        <span class="meta-value">{{ $payment->order->client_name }}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Address:</span>
+                        <span class="meta-value">{{ $payment->order->full_address ?? '____________________________' }}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">GSTIN:</span>
+                        <span class="meta-value">____________________________</span>
+                    </div>
+                </div>
+
+                <div class="invoice-meta">
+                    <div class="meta-row">
+                        <span class="meta-label">Invoice No:</span>
+                        <span class="meta-value">#PAY-{{ str_pad($payment->id, 5, '0', STR_PAD_LEFT) }}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Invoice Date:</span>
+                        <span class="meta-value">{{ $payment->transaction_date->format('d-m-Y') }}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Due Date:</span>
+                        <span class="meta-value">_________________</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Place of Supply:</span>
+                        <span class="meta-value">{{ $payment->order->state ?? '_________________' }}</span>
+                    </div>
                 </div>
             </div>
-            <div class="meta-section">
-                <h3>Payment Details</h3>
-                <div class="meta-content" style="margin-top: 15px;">
-                    <p>Method: <strong>{{ $payment->payment_method }}</strong></p>
-                    <p>Ref ID: <span class="mono" style="font-size:12px; font-weight:600;">{{ $payment->transaction_id ?? 'N/A' }}</span></p>
-                    <p>Status: <span style="background:rgba(16, 185, 129, 0.1); color:#10b981; padding:3px 8px; border-radius:5px; font-size:12px; font-weight:700;">{{ $payment->status->name ?? 'PAID' }}</span></p>
-                    <p>Order Ref: <strong>#ORD-{{ $payment->order_id }}</strong></p>
-                </div>
-            </div>
-        </div>
 
-        <table class="items-table">
-            <thead>
-                <tr>
-                    <th>Description</th>
-                    <th style="text-align:right">Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <div style="font-weight:700; color:var(--dark); margin-bottom:5px;">Service Payment</div>
-                        <div style="font-size:12px; color:var(--text-muted);">
-                            Payment contribution for services under Order #{{ $payment->order_id }}
+            <!-- Table -->
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th width="50%">Item & Description</th>
+                        <th width="15%">HSN/SAC</th>
+                        <th width="10%">Qty</th>
+                        <th width="12%">Rate</th>
+                        <th width="13%">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <strong>Project Payment</strong><br>
+                            <span style="font-size:11px; color:var(--text-muted)">Payment for order #ORD-{{ $payment->order_id }}</span>
+                        </td>
+                        <td></td>
+                        <td>1</td>
+                        <td>{{ number_format($payment->amount, 2) }}</td>
+                        <td>{{ number_format($payment->amount, 2) }}</td>
+                    </tr>
+                    <!-- Empty rows for spacing to match design -->
+                    @for($i=0; $i<6; $i++)
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    @endfor
+                </tbody>
+            </table>
+
+            <!-- Bottom Section -->
+            <div class="bottom-section">
+                <div class="left-col">
+                    <div class="notes-section">
+                        <div class="section-title">Notes:</div>
+                        <ul class="notes-list">
+                            <li><i class="bi bi-dot"></i> Looking forward for your business.</li>
+                            <li><i class="bi bi-dot"></i> Rates are subject to change without prior notification.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bank-section">
+                        <div class="section-title">Bank Details:</div>
+                        <div class="bank-details">
+                            <div class="bank-row">
+                                <span class="bank-label">Account Name:</span>
+                                <div class="bank-line"></div>
+                            </div>
+                            <div class="bank-row">
+                                <span class="bank-label">Bank Name:</span>
+                                <div class="bank-line"></div>
+                            </div>
+                            <div class="bank-row">
+                                <span class="bank-label">Account Number:</span>
+                                <div class="bank-line"></div>
+                            </div>
+                            <div class="bank-row">
+                                <span class="bank-label">IFSC Code:</span>
+                                <div class="bank-line"></div>
+                            </div>
+                            <div class="bank-row">
+                                <span class="bank-label">Branch:</span>
+                                <div class="bank-line"></div>
+                            </div>
                         </div>
-                    </td>
-                    <td style="text-align:right; font-weight:700; font-size:16px;">₹{{ number_format($payment->amount, 2) }}</td>
-                </tr>
-            </tbody>
-        </table>
+                    </div>
+                </div>
 
-        <div class="total-section">
-            <div class="total-box">
-                <div class="total-row">
-                    <span>Subtotal</span>
-                    <span style="font-weight:600;">₹{{ number_format($payment->amount, 2) }}</span>
-                </div>
-                <div class="total-row">
-                    <span>Tax (0%)</span>
-                    <span style="font-weight:600;">₹0.00</span>
-                </div>
-                <div class="total-row grand-total">
-                    <span>Total</span>
-                    <span>₹{{ number_format($payment->amount, 2) }}</span>
+                <div class="right-col">
+                    <div class="summary-box">
+                        <div class="summary-row">
+                            <span class="summary-label">Subtotal:</span>
+                            <span class="summary-value">{{ number_format($payment->amount, 2) }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">CGST (9%):</span>
+                            <span class="summary-value">0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">SGST (9%):</span>
+                            <span class="summary-value">0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Adjustment:</span>
+                            <span class="summary-value">0.00</span>
+                        </div>
+                        <div class="summary-row" style="margin-top:10px; color:var(--navy); font-size:16px;">
+                            <span class="summary-label">Total:</span>
+                            <span class="summary-value">₹{{ number_format($payment->amount, 2) }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        @if($payment->notes)
-        <div style="margin-top:40px; position:relative; z-index:1;">
-            <h3 style="font-size:12px; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px;">Notes</h3>
-            <p style="font-size:13px; color:var(--text-muted); font-style:italic;">
-                {{ $payment->notes }}
-            </p>
-        </div>
-        @endif
+        <!-- Watermark -->
+        <img src="{{ asset('logo.png') }}" class="watermark" alt="Watermark">
 
-        <div class="footer">
-            <p style="font-weight:700; color:var(--dark); margin-bottom:5px;">Thank you for your business!</p>
-            <p>If you have any questions about this invoice, please contact support@crm.com</p>
+        <!-- Footer -->
+        <div class="invoice-footer">
+            <div class="footer-item">
+                <i class="bi bi-globe"></i>
+                <span>www.standsweb.in</span>
+            </div>
+            <div class="footer-item">
+                <i class="bi bi-envelope-fill"></i>
+                <span>standsweb@gmail.com</span>
+            </div>
+            <div class="footer-item">
+                <i class="bi bi-telephone-fill"></i>
+                <span>+91 86606 32597</span>
+            </div>
         </div>
     </div>
 
