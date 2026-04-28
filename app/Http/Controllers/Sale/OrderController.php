@@ -164,6 +164,11 @@ class OrderController extends Controller
             $q->where('assigned_to', $saleId);
         })->with(['status', 'sources', 'services', 'assignments'])->find($lead_id) : null;
 
+        $inquiry = null;
+        if (request()->has('inquiry_id')) {
+            $inquiry = \App\Models\OrderInquiry::find(request('inquiry_id'));
+        }
+
         $services = Service::all();
         $sources = \App\Models\Source::all();
         $sales = Sale::all();
@@ -172,7 +177,7 @@ class OrderController extends Controller
         $plans = \App\Models\Plan::all();
 
         $routePrefix = 'sale';
-        return view('admin.orders.create', compact('lead', 'services', 'sources', 'sales', 'orderStatuses', 'paymentStatuses', 'plans', 'routePrefix'));
+        return view('admin.orders.create', compact('lead', 'inquiry', 'services', 'sources', 'sales', 'orderStatuses', 'paymentStatuses', 'plans', 'routePrefix'));
     }
 
     public function store(Request $request)
