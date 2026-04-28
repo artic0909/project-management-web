@@ -237,8 +237,9 @@
         .v-link.out { color: #ef4444; }
         .v-link:hover { transform: translateY(-2px); }
 
-        /* Ensure table data is left aligned */
-        .data-table th, .data-table td { text-align: left !important; }
+        /* Ensure table data is left aligned and headers don't wrap */
+        .data-table th, .data-table td { text-align: left !important; white-space: nowrap; }
+        .table-wrap { overflow-x: auto; width: 100%; }
         
         /* Dark mode overrides for table background */
         [data-theme="dark"] .data-table {

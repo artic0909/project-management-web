@@ -66,13 +66,13 @@
                 <div class="kpi-value">{{ $totalAbsentDays ?? 0 }}</div>
                 <div class="kpi-label">Total Absents</div>
             </div>
-            <div class="kpi-card" style="--kpi-accent:#0ea5e9">
+            <!-- <div class="kpi-card" style="--kpi-accent:#0ea5e9">
                 <div class="kpi-top">
                     <div class="kpi-icon" style="background:rgba(14,165,233,.15);color:#0ea5e9"><i class="bi bi-stopwatch-fill"></i></div>
                 </div>
                 <div class="kpi-value" style="font-size:18px;">{{ formatDuration($totalWorkSeconds) }}</div>
                 <div class="kpi-label">Team Total Hours</div>
-            </div>
+            </div> -->
         </div>
 
         <div class="dash-card">
@@ -316,8 +316,9 @@
         .v-link.out { color: var(--red); }
         .v-link:hover { transform: translateY(-2px); }
         
-        /* Ensure table data is left aligned */
-        .table th, .table td { text-align: left !important; }
+        /* Ensure table data is left aligned and headers don't wrap */
+        .table th, .table td { text-align: left !important; white-space: nowrap; }
+        .table-wrap { overflow-x: auto; width: 100%; }
     </style>
 
     <!-- SINGLE DELETE MODAL -->
