@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\ProjectTaskController;
 use App\Http\Controllers\Admin\SalesPersonController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SourceController;
+use App\Http\Controllers\Admin\NoteController;
 use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\StatusController;
 use Illuminate\Support\Facades\Route;
@@ -141,6 +142,11 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
     Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
     Route::get('/payments/{id}/invoice', [PaymentController::class, 'invoice'])->name('payments.invoice');
+
+    // Admin Notes
+    Route::get('/notes', [NoteController::class, 'index'])->name('notes.index');
+    Route::post('/notes', [NoteController::class, 'store'])->name('notes.store');
+    Route::delete('/notes/{id}', [NoteController::class, 'destroy'])->name('notes.destroy');
 
     // Account Settings
     Route::get('/my-account', [AccountSettingController::class, 'index'])->name('account-settings');

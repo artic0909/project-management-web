@@ -139,6 +139,11 @@
         <i class="bi bi-chat-left-text-fill"></i><span>Order Inquiries</span>
       </a>
 
+      <!-- Notes -->
+       <a class="nav-item {{ request()->routeIs('admin.notes*') ? 'active' : '' }}" href="{{ route('admin.notes.index') }}">
+          <i class="bi bi-sticky-fill"></i><span>Notes</span>
+        </a>
+
         <a class="nav-item {{ request()->routeIs('admin.supports*') ? 'active' : '' }}" href="{{ route('admin.supports.index') }}">
           <i class="bi bi-headset"></i><span>Support</span>
         </a>
