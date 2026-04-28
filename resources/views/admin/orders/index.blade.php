@@ -294,7 +294,7 @@
                                     @endif
                                 </td>
                                 <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration + ($orders->currentPage() - 1) * $orders->perPage() }}</td>
-                                <td><span class="mono">#ORD-{{ $order->id }}</span></td>
+                                <td><span class="mono">{{ $order->order_number ?? '#ORD-'.$order->id }}</span></td>
                                 <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $order->created_at->format('d M Y') }}</div></td>
                                 <td>
                                     <span class="type-badge {{ $order->is_marketing ? 'marketing-type' : 'website-type' }}">

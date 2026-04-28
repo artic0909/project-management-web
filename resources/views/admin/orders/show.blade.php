@@ -16,7 +16,7 @@
                         <i class="bi bi-arrow-left"></i> All Orders
                     </a>
                 </div>
-                <h1 class="page-title">Order Details</h1>
+                <h1 class="page-title">Order #{{ $order->order_number ?? $order->id }}</h1>
                 <p class="page-desc">Viewing details for <strong>{{ $order->company_name }}</strong></p>
             </div>
             <div style="display:flex;gap:10px;">

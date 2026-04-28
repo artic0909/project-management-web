@@ -16,7 +16,7 @@
                         <i class="bi bi-arrow-left"></i> All Orders
                     </a>
                 </div>
-                <h1 class="page-title">Edit Order</h1>
+                <h1 class="page-title">Edit Order #{{ $order->order_number ?? $order->id }}</h1>
                 <p class="page-desc">Modify details for {{ $order->company_name }}</p>
             </div>
             <div class="header-actions">

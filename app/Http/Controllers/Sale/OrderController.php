@@ -43,6 +43,7 @@ class OrderController extends Controller
 
             $query->where(function ($sub) use ($q, $cleanId) {
                 $sub->where('id', 'LIKE', "%$cleanId%")
+                    ->orWhere('order_number', 'LIKE', "%$q%")
                     ->orWhere('company_name', 'LIKE', "%$q%")
                     ->orWhere('client_name', 'LIKE', "%$q%")
                     ->orWhere('emails', 'LIKE', "%$q%")
@@ -212,7 +213,7 @@ class OrderController extends Controller
 
         $emails = array_filter($request->input('email', []), fn($e) => !empty($e));
 
-        $order = Order::create([
+        $orderData = [
             'lead_id' => $request->lead_id,
             'company_name' => $request->company_name,
             'client_name' => $request->client_name,
@@ -235,7 +236,22 @@ class OrderController extends Controller
             'mkt_password' => $request->mkt_password,
             'created_by' => auth()->guard('sale')->id(),
             'created_by_type' => \App\Models\Sale::class,
-        ]);
+        ];
+
+        // Generate Order Number
+        $lastOrder = Order::where('order_number', 'LIKE', 'ORD-%')
+            ->orderByRaw('CAST(SUBSTRING(order_number, 5) AS UNSIGNED) DESC')
+            ->first();
+            
+        if ($lastOrder) {
+            $lastNum = (int) str_replace('ORD-', '', $lastOrder->order_number);
+            $nextNum = $lastNum + 1;
+        } else {
+            $nextNum = 1001;
+        }
+        $orderData['order_number'] = 'ORD-' . $nextNum;
+
+        $order = Order::create($orderData);
 
         if ($request->has('service_ids')) {
             $order->services()->sync($request->service_ids);
@@ -524,6 +540,7 @@ class OrderController extends Controller
             
             fputcsv($file, [
                 'Order ID',
+                'Order Number',
                 'Lead ID',
                 'Date',
                 'Type',
@@ -591,6 +608,7 @@ class OrderController extends Controller
 
                 fputcsv($file, [
                     '#ORD-' . $order->id,
+                    $order->order_number,
                     $order->lead_id ? '#LEAD-' . $order->lead_id : '',
                     $order->created_at->format('Y-m-d H:i:s'),
                     $order->is_marketing ? 'Marketing' : 'Website',
