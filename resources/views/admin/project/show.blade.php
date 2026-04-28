@@ -35,6 +35,7 @@
                         @foreach($project->sources as $source)
                             <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);">{{ $source->name }}</span>
                         @endforeach
+                        <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);">Primary Domain: {{ $project->domain_name ?? 'N/A' }}</span>
                     </div>
                 </div>
                 <div class="header-actions">
@@ -134,10 +135,12 @@
                     </div>
 
                     {{-- Technical & Infrastructure Specs ── --}}
+                    @if(auth()->guard('admin')->check())
                     <div class="dash-card">
                         <div class="card-head">
                             <div class="card-title"><i class="bi bi-grid-3x3-gap-fill" style="color:#06b6d4;margin-right:8px;"></i>Infrastructure & Platform</div>
                         </div>
+                        
                         <div class="card-body">
                             <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;">
                                 <div>
@@ -176,8 +179,9 @@
                                             <div class="val-text" style="color:#10b981; font-weight:700;">₹{{ number_format($project->domain_renewal_price ?? 0, 0) }}</div>
                                         </div>
                                     </div>
+                                   
                                 </div>
-
+                              
                                 <div>
                                     <div class="kv-item">
                                         <label>CMS / Technical Platform</label>
@@ -226,7 +230,9 @@
                                 </div>
                             </div>
                         </div>
+
                     </div>
+                    
 
                     {{-- Credentials & Access --}}
                     <div class="dash-card" style="border-left:4px solid #f59e0b;">
@@ -256,7 +262,7 @@
                             </div>
                         </div>
                     </div>
-
+                    @endif
 
                     {{-- Communication History & Tracking --}}
                     <div class="dash-card">
