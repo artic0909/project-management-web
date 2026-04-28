@@ -201,13 +201,13 @@
                 <button type="button" class="btn-primary-solid sm" id="bulkDeleteBtn" style="display: none; background: #dc2626; border-color: #dc2626; color: white;" onclick="bulkDeleteSelected()">
                     <i class="bi bi-trash-fill"></i> Bulk Delete
                 </button>
-                @endif
                 <button type="button" class="btn-primary-solid sm" onclick="openImportModal()">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
                 <button class="btn-primary-solid sm" onclick="exportLeads()">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
+                @endif
                 <a class="btn-primary-solid sm" href="{{ route($routePrefix . '.leads.create') }}">
                     <i class="bi bi-plus-lg"></i> Add Lead
                 </a>

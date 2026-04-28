@@ -14,10 +14,11 @@
                     <p class="page-desc">Track and manage upcoming discussions with clients and teams.</p>
                 </div>
                 <div class="d-flex gap-2">
-               
+               @if(auth()->guard('admin')->check())
                     <button type="button" class="btn-primary-solid" onclick="exportMeetings()">
                         <i class="bi bi-file-earmark-spreadsheet"></i> Export
                     </button>
+               @endif
            
                     @if($routePrefix == 'admin' || $routePrefix == 'sale' || $routePrefix == 'developer')
                     <a href="{{ route($routePrefix . '.meetings.create') }}" class="btn-primary-solid">

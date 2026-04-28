@@ -14,12 +14,11 @@
                 <p class="page-desc">Manage website and development projects</p>
             </div>
             <div class="header-actions">
-                @if($routePrefix == 'admin' || $routePrefix == 'sale')
                 @if($routePrefix == 'admin')
                 <button type="button" class="btn-primary-solid sm" id="bulkDeleteProjectsBtn" style="display: none; background: #dc2626; border-color: #dc2626; color: white;" onclick="bulkDeleteSelectedProjects()">
                     <i class="bi bi-trash-fill"></i> Bulk Delete
                 </button>
-                @endif
+               
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>

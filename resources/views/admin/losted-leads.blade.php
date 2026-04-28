@@ -206,10 +206,11 @@
                 <button type="button" class="btn-primary-solid sm" id="bulkDeleteLeadsBtn" style="display: none; background: #dc2626; border-color: #dc2626; color: white;" onclick="bulkDeleteSelectedLeads()">
                     <i class="bi bi-trash-fill"></i> Bulk Delete
                 </button>
-                @endif
+                
                 <button type="button" class="btn-primary-solid sm" onclick="exportLostedLeads()">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
+                @endif
             </div>
         </div>
 

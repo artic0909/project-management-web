@@ -16,9 +16,11 @@
                     <button type="button" class="btn-primary-solid sm">
                         <i class="bi bi-plus-lg"></i> Create Invoice
                     </button>
+                    @if(auth()->guard('admin')->check())
                     <button type="button" class="btn-primary-solid sm" onclick="exportPayments()">
                         <i class="bi bi-file-earmark-spreadsheet"></i> Export
                     </button>
+                    @endif
                     <!-- <a href="#" class="btn-primary-solid">
                         <i class="bi bi-plus-lg"></i> Add Payment
                     </a> -->

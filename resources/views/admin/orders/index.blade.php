@@ -17,17 +17,17 @@
                 <button type="button" class="btn-primary-solid sm" id="bulkDeleteOrdersBtn" style="display: none; background: #dc2626; border-color: #dc2626; color: white;" onclick="bulkDeleteSelectedOrders()">
                     <i class="bi bi-trash-fill"></i> Bulk Delete
                 </button>
-                @endif
                 
                 <button class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
-              
-
+                
+                
                 <button class="btn-primary-solid sm" onclick="exportOrders()">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
                 </button>
-
+                @endif
+                
                 <a href="{{ route($routePrefix . '.orders.create') }}" class="btn-primary-solid sm">
                     <i class="bi bi-plus-lg"></i> Add Order
                 </a>
