@@ -248,7 +248,7 @@
                                                 <a href="{{ route($routePrefix . '.meetings.edit', $meeting->id) }}"
                                                     class="act-btn" title="Edit Meeting"><i class="bi bi-pencil"></i></a>
                                                 @endif
-                                                @if($routePrefix == 'admin' || $routePrefix == 'developer')
+                                                @if($routePrefix == 'admin' || $routePrefix == 'sale' || $routePrefix == 'developer')
                                                     <button type="button" class="act-btn danger" title="Delete" onclick="confirmDelete('{{ route($routePrefix . '.meetings.destroy', $meeting->id) }}')">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
