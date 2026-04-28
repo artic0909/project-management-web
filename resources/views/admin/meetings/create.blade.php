@@ -43,11 +43,16 @@
 
                                 <div class="form-row">
                                     <label class="form-lbl">Related To (Target)</label>
-                                    <select name="meeting_type" id="meetingType" class="form-inp" required onchange="toggleTargets()">
-                                        <option value="lead" {{ request('lead_id') ? 'selected' : '' }}>Lead</option>
-                                        <option value="order" {{ request('order_id') ? 'selected' : '' }}>Order</option>
-                                        <option value="project" {{ request('project_id') ? 'selected' : '' }}>Project</option>
+                                    <select name="meeting_type" id="meetingType" class="form-inp" required onchange="toggleTargets()" {{ $routePrefix === 'developer' ? 'disabled' : '' }}>
+                                        @if($routePrefix !== 'developer')
+                                            <option value="lead" {{ request('lead_id') ? 'selected' : '' }}>Lead</option>
+                                            <option value="order" {{ request('order_id') ? 'selected' : '' }}>Order</option>
+                                        @endif
+                                        <option value="project" {{ (request('project_id') || $routePrefix === 'developer') ? 'selected' : '' }}>Project</option>
                                     </select>
+                                    @if($routePrefix === 'developer')
+                                        <input type="hidden" name="meeting_type" value="project">
+                                    @endif
                                 </div>
 
                                 <div class="form-row">

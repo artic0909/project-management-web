@@ -180,8 +180,8 @@ class MeetingController extends Controller
     {
         $user = auth()->guard('developer')->user();
         $projects = $user->projects;
-        $leads = Lead::all();
-        $orders = Order::all();
+        $leads = collect();
+        $orders = collect();
         $developers = Developer::all();
         $sales = Sale::all();
         
@@ -240,8 +240,8 @@ class MeetingController extends Controller
         
         $user = auth()->guard('developer')->user();
         $projects = $user->projects;
-        $leads = Lead::all();
-        $orders = Order::all();
+        $leads = collect();
+        $orders = collect();
         $developers = Developer::all();
         $sales = Sale::all();
         
