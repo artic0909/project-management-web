@@ -39,7 +39,14 @@ class SalesPersonController extends Controller
         return redirect()->back()->with('success', 'Sales Person added successfully!');
     }
 
-    public function edit(Request $request, $id)
+    public function edit($id)
+    {
+        $routePrefix = 'admin';
+        $sale = Sale::findOrFail($id);
+        return view('admin.salesperson.edit', compact('sale', 'routePrefix'));
+    }
+
+    public function update(Request $request, $id)
     {
         $sale = Sale::findOrFail($id);
 

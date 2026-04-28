@@ -41,7 +41,14 @@ class DeveloperController extends Controller
         return redirect()->back()->with('success', 'Developer added successfully!');
     }
 
-    public function edit(Request $request, $id)
+    public function edit($id)
+    {
+        $routePrefix = 'admin';
+        $developer = Developer::findOrFail($id);
+        return view('admin.developer.edit', compact('developer', 'routePrefix'));
+    }
+
+    public function update(Request $request, $id)
     {
         $developer = Developer::findOrFail($id);
 

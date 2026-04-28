@@ -761,7 +761,7 @@
                                     <!-- Modal Btns -->
                                     <div class="row-actions">
                                         <!-- <button class="ra-btn"><i class="bi bi-power"></i></button> -->
-                                        <button class="ra-btn" onclick="editSalesPerson({{ json_encode($person) }})"><i class="bi bi-pencil-fill"></i></button>
+                                        <a href="{{ route($routePrefix . '.sales-person.edit', $person->id) }}" class="ra-btn"><i class="bi bi-pencil-fill"></i></a>
                                         <button class="ra-btn"><i class="bi bi-envelope-fill"></i></button>
                                         <button class="ra-btn danger" onclick="deleteSalesPerson({{ $person->id }})"><i class="bi bi-trash-fill"></i></button>
                                     </div>
@@ -820,86 +820,7 @@
     </div>
 
 
-    <!-- Edit Modal -->
-    <div class="modal-backdrop" id="editSalesPersonModal">
-        <div class="modal-box" onclick="event.stopPropagation()">
-            <div class="modal-hd"><span>Update Sales Person</span><button class="modal-close" onclick="closeModal('editSalesPersonModal')"><i class="bi bi-x-lg"></i></button></div>
-            <form id="editSalesPersonForm" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
-                <div class="modal-bd" style="max-height: 70vh; overflow-y: auto;">
-                    <div class="form-grid">
-                        <div class="form-row">
-                            <label class="form-lbl">Sales Person *</label>
-                            <input type="text" name="name" id="edit_name" class="form-inp" placeholder="Sales Person name" required>
-                        </div>
-                        <div class="form-row">
-                            <label class="form-lbl">Email *</label>
-                            <input type="email" name="email" id="edit_email" class="form-inp" placeholder="email@company.com" required>
-                        </div>
-                        <div class="form-row">
-                            <label class="form-lbl">Set Password (leave blank to keep current)</label>
-                            <input type="password" name="password" class="form-inp" autocomplete="new-password">
-                        </div>
-                        <div class="form-row">
-                            <label class="form-lbl">Confirm Password</label>
-                            <input type="password" name="password_confirmation" class="form-inp" autocomplete="new-password">
-                        </div>
 
-                        <div class="form-row" style="grid-column: 1 / -1;">
-                            <hr style="border: 0; border-top: 1px solid var(--b2); margin: 10px 0;">
-                            <h4 style="font-size: 14px; font-weight: 600; color: var(--t1); margin-bottom: 8px;">KYC & Additional Details</h4>
-                        </div>
-
-                        <div class="form-row">
-                            <label class="form-lbl">Phone Number</label>
-                            <input type="text" name="phone" id="edit_phone" class="form-inp" placeholder="Phone Number">
-                        </div>
-                        <div class="form-row">
-                            <label class="form-lbl">Address</label>
-                            <textarea name="address" id="edit_address" class="form-inp" rows="2" placeholder="Address"></textarea>
-                        </div>
-                        
-                        <div class="form-row">
-                            <label class="form-lbl">Profile Image</label>
-                            <input type="file" name="profile_image" class="form-inp" accept="image/*">
-                        </div>
-                        <div class="form-row">
-                            <label class="form-lbl">Aadhar Card Document</label>
-                            <input type="file" name="aadhar_card" class="form-inp">
-                        </div>
-                        <div class="form-row">
-                            <label class="form-lbl">PAN Card Document</label>
-                            <input type="file" name="pan_card" class="form-inp">
-                        </div>
-                        <div class="form-row">
-                            <label class="form-lbl">Voter Card Document</label>
-                            <input type="file" name="voter_card" class="form-inp">
-                        </div>
-                        <div class="form-row">
-                            <label class="form-lbl">Bank Account Proof</label>
-                            <input type="file" name="bank_account_pic" class="form-inp">
-                        </div>
-                        
-                        <div class="form-row">
-                            <label class="form-lbl">Qualification/Experience Details</label>
-                            <textarea name="qualification_details" id="edit_qualification_details" class="form-inp" rows="2"></textarea>
-                        </div>
-                        <div class="form-row">
-                            <label class="form-lbl">Qualification Attachments (Multiple)</label>
-                            <input type="file" name="qualification_attachments[]" class="form-inp" multiple accept="image/*,.pdf">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-ft">
-                    <button type="button" class="btn-ghost" onclick="closeModal('editSalesPersonModal')">Cancel</button>
-                    <button type="submit" class="btn-primary-solid">
-                        <i class="bi bi-pencil-fill"></i> Update Sales Person
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <!-- Delete Modal -->
     <div class="modal-backdrop" id="deleteSalesPersonModal">
@@ -929,18 +850,7 @@
     </div>
 
     <script>
-        function editSalesPerson(person) {
-            document.getElementById('editSalesPersonForm').action = `{{ url($routePrefix . '/add-sales-person') }}/${person.id}`;
-            document.getElementById('edit_name').value = person.name;
-            document.getElementById('edit_email').value = person.email;
-            document.getElementById('edit_phone').value = person.phone || '';
-            document.getElementById('edit_address').value = person.address || '';
-            document.getElementById('edit_qualification_details').value = person.qualification_details || '';
-            // Clear password fields on open
-            document.querySelector('#editSalesPersonForm [name="password"]').value = '';
-            document.querySelector('#editSalesPersonForm [name="password_confirmation"]').value = '';
-            openModal('editSalesPersonModal');
-        }
+
 
         function deleteSalesPerson(id) {
             document.getElementById('deleteSalesPersonForm').action = `{{ url($routePrefix . '/add-sales-person') }}/${id}`;
