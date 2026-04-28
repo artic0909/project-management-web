@@ -354,7 +354,8 @@
                                                 <label class="ms-opt">
                                                     <input type="checkbox" name="sales_person_ids[]" value="{{ $sale->id }}" 
                                                         data-name="{{ $sale->name }}" data-initials="{{ $initials }}"
-                                                        onchange="updateMs('saleAssignWrap')">
+                                                        onchange="updateMs('saleAssignWrap')"
+                                                        {{ (is_array(old('sales_person_ids')) && in_array($sale->id, old('sales_person_ids'))) || (!old('sales_person_ids') && ($routePrefix === 'sale' && $sale->id == auth()->guard('sale')->id())) ? 'checked' : '' }}>
                                                     <span class="ms-ava" style="background:{{ $bg }}">{{ $initials }}</span>
                                                     <div>
                                                         <div style="font-size:12.5px;font-weight:600;color:var(--t1);">{{ $sale->name }}</div>

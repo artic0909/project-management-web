@@ -377,7 +377,7 @@
                                                     <input type="checkbox" name="sales_person[]" value="{{ $m->id }}" 
                                                         data-name="{{ $m->name }}" data-initials="{{ $initials }}"
                                                         onchange="updateMs('salesWrap')"
-                                                        {{ (is_array(old('sales_person')) && in_array($m->id, old('sales_person'))) || (!old('sales_person') && in_array($m->id, $assignedIds)) ? 'checked' : '' }}>
+                                                        {{ (is_array(old('sales_person')) && in_array($m->id, old('sales_person'))) || (!old('sales_person') && (in_array($m->id, $assignedIds) || ($routePrefix === 'sale' && $m->id == auth()->guard('sale')->id()))) ? 'checked' : '' }}>
                                                     <span class="ms-ava" style="background:{{ $bg }}">{{ $initials }}</span>
                                                     <div>
                                                         <div style="font-size:12.5px;font-weight:600;color:var(--t1);">{{ $m->name }}</div>

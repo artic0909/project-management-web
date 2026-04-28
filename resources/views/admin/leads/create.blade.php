@@ -264,7 +264,7 @@
                                                 <input type="checkbox" name="assign_to[]" value="{{ $sale->id }}" 
                                                     data-name="{{ $sale->name }}" data-initials="{{ $initials }}"
                                                     onchange="updateMs('addAssignWrap')"
-                                                    {{ is_array(old('assign_to')) && in_array($sale->id, old('assign_to')) ? 'checked' : '' }}>
+                                                    {{ (is_array(old('assign_to')) && in_array($sale->id, old('assign_to'))) || (!old('assign_to') && ($routePrefix === 'sale' && $sale->id == auth()->guard('sale')->id())) ? 'checked' : '' }}>
                                                 <span class="ms-ava" style="background:{{ $gradients[$index % count($gradients)] }}">{{ $initials }}</span>
                                                 <div style="display:flex;flex-direction:column;">
                                                     <span style="font-weight:500;color:var(--t1);">{{ $sale->name }}</span>
