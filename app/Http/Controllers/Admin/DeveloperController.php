@@ -15,7 +15,7 @@ class DeveloperController extends Controller
     {
         $routePrefix = 'admin';
         $developers = Developer::latest()->paginate(14)->withQueryString();
-        return view('admin.developers', compact('developers', 'routePrefix'));
+        return view('admin.developer.index', compact('developers', 'routePrefix'));
     }
 
     public function store(Request $request)
