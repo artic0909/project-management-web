@@ -6,13 +6,18 @@
 
 <main class="page-area" id="pageArea">
     <div class="page" id="page-dashboard">
-        <div class="page-header">
+        <div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
             <div>
                 <a href="{{ route($routePrefix . '.developer') }}" class="btn-ghost" style="margin-bottom: 10px; display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; color: var(--t2);">
                     <i class="bi bi-arrow-left"></i> Back to Developers
                 </a>
                 <h1 class="page-title">Update Developer: {{ $developer->name }}</h1>
             </div>
+            @if($developer->profile_image)
+                <div style="flex-shrink: 0;">
+                    <img src="{{ asset('storage/' . $developer->profile_image) }}" alt="Profile Image" style="width: 80px; height: 80px; border-radius: 12px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                </div>
+            @endif
         </div>
 
         @if (session('success'))
@@ -79,11 +84,6 @@
 
                             <div class="form-row">
                                 <label class="form-lbl">Profile Image</label>
-                                @if($developer->profile_image)
-                                    <div style="margin-bottom: 8px;">
-                                        <img src="{{ asset('storage/' . $developer->profile_image) }}" alt="Profile Image" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 1px solid var(--b2);">
-                                    </div>
-                                @endif
                                 <input type="file" name="profile_image" class="form-inp" accept="image/*">
                             </div>
 
