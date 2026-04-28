@@ -62,13 +62,9 @@
                                         </div>
                                     </div>
                                     <div class="note-actions">
-                                        <form action="{{ route('admin.notes.destroy', $note->id) }}" method="POST" onsubmit="return confirm('Delete this note?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #fee2e2; background: #fff5f5; color: #ef4444; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center;">
-                                                <i class="bi bi-trash-fill"></i>
-                                            </button>
-                                        </form>
+                                        <button type="button" onclick="confirmSingleDelete('{{ route('admin.notes.destroy', $note->id) }}')" style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #fee2e2; background: #fff5f5; color: #ef4444; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
                                     </div>
                                 </div>
 
@@ -132,4 +128,55 @@
         .dash-card { position: static !important; }
     }
 </style>
+
+<!-- SINGLE DELETE MODAL -->
+<div class="modal-backdrop" id="deleteModal">
+    <div class="modal-box sm-box" onclick="event.stopPropagation()">
+        <div class="modal-hd" style="border-bottom:1px solid #fecaca;">
+            <span style="color:#dc2626;">Delete Admin Note</span>
+            <button class="modal-close" onclick="closeModal('deleteModal')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-bd" style="text-align:center;padding:32px 24px;">
+            <div style="width:64px;height:64px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                <i class="bi bi-trash3-fill" style="font-size:28px;color:#dc2626;"></i>
+            </div>
+            <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:var(--t1);">Delete Note?</h3>
+            <p style="margin:0;font-size:14px;color:var(--t3);line-height:1.6;">Are you sure you want to delete this administrative note?<br>This action <strong style="color:#dc2626;">cannot be undone.</strong></p>
+        </div>
+        <div class="modal-ft" style="border-top:1px solid #fecaca;">
+            <button class="btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
+            <form id="deleteRecordForm" method="POST" style="display:none;">
+                @csrf
+                @method('DELETE')
+            </form>
+            <button style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="document.getElementById('deleteRecordForm').submit()">
+                <i class="bi bi-trash3-fill"></i> Confirm Deletion
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmSingleDelete(url) {
+        document.getElementById('deleteRecordForm').action = url;
+        const m = document.getElementById('deleteModal');
+        m.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(id) {
+        const m = document.getElementById(id);
+        if(m) {
+            m.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+    }
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal-backdrop')) {
+            closeModal(event.target.id);
+        }
+    }
+</script>
 @endsection
