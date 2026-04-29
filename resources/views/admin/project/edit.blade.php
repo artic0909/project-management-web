@@ -256,7 +256,7 @@
                             </div>
                         </div>
                     </div>
-
+@if($routePrefix == 'admin')
                     {{-- Section 3: Website & Platform --}}
                     <div class="dash-card">
                         <div class="card-head">
@@ -331,7 +331,8 @@
                             </div>
                         </div>
                     </div>
-
+@endif
+                    @if($routePrefix === 'admin')
                     {{-- Section 4: Hosting & Domain Provider --}}
                     <div class="dash-card">
                         <div class="card-head">
@@ -367,6 +368,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
 
                 </div>
 
@@ -476,6 +478,7 @@
                                     </div>
                                 </div>
                             </div>
+                          
                             <div class="form-row">
                                 <label class="form-lbl">Assign to Developers</label>
                                 @php $assignedDevIds = $project->developers->pluck('id')->toArray(); @endphp
@@ -515,6 +518,7 @@
                                     </div>
                                 </div>
                             </div>
+                            
                         </div>
                     </div>
 

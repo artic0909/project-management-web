@@ -389,11 +389,13 @@
                                      
                                         <a href="{{ route($routePrefix . '.projects.tasks', $project->id) }}" class="ra-btn" title="Tasks" style="color:#6366f1;background:rgba(99,102,241,0.1);"><i class="bi bi-list-task"></i></a>
                                         <a href="{{ route($routePrefix . '.projects.show', $project->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                        @if($routePrefix == 'admin')
+                                        
                                             @if($project->order_id)
                                             <a href="{{ route($routePrefix . '.payments.create', $project->order_id) }}" class="ra-btn" title="Payments"><i class="bi bi-wallet2"></i></a>
                                             @endif
+                                            
                                             <a href="{{ route($routePrefix . '.projects.edit', $project->id) }}" class="ra-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
+                                            @if($routePrefix == 'admin')
                                             <button type="button" class="ra-btn danger" title="Delete" 
                                                     onclick="openDeleteModal('{{ route($routePrefix . '.projects.destroy', $project->id) }}')">
                                                 <i class="bi bi-trash-fill"></i>
@@ -598,7 +600,7 @@
                     <h5 class="modal-title" style="color: var(--t1); font-weight: 700;">Import Projects</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--close-filter);"></button>
                 </div>
-                <form action="{{ route($routePrefix . '.projects.import') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.projects.import') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body p-4">
                         <div style="background: var(--bg3); border: 2px dashed var(--b1); border-radius: 10px; padding: 30px; text-align: center; cursor: pointer;" onclick="document.getElementById('importCsvInput').click()">

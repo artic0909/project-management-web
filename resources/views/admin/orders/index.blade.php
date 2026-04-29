@@ -1113,7 +1113,7 @@
     <!-- ── Import Orders Modal ── -->
     <div class="modal fade" id="importOrdersModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <form action="{{ route($routePrefix . '.orders.import') }}" method="POST" enctype="multipart/form-data" class="modal-content" style="background: var(--bg2); border-color: var(--b2); border-radius: 12px;">
+            <form action="{{ route('admin.orders.import') }}" method="POST" enctype="multipart/form-data" class="modal-content" style="background: var(--bg2); border-color: var(--b2); border-radius: 12px;">
                 @csrf
                 <div class="modal-header" style="border-bottom-color: var(--b1);">
                     <h5 class="modal-title" style="font-weight: 700; color: var(--t1);">Import Orders from CSV</h5>
