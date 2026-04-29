@@ -879,7 +879,10 @@ class LeadController extends Controller
                 if (empty($priority)) $priority = 'warm';
 
                 // Find or create relationship models
-                $status = Status::firstOrCreate(['name' => $statusName]);
+                $status = Status::where('type', 'lead')->where('name', $statusName)->first();
+                if (!$status) {
+                    $status = Status::create(['name' => $statusName, 'type' => 'lead', 'color' => '#6366f1']);
+                }
                 $campaign = !empty($campaignName) ? Campaign::firstOrCreate(['name' => $campaignName]) : null;
 
                 // Identify IDs for single-column relations (source_id and service_id)

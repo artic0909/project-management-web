@@ -11,6 +11,8 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Models\OrderAssign;
 use App\Models\OrderInquiry;
+use App\Models\Source;
+use App\Models\Plan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -641,4 +643,232 @@ class OrderController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt'
+        ]);
+
+        $file = $request->file('csv_file');
+        $path = $file->getRealPath();
+        $handle = fopen($path, 'r');
+
+        // Skip UTF-8 BOM if present
+        $bom = fread($handle, 3);
+        if ($bom !== "\xef\xbb\xbf") {
+            rewind($handle);
+        }
+
+        $header = fgetcsv($handle);
+        if (!$header) {
+            fclose($handle);
+            return back()->with('error', 'Empty file provided');
+        }
+
+        // Clean headers (remove BOM/white-space)
+        $header = array_map(function($h) {
+            return trim(preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $h));
+        }, $header);
+
+        $rowCount = 0;
+        $successCount = 0;
+        $errorsList = [];
+
+        DB::beginTransaction();
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                if (empty(array_filter($row))) continue;
+
+                // Map headers to row data
+                $data = [];
+                foreach($header as $idx => $label) {
+                    if (isset($row[$idx])) {
+                        $data[$label] = $row[$idx];
+                    }
+                }
+
+                $rowCount++;
+
+                // Robust mapping with variations
+                $companyName = $data['Company Name'] ?? ($data['company_name'] ?? ($data['company'] ?? ($data['Company'] ?? '')));
+                if (empty($companyName)) {
+                    $errorsList[] = "Row $rowCount skipped: Company Name missing.";
+                    continue;
+                }
+
+                $clientName = $data['Client Name'] ?? ($data['client_name'] ?? ($data['client'] ?? ($data['Client'] ?? '')));
+                
+                $emailsStr = $data['Emails'] ?? ($data['emails'] ?? ($data['Email'] ?? ($data['email'] ?? '')));
+                $emails = !empty($emailsStr) ? array_filter(array_map('trim', explode(',', $emailsStr))) : [];
+
+                $phonesRaw = $data['Phones'] ?? ($data['phones'] ?? ($data['Phone'] ?? ($data['phone'] ?? '')));
+                $phonesArray = [];
+                if (!empty($phonesRaw)) {
+                    $phonesList = explode(',', $phonesRaw);
+                    foreach($phonesList as $p) {
+                        $p = trim($p);
+                        if (!empty($p)) {
+                            $num = preg_replace('/[^0-9+]/', '', $p);
+                            if (!empty($num)) {
+                                $phonesArray[] = ['code_idx' => 20, 'number' => $num];
+                            }
+                        }
+                    }
+                }
+
+                $typeStr = strtolower($data['Type'] ?? ($data['type'] ?? ''));
+                $isMarketing = ($typeStr === 'marketing');
+
+                $statusName = trim($data['Status'] ?? ($data['status'] ?? 'Pending'));
+                $status = Status::where('type', 'order')->where('name', $statusName)->first();
+                if (!$status) {
+                    $status = Status::create(['name' => $statusName, 'type' => 'order']);
+                }
+
+                $paymentTermsName = trim($data['Payment Terms'] ?? ($data['payment_terms'] ?? ''));
+                $paymentTerms = !empty($paymentTermsName) ? Status::where('type', 'payment')->where('name', $paymentTermsName)->first() : null;
+
+                $mktPaymentStatusName = trim($data['Mkt Payment Status'] ?? ($data['mkt_payment_status'] ?? ''));
+                $mktPaymentStatus = !empty($mktPaymentStatusName) ? Status::where('type', 'payment')->where('name', $mktPaymentStatusName)->first() : null;
+
+                $serviceNames = [];
+                $firstServiceId = null;
+                $rawServices = $data['Services'] ?? ($data['services'] ?? ($data['Service'] ?? ''));
+                if (!empty($rawServices)) {
+                    $serviceNames = array_map('trim', explode(',', $rawServices));
+                    if (!empty($serviceNames)) {
+                        $s = Service::firstOrCreate(['name' => $serviceNames[0]]);
+                        $firstServiceId = $s->id;
+                    }
+                }
+
+                // Order Number handling
+                $orderNumber = $data['Order Number'] ?? ($data['order_number'] ?? null);
+                if ($orderNumber && Order::where('order_number', $orderNumber)->exists()) {
+                    // Conflict found - we'll let the system generate a new one
+                    $orderNumber = null;
+                }
+
+                if (!$orderNumber) {
+                    $lastOrder = Order::where('order_number', 'LIKE', 'ORD-%')
+                        ->orderByRaw('CAST(SUBSTRING(order_number, 5) AS UNSIGNED) DESC')
+                        ->first();
+                    $nextNum = $lastOrder ? ((int) str_replace('ORD-', '', $lastOrder->order_number)) + 1 : 1001;
+                    $orderNumber = 'ORD-' . $nextNum;
+                }
+
+                $orderValue = preg_replace('/[^0-9.]/', '', $data['Order Value'] ?? ($data['order_value'] ?? '0'));
+                $discount = preg_replace('/[^0-9.]/', '', $data['Discount'] ?? ($data['discount'] ?? '0'));
+                $advancePayment = preg_replace('/[^0-9.]/', '', $data['Advance Payment'] ?? ($data['advance_payment'] ?? '0'));
+
+                $order = Order::create([
+                    'order_number' => $orderNumber,
+                    'lead_id' => !empty($data['Lead ID']) ? ltrim(str_ireplace('#LEAD-', '', $data['Lead ID']), '0') : null,
+                    'is_marketing' => $isMarketing,
+                    'company_name' => $companyName,
+                    'client_name' => $clientName,
+                    'emails' => $emails,
+                    'phones' => $phonesArray,
+                    'domain_name' => $data['Domain'] ?? ($data['domain'] ?? ''),
+                    'service_id' => $firstServiceId,
+                    'order_value' => $orderValue ?: 0,
+                    'discount' => $discount ?: 0,
+                    'advance_payment' => $advancePayment ?: 0,
+                    'payment_terms_id' => $paymentTerms?->id,
+                    'delivery_date' => !empty($data['Delivery Date']) ? date('Y-m-d', strtotime($data['Delivery Date'])) : null,
+                    'status_id' => $status->id,
+                    'mkt_payment_status_id' => $mktPaymentStatus?->id,
+                    'mkt_starting_date' => !empty($data['Mkt Starting Date']) ? date('Y-m-d', strtotime($data['Mkt Starting Date'])) : null,
+                    'mkt_username' => $data['Mkt Username'] ?? ($data['mkt_username'] ?? ''),
+                    'mkt_password' => $data['Mkt Password'] ?? ($data['mkt_password'] ?? ''),
+                    'city' => $data['City'] ?? ($data['city'] ?? ''),
+                    'state' => $data['State'] ?? ($data['state'] ?? ''),
+                    'zip_code' => preg_replace('/[^0-9]/', '', $data['Zip Code'] ?? ($data['zip_code'] ?? '')),
+                    'full_address' => $data['Full Address'] ?? ($data['full_address'] ?? ''),
+                    'created_by' => auth()->guard('admin')->id(),
+                    'created_by_type' => \App\Models\Admin::class,
+                ]);
+
+                // Sync Sources
+                if (!empty($data['Sources']) || !empty($data['sources'])) {
+                    $rawSources = $data['Sources'] ?? $data['sources'];
+                    $sourceNames = array_map('trim', explode(',', $rawSources));
+                    $sourceIds = [];
+                    foreach($sourceNames as $sn) {
+                        $s = Source::firstOrCreate(['name' => $sn]);
+                        $sourceIds[] = $s->id;
+                    }
+                    $order->sources()->sync($sourceIds);
+                }
+
+                // Sync Services
+                if (!empty($serviceNames)) {
+                    $serviceIds = [];
+                    foreach($serviceNames as $sn) {
+                        $s = Service::firstOrCreate(['name' => $sn]);
+                        $serviceIds[] = $s->id;
+                    }
+                    $order->services()->sync($serviceIds);
+                }
+
+                // Sync Plans
+                if (!empty($data['Plans']) || !empty($data['plans'])) {
+                    $rawPlans = $data['Plans'] ?? $data['plans'];
+                    $planNames = array_map('trim', explode(',', $rawPlans));
+                    $planIds = [];
+                    foreach($planNames as $pn) {
+                        $p = Plan::firstOrCreate(['name' => $pn]);
+                        $planIds[] = $p->id;
+                    }
+                    $order->plans()->sync($planIds);
+                }
+
+                // Sync Sales Person
+                if (!empty($data['Sales Person']) || !empty($data['sales_person'])) {
+                    $rawSP = $data['Sales Person'] ?? $data['sales_person'];
+                    $spNames = array_map('trim', explode(',', $rawSP));
+                    $saleIds = [];
+                    foreach($spNames as $sp) {
+                        $name = trim(explode('(', $sp)[0]);
+                        $sale = Sale::where('name', 'like', "%$name%")->first();
+                        if ($sale) {
+                            $saleIds[] = $sale->id;
+                        }
+                    }
+                    $order->sales()->sync($saleIds);
+                }
+
+                // Record Advance Payment if exists
+                if ($order->advance_payment > 0) {
+                    $paymentStatus = \App\Models\Status::where('type', 'payment')->where('name', 'Advance')->first();
+                    \App\Models\Payment::create([
+                        'order_id' => $order->id,
+                        'transaction_date' => $order->created_at,
+                        'amount' => $order->advance_payment,
+                        'payment_method' => 'Advance',
+                        'notes' => 'Imported Advance Payment',
+                        'status_id' => $paymentStatus ? $paymentStatus->id : null,
+                        'created_by' => auth()->guard('admin')->id(),
+                        'created_by_type' => \App\Models\Admin::class,
+                    ]);
+                }
+
+                $successCount++;
+            }
+            DB::commit();
+            fclose($handle);
+            
+            $msg = "Imported $successCount of $rowCount orders successfully.";
+            if (!empty($errorsList)) {
+                $msg .= " Note: " . implode(' ', $errorsList);
+            }
+            return back()->with('success', $msg);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            fclose($handle);
+            return back()->with('error', 'Error at row ' . ($rowCount + 1) . ': ' . $e->getMessage());
+        }
+    }
 }
+

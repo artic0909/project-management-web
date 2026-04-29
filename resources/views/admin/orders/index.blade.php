@@ -18,7 +18,7 @@
                     <i class="bi bi-trash-fill"></i> Bulk Delete
                 </button>
                 
-                <button class="btn-primary-solid sm">
+                <button type="button" class="btn-primary-solid sm" onclick="openImportOrdersModal()">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
                 
@@ -1107,6 +1107,37 @@
             });
 
             const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+        }
+    </script>
+    <!-- ── Import Orders Modal ── -->
+    <div class="modal fade" id="importOrdersModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form action="{{ route($routePrefix . '.orders.import') }}" method="POST" enctype="multipart/form-data" class="modal-content" style="background: var(--bg2); border-color: var(--b2); border-radius: 12px;">
+                @csrf
+                <div class="modal-header" style="border-bottom-color: var(--b1);">
+                    <h5 class="modal-title" style="font-weight: 700; color: var(--t1);">Import Orders from CSV</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--close-filter);"></button>
+                </div>
+                <div class="modal-body">
+                    <div style="background: rgba(99,102,241,0.05); border: 1px dashed var(--accent); border-radius: 8px; padding: 20px; text-align: center;">
+                        <i class="bi bi-cloud-upload" style="font-size: 32px; color: var(--accent); display: block; margin-bottom: 10px;"></i>
+                        <p style="font-size: 14px; font-weight: 600; color: var(--t2); margin-bottom: 5px;">Select your CSV file</p>
+                        <p style="font-size: 12px; color: var(--t4); margin-bottom: 15px;">Column headers should match the Export format</p>
+                        <input type="file" name="csv_file" class="form-control" accept=".csv" required style="font-size: 13px;">
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top-color: var(--b1);">
+                    <button type="button" class="btn btn-secondary sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-primary-solid sm">Start Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openImportOrdersModal() {
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('importOrdersModal'));
             modal.show();
         }
     </script>
