@@ -20,11 +20,7 @@
                 <p class="page-desc">Viewing details for <strong>{{ $order->company_name }}</strong></p>
             </div>
             <div style="display:flex;gap:10px;">
-                @if(in_array($guard, ['admin', 'sale']))
-                <a href="{{ route($routePrefix . '.invoices.create', ['order_id' => $order->id]) }}" class="btn-primary-solid sm" style="background:#0ea5e9;border-color:#0ea5e9;">
-                    <i class="bi bi-receipt"></i> Generate Invoice
-                </a>
-                @endif
+                
                 <a href="{{ route($routePrefix . '.projects.create', $order->id) }}" class="btn-primary-solid sm" style="background:#8b5cf6;border-color:#8b5cf6;">
                     <i class="bi bi-plus-square-fill"></i> Convert to Project
                 </a>
