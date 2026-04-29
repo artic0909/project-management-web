@@ -19,7 +19,7 @@
                     <i class="bi bi-trash-fill"></i> Bulk Delete
                 </button>
                
-                <button class="btn-primary-solid sm">
+                <button type="button" class="btn-primary-solid sm" onclick="openImportProjectsModal()">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
                 <button type="button" class="btn-primary-solid sm" onclick="exportProjects()">
@@ -254,7 +254,7 @@
                                     <div class="ln">{{ $project->client_name }}</div>
                                     <div class="ls">
                                         @if(is_array($project->phones) && count($project->phones) > 0)
-                                            {{ is_array($project->phones[0]) ? $project->phones[0]['num'] : $project->phones[0] }}
+                                            {{ is_array($project->phones[0]) ? ($project->phones[0]['number'] ?? $project->phones[0]['num'] ?? 'N/A') : $project->phones[0] }}
                                             @if(count($project->phones) > 1) <small class="text-muted">(+{{ count($project->phones)-1 }})</small> @endif
                                         @elseif($project->phones)
                                             {{ $project->phones }}
@@ -365,7 +365,8 @@
                                             $emailList = is_array($project->emails) ? $project->emails : [];
                                             $fullPhones = [];
                                             foreach($phoneList as $p) {
-                                                $fullPhones[] = (isset($p['code_idx']) && isset($codes[$p['code_idx']])) ? ($codes[$p['code_idx']] . ($p['num'] ?? '')) : (is_array($p) ? ($p['num'] ?? '') : $p);
+                                                $num = is_array($p) ? ($p['number'] ?? $p['num'] ?? '') : $p;
+                                                $fullPhones[] = (is_array($p) && isset($p['code_idx']) && isset($codes[$p['code_idx']])) ? ($codes[$p['code_idx']] . $num) : $num;
                                             }
                                         @endphp
                                         <style>
@@ -585,6 +586,39 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- IMPORT PROJECTS MODAL -->
+    <div class="modal fade" id="importProjectsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: var(--bg2); border-color: var(--b1); border-radius: 12px;">
+                <div class="modal-header" style="border-bottom-color: var(--b1);">
+                    <h5 class="modal-title" style="color: var(--t1); font-weight: 700;">Import Projects</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--close-filter);"></button>
+                </div>
+                <form action="{{ route($routePrefix . '.projects.import') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body p-4">
+                        <div style="background: var(--bg3); border: 2px dashed var(--b1); border-radius: 10px; padding: 30px; text-align: center; cursor: pointer;" onclick="document.getElementById('importCsvInput').click()">
+                            <i class="bi bi-cloud-arrow-up-fill" style="font-size: 40px; color: var(--accent); opacity: 0.8;"></i>
+                            <p style="color: var(--t2); font-weight: 600; margin-top: 15px;">Click to upload CSV file</p>
+                            <p style="color: var(--t4); font-size: 11px;">Max size: 5MB. Must follow standard export format.</p>
+                            <input type="file" name="csv_file" id="importCsvInput" hidden accept=".csv">
+                        </div>
+                        <div id="fileInfo" style="margin-top: 15px; display: none; align-items: center; gap: 10px; padding: 10px; background: var(--bg4); border-radius: 8px;">
+                            <i class="bi bi-file-earmark-text-fill" style="color: var(--accent);"></i>
+                            <span id="fileName" style="font-size: 12.5px; color: var(--t1); font-weight: 500;"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="border-top-color: var(--b1);">
+                        <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn-primary-solid" style="padding: 10px 20px;">
+                            <i class="bi bi-upload"></i> Start Import
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -1054,6 +1088,23 @@
             document.body.appendChild(form);
             form.submit();
         }
+
+        function openImportProjectsModal() {
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('importProjectsModal'));
+            modal.show();
+        }
+
+        document.getElementById('importCsvInput')?.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const fileInfo = document.getElementById('fileInfo');
+            const fileName = document.getElementById('fileName');
+            if (file) {
+                fileName.innerText = file.name;
+                fileInfo.style.display = 'flex';
+            } else {
+                fileInfo.style.display = 'none';
+            }
+        });
 
         function exportProjects() {
             const form = document.querySelector('.card-actions form');

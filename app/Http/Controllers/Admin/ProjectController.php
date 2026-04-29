@@ -13,6 +13,9 @@ use App\Models\Service;
 use App\Models\Source;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\Models\Plan;
+use App\Models\Sale;
 
 class ProjectController extends Controller
 {
@@ -578,9 +581,9 @@ class ProjectController extends Controller
                 $phoneList = is_array($phoneList) ? $phoneList : [];
                 $fullPhones = [];
                 foreach($phoneList as $p) {
-                    if (is_array($p) && isset($p['num'])) {
-                        $code = $codes[$p['code'] ?? null] ?? '';
-                        $fullPhones[] = $code . ($code ? ' ' : '') . $p['num'];
+                    if (is_array($p) && isset($p['number'])) {
+                        $code = $codes[$p['code_idx'] ?? null] ?? '';
+                        $fullPhones[] = $code . ($code ? ' ' : '') . $p['number'];
                     } elseif (is_string($p)) {
                         $fullPhones[] = $p;
                     }
@@ -662,7 +665,225 @@ class ProjectController extends Controller
             }
             fclose($file);
         };
-
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt'
+        ]);
+
+        $file = $request->file('csv_file');
+        $path = $file->getRealPath();
+        $handle = fopen($path, 'r');
+
+        // Skip UTF-8 BOM if present
+        $bom = fread($handle, 3);
+        if ($bom !== "\xef\xbb\xbf") {
+            rewind($handle);
+        }
+
+        $header = fgetcsv($handle);
+        if (!$header) {
+            fclose($handle);
+            return back()->with('error', 'Empty file provided');
+        }
+
+        // Clean headers (remove BOM/white-space)
+        $header = array_map(function($h) {
+            return trim(preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $h));
+        }, $header);
+
+        $rowCount = 0;
+        $successCount = 0;
+        $errorsList = [];
+
+        DB::beginTransaction();
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                if (empty(array_filter($row))) continue;
+
+                // Map headers to row data
+                $data = [];
+                foreach($header as $idx => $label) {
+                    if (isset($row[$idx])) {
+                        $data[$label] = $row[$idx];
+                    }
+                }
+
+                $rowCount++;
+
+                // Robust mapping with variations
+                $projectName = $data['Project Name'] ?? ($data['project_name'] ?? ($data['Project'] ?? ($data['Domain Name'] ?? '')));
+                if (empty($projectName)) {
+                    $errorsList[] = "Row $rowCount skipped: Project Name missing.";
+                    continue;
+                }
+
+                $clientName = $data['Client Name'] ?? ($data['client_name'] ?? ($data['Client'] ?? ''));
+                $firstName = $data['First Name'] ?? ($data['first_name'] ?? '');
+                $lastName = $data['Last Name'] ?? ($data['last_name'] ?? '');
+                
+                $emailsStr = $data['Emails'] ?? ($data['emails'] ?? ($data['Email'] ?? ($data['email'] ?? '')));
+                $emails = !empty($emailsStr) ? array_filter(array_map('trim', explode(',', $emailsStr))) : [];
+
+                $phonesRaw = $data['Phones'] ?? ($data['phones'] ?? ($data['Phone'] ?? ($data['phone'] ?? '')));
+                $phonesArray = [];
+                if (!empty($phonesRaw)) {
+                    $phonesList = explode(',', $phonesRaw);
+                    foreach($phonesList as $p) {
+                        $p = trim($p);
+                        if (!empty($p)) {
+                            $num = preg_replace('/[^0-9+]/', '', $p);
+                            if (!empty($num)) {
+                                $phonesArray[] = ['code_idx' => 20, 'number' => $num];
+                            }
+                        }
+                    }
+                }
+
+                $projectStatusName = trim($data['Project Status'] ?? ($data['project_status'] ?? 'New'));
+                $projectStatus = Status::where('type', 'project')->where('name', 'like', "%$projectStatusName%")->first();
+                if (!$projectStatus && !empty($projectStatusName)) {
+                    $projectStatus = Status::create(['name' => $projectStatusName, 'type' => 'project']);
+                }
+
+                $paymentStatusName = trim($data['Payment Status'] ?? ($data['payment_status'] ?? ''));
+                $paymentStatus = !empty($paymentStatusName) ? Status::where('type', 'payment')->where('name', 'like', "%$paymentStatusName%")->first() : null;
+
+                // Project Code handling
+                $projectCode = $data['Project Code'] ?? ($data['project_code'] ?? null);
+                if ($projectCode && Project::where('project_code', $projectCode)->exists()) {
+                    $projectCode = null; // Conflict found, let system generate
+                }
+
+                if (!$projectCode) {
+                    $lastProject = Project::orderBy('id', 'desc')->first();
+                    $lastId = $lastProject ? $lastProject->id : 0;
+                    $projectCode = 'PROJ-' . str_pad($lastId + 1, 2, '0', STR_PAD_LEFT);
+                }
+
+                $project = Project::create([
+                    'project_code' => $projectCode,
+                    'order_id' => !empty($data['Order ID']) ? ltrim(str_ireplace('#ORD-', '', $data['Order ID']), '0') : null,
+                    'project_name' => $projectName,
+                    'client_name' => $clientName,
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'emails' => $emails,
+                    'phones' => $phonesArray,
+                    'company_name' => $data['Company Name'] ?? ($data['company_name'] ?? ''),
+                    'city' => $data['City'] ?? ($data['city'] ?? ''),
+                    'state' => $data['State'] ?? ($data['state'] ?? ''),
+                    'zip_code' => preg_replace('/[^0-9]/', '', $data['Zip Code'] ?? ($data['zip_code'] ?? '')),
+                    'full_address' => $data['Full Address'] ?? ($data['full_address'] ?? ''),
+                    'domain_name' => $data['Domain Name'] ?? ($data['domain_name'] ?? ''),
+                    'primary_domain_name' => $data['Primary Domain Name'] ?? ($data['primary_domain_name'] ?? ''),
+                    'domain_provider_name' => $data['Domain Provider Name'] ?? ($data['domain_provider_name'] ?? ''),
+                    'domain_renewal_price' => preg_replace('/[^0-9.]/', '', $data['Domain Renewal Price'] ?? '0'),
+                    'domain_server_book' => $data['Domain Server Book'] ?? ($data['domain_server_book'] ?? ''),
+                    'hosting_provider_name' => $data['Hosting Provider Name'] ?? ($data['hosting_provider_name'] ?? ''),
+                    'hosting_renewal_price' => preg_replace('/[^0-9.]/', '', $data['Hosting Renewal Price'] ?? '0'),
+                    'cms_platform' => $data['CMS Platform'] ?? ($data['cms_platform'] ?? ''),
+                    'cms_custom' => $data['CMS Custom'] ?? ($data['cms_custom'] ?? ''),
+                    'no_of_pages' => $data['No Of Pages'] ?? ($data['no_of_pages'] ?? 0),
+                    'required_features' => $data['Required Features'] ?? ($data['required_features'] ?? ''),
+                    'extra_features' => $data['Extra Features'] ?? ($data['extra_features'] ?? ''),
+                    'reference_websites' => $data['Reference Websites'] ?? ($data['reference_websites'] ?? ''),
+                    'username' => $data['Username'] ?? ($data['username'] ?? ''),
+                    'password' => $data['Password'] ?? ($data['password'] ?? ''),
+                    'no_of_mail_ids' => $data['No Of Mail IDs'] ?? ($data['no_of_mail_ids'] ?? 0),
+                    'mail_password' => $data['Mail Password'] ?? ($data['mail_password'] ?? ''),
+                    'order_date_create' => !empty($data['Order Date Create']) ? date('Y-m-d', strtotime($data['Order Date Create'])) : null,
+                    'expected_delivery_date' => !empty($data['Expected Delivery Date']) ? date('Y-m-d', strtotime($data['Expected Delivery Date'])) : null,
+                    'project_status_id' => $projectStatus?->id,
+                    'payment_status_id' => $paymentStatus?->id,
+                    'invoice_number' => $data['Invoice Number'] ?? ($data['invoice_number'] ?? ''),
+                    'created_by' => auth()->guard('admin')->id(),
+                    'created_by_type' => \App\Models\Admin::class,
+                ]);
+
+                // Sync Services
+                $rawServices = $data['Services'] ?? ($data['services'] ?? '');
+                if (!empty($rawServices)) {
+                    $serviceNames = array_map('trim', explode(',', $rawServices));
+                    $serviceIds = [];
+                    foreach($serviceNames as $sn) {
+                        $s = Service::firstOrCreate(['name' => $sn]);
+                        $serviceIds[] = $s->id;
+                    }
+                    $project->services()->sync($serviceIds);
+                }
+
+                // Sync Plans
+                $rawPlans = $data['Plans'] ?? ($data['plans'] ?? '');
+                if (!empty($rawPlans)) {
+                    $planNames = array_map('trim', explode(',', $rawPlans));
+                    $planIds = [];
+                    foreach($planNames as $pn) {
+                        $p = Plan::firstOrCreate(['name' => $pn]);
+                        $planIds[] = $p->id;
+                    }
+                    $project->plans()->sync($planIds);
+                }
+
+                // Sync Sources
+                $rawSources = $data['Sources'] ?? ($data['sources'] ?? '');
+                if (!empty($rawSources)) {
+                    $sourceNames = array_map('trim', explode(',', $rawSources));
+                    $sourceIds = [];
+                    foreach($sourceNames as $sn) {
+                        $s = Source::firstOrCreate(['name' => $sn]);
+                        $sourceIds[] = $s->id;
+                    }
+                    $project->sources()->sync($sourceIds);
+                }
+
+                // Sync Developers
+                $rawDevs = $data['Assigned Developers'] ?? ($data['developers'] ?? '');
+                if (!empty($rawDevs)) {
+                    $devEntries = array_map('trim', explode(',', $rawDevs));
+                    $devIds = [];
+                    foreach($devEntries as $de) {
+                        $name = trim(explode('(', $de)[0]);
+                        $dev = Developer::where('name', 'like', "%$name%")->first();
+                        if ($dev) {
+                            $devIds[] = $dev->id;
+                        }
+                    }
+                    $project->developers()->sync($devIds);
+                }
+
+                // Sync Sales Persons
+                $rawSales = $data['Sales Persons'] ?? ($data['sales_persons'] ?? '');
+                if (!empty($rawSales)) {
+                    $salesEntries = array_map('trim', explode(',', $rawSales));
+                    $saleIds = [];
+                    foreach($salesEntries as $se) {
+                        $name = trim(explode('(', $se)[0]);
+                        $sale = Sale::where('name', 'like', "%$name%")->first();
+                        if ($sale) {
+                            $saleIds[] = $sale->id;
+                        }
+                    }
+                    $project->salesPersons()->sync($saleIds);
+                }
+
+                $successCount++;
+            }
+            DB::commit();
+            fclose($handle);
+            
+            $msg = "Imported $successCount of $rowCount projects successfully.";
+            if (!empty($errorsList)) {
+                $msg .= " Note: " . implode(' ', $errorsList);
+            }
+            return back()->with('success', $msg);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            fclose($handle);
+            return back()->with('error', 'Error at row ' . ($rowCount + 1) . ': ' . $e->getMessage());
+        }
     }
 }
