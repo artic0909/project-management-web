@@ -79,6 +79,19 @@
         <i class="bi bi-wallet2"></i><span>Payments</span>
       </a>
 
+      @if($guard === 'admin')
+      <a class="nav-item {{ request()->routeIs('admin.invoices*') ? 'active' : '' }}"
+        href="{{ route('admin.invoices.index') }}">
+        <i class="bi bi-receipt"></i><span>Invoices</span>
+        <span class="nav-count">{{ $invoiceCount }}</span>
+      </a>
+      @elseif($guard === 'sale')
+      <a class="nav-item {{ request()->routeIs('sale.invoices*') ? 'active' : '' }}"
+        href="{{ route('sale.invoices.index') }}">
+        <i class="bi bi-receipt"></i><span>Invoices</span>
+      </a>
+      @endif
+
 
       <a class="nav-item {{ request()->routeIs($routePrefix . 'projects*') ? 'active' : '' }}"
         href="{{ route($routePrefix . 'projects.index') }}">

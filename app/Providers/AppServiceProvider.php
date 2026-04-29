@@ -56,6 +56,7 @@ class AppServiceProvider extends ServiceProvider
             $meetingCount = 0;
             $supportCount = 0;
             $inquiryCount = 0;
+            $invoiceCount = 0;
 
 
             if (auth()->guard('admin')->check()) {
@@ -66,6 +67,7 @@ class AppServiceProvider extends ServiceProvider
                 $meetingCount = \App\Models\Meeting::where('status', 'pending')->count();
                 $supportCount = \App\Models\Support::where('status', '!=', 'resolved')->count();
                 $inquiryCount = \App\Models\OrderInquiry::count();
+                $invoiceCount = \App\Models\Invoice::count();
             } elseif (auth()->guard('sale')->check()) {
                 $saleId = auth()->guard('sale')->id();
                 $saleType = \App\Models\Sale::class;
@@ -136,6 +138,7 @@ class AppServiceProvider extends ServiceProvider
                 'taskCount' => $taskCount,
                 'supportCount' => $supportCount,
                 'inquiryCount' => $inquiryCount,
+                'invoiceCount' => $invoiceCount,
             ]);
         });
     }

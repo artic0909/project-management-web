@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\SourceController;
 use App\Http\Controllers\Admin\NoteController;
 use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\StatusController;
+use App\Http\Controllers\Admin\InvoiceController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -144,6 +145,11 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
     Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
     Route::get('/payments/{id}/invoice', [PaymentController::class, 'invoice'])->name('payments.invoice');
+
+    // Invoices
+    Route::resource('invoices', InvoiceController::class);
+    Route::get('/invoices/{id}/copy', [InvoiceController::class, 'copy'])->name('invoices.copy');
+    Route::get('/invoices/create/{order_id?}', [InvoiceController::class, 'create'])->name('invoices.create_with_order');
 
     // Admin Notes
     Route::get('/notes', [NoteController::class, 'index'])->name('notes.index');

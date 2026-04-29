@@ -89,6 +89,14 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
 
     // Developer
     Route::get('/add-developer', [DeveloperController::class, 'index'])->name('developer');
+
+    // Invoices
+    Route::resource('invoices', \App\Http\Controllers\Sale\InvoiceController::class);
+    Route::get('/invoices/{id}/copy', [\App\Http\Controllers\Sale\InvoiceController::class, 'copy'])->name('invoices.copy');
+    Route::get('/invoices/create/{order_id?}', [\App\Http\Controllers\Sale\InvoiceController::class, 'create'])->name('invoices.create_with_order');
+
+    // Developer (Duplicate line removed)
+    // Route::get('/add-developer', [DeveloperController::class, 'index'])->name('developer');
     Route::get('/developer/create', [DeveloperController::class, 'create'])->name('developer.create');
     Route::post('/developer/store', [DeveloperController::class, 'store'])->name('developer.store');
     Route::get('/developer/show/{id}', [DeveloperController::class, 'show'])->name('developer.show');

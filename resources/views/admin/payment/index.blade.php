@@ -13,9 +13,9 @@
                     <p class="page-desc">Audit trail for all payments received across all orders</p>
                 </div>
                 <div class="header-actions">
-                    <button type="button" class="btn-primary-solid sm">
+                    <a href="{{ route($routePrefix . '.invoices.create') }}" type="button" class="btn-primary-solid sm">
                         <i class="bi bi-plus-lg"></i> Create Invoice
-                    </button>
+</a>
                     @if(auth()->guard('admin')->check())
                     <button type="button" class="btn-primary-solid sm" onclick="exportPayments()">
                         <i class="bi bi-file-earmark-spreadsheet"></i> Export
