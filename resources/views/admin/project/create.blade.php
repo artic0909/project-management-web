@@ -4,6 +4,10 @@
 
 @section('content')
 
+@include('admin.project._multiselect_assets')
+@include('admin.project._order_select_assets')
+@include('admin.project._phone_email_assets')
+
 <main class="page-area" id="pageArea">
     <div class="page" id="page-add-project">
 
@@ -51,9 +55,9 @@
                                         <div class="os-trigger" onclick="toggleOs()">
                                             <div class="os-selected-text">
                                                 @if(isset($order))
-                                                    {{ $order->id }} - {{ $order->company_name }}
+                                                    {{ $order->company_name }} <span style="color:var(--t4);font-weight:400;margin-left:8px;">({{ $order->domain_name }})</span>
                                                 @else
-                                                    <span class="os-placeholder">— Select Order (Required) —</span>
+                                                    <span class="os-placeholder">— Select Order (Optional) —</span>
                                                 @endif
                                             </div>
                                             <i class="bi bi-chevron-down ms-arrow"></i>
@@ -102,14 +106,32 @@
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Email ID(s) <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <div id="add-email-list">
-                                        {{-- Multi-email rows --}}
+                                        @if(isset($order) && !empty($order->emails))
+                                            @php $emails = is_array($order->emails) ? $order->emails : json_decode($order->emails, true); @endphp
+                                            @if(is_array($emails))
+                                                @foreach($emails as $email)
+                                                    <script>document.addEventListener('DOMContentLoaded', () => { if(typeof addEmailRow === 'function') addEmailRow('add-email-list', '{{ $email }}'); });</script>
+                                                @endforeach
+                                            @endif
+                                        @endif
                                     </div>
                                     @error('email.*')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Phone Number(s) <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <div id="add-phone-list">
-                                        {{-- Multi-phone rows --}}
+                                        @if(isset($order) && !empty($order->phones))
+                                            @php $phones = is_array($order->phones) ? $order->phones : json_decode($order->phones, true); @endphp
+                                            @if(is_array($phones))
+                                                @foreach($phones as $phone)
+                                                    @php 
+                                                        $num = is_array($phone) ? ($phone['number'] ?? '') : $phone;
+                                                        $code = is_array($phone) ? ($phone['code_idx'] ?? '') : '';
+                                                    @endphp
+                                                    <script>document.addEventListener('DOMContentLoaded', () => { if(typeof addPhoneRow === 'function') addPhoneRow('add-phone-list', '{{ $num }}', '{{ $code }}'); });</script>
+                                                @endforeach
+                                            @endif
+                                        @endif
                                     </div>
                                     @error('phone.*')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
@@ -370,6 +392,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @if($routePrefix === 'admin')
                             <div class="form-row">
                                 <label class="form-lbl">Assign to Developers</label>
                                 <div class="ms-wrap" id="devAssignWrap">
@@ -407,6 +430,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
                         </div>
                     </div>
 
@@ -419,6 +443,7 @@
                         {{-- Handle hidden fields for base model if not visible on form --}}
                         <div id="hiddenServiceWrap"></div>
                         <div id="hiddenSourceWrap"></div>
+                        <div id="hiddenPlanWrap"></div>
 
                         <button type="submit" class="btn-primary-solid" style="padding:12px;justify-content:center;" onclick="document.getElementById('projectNameFull').value = document.querySelector('input[name=\'domain_name\']').value">
                             <i class="bi bi-plus-lg"></i> Create Project
@@ -454,13 +479,17 @@
         
         // Auto-select and pre-fill if order is present
         @if($order)
-            selectOrder('{{ $order->id }}');
+            setTimeout(() => {
+                if (typeof selectOrder === 'function') {
+                    console.log('Auto-selecting order:', '{{ $order->id }}');
+                    selectOrder('{{ $order->id }}');
+                } else {
+                    console.warn('selectOrder function not found during auto-select');
+                }
+            }, 1000);
         @endif
     });
 </script>
 
-@include('admin.project._multiselect_assets')
-@include('admin.project._order_select_assets')
-@include('admin.project._phone_email_assets')
 @include('admin.project._validation_assets')
 @endsection

@@ -27,35 +27,36 @@ class ProjectController extends Controller
         if ($request->filled('q')) {
             $q = $request->q;
             $cleanId = ltrim(str_ireplace('#PRJ-', '', $q), '0');
-            if (empty($cleanId)) $cleanId = $q;
+            if (empty($cleanId))
+                $cleanId = $q;
 
-            $query->where(function($qq) use ($q, $cleanId) {
+            $query->where(function ($qq) use ($q, $cleanId) {
                 $qq->where('id', 'LIKE', "%$cleanId%")
-                   ->orWhere('project_name', 'like', "%$q%")
-                   ->orWhere('client_name', 'like', "%$q%")
-                   ->orWhere('company_name', 'like', "%$q%")
-                   ->orWhere('domain_name', 'like', "%$q%")
-                   ->orWhere('emails', 'like', "%$q%")
-                   ->orWhere('phones', 'like', "%$q%")
-                   ->orWhere('cms_platform', 'like', "%$q%")
-                   ->orWhereHas('projectStatus', function($s) use ($q) {
-                       $s->where('name', 'like', "%$q%");
-                   })
-                   ->orWhereHas('services', function($s) use ($q) {
-                       $s->where('services.name', 'like', "%$q%");
-                   })
-                   ->orWhereHas('developers', function($s) use ($q) {
-                       $s->where('developers.name', 'like', "%$q%")
-                         ->orWhere('developers.email', 'like', "%$q%");
-                   })
-                   ->orWhereHas('salesPersons', function($s) use ($q) {
-                       $s->where('sales.name', 'like', "%$q%")
-                         ->orWhere('sales.email', 'like', "%$q%");
-                   })
-                   ->orWhereHasMorph('createdBy', [\App\Models\User::class, \App\Models\Sale::class], function($s) use ($q) {
-                       $s->where('name', 'LIKE', "%$q%")
-                         ->orWhere('email', 'LIKE', "%$q%");
-                   });
+                    ->orWhere('project_name', 'like', "%$q%")
+                    ->orWhere('client_name', 'like', "%$q%")
+                    ->orWhere('company_name', 'like', "%$q%")
+                    ->orWhere('domain_name', 'like', "%$q%")
+                    ->orWhere('emails', 'like', "%$q%")
+                    ->orWhere('phones', 'like', "%$q%")
+                    ->orWhere('cms_platform', 'like', "%$q%")
+                    ->orWhereHas('projectStatus', function ($s) use ($q) {
+                        $s->where('name', 'like', "%$q%");
+                    })
+                    ->orWhereHas('services', function ($s) use ($q) {
+                        $s->where('services.name', 'like', "%$q%");
+                    })
+                    ->orWhereHas('developers', function ($s) use ($q) {
+                        $s->where('developers.name', 'like', "%$q%")
+                            ->orWhere('developers.email', 'like', "%$q%");
+                    })
+                    ->orWhereHas('salesPersons', function ($s) use ($q) {
+                        $s->where('sales.name', 'like', "%$q%")
+                            ->orWhere('sales.email', 'like', "%$q%");
+                    })
+                    ->orWhereHasMorph('createdBy', [\App\Models\User::class, \App\Models\Sale::class], function ($s) use ($q) {
+                        $s->where('name', 'LIKE', "%$q%")
+                            ->orWhere('email', 'LIKE', "%$q%");
+                    });
             });
         }
 
@@ -74,22 +75,22 @@ class ProjectController extends Controller
             $query->where('payment_status_id', $request->payment_status_id);
         }
         if ($request->filled('assigned_to')) {
-            $query->whereHas('developers', function($q) use ($request) {
+            $query->whereHas('developers', function ($q) use ($request) {
                 $q->where('assigned_to', $request->assigned_to);
             });
         }
         if ($request->filled('service_id')) {
-            $query->whereHas('services', function($q) use ($request) {
+            $query->whereHas('services', function ($q) use ($request) {
                 $q->where('services.id', $request->service_id);
             });
         }
         if ($request->filled('source_id')) {
-            $query->whereHas('sources', function($q) use ($request) {
+            $query->whereHas('sources', function ($q) use ($request) {
                 $q->where('sources.id', $request->source_id);
             });
         }
         if ($request->filled('sales_person_id')) {
-            $query->whereHas('salesPersons', function($q) use ($request) {
+            $query->whereHas('salesPersons', function ($q) use ($request) {
                 $q->where('sale_id', $request->sales_person_id);
             });
         }
@@ -102,19 +103,19 @@ class ProjectController extends Controller
         }
 
         $projects = $query->latest()->paginate($perPage)->withQueryString();
-        
+
         // Accurate Counts for KPI Cards (dynamically reflect filters)
         $totalProjects = (clone $aggQuery)->count();
-        
-        $activeProjects = (clone $aggQuery)->whereHas('projectStatus', function($q) {
+
+        $activeProjects = (clone $aggQuery)->whereHas('projectStatus', function ($q) {
             $q->where('name', 'development');
         })->count();
 
-        $completedProjects = (clone $aggQuery)->whereHas('projectStatus', function($q) {
+        $completedProjects = (clone $aggQuery)->whereHas('projectStatus', function ($q) {
             $q->where('name', 'complete');
         })->count();
 
-        $onHoldProjects = (clone $aggQuery)->whereHas('projectStatus', function($q) {
+        $onHoldProjects = (clone $aggQuery)->whereHas('projectStatus', function ($q) {
             $q->where('name', 'on hold');
         })->count();
 
@@ -126,10 +127,10 @@ class ProjectController extends Controller
 
         $routePrefix = 'admin';
         return view('admin.project.index', compact(
-            'projects', 
-            'totalProjects', 
-            'activeProjects', 
-            'completedProjects', 
+            'projects',
+            'totalProjects',
+            'activeProjects',
+            'completedProjects',
             'onHoldProjects',
             'statuses',
             'allDevelopers',
@@ -158,9 +159,36 @@ class ProjectController extends Controller
         $plans = \App\Models\Plan::all();
         $services = Service::all();
         $sources = Source::all();
-        
+
+        $orderData = $orders->map(function ($o) {
+            return [
+                'id' => $o->id,
+                'company_name' => $o->company_name,
+                'client_name' => $o->client_name,
+                'emails' => is_array($o->emails) ? array_values($o->emails) : [],
+                'phones' => is_array($o->phones) ? array_values($o->phones) : [],
+                'domain_name' => $o->domain_name,
+                'state' => $o->state,
+                'city' => $o->city,
+                'zip_code' => $o->zip_code,
+                'full_address' => $o->full_address,
+                'order_value' => $o->order_value,
+                'advance_payment' => $o->advance_payment,
+                'delivery_date' => $o->delivery_date ? $o->delivery_date->format('Y-m-d') : null,
+                'created_at_val' => $o->created_at ? $o->created_at->format('Y-m-d') : null,
+                'plan_name' => $o->plan_name,
+                'mkt_username' => $o->mkt_username,
+                'mkt_password' => $o->mkt_password,
+                'mkt_starting_date' => $o->mkt_starting_date ? \Carbon\Carbon::parse($o->mkt_starting_date)->format('Y-m-d') : null,
+                'service_ids' => $o->services->pluck('id')->toArray(),
+                'source_ids' => $o->sources->pluck('id')->toArray(),
+                'plan_ids' => $o->plans->pluck('id')->toArray(),
+                'sales_person_ids' => $o->sales->pluck('id')->toArray(),
+            ];
+        })->values()->toArray();
+
         $routePrefix = 'admin';
-        return view('admin.project.create', compact('order', 'orders', 'developers', 'salesPersons', 'services', 'sources', 'statuses', 'plans', 'routePrefix'));
+        return view('admin.project.create', compact('order', 'orders', 'orderData', 'developers', 'salesPersons', 'services', 'sources', 'statuses', 'plans', 'routePrefix'));
     }
 
     public function store(Request $request)
@@ -215,7 +243,7 @@ class ProjectController extends Controller
 
         $data['created_by'] = Auth::id();
         $data['created_by_type'] = get_class(Auth::user());
-        
+
         // Ensure project_name and client_name are set
         $data['project_name'] = $request->domain_name;
         $data['client_name'] = trim($request->first_name . ' ' . $request->last_name);
@@ -231,15 +259,15 @@ class ProjectController extends Controller
         $project = Project::create($data);
 
         if ($request->has('service_ids')) {
-            $validServiceIds = \App\Models\Service::whereIn('id', (array)$request->service_ids)->pluck('id')->toArray();
+            $validServiceIds = \App\Models\Service::whereIn('id', (array) $request->service_ids)->pluck('id')->toArray();
             $project->services()->sync($validServiceIds);
         }
         if ($request->has('plan_ids')) {
-            $validPlanIds = \App\Models\Plan::whereIn('id', (array)$request->plan_ids)->pluck('id')->toArray();
+            $validPlanIds = \App\Models\Plan::whereIn('id', (array) $request->plan_ids)->pluck('id')->toArray();
             $project->plans()->sync($validPlanIds);
         }
         if ($request->has('source_ids')) {
-            $validSourceIds = \App\Models\Source::whereIn('id', (array)$request->source_ids)->pluck('id')->toArray();
+            $validSourceIds = \App\Models\Source::whereIn('id', (array) $request->source_ids)->pluck('id')->toArray();
             $project->sources()->sync($validSourceIds);
         }
 
@@ -258,7 +286,7 @@ class ProjectController extends Controller
         }
 
         if ($request->has('sales_person_ids')) {
-            $validSalesIds = \App\Models\Sale::whereIn('id', (array)$request->sales_person_ids)->pluck('id')->toArray();
+            $validSalesIds = \App\Models\Sale::whereIn('id', (array) $request->sales_person_ids)->pluck('id')->toArray();
             $project->salesPersons()->sync($validSalesIds);
         }
 
@@ -276,7 +304,7 @@ class ProjectController extends Controller
     public function quickUpdate(Request $request, $id)
     {
         $project = Project::findOrFail($id);
-        
+
         // Update Statuses
         $project->update([
             'project_status_id' => $request->project_status_id,
@@ -308,15 +336,42 @@ class ProjectController extends Controller
         $plans = \App\Models\Plan::all();
         $services = Service::all();
         $sources = Source::all();
-        
+
+        $orderData = $orders->map(function ($o) {
+            return [
+                'id' => $o->id,
+                'company_name' => $o->company_name,
+                'client_name' => $o->client_name,
+                'emails' => is_array($o->emails) ? array_values($o->emails) : [],
+                'phones' => is_array($o->phones) ? array_values($o->phones) : [],
+                'domain_name' => $o->domain_name,
+                'state' => $o->state,
+                'city' => $o->city,
+                'zip_code' => $o->zip_code,
+                'full_address' => $o->full_address,
+                'order_value' => $o->order_value,
+                'advance_payment' => $o->advance_payment,
+                'delivery_date' => $o->delivery_date ? $o->delivery_date->format('Y-m-d') : null,
+                'created_at_val' => $o->created_at ? $o->created_at->format('Y-m-d') : null,
+                'plan_name' => $o->plan_name,
+                'mkt_username' => $o->mkt_username,
+                'mkt_password' => $o->mkt_password,
+                'mkt_starting_date' => $o->mkt_starting_date ? \Carbon\Carbon::parse($o->mkt_starting_date)->format('Y-m-d') : null,
+                'service_ids' => $o->services->pluck('id')->toArray(),
+                'source_ids' => $o->sources->pluck('id')->toArray(),
+                'plan_ids' => $o->plans->pluck('id')->toArray(),
+                'sales_person_ids' => $o->sales->pluck('id')->toArray(),
+            ];
+        })->values()->toArray();
+
         $routePrefix = 'admin';
-        return view('admin.project.edit', compact('project', 'orders', 'developers', 'salesPersons', 'services', 'sources', 'statuses', 'plans', 'routePrefix'));
+        return view('admin.project.edit', compact('project', 'orders', 'orderData', 'developers', 'salesPersons', 'services', 'sources', 'statuses', 'plans', 'routePrefix'));
     }
 
     public function update(Request $request, $id)
     {
         $project = Project::findOrFail($id);
-        
+
         $request->validate([
             'order_id' => 'required|exists:orders,id',
             'first_name' => 'required|string|max:255',
@@ -347,7 +402,7 @@ class ProjectController extends Controller
         ]);
 
         $data = $request->all();
-        
+
         // Handle Multi-Email
         $data['emails'] = $request->email ?? [];
 
@@ -376,19 +431,19 @@ class ProjectController extends Controller
         if ($request->cms_platform === 'Others' && $request->cms_custom) {
             $data['cms_platform'] = $request->cms_custom;
         }
-        
+
         $project->update($data);
 
         if ($request->has('service_ids')) {
-            $validServiceIds = \App\Models\Service::whereIn('id', (array)$request->service_ids)->pluck('id')->toArray();
+            $validServiceIds = \App\Models\Service::whereIn('id', (array) $request->service_ids)->pluck('id')->toArray();
             $project->services()->sync($validServiceIds);
         }
         if ($request->has('plan_ids')) {
-            $validPlanIds = \App\Models\Plan::whereIn('id', (array)$request->plan_ids)->pluck('id')->toArray();
+            $validPlanIds = \App\Models\Plan::whereIn('id', (array) $request->plan_ids)->pluck('id')->toArray();
             $project->plans()->sync($validPlanIds);
         }
         if ($request->has('source_ids')) {
-            $validSourceIds = \App\Models\Source::whereIn('id', (array)$request->source_ids)->pluck('id')->toArray();
+            $validSourceIds = \App\Models\Source::whereIn('id', (array) $request->source_ids)->pluck('id')->toArray();
             $project->sources()->sync($validSourceIds);
         }
 
@@ -407,7 +462,7 @@ class ProjectController extends Controller
         }
 
         if ($request->has('sales_person_ids')) {
-            $validSalesIds = \App\Models\Sale::whereIn('id', (array)$request->sales_person_ids)->pluck('id')->toArray();
+            $validSalesIds = \App\Models\Sale::whereIn('id', (array) $request->sales_person_ids)->pluck('id')->toArray();
             $project->salesPersons()->sync($validSalesIds);
         }
 
@@ -441,35 +496,36 @@ class ProjectController extends Controller
         if ($request->filled('q')) {
             $q = $request->q;
             $cleanId = ltrim(str_ireplace('#PRJ-', '', $q), '0');
-            if (empty($cleanId)) $cleanId = $q;
+            if (empty($cleanId))
+                $cleanId = $q;
 
-            $query->where(function($qq) use ($q, $cleanId) {
+            $query->where(function ($qq) use ($q, $cleanId) {
                 $qq->where('id', 'LIKE', "%$cleanId%")
-                   ->orWhere('project_name', 'like', "%$q%")
-                   ->orWhere('client_name', 'like', "%$q%")
-                   ->orWhere('company_name', 'like', "%$q%")
-                   ->orWhere('domain_name', 'like', "%$q%")
-                   ->orWhere('emails', 'like', "%$q%")
-                   ->orWhere('phones', 'like', "%$q%")
-                   ->orWhere('cms_platform', 'like', "%$q%")
-                   ->orWhereHas('projectStatus', function($s) use ($q) {
-                       $s->where('name', 'like', "%$q%");
-                   })
-                   ->orWhereHas('services', function($s) use ($q) {
-                       $s->where('services.name', 'like', "%$q%");
-                   })
-                   ->orWhereHas('developers', function($s) use ($q) {
-                       $s->where('developers.name', 'like', "%$q%")
-                         ->orWhere('developers.email', 'like', "%$q%");
-                   })
-                   ->orWhereHas('salesPersons', function($s) use ($q) {
-                       $s->where('sales.name', 'like', "%$q%")
-                         ->orWhere('sales.email', 'like', "%$q%");
-                   })
-                   ->orWhereHasMorph('createdBy', [\App\Models\User::class, \App\Models\Sale::class], function($s) use ($q) {
-                       $s->where('name', 'LIKE', "%$q%")
-                         ->orWhere('email', 'LIKE', "%$q%");
-                   });
+                    ->orWhere('project_name', 'like', "%$q%")
+                    ->orWhere('client_name', 'like', "%$q%")
+                    ->orWhere('company_name', 'like', "%$q%")
+                    ->orWhere('domain_name', 'like', "%$q%")
+                    ->orWhere('emails', 'like', "%$q%")
+                    ->orWhere('phones', 'like', "%$q%")
+                    ->orWhere('cms_platform', 'like', "%$q%")
+                    ->orWhereHas('projectStatus', function ($s) use ($q) {
+                        $s->where('name', 'like', "%$q%");
+                    })
+                    ->orWhereHas('services', function ($s) use ($q) {
+                        $s->where('services.name', 'like', "%$q%");
+                    })
+                    ->orWhereHas('developers', function ($s) use ($q) {
+                        $s->where('developers.name', 'like', "%$q%")
+                            ->orWhere('developers.email', 'like', "%$q%");
+                    })
+                    ->orWhereHas('salesPersons', function ($s) use ($q) {
+                        $s->where('sales.name', 'like', "%$q%")
+                            ->orWhere('sales.email', 'like', "%$q%");
+                    })
+                    ->orWhereHasMorph('createdBy', [\App\Models\User::class, \App\Models\Sale::class], function ($s) use ($q) {
+                        $s->where('name', 'LIKE', "%$q%")
+                            ->orWhere('email', 'LIKE', "%$q%");
+                    });
             });
         }
 
@@ -488,22 +544,22 @@ class ProjectController extends Controller
             $query->where('payment_status_id', $request->payment_status_id);
         }
         if ($request->filled('assigned_to')) {
-            $query->whereHas('developers', function($q) use ($request) {
+            $query->whereHas('developers', function ($q) use ($request) {
                 $q->where('assigned_to', $request->assigned_to);
             });
         }
         if ($request->filled('service_id')) {
-            $query->whereHas('services', function($q) use ($request) {
+            $query->whereHas('services', function ($q) use ($request) {
                 $q->where('services.id', $request->service_id);
             });
         }
         if ($request->filled('source_id')) {
-            $query->whereHas('sources', function($q) use ($request) {
+            $query->whereHas('sources', function ($q) use ($request) {
                 $q->where('sources.id', $request->source_id);
             });
         }
         if ($request->filled('sales_person_id')) {
-            $query->whereHas('salesPersons', function($q) use ($request) {
+            $query->whereHas('salesPersons', function ($q) use ($request) {
                 $q->where('sale_id', $request->sales_person_id);
             });
         }
@@ -512,17 +568,17 @@ class ProjectController extends Controller
 
         $filename = "projects_export_" . date('Y-m-d_H-i-s') . ".csv";
         $headers = [
-            "Content-type"        => "text/csv",
+            "Content-type" => "text/csv",
             "Content-Disposition" => "attachment; filename=$filename",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
         ];
 
-        $callback = function() use($projects) {
+        $callback = function () use ($projects) {
             $file = fopen('php://output', 'w');
             fputs($file, "\xEF\xBB\xBF");
-            
+
             fputcsv($file, [
                 'Project ID',
                 'Project Code',
@@ -569,18 +625,18 @@ class ProjectController extends Controller
                 'Created At'
             ]);
 
-            $codes = [0=>'+93',1=>'+355',2=>'+213',3=>'+376',4=>'+244',5=>'+54',6=>'+61',7=>'+43',8=>'+880',9=>'+32',10=>'+55',11=>'+1',12=>'+86',13=>'+57',14=>'+45',15=>'+20',16=>'+33',17=>'+49',18=>'+233',19=>'+30',20=>'+91',21=>'+62',22=>'+98',23=>'+964',24=>'+353',25=>'+972',26=>'+39',27=>'+81',28=>'+962',29=>'+254',30=>'+965',31=>'+961',32=>'+60',33=>'+52',34=>'+212',35=>'+977',36=>'+31',37=>'+64',38=>'+234',39=>'+47',40=>'+968',41=>'+92',42=>'+63',43=>'+48',44=>'+351',45=>'+974',46=>'+7',47=>'+966',48=>'+65',49=>'+27',50=>'+34',51=>'+94',52=>'+46',53=>'+41',54=>'+886',55=>'+66',56=>'+90',57=>'+971',58=>'+44',59=>'+1',60=>'+84',61=>'+260',62=>'+263'];
+            $codes = [0 => '+93', 1 => '+355', 2 => '+213', 3 => '+376', 4 => '+244', 5 => '+54', 6 => '+61', 7 => '+43', 8 => '+880', 9 => '+32', 10 => '+55', 11 => '+1', 12 => '+86', 13 => '+57', 14 => '+45', 15 => '+20', 16 => '+33', 17 => '+49', 18 => '+233', 19 => '+30', 20 => '+91', 21 => '+62', 22 => '+98', 23 => '+964', 24 => '+353', 25 => '+972', 26 => '+39', 27 => '+81', 28 => '+962', 29 => '+254', 30 => '+965', 31 => '+961', 32 => '+60', 33 => '+52', 34 => '+212', 35 => '+977', 36 => '+31', 37 => '+64', 38 => '+234', 39 => '+47', 40 => '+968', 41 => '+92', 42 => '+63', 43 => '+48', 44 => '+351', 45 => '+974', 46 => '+7', 47 => '+966', 48 => '+65', 49 => '+27', 50 => '+34', 51 => '+94', 52 => '+46', 53 => '+41', 54 => '+886', 55 => '+66', 56 => '+90', 57 => '+971', 58 => '+44', 59 => '+1', 60 => '+84', 61 => '+260', 62 => '+263'];
 
             foreach ($projects as $project) {
                 // Emails
                 $emailsDecoded = is_string($project->emails) ? json_decode($project->emails, true) : $project->emails;
                 $emailsStr = is_array($emailsDecoded) ? implode(', ', $emailsDecoded) : ($emailsDecoded ?? '');
-                
+
                 // Phones
                 $phoneList = is_string($project->phones) ? json_decode($project->phones, true) : $project->phones;
                 $phoneList = is_array($phoneList) ? $phoneList : [];
                 $fullPhones = [];
-                foreach($phoneList as $p) {
+                foreach ($phoneList as $p) {
                     if (is_array($p) && isset($p['number'])) {
                         $code = $codes[$p['code_idx'] ?? null] ?? '';
                         $fullPhones[] = $code . ($code ? ' ' : '') . $p['number'];
@@ -592,27 +648,27 @@ class ProjectController extends Controller
                 if (!empty($phonesStr)) {
                     $phonesStr = "\t" . $phonesStr;
                 }
-                
+
                 // Services, Plans, Sources
                 $servicesStr = $project->services->pluck('name')->implode(', ');
                 $plansStr = $project->plans ? $project->plans->pluck('name')->implode(', ') : '';
                 $sourcesStr = $project->sources->pluck('name')->implode(', ');
-                
+
                 // Statuses
                 $projStatus = $project->projectStatus->name ?? $project->project_status ?? '';
                 $payStatus = $project->paymentStatus->name ?? $project->payment_status ?? '';
 
                 // People
                 $createdBy = $project->createdBy ? $project->createdBy->name . ' (' . $project->createdBy->email . ')' : 'System';
-                
+
                 $devs = [];
-                foreach($project->developers as $dev) {
+                foreach ($project->developers as $dev) {
                     $devs[] = $dev->name . ' (' . $dev->email . ')';
                 }
                 $devStr = implode(', ', $devs);
 
                 $sales = [];
-                foreach($project->salesPersons as $sale) {
+                foreach ($project->salesPersons as $sale) {
                     $sales[] = $sale->name . ' (' . $sale->email . ')';
                 }
                 $salesStr = implode(', ', $sales);
@@ -691,7 +747,7 @@ class ProjectController extends Controller
         }
 
         // Clean headers (remove BOM/white-space)
-        $header = array_map(function($h) {
+        $header = array_map(function ($h) {
             return trim(preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $h));
         }, $header);
 
@@ -702,11 +758,12 @@ class ProjectController extends Controller
         DB::beginTransaction();
         try {
             while (($row = fgetcsv($handle)) !== false) {
-                if (empty(array_filter($row))) continue;
+                if (empty(array_filter($row)))
+                    continue;
 
                 // Map headers to row data
                 $data = [];
-                foreach($header as $idx => $label) {
+                foreach ($header as $idx => $label) {
                     if (isset($row[$idx])) {
                         $data[$label] = $row[$idx];
                     }
@@ -724,7 +781,7 @@ class ProjectController extends Controller
                 $clientName = $data['Client Name'] ?? ($data['client_name'] ?? ($data['Client'] ?? ''));
                 $firstName = $data['First Name'] ?? ($data['first_name'] ?? '');
                 $lastName = $data['Last Name'] ?? ($data['last_name'] ?? '');
-                
+
                 $emailsStr = $data['Emails'] ?? ($data['emails'] ?? ($data['Email'] ?? ($data['email'] ?? '')));
                 $emails = !empty($emailsStr) ? array_filter(array_map('trim', explode(',', $emailsStr))) : [];
 
@@ -732,7 +789,7 @@ class ProjectController extends Controller
                 $phonesArray = [];
                 if (!empty($phonesRaw)) {
                     $phonesList = explode(',', $phonesRaw);
-                    foreach($phonesList as $p) {
+                    foreach ($phonesList as $p) {
                         $p = trim($p);
                         if (!empty($p)) {
                             $num = preg_replace('/[^0-9+]/', '', $p);
@@ -809,7 +866,7 @@ class ProjectController extends Controller
                 if (!empty($rawServices)) {
                     $serviceNames = array_map('trim', explode(',', $rawServices));
                     $serviceIds = [];
-                    foreach($serviceNames as $sn) {
+                    foreach ($serviceNames as $sn) {
                         $s = Service::firstOrCreate(['name' => $sn]);
                         $serviceIds[] = $s->id;
                     }
@@ -821,7 +878,7 @@ class ProjectController extends Controller
                 if (!empty($rawPlans)) {
                     $planNames = array_map('trim', explode(',', $rawPlans));
                     $planIds = [];
-                    foreach($planNames as $pn) {
+                    foreach ($planNames as $pn) {
                         $p = Plan::firstOrCreate(['name' => $pn]);
                         $planIds[] = $p->id;
                     }
@@ -833,7 +890,7 @@ class ProjectController extends Controller
                 if (!empty($rawSources)) {
                     $sourceNames = array_map('trim', explode(',', $rawSources));
                     $sourceIds = [];
-                    foreach($sourceNames as $sn) {
+                    foreach ($sourceNames as $sn) {
                         $s = Source::firstOrCreate(['name' => $sn]);
                         $sourceIds[] = $s->id;
                     }
@@ -845,7 +902,7 @@ class ProjectController extends Controller
                 if (!empty($rawDevs)) {
                     $devEntries = array_map('trim', explode(',', $rawDevs));
                     $devIds = [];
-                    foreach($devEntries as $de) {
+                    foreach ($devEntries as $de) {
                         $name = trim(explode('(', $de)[0]);
                         $dev = Developer::where('name', 'like', "%$name%")->first();
                         if ($dev) {
@@ -860,7 +917,7 @@ class ProjectController extends Controller
                 if (!empty($rawSales)) {
                     $salesEntries = array_map('trim', explode(',', $rawSales));
                     $saleIds = [];
-                    foreach($salesEntries as $se) {
+                    foreach ($salesEntries as $se) {
                         $name = trim(explode('(', $se)[0]);
                         $sale = Sale::where('name', 'like', "%$name%")->first();
                         if ($sale) {
@@ -874,7 +931,7 @@ class ProjectController extends Controller
             }
             DB::commit();
             fclose($handle);
-            
+
             $msg = "Imported $successCount of $rowCount projects successfully.";
             if (!empty($errorsList)) {
                 $msg .= " Note: " . implode(' ', $errorsList);

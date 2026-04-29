@@ -258,26 +258,36 @@
             }
         }
 
-        // Handle Hidden Services/Sources (if they exist)
-        ['hiddenServiceWrap', 'hiddenSourceWrap'].forEach(id => {
+        // Handle Hidden Services/Sources/Plans (if they exist)
+        ['hiddenServiceWrap', 'hiddenSourceWrap', 'hiddenPlanWrap'].forEach(id => {
             const wrap = document.getElementById(id);
             if (wrap) {
                 wrap.innerHTML = '';
-                const type = id.includes('Service') ? 'service_ids' : 'source_ids';
-                if (order[type] && Array.isArray(order[type])) {
-                    order[type].filter(val => val > 0).forEach(val => {
-                        const inp = document.createElement('input');
-                        inp.type = 'hidden';
-                        inp.name = type + '[]';
-                        inp.value = val;
-                        wrap.appendChild(inp);
+                let type = '';
+                if (id.includes('Service')) type = 'service_ids';
+                else if (id.includes('Source')) type = 'source_ids';
+                else if (id.includes('Plan')) type = 'plan_ids';
+
+                const data = order[type] || [];
+                if (Array.isArray(data)) {
+                    data.forEach(val => {
+                        if (val) {
+                            const inp = document.createElement('input');
+                            inp.type = 'hidden';
+                            inp.name = type + '[]';
+                            inp.value = val;
+                            wrap.appendChild(inp);
+                        }
                     });
                 }
             }
         });
 
-        // Emails & Phones (Special handle for multi-add)
+        // Prefill Emails & Phones
+        console.log('Project Create: Prefilling emails', order.emails);
         fillMultiContact('add-email-list', order.emails, 'email');
+
+        console.log('Project Create: Prefilling phones', order.phones);
         fillMultiContact('add-phone-list', order.phones, 'phone');
     }
 
@@ -287,35 +297,71 @@
     }
 
     function fillMultiContact(listId, data, type) {
+        console.log(`fillMultiContact [${type}] for ${listId}:`, data);
         const list = document.getElementById(listId) || document.getElementById('add-' + listId) || document.getElementById('edit-' + listId);
-        if (!list) return;
+        if (!list) {
+            console.warn(`List element ${listId} not found`);
+            return;
+        }
 
         list.innerHTML = '';
-        const items = Array.isArray(data) ? data : (data ? [data] : []);
 
-        if (items.length > 0) {
-            items.forEach(item => {
-                if (type === 'email') {
-                    const emailVal = typeof item === 'object' ? (item.email || item.val || '') : item;
-                    addEmailRow(list.id, emailVal);
+        let items = [];
+        try {
+            if (typeof data === 'string' && data.trim().length > 0) {
+                if (data.startsWith('[') || data.startsWith('{')) {
+                    items = JSON.parse(data);
                 } else {
-                    // Improved Phone handling
-                    let num = '', code = null;
-                    if (typeof item === 'object' && item !== null) {
-                        num = item.number || item.num || item.phone || '';
-                        code = item.code_idx !== undefined ? item.code_idx : (item.code || item.country_code || null);
-                    } else {
-                        num = item || '';
-                    }
-                    if (num) addPhoneRow(list.id, num, code);
+                    items = [data];
                 }
-            });
+            } else {
+                items = Array.isArray(data) ? data : (data ? [data] : []);
+            }
+        } catch (e) {
+            console.error('Error parsing contact data:', e, data);
+            items = data ? [data] : [];
         }
+
+        console.log(`Processing ${items.length} items for ${type}`);
+
+        items.forEach(item => {
+            if (!item) return;
+            let emailVal = '';
+            let num = '';
+            let idx = null;
+
+            if (type === 'email') {
+                emailVal = (typeof item === 'object' && item !== null) ? (item.email || item.val || item.value || '') : item;
+                if (emailVal && typeof addEmailRow === 'function') {
+                    console.log('Adding email row:', emailVal);
+                    addEmailRow(list.id, emailVal);
+                }
+            } else {
+                if (typeof item === 'object' && item !== null) {
+                    num = item.number || item.num || item.phone || item.value || '';
+                    idx = item.code_idx !== undefined ? item.code_idx : (item.code !== undefined ? item.code : (item.country_code_idx !== undefined ? item.country_code_idx : null));
+                } else {
+                    num = item;
+                }
+                if (num && typeof addPhoneRow === 'function') {
+                    console.log('Adding phone row:', num, idx);
+                    addPhoneRow(list.id, num, idx);
+                }
+            }
+        });
 
         // Ensure at least one row exists
         if (list.children.length === 0) {
-            if (type === 'email') addEmailRow(list.id);
-            else addPhoneRow(list.id);
+            console.log('No rows added from data, adding empty row');
+            if (type === 'email' && typeof addEmailRow === 'function') {
+                addEmailRow(list.id);
+            } else if (type === 'phone' && typeof addPhoneRow === 'function') {
+                addPhoneRow(list.id);
+            }
+        }
+
+        if (typeof updateButtons === 'function') {
+            updateButtons(list.id);
         }
     }
 
