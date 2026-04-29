@@ -43,7 +43,7 @@
         </div>
 
         <!-- Filters -->
-        <div class="dash-card" style="margin-bottom: 24px; border:none; background:transparent;">
+        <!-- <div class="dash-card" style="margin-bottom: 24px; border:none; background:transparent;">
             <div class="card-body" style="padding:0;">
                 <form action="{{ route($routePrefix . '.invoices.index') }}" method="GET" class="filter-grid"
                     style="display: grid; grid-template-columns: 1fr 0.8fr 0.8fr 180px; gap: 15px; align-items: flex-end;">
@@ -72,7 +72,7 @@
                     </div>
                 </form>
             </div>
-        </div>
+        </div> -->
 
         <div class="dash-card">
             <div class="card-body" style="padding: 0;">
