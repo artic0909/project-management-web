@@ -54,6 +54,8 @@ class AppServiceProvider extends ServiceProvider
             $developerCount = \App\Models\Developer::count();
             $salesPersonCount = \App\Models\Sale::count();
             $meetingCount = 0;
+            $supportCount = 0;
+            $inquiryCount = 0;
 
 
             if (auth()->guard('admin')->check()) {
@@ -62,6 +64,8 @@ class AppServiceProvider extends ServiceProvider
                 $lostLeadCount = \App\Models\Lead::whereHas('status', function($q){ $q->where('name','lost'); })->count();
                 $projectCount = \App\Models\Project::count();
                 $meetingCount = \App\Models\Meeting::where('status', 'pending')->count();
+                $supportCount = \App\Models\Support::where('status', '!=', 'resolved')->count();
+                $inquiryCount = \App\Models\OrderInquiry::count();
             } elseif (auth()->guard('sale')->check()) {
                 $saleId = auth()->guard('sale')->id();
                 $saleType = \App\Models\Sale::class;
@@ -130,6 +134,8 @@ class AppServiceProvider extends ServiceProvider
                 'projectCount' => $projectCount,
                 'meetingCount' => $meetingCount,
                 'taskCount' => $taskCount,
+                'supportCount' => $supportCount,
+                'inquiryCount' => $inquiryCount,
             ]);
         });
     }
