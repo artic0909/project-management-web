@@ -3068,15 +3068,16 @@
             </div> -->
 
             <div class="topbar-right">
-                <!-- <div class="tb-btn" onclick="showToast('info','Syncing data...','bi-arrow-clockwise')" data-tooltip="Sync">
+                <div class="tb-btn" onclick="showToast('info','Syncing data...','bi-arrow-clockwise')" data-tooltip="Sync">
                     <i class="bi bi-arrow-clockwise"></i>
                 </div>
 
                 <div class="tb-btn notif-btn" data-tooltip="Notifications" onclick="toggleNotifPanel()">
                     <i class="bi bi-bell-fill"></i>
                     <span class="notif-badge">7</span>
-                </div> -->
+                </div>
 
+                @if ($guard === 'admin')
                 <!-- Notification dropdown -->
                 <div class="notif-panel" id="notifPanel">
                     <div class="notif-header">
@@ -3110,9 +3111,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="notif-footer"><a href="#">View all notifications →</a></div>
+                    <!-- <div class="notif-footer"><a href="#">View all notifications →</a></div> -->
                 </div>
-
+                @endif
+                
                 <div class="tb-user" onclick="toggleUserMenu()">
                     <div class="user-ava sm" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">
                         {{ strtoupper(substr(auth()->guard($guard)->user()->name ?? 'U', 0, 2)) }}

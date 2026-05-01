@@ -277,9 +277,9 @@
                                     <div class="ls">{{ $project->project_start_date ? $project->project_start_date->format('d M Y') : 'N/A' }}</div>
                                 </td>
                                 <td>
-                                    @if($project->actual_delivery_date)
-                                        <span class="date-cell {{ $project->actual_delivery_date->isPast() ? 'danger' : 'warn' }}">
-                                            {{ $project->actual_delivery_date->format('d M Y') }}
+                                    @if($project->expected_delivery_date)
+                                        <span class="date-cell {{ $project->expected_delivery_date->isPast() ? 'danger' : 'warn' }}">
+                                            {{ $project->expected_delivery_date->format('d M Y') }}
                                         </span>
                                     @else
                                         <span style="color:var(--t4);font-size:11px;">N/A</span>
