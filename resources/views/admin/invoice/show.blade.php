@@ -164,9 +164,9 @@
         }
 
         @media print {
-            body { padding: 0; background: none; }
-            .invoice-card { box-shadow: none; margin: 0; width: 100%; max-width: 100%; }
-            .no-print { display: none; }
+            body { padding: 0 !important; background: none !important; }
+            .invoice-card { box-shadow: none !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; min-height: unset !important; }
+            .no-print { display: none !important; }
         }
 
         .print-btn {
@@ -185,6 +185,12 @@
             align-items: center;
             gap: 10px;
             z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .print-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
 
         .back-btn {
@@ -203,6 +209,10 @@
             align-items: center;
             gap: 10px;
             z-index: 100;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: var(--grey);
         }
     </style>
 </head>
@@ -216,9 +226,21 @@
         <i class="bi bi-arrow-left"></i> Back to List
     </a>
 
-    <button class="print-btn no-print" onclick="window.print()" style="border-radius: 8px; background: var(--accent, #6366f1);">
+    <button class="print-btn no-print" onclick="printInvoice()" style="border-radius: 8px; background: var(--accent, #6366f1);">
         <i class="bi bi-printer-fill"></i> Print Invoice
     </button>
+
+    <script>
+        function printInvoice() {
+            const btns = document.querySelectorAll('.no-print');
+            btns.forEach(btn => btn.style.display = 'none');
+            window.print();
+        }
+        window.onafterprint = function() {
+            const btns = document.querySelectorAll('.no-print');
+            btns.forEach(btn => btn.style.display = 'flex');
+        };
+    </script>
 
     <div class="invoice-card">
         <img src="{{ asset('invtop.png') }}" alt="Header" class="header-image">
@@ -273,11 +295,11 @@
             <table class="invoice-table">
                 <thead>
                     <tr>
-                        <th width="50%">Item & Description</th>
+                        <th width="45%">Description</th>
                         <th width="15%">HSN/SAC</th>
                         <th width="10%">Qty</th>
-                        <th width="12%">Rate</th>
-                        <th width="13%">Amount</th>
+                        <th width="15%">Rate</th>
+                        <th width="15%">Amount</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -294,7 +316,7 @@
                     @endforeach
                     
                     {{-- Empty rows for design --}}
-                    @for($i=0; $i < max(0, 6 - count($invoice->items)); $i++)
+                    <!-- @for($i=0; $i < max(0, 6 - count($invoice->items)); $i++)
                     <tr>
                         <td>&nbsp;</td>
                         <td></td>
@@ -302,7 +324,7 @@
                         <td></td>
                         <td></td>
                     </tr>
-                    @endfor
+                    @endfor -->
                 </tbody>
             </table>
 
