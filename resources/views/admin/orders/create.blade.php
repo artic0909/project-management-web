@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <form action="{{ route($routePrefix . '.orders.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route($routePrefix . '.orders.store') }}" method="POST" enctype="multipart/form-data" id="orderCreateForm">
             @csrf
             @if($lead)
                 <input type="hidden" name="lead_id" value="{{ $lead->id }}">

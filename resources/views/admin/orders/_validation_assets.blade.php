@@ -5,7 +5,13 @@
 
 <script>
 $(document).ready(function() {
-    const form = $('form[action*="orders"]');
+    const form = $('#orderCreateForm');
+    
+    if (form.length === 0) {
+        form = $('form[action*="orders"]');
+    }
+
+    const submitBtn = form.find('button[type="submit"]');
 
     // Real-time numeric enforcement for phone fields
     $(document).on('input change keyup paste', 'input[name="phone[]"]', function() {
@@ -19,33 +25,48 @@ $(document).ready(function() {
         let isValid = true;
         let firstErrorEl = null;
 
-        // Clear previous custom error borders on multi-selects
-        $('.ms-trigger').css('border-color', '');
-        $('.field-error').hide();
+        // Clear previous errors
+        $('.field-error').remove();
         $('.is-invalid').removeClass('is-invalid');
+        $('.ms-trigger').css('border-color', '');
 
         function markError(el, msg) {
             isValid = false;
-            if (!firstErrorEl) firstErrorEl = el;
-            $(el).addClass('is-invalid');
             
-            // Find or create error span
-            let errorSpan = $(el).siblings('.field-error');
-            if (errorSpan.length === 0) {
-                if ($(el).closest('.ms-wrap').length > 0) {
-                    errorSpan = $('<span class="field-error"></span>').appendTo($(el).closest('.ms-wrap'));
-                } else if ($(el).parent().is('.form-row')) {
-                    errorSpan = $('<span class="field-error"></span>').appendTo($(el).closest('.form-row'));
-                } else {
-                    errorSpan = $('<span class="field-error"></span>').insertAfter(el);
-                }
-            }
-            errorSpan.text(msg).show();
+            let target = $(el);
+            let scrollTarget = target;
 
-            // Remove error on input
+            if (target.hasClass('phone-num-inp')) {
+                target.closest('.phone-wrap').addClass('is-invalid');
+                scrollTarget = target.closest('.phone-wrap');
+            } else if (target.closest('.ms-wrap').length > 0) {
+                target.closest('.ms-wrap').find('.ms-trigger').addClass('is-invalid');
+                scrollTarget = target.closest('.ms-wrap').find('.ms-trigger');
+            } else {
+                target.addClass('is-invalid');
+            }
+
+            if (!firstErrorEl) firstErrorEl = scrollTarget;
+            
+            let errorSpan = $('<span class="field-error"></span>').text(msg);
+            
+            if (target.closest('.ms-wrap').length > 0) {
+                errorSpan.appendTo(target.closest('.ms-wrap'));
+            } else if (target.hasClass('phone-num-inp')) {
+                errorSpan.insertAfter(target.closest('.phone-wrap'));
+            } else {
+                errorSpan.insertAfter(target);
+            }
+
             $(el).one('input change', function() {
-                $(el).removeClass('is-invalid');
-                errorSpan.fadeOut();
+                if (target.hasClass('phone-num-inp')) {
+                    target.closest('.phone-wrap').removeClass('is-invalid');
+                } else if (target.closest('.ms-wrap').length > 0) {
+                    target.closest('.ms-wrap').find('.ms-trigger').removeClass('is-invalid');
+                } else {
+                    target.removeClass('is-invalid');
+                }
+                errorSpan.fadeOut(200, function() { $(this).remove(); });
             });
         }
 
@@ -77,92 +98,55 @@ $(document).ready(function() {
         });
 
         // 2. Email Validation
-        const emails = $('input[name="email[]"]');
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        let hasValidEmail = false;
-
-        emails.each(function() {
+        $('input[name="email[]"]').each(function() {
             const val = $(this).val().trim();
-            if (val !== '') {
-                if (!emailRegex.test(val)) {
-                    markError(this, 'Please enter a valid email address.');
-                } else {
-                    hasValidEmail = true;
-                }
+            if (val !== '' && !emailRegex.test(val)) {
+                markError(this, 'Please enter a valid email address.');
             }
         });
-
-        if (!hasValidEmail && emails.length > 0) {
-            markError(emails[0], 'At least one valid email address is required.');
-        }
 
         // 3. Phone Validation
-        const phones = $('input[name="phone[]"]');
-        let hasValidPhone = false;
-
-        phones.each(function() {
+        $('input[name="phone[]"]').each(function() {
             const val = $(this).val().trim();
-            if (val !== '') {
-                if (!/^\d+$/.test(val)) {
-                    markError(this, 'Phone number must contain only digits.');
-                } else if (val.length < 8) {
-                    markError(this, 'Phone number is too short.');
-                } else {
-                    hasValidPhone = true;
-                }
+            if (val !== '' && val.length < 7) {
+                markError(this, 'Phone number is too short.');
             }
         });
 
-        if (!hasValidPhone && phones.length > 0) {
-            markError(phones[0], 'At least one phone number is required.');
-        }
-
-        // 4. Multi-select Validation (Services & Sources)
+        // 4. Multi-select Validation
         const msFields = [
             { id: 'serviceWrap', name: 'service_ids[]', label: 'Service / Product' },
             { id: 'sourceWrap', name: 'source_ids[]', label: 'Lead Source' }
         ];
 
         msFields.forEach(ms => {
-            const checked = $(`input[name="${ms.name}"]:checked`);
-            if (checked.length === 0) {
-                const wrap = $(`#${ms.id}`);
-                const trigger = wrap.find('.ms-trigger');
-                trigger.css('border-color', '#ef4444');
-                
-                let err = wrap.find('.field-error');
-                if (err.length === 0) {
-                    err = $('<span class="field-error"></span>').appendTo(wrap);
-                }
-                err.text(`${ms.label} is required.`).show();
-                
-                if (!firstErrorEl) firstErrorEl = trigger;
-                isValid = false;
-
-                $(`input[name="${ms.name}"]`).one('change', function() {
-                    trigger.css('border-color', '');
-                    err.fadeOut();
-                });
+            if ($(`input[name="${ms.name}"]:checked`).length === 0) {
+                markError($(`input[name="${ms.name}"]`).first(), `${ms.label} is required.`);
             }
         });
 
-        // 5. Zip Code Digit Check
+        // 5. Zip Code Specific Check
         const zipField = $('input[name="zip_code"]');
         if (zipField.val() && zipField.val().length !== 6) {
-            markError(zipField[0], 'Zip Code must be exactly 6 digits.');
+            markError(zipField, 'Zip Code must be exactly 6 digits.');
         }
 
         if (!isValid) {
             e.preventDefault();
+            e.stopPropagation();
             
             if (firstErrorEl) {
                 $('html, body').animate({
-                    scrollTop: $(firstErrorEl).offset().top - 150
+                    scrollTop: $(firstErrorEl).offset().top - 120
                 }, 500);
-                // Attempt to focus
-                setTimeout(() => { $(firstErrorEl).focus(); }, 600);
             }
+            return false;
         }
+
+        // Show loading state
+        submitBtn.prop('disabled', true).html('<i class="bi bi-hourglass-split"></i> Finalizing...');
+        return true;
     });
 });
 </script>
@@ -178,8 +162,10 @@ $(document).ready(function() {
         font-weight: 600;
         margin-top: 4px;
         display: block;
+        animation: fadeInError 0.2s ease;
     }
-    .ms-wrap .field-error {
-        margin-top: 8px;
+    @keyframes fadeInError {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
