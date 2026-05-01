@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <form action="{{ route($routePrefix . '.leads.store') }}" method="POST">
+        <form action="{{ route($routePrefix . '.leads.store') }}" method="POST" id="leadCreateForm">
             @csrf
             
             <input type="hidden" name="created_by" value="{{ $createdBy }}">

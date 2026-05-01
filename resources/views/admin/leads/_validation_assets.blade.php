@@ -5,7 +5,15 @@
 
 <script>
 $(document).ready(function() {
-    const form = $('form[action*="leads"]');
+    const form = $('#leadCreateForm');
+    
+    if (form.length === 0) {
+        // Fallback for edit page if it doesn't use the ID yet
+        console.warn('Lead form by ID not found, falling back to action selector.');
+        form = $('form[action*="leads"]');
+    }
+
+    const submitBtn = form.find('button[type="submit"]');
 
     // Real-time numeric enforcement for phone fields
     $(document).on('input change keyup paste', 'input[name="phone[]"]', function() {
@@ -16,113 +24,108 @@ $(document).ready(function() {
     });
 
     form.on('submit', function(e) {
+        // First, check if we should even proceed
         let isValid = true;
         let firstErrorEl = null;
-        const errors = [];
+
+        // Clear previous errors immediately
+        $('.field-error').remove();
+        $('.is-invalid').removeClass('is-invalid');
+        $('.ms-trigger').css('border-color', '');
 
         function markError(el, msg) {
             isValid = false;
-            if (!firstErrorEl) firstErrorEl = el;
-            $(el).addClass('is-invalid');
             
-            // Add error message below the field if not exists
-            let errorSpan = $(el).siblings('.field-error');
-            if (errorSpan.length === 0) {
-                // If it's a multi-select, append to wrap
-                if ($(el).closest('.ms-wrap').length > 0) {
-                    errorSpan = $('<span class="field-error"></span>').appendTo($(el).closest('.ms-wrap'));
-                } else {
-                    errorSpan = $('<span class="field-error"></span>').insertAfter(el);
-                }
-            }
-            errorSpan.text(msg).show();
+            let target = $(el);
+            let scrollTarget = target;
 
-            // Remove error on input
+            if (target.hasClass('phone-num-inp')) {
+                target.closest('.phone-wrap').addClass('is-invalid');
+                scrollTarget = target.closest('.phone-wrap');
+            } else if (target.closest('.ms-wrap').length > 0) {
+                target.closest('.ms-wrap').find('.ms-trigger').addClass('is-invalid');
+                scrollTarget = target.closest('.ms-wrap').find('.ms-trigger');
+            } else {
+                target.addClass('is-invalid');
+            }
+
+            if (!firstErrorEl) firstErrorEl = scrollTarget;
+            
+            let errorSpan = $('<span class="field-error"></span>').text(msg);
+            
+            if (target.closest('.ms-wrap').length > 0) {
+                errorSpan.appendTo(target.closest('.ms-wrap'));
+            } else if (target.hasClass('phone-num-inp')) {
+                errorSpan.insertAfter(target.closest('.phone-wrap'));
+            } else {
+                errorSpan.insertAfter(target);
+            }
+
             $(el).one('input change', function() {
-                $(el).removeClass('is-invalid');
-                $(el).siblings('.field-error').fadeOut();
+                if (target.hasClass('phone-num-inp')) {
+                    target.closest('.phone-wrap').removeClass('is-invalid');
+                } else if (target.closest('.ms-wrap').length > 0) {
+                    target.closest('.ms-wrap').find('.ms-trigger').removeClass('is-invalid');
+                } else {
+                    target.removeClass('is-invalid');
+                }
+                errorSpan.fadeOut(200, function() { $(this).remove(); });
             });
         }
 
-        // 1. Basic Required Fields
-        const requiredFields = [
-            { name: 'contact_person', label: 'Contact Person' },
-            { name: 'business_type', label: 'Business Type' },
-            { name: 'address', label: 'Full Address' }
-        ];
+        // Validation Rules
+        const contactPerson = $('[name="contact_person"]');
+        if (!contactPerson.val() || contactPerson.val().trim() === '') {
+            markError(contactPerson, 'Contact Person is required.');
+        }
 
-        requiredFields.forEach(f => {
-            const el = $(`[name="${f.name}"]`);
-            if (!el.val() || el.val().trim() === '') {
-                markError(el, `${f.label} is required.`);
-            }
-        });
+        const businessType = $('[name="business_type"]');
+        if (!businessType.val() || businessType.val().trim() === '') {
+            markError(businessType, 'Business Type is required.');
+        }
 
-        // 2. Email Validation
-        const emails = $('input[name="email[]"]');
+        const address = $('[name="address"]');
+        if (!address.val() || address.val().trim() === '') {
+            markError(address, 'Full Address is required.');
+        }
+
+        // Email Validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        let hasValidEmail = false;
-
-        emails.each(function() {
+        $('input[name="email[]"]').each(function() {
             const val = $(this).val().trim();
-            if (val !== '') {
-                if (!emailRegex.test(val)) {
-                    markError(this, 'Please enter a valid email address.');
-                } else {
-                    hasValidEmail = true;
-                }
+            if (val !== '' && !emailRegex.test(val)) {
+                markError(this, 'Please enter a valid email address.');
             }
         });
 
-        if (!hasValidEmail && emails.length > 0) {
-            markError(emails[0], 'At least one valid email address is required.');
-        }
-
-        // 3. Phone Validation
-        const phones = $('input[name="phone[]"]');
-        let hasValidPhone = false;
-
-        phones.each(function() {
+        // Phone Validation
+        $('input[name="phone[]"]').each(function() {
             const val = $(this).val().trim();
-            if (val !== '') {
-                if (!/^\d+$/.test(val)) {
-                    markError(this, 'Phone number must contain only digits.');
-                } else if (val.length < 8) {
-                    markError(this, 'Phone number is too short.');
-                } else {
-                    hasValidPhone = true;
-                }
+            if (val !== '' && val.length < 7) {
+                markError(this, 'Phone number is too short.');
             }
         });
 
-        if (!hasValidPhone && phones.length > 0) {
-            markError(phones[0], 'At least one phone number is required.');
-        }
-
-        // 4. Service Need Validation (Multi-select)
-        const services = $('input[name="service_ids[]"]:checked');
-        if (services.length === 0) {
-            isValid = false;
-            const trigger = $('#serviceWrap .ms-trigger');
-            trigger.css('border-color', '#ef4444');
-            errors.push('At least one Service Need must be selected.');
-            if (!firstErrorEl) firstErrorEl = trigger;
-            
-            $('input[name="service_ids[]"]').one('change', function() {
-                trigger.css('border-color', '');
-            });
+        // Service Need Validation
+        if ($('input[name="service_ids[]"]:checked').length === 0) {
+            markError($('input[name="service_ids[]"]').first(), 'At least one Service Need must be selected.');
         }
 
         if (!isValid) {
             e.preventDefault();
+            e.stopPropagation();
             
             if (firstErrorEl) {
                 $('html, body').animate({
                     scrollTop: $(firstErrorEl).offset().top - 120
                 }, 500);
-                $(firstErrorEl).focus();
             }
+            return false;
         }
+
+        // SUCCESS: Show loading state
+        submitBtn.prop('disabled', true).html('<i class="bi bi-hourglass-split"></i> Saving...');
+        return true;
     });
 });
 </script>
@@ -138,5 +141,10 @@ $(document).ready(function() {
         font-weight: 600;
         margin-top: 4px;
         display: block;
+        animation: fadeInError 0.2s ease;
+    }
+    @keyframes fadeInError {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
