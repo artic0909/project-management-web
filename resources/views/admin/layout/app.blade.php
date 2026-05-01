@@ -3068,13 +3068,12 @@
             </div> -->
 
             <div class="topbar-right">
-                <div class="tb-btn" onclick="showToast('info','Syncing data...','bi-arrow-clockwise')" data-tooltip="Sync">
-                    <i class="bi bi-arrow-clockwise"></i>
-                </div>
 
                 <div class="tb-btn notif-btn" data-tooltip="Notifications" onclick="toggleNotifPanel()">
                     <i class="bi bi-bell-fill"></i>
-                    <span class="notif-badge">7</span>
+                    @if(isset($upcomingProjects) && $upcomingProjects->count() > 0)
+                        <span class="notif-badge">{{ $upcomingProjects->count() }}</span>
+                    @endif
                 </div>
 
                 @if ($guard === 'admin')
@@ -3082,39 +3081,34 @@
                 <div class="notif-panel" id="notifPanel">
                     <div class="notif-header">
                         <span>Notifications</span>
-                        <button class="btn-xs" onclick="markAllRead()">Mark all read</button>
                     </div>
                     <div class="notif-list">
-                        <div class="notif-item unread">
-                            <div class="notif-icon blue"><i class="bi bi-kanban-fill"></i></div>
-                            <div class="notif-body"><strong>Project Orion v2</strong> deadline in 2 days<div class="notif-time">5 min ago</div>
+                        @if(isset($upcomingProjects) && $upcomingProjects->count() > 0)
+                            @foreach($upcomingProjects as $project)
+                                @php
+                                    $email = is_array($project->emails) ? ($project->emails[0] ?? 'N/A') : $project->emails;
+                                    $diff = now()->startOfDay()->diffInDays($project->expected_delivery_date->startOfDay(), false);
+                                    $timeText = $diff == 0 ? 'Today' : ($diff == 1 ? 'Tomorrow' : "in $diff days");
+                                @endphp
+                                <a href="{{ route('admin.projects.show', $project->id) }}" class="notif-item unread">
+                                    <div class="notif-icon orange"><i class="bi bi-exclamation-circle-fill"></i></div>
+                                    <div class="notif-body">
+                                        <strong>{{ $project->domain_name }}</strong> ({{ $project->project_code }})
+                                        <div>Email: {{ $email }}</div>
+                                        <div class="notif-time">Due {{ $timeText }} ({{ $project->expected_delivery_date->format('d M, Y') }})</div>
+                                    </div>
+                                </a>
+                            @endforeach
+                        @else
+                            <div class="p-4 text-center text-muted">
+                                <i class="bi bi-bell-slash mb-2" style="font-size: 24px;"></i>
+                                <p class="mb-0">No upcoming deliveries</p>
                             </div>
-                        </div>
-                        <div class="notif-item unread">
-                            <div class="notif-icon green"><i class="bi bi-currency-rupee"></i></div>
-                            <div class="notif-body"><strong>₹2.4L order</strong> received from TechCorp<div class="notif-time">22 min ago</div>
-                            </div>
-                        </div>
-                        <div class="notif-item unread">
-                            <div class="notif-icon orange"><i class="bi bi-person-fill"></i></div>
-                            <div class="notif-body"><strong>Priya Sharma</strong> marked attendance late<div class="notif-time">1 hr ago</div>
-                            </div>
-                        </div>
-                        <div class="notif-item">
-                            <div class="notif-icon purple"><i class="bi bi-code-slash"></i></div>
-                            <div class="notif-body"><strong>Sprint 12</strong> review completed<div class="notif-time">3 hrs ago</div>
-                            </div>
-                        </div>
-                        <div class="notif-item">
-                            <div class="notif-icon red"><i class="bi bi-exclamation-triangle-fill"></i></div>
-                            <div class="notif-body"><strong>API Gateway</strong> response time elevated<div class="notif-time">Yesterday</div>
-                            </div>
-                        </div>
+                        @endif
                     </div>
-                    <!-- <div class="notif-footer"><a href="#">View all notifications →</a></div> -->
                 </div>
                 @endif
-                
+
                 <div class="tb-user" onclick="toggleUserMenu()">
                     <div class="user-ava sm" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">
                         {{ strtoupper(substr(auth()->guard($guard)->user()->name ?? 'U', 0, 2)) }}

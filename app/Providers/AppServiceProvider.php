@@ -59,6 +59,8 @@ class AppServiceProvider extends ServiceProvider
             $invoiceCount = 0;
 
 
+            $upcomingProjects = collect();
+
             if (auth()->guard('admin')->check()) {
                 $leadCount = \App\Models\Lead::whereHas('status', function($q){ $q->where('name','!=','lost'); })->count();
                 $orderCount = \App\Models\Order::count();
@@ -68,6 +70,13 @@ class AppServiceProvider extends ServiceProvider
                 $supportCount = \App\Models\Support::where('status', '!=', 'resolved')->count();
                 $inquiryCount = \App\Models\OrderInquiry::count();
                 $invoiceCount = \App\Models\Invoice::count();
+
+                // Fetch projects with expected_delivery_date within the next 3 days
+                $upcomingProjects = \App\Models\Project::whereBetween('expected_delivery_date', [
+                    now()->startOfDay(),
+                    now()->addDays(3)->endOfDay()
+                ])->get();
+
             } elseif (auth()->guard('sale')->check()) {
                 $saleId = auth()->guard('sale')->id();
                 $saleType = \App\Models\Sale::class;
@@ -139,6 +148,7 @@ class AppServiceProvider extends ServiceProvider
                 'supportCount' => $supportCount,
                 'inquiryCount' => $inquiryCount,
                 'invoiceCount' => $invoiceCount,
+                'upcomingProjects' => $upcomingProjects,
             ]);
         });
     }
