@@ -119,14 +119,15 @@ $(document).ready(function() {
             }
         });
 
-        // 4. Multi-select Validation
-        if ($('input[name="plan_ids[]"]:checked').length === 0) {
-            markError($('input[name="plan_ids[]"]').first(), 'Plan Name is required.');
+        // 4. Multi-select Validation (Plans)
+        const planCheckboxes = $('input[name="plan_ids[]"]');
+        if (planCheckboxes.length > 0 && $('input[name="plan_ids[]"]:checked').length === 0) {
+            markError(planCheckboxes.first(), 'Plan Name is required.');
         }
 
         // 5. Special check for "Others" CMS
         const cmsSelect = $('#cmsSelect');
-        if (cmsSelect.val() === 'Others') {
+        if (cmsSelect.length > 0 && cmsSelect.val() === 'Others') {
             const customCms = $('#cmsCustomInput');
             if (!customCms.val() || customCms.val().trim() === '') {
                 markError(customCms, 'Please specify the platform.');
