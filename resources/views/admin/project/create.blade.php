@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <form action="{{ route($routePrefix . '.projects.store') }}" method="POST">
+        <form action="{{ route($routePrefix . '.projects.store') }}" method="POST" id="projectCreateForm">
             @csrf
 
             @if(session('success'))

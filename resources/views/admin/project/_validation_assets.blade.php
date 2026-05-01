@@ -5,36 +5,70 @@
 
 <script>
 $(document).ready(function() {
-    const form = $('form[action*="projects"]');
-    form.attr('novalidate', 'novalidate');
+    const form = $('#projectCreateForm');
+    
+    if (form.length === 0) {
+        form = $('form[action*="projects"]');
+    }
+
+    const submitBtn = form.find('button[type="submit"]');
 
     form.on('submit', function(e) {
         let isValid = true;
         let firstErrorEl = null;
 
+        // Clear previous errors
+        $('.field-error').remove();
+        $('.is-invalid').removeClass('is-invalid');
+        $('.ms-trigger, .os-trigger').css('border-color', '');
+
         function markError(el, msg) {
             isValid = false;
-            if (!firstErrorEl) firstErrorEl = el;
-            $(el).addClass('is-invalid');
             
-            let wrap = $(el).closest('.form-row');
-            let errorSpan = wrap.find('.field-error');
-            
-            if (errorSpan.length === 0) {
-                errorSpan = $('<span class="field-error"></span>').appendTo(wrap);
+            let target = $(el);
+            let scrollTarget = target;
+
+            if (target.attr('name') === 'order_id') {
+                const trigger = target.closest('.order-select-wrap').find('.os-trigger');
+                trigger.addClass('is-invalid');
+                scrollTarget = trigger;
+            } else if (target.hasClass('phone-num-inp')) {
+                target.closest('.phone-wrap').addClass('is-invalid');
+                scrollTarget = target.closest('.phone-wrap');
+            } else if (target.closest('.ms-wrap').length > 0) {
+                target.closest('.ms-wrap').find('.ms-trigger').addClass('is-invalid');
+                scrollTarget = target.closest('.ms-wrap').find('.ms-trigger');
+            } else {
+                target.addClass('is-invalid');
             }
-            errorSpan.text(msg).show();
+
+            if (!firstErrorEl) firstErrorEl = scrollTarget;
+            
+            let errorSpan = $('<span class="field-error"></span>').text(msg);
+            
+            if (target.attr('name') === 'order_id') {
+                errorSpan.appendTo(target.closest('.order-select-wrap'));
+            } else if (target.closest('.ms-wrap').length > 0) {
+                errorSpan.appendTo(target.closest('.ms-wrap'));
+            } else if (target.hasClass('phone-num-inp')) {
+                errorSpan.insertAfter(target.closest('.phone-wrap'));
+            } else {
+                errorSpan.insertAfter(target);
+            }
 
             $(el).one('input change', function() {
-                $(el).removeClass('is-invalid');
-                errorSpan.fadeOut();
+                if (target.attr('name') === 'order_id') {
+                    target.closest('.order-select-wrap').find('.os-trigger').removeClass('is-invalid');
+                } else if (target.hasClass('phone-num-inp')) {
+                    target.closest('.phone-wrap').removeClass('is-invalid');
+                } else if (target.closest('.ms-wrap').length > 0) {
+                    target.closest('.ms-wrap').find('.ms-trigger').removeClass('is-invalid');
+                } else {
+                    target.removeClass('is-invalid');
+                }
+                errorSpan.fadeOut(200, function() { $(this).remove(); });
             });
         }
-
-        // Clear previous
-        $('.ms-trigger').css('border-color', '');
-        $('.field-error').hide();
-        $('.is-invalid').removeClass('is-invalid');
 
         // 1. Basic Required Fields
         const requiredFields = [
@@ -63,93 +97,63 @@ $(document).ready(function() {
             const el = $(`[name="${f.name}"]`);
             if (el.length > 0) {
                 if (!el.val() || el.val().trim() === '') {
-                    markError(el[0], `${f.label} is required.`);
+                    markError(el, `${f.label} is required.`);
                 }
             }
         });
 
         // 2. Email Validation
-        const emails = $('input[name="email[]"]');
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        let hasValidEmail = false;
-        emails.each(function() {
+        $('input[name="email[]"]').each(function() {
             const val = $(this).val().trim();
-            if (val !== '') {
-                if (!emailRegex.test(val)) {
-                    markError(this, 'Please enter a valid email address.');
-                } else {
-                    hasValidEmail = true;
-                }
+            if (val !== '' && !emailRegex.test(val)) {
+                markError(this, 'Please enter a valid email address.');
             }
         });
-        if (!hasValidEmail && emails.length > 0) {
-            markError(emails[0], 'At least one valid email address is required.');
-        }
 
         // 3. Phone Validation
-        const phones = $('input[name="phone[]"]');
-        let hasValidPhone = false;
-        phones.each(function() {
+        $('input[name="phone[]"]').each(function() {
             const val = $(this).val().trim();
-            if (val !== '') {
-                if (!/^\d+$/.test(val)) {
-                    markError(this, 'Phone number must contain only digits.');
-                } else if (val.length < 8) {
-                    markError(this, 'Phone number is too short.');
-                } else {
-                    hasValidPhone = true;
-                }
+            if (val !== '' && val.length < 7) {
+                markError(this, 'Phone number is too short.');
             }
         });
-        if (!hasValidPhone && phones.length > 0) {
-            markError(phones[0], 'At least one phone number is required.');
+
+        // 4. Multi-select Validation
+        if ($('input[name="plan_ids[]"]:checked').length === 0) {
+            markError($('input[name="plan_ids[]"]').first(), 'Plan Name is required.');
         }
-
-        // 4. Multi-select Validation (Plans)
-        const msFields = [
-            { id: 'planWrap', name: 'plan_ids[]', label: 'Plan Name' }
-        ];
-        msFields.forEach(ms => {
-            const checked = $(`input[name="${ms.name}"]:checked`);
-            if (checked.length === 0) {
-                const wrap = $(`#${ms.id}`);
-                const trigger = wrap.find('.ms-trigger');
-                trigger.css('border-color', '#ef4444');
-                
-                let err = wrap.parent().find('.field-error');
-                if (err.length === 0) {
-                    err = $('<span class="field-error"></span>').appendTo(wrap.parent());
-                }
-                err.text(`${ms.label} is required.`).show();
-                
-                if (!firstErrorEl) firstErrorEl = trigger[0];
-                isValid = false;
-
-                $(`input[name="${ms.name}"]`).one('change', function() {
-                    trigger.css('border-color', '');
-                    err.fadeOut();
-                });
-            }
-        });
 
         // 5. Special check for "Others" CMS
         const cmsSelect = $('#cmsSelect');
         if (cmsSelect.val() === 'Others') {
             const customCms = $('#cmsCustomInput');
             if (!customCms.val() || customCms.val().trim() === '') {
-                markError(customCms[0], 'Please specify the platform.');
+                markError(customCms, 'Please specify the platform.');
             }
+        }
+
+        // 6. Zip Code
+        const zipField = $('input[name="zip_code"]');
+        if (zipField.val() && zipField.val().length !== 6) {
+            markError(zipField, 'Zip Code must be exactly 6 digits.');
         }
 
         if (!isValid) {
             e.preventDefault();
+            e.stopPropagation();
+            
             if (firstErrorEl) {
                 $('html, body').animate({
-                    scrollTop: $(firstErrorEl).offset().top - 150
+                    scrollTop: $(firstErrorEl).offset().top - 120
                 }, 500);
             }
             return false;
         }
+
+        // Show loading state
+        submitBtn.prop('disabled', true).html('<i class="bi bi-hourglass-split"></i> Creating Project...');
+        return true;
     });
 });
 </script>
@@ -165,5 +169,10 @@ $(document).ready(function() {
         font-weight: 600;
         margin-top: 4px;
         display: block;
+        animation: fadeInError 0.2s ease;
+    }
+    @keyframes fadeInError {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
