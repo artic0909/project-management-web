@@ -83,7 +83,12 @@ class SupportController extends Controller
             $query->where('priority', $request->priority);
         }
 
-        $tickets = $query->latest()->paginate(15)->withQueryString();
+        $perPage = $request->get('per_page', 10);
+        if ($perPage === 'all') {
+            $perPage = Support::count() ?: 10;
+        }
+
+        $tickets = $query->latest()->paginate($perPage)->withQueryString();
 
         // Stats for boxes
         $total = Support::count();

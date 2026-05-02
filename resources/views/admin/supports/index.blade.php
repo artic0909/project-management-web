@@ -70,6 +70,13 @@
                                 <option value="medium" {{ request('priority') == 'medium' ? 'selected' : '' }}>Medium</option>
                                 <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>Low</option>
                             </select>
+
+                            <select name="per_page" class="filter-select" onchange="this.form.submit()">
+                                <option value="10" {{ (request('per_page') == 10 || !request('per_page')) ? 'selected' : '' }}>10 Rows</option>
+                                <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20 Rows</option>
+                                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Rows</option>
+                                <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 Rows</option>
+                                <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>All Rows</option>
                             </select>
                         </form>
                     </div>
@@ -121,37 +128,38 @@
                                 </td>
                                 <td>
                                     <div class="ln">{{ $ticket->subject }}</div>
-                                    <div class="ls">{{ $ticket->domain_name ?? 'No Domain' }}</div>
+                                    <div class="ls" style="font-size:10px;">{{ $ticket->domain_name ?? 'No Domain' }}</div>
                                 </td>
                                 <td>
                                     @php
-                                        $pClr = ['high' => '#ef4444', 'medium' => '#f59e0b', 'low' => '#0ea5e9'];
-                                        $pclr = $pClr[$ticket->priority] ?? '#6366f1';
+                                        $pClr = match($ticket->priority) {
+                                            'high' => '#ef4444',
+                                            'medium' => '#f59e0b',
+                                            default => '#10b981'
+                                        };
                                     @endphp
-                                    <span class="status-pill" style="background:{{ $pclr }}15; color:{{ $pclr }}; border-radius: 4px; font-weight: 700; text-transform: uppercase; font-size: 10px; padding: 2px 8px;">
+                                    <div style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;text-transform:uppercase;color:{{ $pClr }}">
+                                        <div style="width:6px;height:6px;border-radius:50%;background:{{ $pClr }}"></div>
                                         {{ $ticket->priority }}
-                                    </span>
+                                    </div>
                                 </td>
                                 <td>
                                     @php
-                                        $sClr = ['active' => '#10b981', 'pending' => '#f59e0b', 'review' => '#0ea5e9', 'replied' => '#10b981', 'closed' => '#6b7280'];
-                                        $sclr = $sClr[$ticket->status] ?? '#6366f1';
+                                        $sClr = match($ticket->status) {
+                                            'pending' => '#f59e0b',
+                                            'active' => '#10b981',
+                                            'closed' => '#6b7280',
+                                            default => '#6366f1'
+                                        };
                                     @endphp
-                                    <span class="status-pill" style="background:{{ $sclr }}15; color:{{ $sclr }};">
+                                    <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;background:{{ $sClr }}15;color:{{ $sClr }};text-transform:uppercase;border:1px solid {{ $sClr }}30;">
                                         {{ ucfirst($ticket->status) }}
                                     </span>
                                 </td>
                                 <td>
-                                    <div class="row-actions">
-                                        <a href="tel:{{ $ticket->phone }}" class="ra-btn phone" title="Call: {{ $ticket->phone }}">
-                                            <i class="bi bi-telephone-fill"></i>
-                                        </a>
-                                        <a href="mailto:{{ $ticket->email }}" class="ra-btn email" title="Email: {{ $ticket->email }}">
-                                            <i class="bi bi-envelope-fill"></i>
-                                        </a>
-
-                                        <a href="{{ route('admin.supports.show', $ticket->id) }}" class="ra-btn" title="View & Reply"><i class="bi bi-eye-fill"></i></a>
-                                        <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route('admin.supports.destroy', $ticket->id) }}')"><i class="bi bi-trash-fill"></i></button>
+                                    <div style="display:flex;gap:5px;">
+                                        <a href="{{ route('admin.supports.show', $ticket->id) }}" class="tb-btn sm" title="View & Reply"><i class="bi bi-eye-fill"></i></a>
+                                        <button type="button" class="tb-btn sm danger" onclick="confirmDelete('{{ route('admin.supports.destroy', $ticket->id) }}')" title="Delete"><i class="bi bi-trash-fill"></i></button>
                                     </div>
                                 </td>
                             </tr>
@@ -163,14 +171,14 @@
                         </tbody>
                     </table>
                 </div>
-                </form>
 
                 <div class="table-footer" style="padding:16px 20px; border-top:1px solid var(--b2); display:flex; justify-content:space-between; align-items:center;">
-                    <span class="tf-info" style="font-size:13px; color:var(--t3); font-weight:500;">Showing {{ $tickets->count() }} of {{ $tickets->total() }} Tickets</span>
+                    <span class="tf-info" style="font-size:13px; color:var(--t3); font-weight:500;">Showing {{ $tickets->firstItem() ?? 0 }} to {{ $tickets->lastItem() ?? 0 }} of {{ $tickets->total() }} Tickets</span>
                     <div class="tf-pagination">
-                        {{ $tickets->links('admin.includes.pagination') }}
+                        {{ $tickets->appends(request()->query())->links('admin.includes.pagination') }}
                     </div>
                 </div>
+                </form>
             </div>
         </div>
     </div>
