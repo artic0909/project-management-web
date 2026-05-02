@@ -284,13 +284,12 @@
                     <table class="data-table">
                         <thead>
                             <tr>
+                                @if($routePrefix == 'admin')
                                 <th style="width: 40px; text-align: center;">
-                                    @if($routePrefix == 'admin')
                                     <input type="checkbox" id="selectAllLeads" onclick="toggleAllLeads(this)" style="cursor: pointer;">
-                                    @else
-                                    #
-                                    @endif
+                                
                                 </th>
+                                @endif
                                 <th>SL</th>
                                 <th>Lead</th>
                                 <th>Source</th>
@@ -306,14 +305,13 @@
                         <tbody>
                             @forelse($leads as $index => $lead)
                             <tr>
+                                @if($routePrefix == 'admin')
                                 <td style="text-align: center;">
-                                    @if($routePrefix == 'admin')
                                     <input type="checkbox" class="lead-checkbox" name="lead_ids[]" value="{{ $lead->id }}" onclick="updateBulkDeleteButtonLeads()" style="cursor: pointer;">
-                                    @else
-                                    {{ $index + 1 }}
-                                    @endif
+                                    
                                 </td>
-                                <td>{{ $index + 1 }}</td>
+                                @endif
+                                <td>{{ $loop->iteration + ($leads->currentPage() - 1) * $leads->perPage() }}</td>
                                 <td>
                                     <div class="lead-cell">
                                         @php

@@ -197,13 +197,12 @@
                     <table class="data-table" id="projectsTable">
                         <thead>
                             <tr>
+                                @if($routePrefix == 'admin')
                                 <th style="width: 40px; text-align: center;">
-                                    @if($routePrefix == 'admin')
                                     <input type="checkbox" id="selectAllProjects" onclick="toggleAllProjects(this)" style="cursor: pointer;">
-                                    @else
-                                    #
-                                    @endif
+                                
                                 </th>
+                                @endif
                                 <th>SL.</th>
                                 <th>Project ID</th>
                                 <th>Project / Domain</th>
@@ -228,13 +227,12 @@
                         <tbody>
                         @forelse($projects as $project)
                             <tr>
+                                @if($routePrefix == 'admin')
                                 <td style="text-align: center;">
-                                    @if($routePrefix == 'admin')
                                     <input type="checkbox" class="project-checkbox" name="project_ids[]" value="{{ $project->id }}" onclick="updateBulkDeleteButtonProjects()" style="cursor: pointer;">
-                                    @else
-                                    {{ $loop->iteration + ($projects->currentPage() - 1) * $projects->perPage() }}
-                                    @endif
+                                    
                                 </td>
+                                @endif
                                 <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration + ($projects->currentPage() - 1) * $projects->perPage() }}</td>
                                 <td><span class="mono">#PRJ-{{ str_pad($project->id, 4, '0', STR_PAD_LEFT) }}</span></td>
                                 <td>

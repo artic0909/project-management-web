@@ -458,13 +458,12 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th style="width: 40px; text-align: center;">
                                     @if($routePrefix == 'admin')
+                                <th style="width: 40px; text-align: center;">
+                                
                                     <input type="checkbox" id="selectAllLeads" onclick="toggleAllLeads(this)" style="cursor: pointer;">
-                                    @else
-                                    #
-                                    @endif
                                 </th>
+                                @endif
                                 <th>SL</th>
                                 <th>Date</th>
                                 <th>Lead</th>
@@ -486,13 +485,12 @@
                             @endphp
                             @forelse($leads as $index => $lead)
                             <tr>
+                                @if($routePrefix == 'admin')
                                 <td style="text-align: center;">
-                                    @if($routePrefix == 'admin')
                                     <input type="checkbox" class="lead-checkbox" name="lead_ids[]" value="{{ $lead->id }}" onclick="updateBulkDeleteButton()" style="cursor: pointer;">
-                                    @else
-                                    {{ $index + 1 }}
-                                    @endif
+                               
                                 </td>
+                                @endif
                                 <td>{{ $leads->firstItem() + $index }}</td>
                                 <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $lead->created_at->format('d M Y') }}</div></td>
                                 <td>
