@@ -140,7 +140,7 @@
             </script>
             <div class="card-body">
                 <div class="table-wrap">
-                    <table class="table">
+                    <table class="data-table">
                         <thead>
                             <tr>
                                 <th style="width: 40px; text-align: center;">
@@ -317,7 +317,7 @@
         .v-link:hover { transform: translateY(-2px); }
         
         /* Ensure table data is left aligned and headers don't wrap */
-        .table th, .table td { text-align: left !important; white-space: nowrap; }
+        .data-table th, .data-table td { text-align: left !important; white-space: nowrap; }
         .table-wrap { overflow-x: auto; width: 100%; }
     </style>
 
