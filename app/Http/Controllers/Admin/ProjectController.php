@@ -305,13 +305,22 @@ class ProjectController extends Controller
     {
         $project = Project::findOrFail($id);
 
-        // Update Statuses
-        $project->update([
+        // Update Statuses & Dates
+        $updateData = [
             'project_status_id' => $request->project_status_id,
-            'payment_status_id' => $request->payment_status_id,
             'project_status' => Status::find($request->project_status_id)?->name,
-            'payment_status' => Status::find($request->payment_status_id)?->name,
-        ]);
+        ];
+
+        if ($request->filled('payment_status_id')) {
+            $updateData['payment_status_id'] = $request->payment_status_id;
+            $updateData['payment_status'] = Status::find($request->payment_status_id)?->name;
+        }
+
+        if ($request->filled('expected_delivery_date')) {
+            $updateData['expected_delivery_date'] = $request->expected_delivery_date;
+        }
+
+        $project->update($updateData);
 
         // Add Feedback Log if notes provided
         if ($request->filled('internal_notes') || $request->filled('feedback_summary')) {

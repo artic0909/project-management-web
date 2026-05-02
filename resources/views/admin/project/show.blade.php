@@ -336,6 +336,7 @@
                                             @endforeach
                                         </select>
                                     </div>
+                                    @if($routePrefix != 'developer')
                                     <div class="form-row" style="margin-bottom:0;">
                                         <label class="form-lbl" style="font-size:9px;">Payment Status</label>
                                         <select name="payment_status_id" class="form-inp" style="padding:6px 8px;font-size:12px;">
@@ -344,7 +345,20 @@
                                             @endforeach
                                         </select>
                                     </div>
+                                    @else
+                                    <div class="form-row" style="margin-bottom:0;">
+                                        <label class="form-lbl" style="font-size:9px;">Exp. Delivery</label>
+                                        <input type="date" name="expected_delivery_date" class="form-inp" value="{{ $project->expected_delivery_date ? $project->expected_delivery_date->format('Y-m-d') : '' }}" style="padding:5px 8px;font-size:12px;">
+                                    </div>
+                                    @endif
                                 </div>
+                                
+                                @if($routePrefix != 'developer')
+                                <div class="form-row" style="margin-bottom:12px;">
+                                    <label class="form-lbl" style="font-size:9px;">Expected Delivery Date</label>
+                                    <input type="date" name="expected_delivery_date" class="form-inp" value="{{ $project->expected_delivery_date ? $project->expected_delivery_date->format('Y-m-d') : '' }}" style="padding:8px;font-size:12px;">
+                                </div>
+                                @endif
                                
                                 <div class="form-row" style="margin-bottom:12px;">
                                     <label class="form-lbl" style="font-size:9px;">Latest Feedback / Notes</label>
