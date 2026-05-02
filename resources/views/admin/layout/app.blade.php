@@ -3072,38 +3072,38 @@
 
                 <div class="tb-btn notif-btn" data-tooltip="Notifications" onclick="toggleNotifPanel()">
                     <i class="bi bi-bell-fill"></i>
-                    @if(isset($upcomingProjects) && $upcomingProjects->count() > 0)
-                        <span class="notif-badge">{{ $upcomingProjects->count() }}</span>
+                    @if(isset($upcomingRenewals) && $upcomingRenewals->count() > 0)
+                        <span class="notif-badge">{{ $upcomingRenewals->count() }}</span>
                     @endif
                 </div>
 
-                @if ($guard === 'admin')
+                @if ($guard === 'admin' || $guard === 'sale')
                 <!-- Notification dropdown -->
                 <div class="notif-panel" id="notifPanel">
                     <div class="notif-header">
-                        <span>Notifications</span>
+                        <span>Upcoming Renewals (3 Days)</span>
                     </div>
                     <div class="notif-list">
-                        @if(isset($upcomingProjects) && $upcomingProjects->count() > 0)
-                            @foreach($upcomingProjects as $project)
+                        @if(isset($upcomingRenewals) && $upcomingRenewals->count() > 0)
+                            @foreach($upcomingRenewals as $order)
                                 @php
-                                    $email = is_array($project->emails) ? ($project->emails[0] ?? 'N/A') : $project->emails;
-                                    $diff = now()->startOfDay()->diffInDays($project->expected_delivery_date->startOfDay(), false);
+                                    $email = is_array($order->emails) ? ($order->emails[0] ?? 'N/A') : $order->emails;
+                                    $diff = now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($order->renewal_date)->startOfDay(), false);
                                     $timeText = $diff == 0 ? 'Today' : ($diff == 1 ? 'Tomorrow' : "in $diff days");
                                 @endphp
-                                <a href="{{ route('admin.projects.show', $project->id) }}" class="notif-item unread">
-                                    <div class="notif-icon orange"><i class="bi bi-exclamation-circle-fill"></i></div>
+                                <a href="{{ route($guard . '.orders.show', $order->id) }}" class="notif-item unread">
+                                    <div class="notif-icon orange"><i class="bi bi-arrow-repeat"></i></div>
                                     <div class="notif-body">
-                                        <strong>{{ $project->domain_name }}</strong> ({{ $project->project_code }})
-                                        <div>Email: {{ $email }}</div>
-                                        <div class="notif-time">Due {{ $timeText }} ({{ $project->expected_delivery_date->format('d M, Y') }})</div>
+                                        <strong>{{ $order->company_name }}</strong> ({{ $order->order_number }})
+                                        <div>Domain: {{ $order->domain_name ?? 'N/A' }}</div>
+                                        <div class="notif-time">Renewal {{ $timeText }} ({{ \Carbon\Carbon::parse($order->renewal_date)->format('d M, Y') }})</div>
                                     </div>
                                 </a>
                             @endforeach
                         @else
                             <div class="p-4 text-center text-muted">
                                 <i class="bi bi-bell-slash mb-2" style="font-size: 24px;"></i>
-                                <p class="mb-0">No upcoming deliveries</p>
+                                <p class="mb-0">No upcoming renewals</p>
                             </div>
                         @endif
                     </div>

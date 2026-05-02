@@ -184,6 +184,7 @@ class OrderController extends Controller
             'discount' => 'nullable|numeric|min:0',
             'payment_terms_id' => 'required|exists:statuses,id',
             'delivery_date' => 'required|date',
+            'renewal_date' => 'nullable|date',
             'city' => 'required|string|max:100',
             'state' => 'required|string|max:100',
             'zip_code' => 'required|numeric|digits:6',
@@ -217,7 +218,7 @@ class OrderController extends Controller
 
         $orderData = $request->only([
             'lead_id', 'inquiry_id', 'company_name', 'client_name', 'domain_name',
-            'order_value', 'discount', 'payment_terms_id', 'delivery_date', 'city', 'state',
+            'order_value', 'discount', 'payment_terms_id', 'delivery_date', 'renewal_date', 'city', 'state',
             'zip_code', 'full_address', 'status_id',
             'mkt_payment_status_id', 'mkt_starting_date', 'mkt_username', 'mkt_password'
         ]);
@@ -361,6 +362,8 @@ class OrderController extends Controller
             'phone.*' => 'required|numeric|digits_between:7,15',
             'order_value' => 'required|numeric',
             'discount' => 'nullable|numeric|min:0',
+            'delivery_date' => 'required|date',
+            'renewal_date' => 'nullable|date',
             'zip_code' => 'required|numeric|digits:6',
             'status_id' => 'required|exists:statuses,id',
             'service_ids' => 'required|array|min:1',
@@ -392,7 +395,7 @@ class OrderController extends Controller
 
         $orderData = $request->only([
             'company_name', 'client_name', 'domain_name',
-            'order_value', 'discount', 'advance_payment', 'payment_terms_id', 'delivery_date', 'city', 'state',
+            'order_value', 'discount', 'advance_payment', 'payment_terms_id', 'delivery_date', 'renewal_date', 'city', 'state',
             'zip_code', 'full_address', 'status_id',
             'mkt_payment_status_id', 'mkt_starting_date', 'mkt_username', 'mkt_password'
         ]);

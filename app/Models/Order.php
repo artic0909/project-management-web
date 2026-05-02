@@ -9,7 +9,7 @@ class Order extends Model
     protected $fillable = [
         'order_number', 'lead_id', 'inquiry_id', 'company_name', 'client_name', 'emails', 'phones',
         'domain_name', 'service_id', 'order_value', 'discount', 'advance_payment', 'payment_terms_id',
-        'delivery_date', 'city', 'state', 'zip_code', 'full_address',
+        'delivery_date', 'renewal_date', 'city', 'state', 'zip_code', 'full_address',
         'status_id', 'is_marketing', 'mkt_payment_status_id',
         'mkt_starting_date', 'plan_name', 'mkt_username', 'mkt_password',
         'created_by', 'created_by_type', 'notes'
@@ -26,6 +26,7 @@ class Order extends Model
         'is_marketing' => 'boolean',
         'mkt_starting_date' => 'date',
         'delivery_date' => 'date',
+        'renewal_date' => 'date',
     ];
 
     public function lead()

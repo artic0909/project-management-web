@@ -59,7 +59,7 @@ class AppServiceProvider extends ServiceProvider
             $invoiceCount = 0;
 
 
-            $upcomingProjects = collect();
+            $upcomingRenewals = collect();
 
             if (auth()->guard('admin')->check()) {
                 $leadCount = \App\Models\Lead::whereHas('status', function($q){ $q->where('name','!=','lost'); })->count();
@@ -71,8 +71,8 @@ class AppServiceProvider extends ServiceProvider
                 $inquiryCount = \App\Models\OrderInquiry::count();
                 $invoiceCount = \App\Models\Invoice::count();
 
-                // Fetch projects with expected_delivery_date within the next 3 days
-                $upcomingProjects = \App\Models\Project::whereBetween('expected_delivery_date', [
+                // Fetch orders with renewal_date within the next 3 days
+                $upcomingRenewals = \App\Models\Order::whereBetween('renewal_date', [
                     now()->startOfDay(),
                     now()->addDays(3)->endOfDay()
                 ])->get();
@@ -118,6 +118,18 @@ class AppServiceProvider extends ServiceProvider
 
                 $meetingCount = \App\Models\Meeting::whereJsonContains('assignsale_ids', (int)$saleId)
                     ->where('status', 'pending')->count();
+
+                // Fetch upcoming renewals for sales person
+                $upcomingRenewals = \App\Models\Order::where(function($q) use ($saleId, $saleType) {
+                    $q->where(function($sq) use ($saleId, $saleType) {
+                        $sq->where('created_by', $saleId)->where('created_by_type', $saleType);
+                    })->orWhereHas('assignments', function($sq) use ($saleId) {
+                        $sq->where('assigned_to', $saleId);
+                    });
+                })->whereBetween('renewal_date', [
+                    now()->startOfDay(),
+                    now()->addDays(3)->endOfDay()
+                ])->get();
             } elseif (auth()->guard('developer')->check()) {
                 $devId = auth()->guard('developer')->id();
                 $projectCount = \App\Models\Project::whereHas('developers', function($q) use ($devId) {
@@ -148,7 +160,7 @@ class AppServiceProvider extends ServiceProvider
                 'supportCount' => $supportCount,
                 'inquiryCount' => $inquiryCount,
                 'invoiceCount' => $invoiceCount,
-                'upcomingProjects' => $upcomingProjects,
+                'upcomingRenewals' => $upcomingRenewals,
             ]);
         });
     }

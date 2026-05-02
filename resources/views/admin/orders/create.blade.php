@@ -160,9 +160,14 @@
                                     @error('payment_terms_id')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Delivery Date <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <label class="form-lbl">Delivery Date <span style="color:#ef4444"> *</span></label>
                                     <input type="date" name="delivery_date" class="form-inp @error('delivery_date') is-invalid @enderror" value="{{ old('delivery_date') }}">
                                     @error('delivery_date')<span class="field-error">{{ $message }}</span>@enderror
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Renewal Date</label>
+                                    <input type="date" name="renewal_date" class="form-inp @error('renewal_date') is-invalid @enderror" value="{{ old('renewal_date') }}">
+                                    @error('renewal_date')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                             </div>
                         </div>

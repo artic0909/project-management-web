@@ -143,6 +143,10 @@
                                 <div class="dk-val" style="color:var(--t2);">{{ $order->delivery_date ? \Carbon\Carbon::parse($order->delivery_date)->format('d M Y') : 'N/A' }}</div>
                                 <div class="dk-lbl">Delivery</div>
                             </div>
+                            <div class="dk-item">
+                                <div class="dk-val" style="color:#f59e0b;">{{ $order->renewal_date ? \Carbon\Carbon::parse($order->renewal_date)->format('d M Y') : 'N/A' }}</div>
+                                <div class="dk-lbl">Renewal</div>
+                            </div>
                         </div>
                     </div>
                 </div>
