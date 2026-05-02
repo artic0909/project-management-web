@@ -66,8 +66,12 @@
       </label>
     </div>
     <div class="user-profile">
-      <div class="user-ava" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">
-        {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 2)) }}
+      <div class="user-ava" style="{{ auth()->user()->profile_image ? 'background:transparent;' : 'background:linear-gradient(135deg,#6366f1,#8b5cf6);' }}">
+        @if(auth()->user()->profile_image)
+            <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
+        @else
+            {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 2)) }}
+        @endif
       </div>
       <div class="user-info">
         <div class="user-name">{{ auth()->user()->name ?? 'Dev' }}</div>
