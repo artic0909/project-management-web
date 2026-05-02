@@ -52,7 +52,7 @@
                         <form action="{{ route('admin.supports.index') }}" method="GET" class="card-actions mb-0">
                             <div class="global-search">
                                 <i class="bi bi-search"></i>
-                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search company, name, subject..." onkeypress="if(event.key === 'Enter') this.form.submit()">
+                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search company, name, subject..." id="searchInput">
                             </div>
 
                             <select name="status" class="filter-select" onchange="this.form.submit()">
@@ -69,6 +69,7 @@
                                 <option value="high" {{ request('priority') == 'high' ? 'selected' : '' }}>High</option>
                                 <option value="medium" {{ request('priority') == 'medium' ? 'selected' : '' }}>Medium</option>
                                 <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>Low</option>
+                            </select>
                             </select>
                         </form>
                     </div>
@@ -233,10 +234,29 @@
         } else {
             url.searchParams.delete('status');
         }
+        url.searchParams.delete('page');
         window.location.href = url.toString();
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        let debounceTimer;
+
+        if(searchInput) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    this.form.submit();
+                }, 500);
+            });
+
+            // Put cursor at end of input
+            const val = searchInput.value;
+            searchInput.value = '';
+            searchInput.value = val;
+            searchInput.focus();
+        }
+
         const selectAll = document.getElementById('selectAll');
         const checkboxes = document.querySelectorAll('.row-checkbox');
         const bulkActions = document.getElementById('bulkActions');

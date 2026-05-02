@@ -66,8 +66,11 @@ class SupportController extends Controller
         if ($request->filled('q')) {
             $q = $request->q;
             $query->where(function($qq) use ($q) {
-                $qq->where('company_name', 'like', "%$q%")
+                $qq->where('ticket_no', 'like', "%$q%")
+                   ->orWhere('company_name', 'like', "%$q%")
                    ->orWhere('your_name', 'like', "%$q%")
+                   ->orWhere('email', 'like', "%$q%")
+                   ->orWhere('phone', 'like', "%$q%")
                    ->orWhere('subject', 'like', "%$q%");
             });
         }
@@ -80,7 +83,7 @@ class SupportController extends Controller
             $query->where('priority', $request->priority);
         }
 
-        $tickets = $query->latest()->paginate(15);
+        $tickets = $query->latest()->paginate(15)->withQueryString();
 
         // Stats for boxes
         $total = Support::count();
