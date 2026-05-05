@@ -23,7 +23,8 @@ class PaymentController extends Controller
 
             $query->where(function($sub) use ($q, $cleanId) {
                 // Payment fields
-                $sub->where('transaction_id', 'LIKE', "%$q%")
+                $sub->where('invoice_no', 'LIKE', "%$q%")
+                    ->orWhere('transaction_id', 'LIKE', "%$q%")
                     ->orWhere('payment_method', 'LIKE', "%$q%")
                     ->orWhere('amount', 'LIKE', "%$q%")
                     // Order ID search
@@ -115,6 +116,11 @@ class PaymentController extends Controller
             $path = $request->file('screenshot')->store('payments', 'public');
             $data['screenshot'] = $path;
         }
+
+        // Generate Unique Invoice No for Payment
+        $lastPayment = Payment::orderBy('id', 'desc')->first();
+        $nextId = $lastPayment ? $lastPayment->id + 1 : 1;
+        $data['invoice_no'] = 'INV-' . date('Ymd') . '-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
 
         Payment::create($data);
         $routePrefix = 'admin';

@@ -116,6 +116,7 @@
                                 <tr>
                                     <th>SL.</th>
                                     <th>Date</th>
+                                    <th>Invoice No</th>
                                     <th>Order ID</th>
                                     <th>Company</th>
                                     <th>Contact</th>
@@ -133,6 +134,9 @@
                                     <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration + ($payments->currentPage() - 1) * $payments->perPage() }}</td>
                                         <td>
                                             <div class="ls">{{ $pay->transaction_date->format('d M Y') }}</div>
+                                        </td>
+                                        <td>
+                                            <span class="mono" style="font-size:12px; font-weight:700; color:var(--t1);">{{ $pay->invoice_no ?? 'N/A' }}</span>
                                         </td>
                                         <td>
                                             <a href="{{ route($routePrefix . '.orders.show', $pay->order_id) }}"
