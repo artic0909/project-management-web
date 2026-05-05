@@ -197,12 +197,12 @@
                     <table class="data-table" id="projectsTable">
                         <thead>
                             <tr>
-                                @if($routePrefix == 'admin')
+                                <!-- @if($routePrefix == 'admin')
                                 <th style="width: 40px; text-align: center;">
                                     <input type="checkbox" id="selectAllProjects" onclick="toggleAllProjects(this)" style="cursor: pointer;">
                                 
                                 </th>
-                                @endif
+                                @endif -->
                                 <th>SL.</th>
                                 <th>Project ID</th>
                                 <th>Project / Domain</th>
@@ -227,12 +227,12 @@
                         <tbody>
                         @forelse($projects as $project)
                             <tr>
-                                @if($routePrefix == 'admin')
+                                <!-- @if($routePrefix == 'admin')
                                 <td style="text-align: center;">
                                     <input type="checkbox" class="project-checkbox" name="project_ids[]" value="{{ $project->id }}" onclick="updateBulkDeleteButtonProjects()" style="cursor: pointer;">
                                     
                                 </td>
-                                @endif
+                                @endif -->
                                 <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration + ($projects->currentPage() - 1) * $projects->perPage() }}</td>
                                 <td><span class="mono">#PRJ-{{ str_pad($project->id, 4, '0', STR_PAD_LEFT) }}</span></td>
                                 <td>
