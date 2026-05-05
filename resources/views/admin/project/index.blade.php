@@ -213,8 +213,11 @@
                                 <th>Delivery</th>
                                 <th>Services</th>
                                 <!-- <th>Sources</th> -->
+                                @if($routePrefix == 'admin' || $routePrefix == 'sale')
                                 <th>Assigned To</th>
                                 <th>Sales Person</th>
+                                @endif
+                                
                                 <th>Project Status</th>
                                 <!-- <th>Project Price</th> -->
                                 <!-- <th>Advance</th> -->
@@ -305,6 +308,8 @@
                                         @endforelse
                                     </div>
                                 </td> -->
+
+                                @if($routePrefix == 'admin' || $routePrefix == 'sale')
                                 <td>
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         @forelse($project->developers as $dev)
@@ -330,6 +335,8 @@
                                         @endforelse
                                     </div>
                                 </td>
+                                @endif
+
                                 <td>
                                     @php
                                         $displayProjStatus = $project->projectStatus ? $project->projectStatus->name : ($project->project_status ?? 'New');
