@@ -60,7 +60,7 @@
                                     @error('contact_person')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Business Type <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Business Type</label>
                                     <input type="text" name="business_type" class="form-inp @error('business_type') is-invalid @enderror" value="{{ old('business_type') }}" placeholder="e.g. E-commerce, Healthcare, Education…">
                                     @error('business_type')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
@@ -75,14 +75,14 @@
 
                                 {{-- Phone — multiple + country code --}}
                                 <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Phone</label>
+                                    <label class="form-lbl">Phone <span style="color:#ef4444">*</span></label>
                                     <div id="add-phone-list"></div>
                                     @error('phone')<span class="field-error">{{ $message }}</span>@enderror
                                     @error('phone.*')<span class="field-error">One or more phone numbers are invalid.</span>@enderror
                                 </div>
 
                                 <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Full Address <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Full Address</label>
                                     <textarea name="address" class="form-inp @error('address') is-invalid @enderror" rows="2" placeholder="Full address…">{{ old('address') }}</textarea>
                                     @error('address')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>

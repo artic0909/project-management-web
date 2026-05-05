@@ -79,16 +79,6 @@ $(document).ready(function() {
             markError(contactPerson, 'Contact Person is required.');
         }
 
-        const businessType = $('[name="business_type"]');
-        if (!businessType.val() || businessType.val().trim() === '') {
-            markError(businessType, 'Business Type is required.');
-        }
-
-        const address = $('[name="address"]');
-        if (!address.val() || address.val().trim() === '') {
-            markError(address, 'Full Address is required.');
-        }
-
         // Email Validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         $('input[name="email[]"]').each(function() {
@@ -99,12 +89,20 @@ $(document).ready(function() {
         });
 
         // Phone Validation
+        let hasPhone = false;
         $('input[name="phone[]"]').each(function() {
             const val = $(this).val().trim();
-            if (val !== '' && val.length < 7) {
-                markError(this, 'Phone number is too short.');
+            if (val !== '') {
+                hasPhone = true;
+                if (val.length < 7) {
+                    markError(this, 'Phone number is too short.');
+                }
             }
         });
+
+        if (!hasPhone) {
+            markError($('input[name="phone[]"]').first(), 'At least one Phone Number is required.');
+        }
 
         // Service Need Validation
         if ($('input[name="service_ids[]"]:checked').length === 0) {
