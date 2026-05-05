@@ -21,6 +21,7 @@ class InvoiceController extends Controller
             $query->where(function($q) use ($search) {
                 $q->where('invoice_no', 'LIKE', "%$search%")
                   ->orWhere('client_name', 'LIKE', "%$search%")
+                  ->orWhere('status', 'LIKE', "%$search%")
                   ->orWhereHas('order', function($sq) use ($search) {
                       $sq->where('order_number', 'LIKE', "%$search%");
                   });
@@ -70,6 +71,7 @@ class InvoiceController extends Controller
             'items.*.qty' => 'required|numeric',
             'items.*.rate' => 'required|numeric',
             'total' => 'required|numeric',
+            'status' => 'required|string|in:PAID,UNPAID,PROFORMA',
         ]);
 
         $data = $request->all();
@@ -122,6 +124,7 @@ class InvoiceController extends Controller
             'client_name' => 'required|string',
             'items' => 'required|array|min:1',
             'total' => 'required|numeric',
+            'status' => 'required|string|in:PAID,UNPAID,PROFORMA',
         ]);
 
         $data = $request->all();

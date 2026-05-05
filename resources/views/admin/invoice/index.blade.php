@@ -86,6 +86,7 @@
                                 <th>Client</th>
                                 <th>Order #</th>
                                 <th>Total</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -119,6 +120,17 @@
                                     </td>
                                     <td><span
                                             style="font-weight: 800; color: #10b981; font-size: 15px;">₹{{ number_format($invoice->total, 2) }}</span>
+                                    </td>
+                                    <td>
+                                        @php
+                                            $statusColor = '#6366f1';
+                                            if($invoice->status == 'PAID') $statusColor = '#10b981';
+                                            if($invoice->status == 'UNPAID') $statusColor = '#ef4444';
+                                            if($invoice->status == 'PROFORMA') $statusColor = '#f59e0b';
+                                        @endphp
+                                        <span class="status-pill" style="background:{{ $statusColor }}20; color:{{ $statusColor }}; border: 1px solid {{ $statusColor }}30;">
+                                            {{ $invoice->status }}
+                                        </span>
                                     </td>
                                     <td>
                                         <div class="row-actions">

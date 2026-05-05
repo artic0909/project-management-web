@@ -7,6 +7,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- favicon png -->
+    <link rel="icon" type="image/png" href="{{ asset('./logo.png') }}">
+    
     <style>
         :root {
             --navy: #00112c;
@@ -288,6 +292,20 @@
                     <div class="meta-row">
                         <span class="meta-label">Place of Supply:</span>
                         <span class="meta-value">{{ $invoice->place_of_supply ?? '_________________' }}</span>
+                    </div>
+                    <div class="meta-row" style="margin-top: 10px;">
+                        <span class="meta-label">Status:</span>
+                        <span class="meta-value">
+                            @php
+                                $statusColor = '#6366f1';
+                                if($invoice->status == 'PAID') $statusColor = '#10b981';
+                                if($invoice->status == 'UNPAID') $statusColor = '#ef4444';
+                                if($invoice->status == 'PROFORMA') $statusColor = '#f59e0b';
+                            @endphp
+                            <span style="display: inline-block; padding: 2px 10px; border-radius: 4px; background: {{ $statusColor }}; color: #fff; font-size: 11px; font-weight: 800; text-transform: uppercase;">
+                                {{ $invoice->status }}
+                            </span>
+                        </span>
                     </div>
                 </div>
             </div>

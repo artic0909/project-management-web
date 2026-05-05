@@ -133,6 +133,14 @@
                                     <label class="form-lbl">Place of Supply</label>
                                     <input type="text" name="place_of_supply" id="place_of_supply" value="{{ old('place_of_supply', $selectedOrder->state ?? '') }}" class="form-inp">
                                 </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Invoice Status <span class="text-danger">*</span></label>
+                                    <select name="status" class="form-inp" required>
+                                        <option value="UNPAID" {{ old('status') == 'UNPAID' ? 'selected' : '' }}>UNPAID</option>
+                                        <option value="PAID" {{ old('status') == 'PAID' ? 'selected' : '' }}>PAID</option>
+                                        <option value="PROFORMA" {{ old('status') == 'PROFORMA' ? 'selected' : '' }}>PROFORMA</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
