@@ -321,7 +321,7 @@ class OrderController extends Controller
         }
 
         $orderData = $request->only([
-            'lead_id', 'inquiry_id', 'company_name', 'client_name', 'domain_name',
+            'lead_id', 'inquiry_id', 'company_name', 'client_name', 'username', 'password', 'domain_name',
             'order_value', 'discount', 'payment_terms_id', 'delivery_date', 'renewal_date', 'city', 'state',
             'zip_code', 'full_address', 'status_id',
             'mkt_payment_status_id', 'mkt_starting_date', 'mkt_username', 'mkt_password'
@@ -498,7 +498,7 @@ class OrderController extends Controller
         }
 
         $orderData = $request->only([
-            'company_name', 'client_name', 'domain_name',
+            'company_name', 'client_name', 'username', 'password', 'domain_name',
             'order_value', 'discount', 'advance_payment', 'payment_terms_id', 'delivery_date', 'renewal_date', 'city', 'state',
             'zip_code', 'full_address', 'status_id',
             'mkt_payment_status_id', 'mkt_starting_date', 'mkt_username', 'mkt_password'

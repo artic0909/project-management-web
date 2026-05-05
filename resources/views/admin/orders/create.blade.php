@@ -53,6 +53,16 @@
                                     @error('client_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
+                                    <label class="form-lbl">Username</label>
+                                    <input type="text" name="username" class="form-inp @error('username') is-invalid @enderror" value="{{ old('username') }}" placeholder="Order username">
+                                    @error('username')<span class="field-error">{{ $message }}</span>@enderror
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl">Password</label>
+                                    <input type="text" name="password" class="form-inp @error('password') is-invalid @enderror" value="{{ old('password') }}" placeholder="Order password">
+                                    @error('password')<span class="field-error">{{ $message }}</span>@enderror
+                                </div>
+                                <div class="form-row">
                                     <label class="form-lbl">Contact Emails <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <div id="order-email-list"></div>
                                     @error('email')<span class="field-error">{{ $message }}</span>@enderror

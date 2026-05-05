@@ -73,6 +73,27 @@
                             </div>
                         </div>
                         <div class="detail-row">
+                            <div class="detail-icon"><i class="bi bi-person-circle"></i></div>
+                            <div>
+                                <div class="detail-lbl">Username</div>
+                                <div class="detail-val">{{ $order->username ?? 'N/A' }}</div>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-icon"><i class="bi bi-shield-lock-fill"></i></div>
+                            <div>
+                                <div class="detail-lbl">Password</div>
+                                <div class="detail-val">
+                                    <span id="orderPwVal">••••••••</span>
+                                    @if($order->password)
+                                    <button type="button" onclick="toggleOrderPw('{{ $order->password }}')" style="background:none;border:none;color:var(--accent);cursor:pointer;margin-left:8px;padding:0;">
+                                        <i class="bi bi-eye-fill" id="orderPwIcon"></i>
+                                    </button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-row">
                             <div class="detail-icon"><i class="bi bi-geo-alt-fill"></i></div>
                             <div>
                                 <div class="detail-lbl">Full Address</div>
@@ -361,6 +382,13 @@
 </style>
 
 <script>
+    let orderPwVisible = false;
+    function toggleOrderPw(pw) {
+        orderPwVisible = !orderPwVisible;
+        document.getElementById('orderPwVal').textContent = orderPwVisible ? pw : '••••••••';
+        document.getElementById('orderPwIcon').className  = orderPwVisible ? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill';
+    }
+
     let mktPwVisible = false;
     function toggleMktPw(pw) {
         mktPwVisible = !mktPwVisible;

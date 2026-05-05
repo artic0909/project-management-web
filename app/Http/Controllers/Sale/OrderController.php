@@ -327,6 +327,8 @@ class OrderController extends Controller
             'lead_id' => $request->lead_id,
             'company_name' => $request->company_name,
             'client_name' => $request->client_name,
+            'username' => $request->username,
+            'password' => $request->password,
             'order_value' => $request->order_value,
             'discount' => $request->discount,
             'advance_payment' => $request->advance_payment ?? 0,
@@ -482,6 +484,8 @@ class OrderController extends Controller
         $order->update([
             'company_name' => $request->company_name,
             'client_name' => $request->client_name,
+            'username' => $request->username,
+            'password' => $request->password,
             'order_value' => $request->order_value,
             'discount' => $request->discount,
             'advance_payment' => $request->advance_payment ?? 0,
