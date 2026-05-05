@@ -97,7 +97,67 @@
                                                 </div>
                                             @else
                                                 <div style="margin-bottom: 12px; font-size: 13px; color: #16a34a; font-weight: 600;"><i class="bi bi-check-circle-fill"></i> KYC Details Submitted</div>
-                                                <div style="font-size: 13px; color: var(--t2);">Your KYC details have been successfully submitted and are under review or approved. You can no longer edit these details. Contact administration for changes.</div>
+                                                <div style="font-size: 13px; color: var(--t2); margin-bottom: 25px; line-height: 1.5;">Your KYC details have been successfully submitted. You can no longer edit these details. Contact administration for changes.</div>
+
+                                                <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+                                                    <div style="padding: 14px; background: var(--bg2); border-radius: 8px; border: 1px solid var(--b3);">
+                                                        <div style="font-size: 11px; color: var(--t4); text-transform: uppercase; font-weight: 700; margin-bottom: 5px;">Phone Number</div>
+                                                        <div style="font-size: 14px; color: var(--t1); font-weight: 600;">{{ $user->phone ?? 'N/A' }}</div>
+                                                    </div>
+                                                    <div style="padding: 14px; background: var(--bg2); border-radius: 8px; border: 1px solid var(--b3);">
+                                                        <div style="font-size: 11px; color: var(--t4); text-transform: uppercase; font-weight: 700; margin-bottom: 5px;">Address</div>
+                                                        <div style="font-size: 14px; color: var(--t1); line-height: 1.4;">{{ $user->address ?? 'N/A' }}</div>
+                                                    </div>
+                                                    
+                                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                                        @foreach(['aadhar_card' => 'Aadhar Card', 'pan_card' => 'PAN Card', 'voter_card' => 'Voter Card', 'bank_account_pic' => 'Bank Proof'] as $key => $label)
+                                                            <div style="padding: 16px; background: var(--bg2); border-radius: 12px; border: 1px solid var(--b3);">
+                                                                <div style="font-size: 11px; color: var(--t4); text-transform: uppercase; font-weight: 700; margin-bottom: 10px;">{{ $label }}</div>
+                                                                @if($user->$key)
+                                                                    @php $ext = pathinfo($user->$key, PATHINFO_EXTENSION); @endphp
+                                                                    @if(in_array(strtolower($ext), ['jpg', 'jpeg', 'png', 'webp', 'gif']))
+                                                                        <div style="width: 100%; height: 160px; border-radius: 8px; overflow: hidden; border: 1px solid var(--b2); background: var(--bg1);">
+                                                                            <img src="{{ asset('storage/' . $user->$key) }}" alt="{{ $label }}" style="width: 100%; height: 100%; object-fit: contain;">
+                                                                        </div>
+                                                                    @else
+                                                                        <div style="height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; background: var(--bg1); border-radius: 8px; border: 1px solid var(--b3);">
+                                                                            <i class="bi bi-file-earmark-pdf-fill" style="font-size: 40px; color: #ef4444;"></i>
+                                                                            <a href="{{ asset('storage/' . $user->$key) }}" target="_blank" style="color: var(--accent); font-size: 13px; font-weight: 700; text-decoration: none;">View PDF Document</a>
+                                                                        </div>
+                                                                    @endif
+                                                                @else
+                                                                    <div style="height: 160px; display: flex; align-items: center; justify-content: center; background: var(--bg1); border-radius: 8px; border: 1px dashed var(--b2); color: var(--t4); font-size: 12px;">Not Uploaded</div>
+                                                                @endif
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+
+                                                    <div style="padding: 14px; background: var(--bg2); border-radius: 8px; border: 1px solid var(--b3);">
+                                                        <div style="font-size: 11px; color: var(--t4); text-transform: uppercase; font-weight: 700; margin-bottom: 5px;">Qualification Details</div>
+                                                        <div style="font-size: 14px; color: var(--t1); line-height: 1.4;">{{ $user->qualification_details ?? 'N/A' }}</div>
+                                                    </div>
+
+                                                    @if($user->qualification_attachments)
+                                                        <div style="padding: 16px; background: var(--bg2); border-radius: 12px; border: 1px solid var(--b3);">
+                                                            <div style="font-size: 11px; color: var(--t4); text-transform: uppercase; font-weight: 700; margin-bottom: 12px;">Qualification Attachments</div>
+                                                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px;">
+                                                                @foreach($user->qualification_attachments as $attach)
+                                                                    @php $ext = pathinfo($attach, PATHINFO_EXTENSION); @endphp
+                                                                    @if(in_array(strtolower($ext), ['jpg', 'jpeg', 'png', 'webp', 'gif']))
+                                                                        <div style="aspect-ratio: 1; border-radius: 8px; overflow: hidden; border: 1px solid var(--b2); background: var(--bg1);">
+                                                                            <img src="{{ asset('storage/' . $attach) }}" alt="Attachment" style="width: 100%; height: 100%; object-fit: cover;">
+                                                                        </div>
+                                                                    @else
+                                                                        <a href="{{ asset('storage/' . $attach) }}" target="_blank" style="aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; background: var(--bg1); border: 1px solid var(--b2); border-radius: 8px; text-decoration: none; padding: 10px;">
+                                                                            <i class="bi bi-file-earmark-fill" style="font-size: 24px; color: var(--t3);"></i>
+                                                                            <span style="font-size: 10px; color: var(--t2); font-weight: 700;">{{ strtoupper($ext) }}</span>
+                                                                        </a>
+                                                                    @endif
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                </div>
                                             @endif
                                         </div>
                                     </div>
