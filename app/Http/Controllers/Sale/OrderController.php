@@ -153,6 +153,110 @@ class OrderController extends Controller
         ));
     }
 
+    public function renewals(Request $request)
+    {
+        $routePrefix = 'sale';
+        $query = $this->getFilteredOrders()->whereBetween('renewal_date', [
+            now()->startOfDay(),
+            now()->addDays(3)->endOfDay()
+        ]);
+
+        // Search Filter
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $cleanId = ltrim(str_ireplace('#ORD-', '', $q), '0');
+            if (empty($cleanId)) $cleanId = $q;
+
+            $query->where(function ($sub) use ($q, $cleanId) {
+                $sub->where('id', 'LIKE', "%$cleanId%")
+                    ->orWhere('order_number', 'LIKE', "%$q%")
+                    ->orWhere('company_name', 'LIKE', "%$q%")
+                    ->orWhere('client_name', 'LIKE', "%$q%")
+                    ->orWhere('emails', 'LIKE', "%$q%")
+                    ->orWhere('phones', 'LIKE', "%$q%")
+                    ->orWhere('domain_name', 'LIKE', "%$q%")
+                    ->orWhere('order_value', 'LIKE', "%$q%")
+                    ->orWhere('advance_payment', 'LIKE', "%$q%")
+                    ->orWhereHas('status', function($s) use ($q) {
+                        $s->where('name', 'LIKE', "%$q%");
+                    })
+                    ->orWhereHas('services', function($s) use ($q) {
+                        $s->where('services.name', 'LIKE', "%$q%");
+                    });
+            });
+        }
+
+        // Service Filter
+        if ($request->filled('service_id')) {
+            $query->whereHas('services', function($q) use ($request) {
+                $q->where('services.id', $request->service_id);
+            });
+        }
+
+        // Status Filter
+        if ($request->filled('status_id')) {
+            $query->where('status_id', $request->status_id);
+        }
+
+        // Type Filter (Marketing vs Website)
+        if ($request->filled('is_marketing')) {
+            $query->where('is_marketing', $request->is_marketing == '1');
+        }
+
+        $aggQuery = clone $query;
+        $totalOrdersCount = (clone $aggQuery)->count();
+        $perPage = $request->get('per_page', 20);
+        if ($perPage === 'all') {
+            $perPage = $totalOrdersCount ?: 20;
+        }
+
+        $orders = $query->with(['status', 'services', 'sources', 'plans', 'assignments.sale', 'createdBy'])->withCount('followups')->latest()->paginate($perPage)->withQueryString();
+        
+        // Total Calling & Message Followups for the logged-in salesperson's assigned orders
+        $orderIds = (clone $aggQuery)->pluck('id');
+        $followupCounts = \App\Models\Followup::whereIn('followable_id', $orderIds)
+            ->where('followable_type', \App\Models\Order::class)
+            ->select('followup_type', DB::raw('count(*) as count'))
+            ->groupBy('followup_type')
+            ->pluck('count', 'followup_type');
+
+        $totalCallingUserFollowups = ($followupCounts['Calling'] ?? 0) + ($followupCounts['Both'] ?? 0);
+        $totalMessageUserFollowups = ($followupCounts['Message'] ?? 0) + ($followupCounts['Both'] ?? 0);
+
+        // Counts (Only for their orders)
+        $totalOrders = (clone $aggQuery)->count();
+        $marketingOrders = (clone $aggQuery)->where('is_marketing', true)->count();
+        $totalValue = (clone $aggQuery)->whereHas('status', function ($q) {
+            $q->where('name', '!=', 'cancel');
+        })->sum('order_value');
+        $cancelledOrders = (clone $aggQuery)->whereHas('status', function ($q) {
+            $q->where('name', 'cancel');
+        })->count();
+
+        $totalReceived = \App\Models\Payment::whereIn('order_id', $orderIds)->sum('amount');
+        $pendingValue = $totalValue - $totalReceived;
+
+        $allStatuses = Status::where('type', 'order')->get();
+        $allServices = Service::all();
+        $allSales = Sale::all();
+
+        return view('admin.orders.renewals', compact(
+            'orders',
+            'totalOrders',
+            'marketingOrders',
+            'totalValue',
+            'cancelledOrders',
+            'pendingValue',
+            'totalReceived',
+            'allStatuses',
+            'allServices',
+            'allSales',
+            'totalCallingUserFollowups',
+            'totalMessageUserFollowups',
+            'routePrefix'
+        ));
+    }
+
     public function create($lead_id = null)
     {
         $saleId = auth()->guard('sale')->id();

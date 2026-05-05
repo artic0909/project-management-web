@@ -106,6 +106,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
 
     // Orders
     Route::get('/all-orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/order-renewals', [OrderController::class, 'renewals'])->name('orders.renewals');
     Route::get('/export-orders', [OrderController::class, 'export'])->name('orders.export');
     Route::post('/import-orders', [OrderController::class, 'import'])->name('orders.import');
     Route::get('/add-order/{lead_id?}', [OrderController::class, 'create'])->name('orders.create');

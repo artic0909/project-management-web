@@ -67,10 +67,18 @@
         <i class="bi bi-person-lines-fill"></i><span>{{ $guard === 'sale' ? 'My Leads' : 'Leads' }}</span>
         <span class="nav-count">{{ $leadCount }}</span>
       </a>
-      <a class="nav-item {{ request()->routeIs($routePrefix . 'orders*') ? 'active' : '' }}"
+      <a class="nav-item {{ request()->routeIs($routePrefix . 'orders.index') ? 'active' : '' }}"
         href="{{ route($routePrefix . 'orders.index') }}">
         <i class="bi bi-bag-check-fill"></i><span>{{ $guard === 'sale' ? 'My Orders' : 'Orders' }}</span>
         <span class="nav-count">{{ $orderCount }}</span>
+      </a>
+
+      <a class="nav-item {{ request()->routeIs($routePrefix . 'orders.renewals') ? 'active' : '' }}"
+        href="{{ route($routePrefix . 'orders.renewals') }}">
+        <i class="bi bi-arrow-repeat"></i><span>Renewals</span>
+        @if(isset($upcomingRenewals) && $upcomingRenewals->count() > 0)
+          <span class="nav-badge">{{ $upcomingRenewals->count() }}</span>
+        @endif
       </a>
 
 
