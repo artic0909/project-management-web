@@ -1013,9 +1013,8 @@
     <div class="page-inner">
       <div class="page-head">
         <div class="eyebrow"><i class="bi bi-lightning-fill"></i> Fast Delivery System</div>
-        <h1 class="page-title">Ready to bring your<br>idea to life?</h1>
-        <p class="page-subtitle">Complete the order form below to initiate your project. Our experts will review the
-          details and reach out within 24 hours.</p>
+        <h1 class="page-title">Ready to <br>Start Your Project?</h1>
+        <p class="page-subtitle">Fill out the order form below to get started. Our team will review your requirements and contact you within 30 minutes to move things forward.</p>
       </div>
 
       <div class="form-card" id="orderForm">
@@ -1023,9 +1022,11 @@
         <aside class="form-sidebar">
           <div class="fs-head">
             <h2 class="fs-title">What happens next?</h2>
-            <p class="fs-desc">Our streamlined process ensures your product is built with precision and speed.</p>
+            <p class="fs-desc">Our workflow is designed to deliver high-quality results, fast and efficient.</p>
+       
+            <p class="fs-desc">Address and other details collect from - <a href="https://www.standsweb.com/" style="color:#FF4D1C;text-decoration:underline">www.standsweb.com</a></p>
 
-            <div class="fs-feat">
+            <!-- <div class="fs-feat">
               <div class="f-item">
                 <div class="f-ico"><i class="bi bi-shield-check"></i></div>
                 <div>
@@ -1054,12 +1055,11 @@
                   <div class="f-sub">Development starts in 7 days.</div>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
 
           <div style="font-size:12px; color:rgba(255,255,255,.3); margin-top:40px;">
-            <i class="bi bi-info-circle"></i> Need help? <a href="#" style="color:#fff;text-decoration:underline">Talk
-              to Sales</a>
+            <i class="bi bi-info-circle"></i> Need help? <a href="https://www.standsweb.com/" style="color:#fff;text-decoration:underline">Contact Us</a>
           </div>
         </aside>
 
