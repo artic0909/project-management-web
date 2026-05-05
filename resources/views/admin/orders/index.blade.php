@@ -258,12 +258,12 @@
                     <table class="data-table" id="ordersTable">
                         <thead>
                             <tr>
-                                @if($routePrefix == 'admin')
+                                <!-- @if($routePrefix == 'admin')
                                 <th style="width: 40px; text-align: center;">
                                     <input type="checkbox" id="selectAllOrders" onclick="toggleAllOrders(this)" style="cursor: pointer;">
                               
                                 </th>
-                                @endif
+                                @endif -->
                                 <th>SL.</th>
                                 <th>Order ID</th>
                                 <th>Date</th>
@@ -285,12 +285,12 @@
                             <tr data-order-type="{{ $order->is_marketing ? 'marketing' : 'website' }}" 
                                 data-status="{{ strtolower($order->status->name ?? '') }}"
                                 data-service="{{ $order->service_id }}">
-                                @if($routePrefix == 'admin')
+                                <!-- @if($routePrefix == 'admin')
                                 <td style="text-align: center;">
                                     <input type="checkbox" class="order-checkbox" name="order_ids[]" value="{{ $order->id }}" onclick="updateBulkDeleteButtonOrders()" style="cursor: pointer;">
                                     
                                 </td>
-                                @endif
+                                @endif -->
                                 <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration + ($orders->currentPage() - 1) * $orders->perPage() }}</td>
                                 <td><span class="mono">{{ $order->order_number ?? '#ORD-'.$order->id }}</span></td>
                                 <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $order->created_at->format('d M Y') }}</div></td>
