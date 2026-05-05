@@ -35,21 +35,9 @@ class AttendanceController extends Controller
         }
 
         $this->applyFilters($query, $request);
+        $this->cleanupAttendances();
 
-        // One-time fix for existing messed up records (Optional, but ensures sum() works)
-        // We only do this if total_seconds is 0 or negative but both times exist
-        Attendance::where('total_seconds', '<=', 0)
-            ->whereNotNull('check_in_time')
-            ->whereNotNull('check_out_time')
-            ->get()
-            ->each(function($att) {
-                $cIn = Carbon::parse($att->date->toDateString() . ' ' . $att->check_in_time);
-                $cOut = Carbon::parse($att->date->toDateString() . ' ' . $att->check_out_time);
-                $diff = abs($cOut->diffInSeconds($cIn, false));
-                if($diff > 0){
-                    $att->update(['total_seconds' => $diff]);
-                }
-            });
+        // Sum of all filtered results (using ABS to handle any lingering negatives)
 
         // Sum of all filtered results (using ABS to handle any lingering negatives)
         $totalWorkSeconds = $query->sum(DB::raw('ABS(total_seconds)'));
@@ -88,6 +76,7 @@ class AttendanceController extends Controller
         $query = Attendance::with('user')->where('user_type', 'Sale');
         
         $this->applyFilters($query, $request);
+        $this->cleanupAttendances();
 
         // Sum of all filtered results
         $totalWorkSeconds = $query->sum(DB::raw('ABS(total_seconds)'));
@@ -112,6 +101,7 @@ class AttendanceController extends Controller
         $query = Attendance::with('user')->where('user_type', 'Developer');
         
         $this->applyFilters($query, $request);
+        $this->cleanupAttendances();
 
         // Sum of all filtered results
         $totalWorkSeconds = $query->sum(DB::raw('ABS(total_seconds)'));
@@ -269,6 +259,12 @@ class AttendanceController extends Controller
                 // Using ABSOLUTE difference to prevent negative values (-58)
                 $totalSeconds = abs($now->diffInSeconds($checkInDateTime, false));
 
+                // Subtract lunch break if it exists
+                if ($attendance->total_break_seconds > 0) {
+                    $totalSeconds = $totalSeconds - $attendance->total_break_seconds;
+                    if ($totalSeconds < 0) $totalSeconds = 0;
+                }
+
                 $attendance->update([
                     'check_out_time' => $timeStr,
                     'check_out_screenshot' => $path,
@@ -281,6 +277,64 @@ class AttendanceController extends Controller
                 return response()->json(['success' => false, 'message' => 'You have already checked out for today.']);
             }
         }
+    }
+
+    public function startLunch(Request $request)
+    {
+        $guard = $this->getGuard();
+        $user = auth()->guard($guard)->user();
+        $userType = $guard === 'developer' ? 'Developer' : ($guard === 'sale' ? 'Sale' : 'Unknown');
+
+        $attendance = Attendance::where('user_id', $user->id)
+            ->where('user_type', $userType)
+            ->where('date', now()->toDateString())
+            ->first();
+
+        if (!$attendance || !$attendance->is_checked_in) {
+            return response()->json(['success' => false, 'message' => 'You must be checked in to take a lunch break.']);
+        }
+
+        if ($attendance->lunch_from) {
+            return response()->json(['success' => false, 'message' => 'Lunch break already started.']);
+        }
+
+        $attendance->update([
+            'lunch_from' => now()->toTimeString()
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Lunch break started at ' . now()->format('h:i:s A')]);
+    }
+
+    public function endLunch(Request $request)
+    {
+        $guard = $this->getGuard();
+        $user = auth()->guard($guard)->user();
+        $userType = $guard === 'developer' ? 'Developer' : ($guard === 'sale' ? 'Sale' : 'Unknown');
+
+        $attendance = Attendance::where('user_id', $user->id)
+            ->where('user_type', $userType)
+            ->where('date', now()->toDateString())
+            ->first();
+
+        if (!$attendance || !$attendance->lunch_from) {
+            return response()->json(['success' => false, 'message' => 'Lunch break not started.']);
+        }
+
+        if ($attendance->lunch_to) {
+            return response()->json(['success' => false, 'message' => 'Lunch break already ended.']);
+        }
+
+        $lunchTo = now();
+        $dbDate = ($attendance->date instanceof Carbon) ? $attendance->date : Carbon::parse($attendance->date);
+        $lunchFrom = Carbon::parse($dbDate->toDateString() . ' ' . $attendance->lunch_from);
+        $breakSeconds = abs($lunchTo->diffInSeconds($lunchFrom, false));
+
+        $attendance->update([
+            'lunch_to' => $lunchTo->toTimeString(),
+            'total_break_seconds' => $breakSeconds
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Lunch break ended at ' . $lunchTo->format('h:i:s A')]);
     }
 
     public function bulkDestroy(Request $request)
@@ -314,5 +368,28 @@ class AttendanceController extends Controller
         if (!auth()->guard('admin')->check()) {
             abort(403, 'Unauthorized action.');
         }
+    }
+
+    private function cleanupAttendances()
+    {
+        // One-time fix for existing messed up records or records where break wasn't subtracted
+        Attendance::whereNotNull('check_in_time')
+            ->whereNotNull('check_out_time')
+            ->get()
+            ->each(function($att) {
+                $dbDate = ($att->date instanceof Carbon) ? $att->date : Carbon::parse($att->date);
+                $cIn = Carbon::parse($dbDate->toDateString() . ' ' . $att->check_in_time);
+                $cOut = Carbon::parse($att->date->toDateString() . ' ' . $att->check_out_time);
+                $diff = abs($cOut->diffInSeconds($cIn, false));
+                
+                // Subtract break if it exists
+                if ($att->total_break_seconds > 0) {
+                    $diff = $diff - $att->total_break_seconds;
+                }
+
+                if($diff >= 0 && $att->total_seconds != $diff){
+                    $att->update(['total_seconds' => $diff]);
+                }
+            });
     }
 }

@@ -165,6 +165,8 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::get('/attendance/developer', [\App\Http\Controllers\Admin\AttendanceController::class, 'devIndex'])->name('attendance.dev-index');
     Route::post('/attendance/settings', [\App\Http\Controllers\Admin\AttendanceController::class, 'storeSettings'])->name('attendance.store-settings');
     Route::post('/attendance/give', [\App\Http\Controllers\Admin\AttendanceController::class, 'giveAttendance'])->name('attendance.give');
+    Route::post('/attendance/start-lunch', [\App\Http\Controllers\Admin\AttendanceController::class, 'startLunch'])->name('attendance.start-lunch');
+    Route::post('/attendance/end-lunch', [\App\Http\Controllers\Admin\AttendanceController::class, 'endLunch'])->name('attendance.end-lunch');
     Route::delete('/attendance/bulk-delete', [\App\Http\Controllers\Admin\AttendanceController::class, 'bulkDestroy'])->name('attendance.bulk-destroy');
     Route::delete('/attendance/{id}', [\App\Http\Controllers\Admin\AttendanceController::class, 'destroy'])->name('attendance.destroy');
 

@@ -43,9 +43,21 @@
                             <i class="bi bi-box-arrow-in-right me-2"></i> Give Attendance
                         </button>
                     @elseif($todayAttendance->is_checked_in)
-                        <button class="btn-danger-solid px-4 py-2" onclick="processAttendance('check-out')" id="checkoutBtn" style="font-weight: 600; background:#ef4444; border:none; color:#fff; border-radius:var(--r); display:flex; align-items:center; gap:8px;">
-                            <i class="bi bi-box-arrow-right"></i> Check-out Now
-                        </button>
+                        <div style="display: flex; gap: 10px;">
+                            @if(!$todayAttendance->lunch_from)
+                                <button class="btn btn-warning px-4 py-2" onclick="processLunch('start')" id="lunchStartBtn" style="font-weight: 600; background:#f59e0b; border:none; color:#fff; border-radius:var(--r); display:flex; align-items:center; gap:8px;">
+                                    <i class="bi bi-cup-hot-fill"></i> Take Lunch Break
+                                </button>
+                            @elseif(!$todayAttendance->lunch_to)
+                                <button class="btn btn-info px-4 py-2" onclick="processLunch('end')" id="lunchEndBtn" style="font-weight: 600; background:#0ea5e9; border:none; color:#fff; border-radius:var(--r); display:flex; align-items:center; gap:8px;">
+                                    <i class="bi bi-patch-check-fill"></i> Break Over
+                                </button>
+                            @endif
+                            
+                            <button class="btn-danger-solid px-4 py-2" onclick="processAttendance('check-out')" id="checkoutBtn" style="font-weight: 600; background:#ef4444; border:none; color:#fff; border-radius:var(--r); display:flex; align-items:center; gap:8px;">
+                                <i class="bi bi-box-arrow-right"></i> Check-out Now
+                            </button>
+                        </div>
                     @else
                         <div class="badge bg-success-subtle text-success p-2 px-3 border border-success-subtle" style="font-size:14px; border-radius:10px;">
                              <i class="bi bi-check-circle-fill me-1"></i> Today's Shift Completed
@@ -120,6 +132,9 @@
                                 <th>Check-in</th>
                                 <th>Check-out</th>
                                 <th>Late Hours</th>
+                                <th>Lunch Start</th>
+                                <th>Lunch End</th>
+                                <th>Total Break</th>
                                 <th>Total Hours</th>
                                 <th>Check-in Photo</th>
                                 <th>Check-out Photo</th>
@@ -149,13 +164,13 @@
                                     <td>
                                         <div class="time-stamp">
                                             <i class="bi bi-clock-fill text-success"></i>
-                                            {{ $row->check_in_time ? \Carbon\Carbon::parse($row->check_in_time)->format('h:i A') : '--:--' }}
+                                            {{ $row->check_in_time ? \Carbon\Carbon::parse($row->check_in_time)->format('h:i:s A') : '--:--:--' }}
                                         </div>
                                     </td>
                                     <td>
                                         <div class="time-stamp">
                                             <i class="bi bi-clock-history text-muted"></i>
-                                            {{ $row->check_out_time ? \Carbon\Carbon::parse($row->check_out_time)->format('h:i A') : '--:--' }}
+                                            {{ $row->check_out_time ? \Carbon\Carbon::parse($row->check_out_time)->format('h:i:s A') : '--:--:--' }}
                                         </div>
                                     </td>
                                     <td>
@@ -170,6 +185,34 @@
                                         @endif
                                     </td>
                                     <td>
+                                        <div class="time-stamp">
+                                            <i class="bi bi-cup-hot text-warning"></i>
+                                            {{ $row->lunch_from ? \Carbon\Carbon::parse($row->lunch_from)->format('h:i:s A') : '--:--:--' }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="time-stamp">
+                                            <i class="bi bi-cup-fill text-info"></i>
+                                            {{ $row->lunch_to ? \Carbon\Carbon::parse($row->lunch_to)->format('h:i:s A') : '--:--:--' }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if($row->total_break_seconds > 0)
+                                            @php
+                                                $allowedSeconds = 0;
+                                                if($settings->lunch_time) {
+                                                    $allowedSeconds = $settings->lunch_time_unit == 'hours' ? $settings->lunch_time * 3600 : $settings->lunch_time * 60;
+                                                }
+                                                $isExceeded = $row->total_break_seconds > $allowedSeconds;
+                                            @endphp
+                                            <span class="{{ $isExceeded ? 'text-danger' : 'text-success' }} fw-bold">
+                                                {{ formatDuration($row->total_break_seconds) }}
+                                            </span>
+                                        @else
+                                            <span class="text-muted">--</span>
+                                        @endif
+                                    </td>
+                                    <td>
                                         @if($row->check_out_time)
                                             @php
                                                 $displaySeconds = (int)($row->total_seconds ?? 0);
@@ -178,6 +221,12 @@
                                                     $cIn = \Carbon\Carbon::parse($row->date->format('Y-m-d') . ' ' . $row->check_in_time);
                                                     $cOut = \Carbon\Carbon::parse($row->date->format('Y-m-d') . ' ' . $row->check_out_time);
                                                     $displaySeconds = abs($cOut->diffInSeconds($cIn, false));
+                                                    
+                                                    // Subtract break if it exists
+                                                    if($row->total_break_seconds > 0) {
+                                                        $displaySeconds -= $row->total_break_seconds;
+                                                    }
+                                                    if($displaySeconds < 0) $displaySeconds = 0;
                                                 }
                                             @endphp
                                             <span class="fw-bold text-primary">
@@ -313,6 +362,39 @@
                     "Accept": "application/json",
                 },
                 body: JSON.stringify({ screenshot: base64 })
+            })
+            .then(async res => {
+                const data = await res.json();
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.message);
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            });
+        }
+
+        function processLunch(type) {
+            const btn = type === 'start' ? document.getElementById('lunchStartBtn') : document.getElementById('lunchEndBtn');
+            const originalHtml = btn.innerHTML;
+            const url = type === 'start' ? "{{ route($routePrefix . '.attendance.start-lunch') }}" : "{{ route($routePrefix . '.attendance.end-lunch') }}";
+            
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Processing...';
+            btn.disabled = true;
+
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Accept": "application/json",
+                }
             })
             .then(async res => {
                 const data = await res.json();

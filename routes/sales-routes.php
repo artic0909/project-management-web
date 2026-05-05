@@ -110,6 +110,8 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     // Attendance
     Route::get('/attendance', [\App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance/give', [\App\Http\Controllers\Admin\AttendanceController::class, 'giveAttendance'])->name('attendance.give');
+    Route::post('/attendance/start-lunch', [\App\Http\Controllers\Admin\AttendanceController::class, 'startLunch'])->name('attendance.start-lunch');
+    Route::post('/attendance/end-lunch', [\App\Http\Controllers\Admin\AttendanceController::class, 'endLunch'])->name('attendance.end-lunch');
 
     // Meetings
     Route::patch('/meetings/{id}/status', [MeetingController::class, 'updateStatus'])->name('meetings.updateStatus');

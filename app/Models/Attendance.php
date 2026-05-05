@@ -19,6 +19,9 @@ class Attendance extends Model
         'note',
         'late_seconds',
         'total_seconds',
+        'lunch_from',
+        'lunch_to',
+        'total_break_seconds',
         'ip_address',
         'user_agent'
     ];

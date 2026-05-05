@@ -66,13 +66,13 @@
                 <div class="kpi-value">{{ $totalAbsentDays ?? 0 }}</div>
                 <div class="kpi-label">Total Absents</div>
             </div>
-            <!-- <div class="kpi-card" style="--kpi-accent:#0ea5e9">
+            <div class="kpi-card" style="--kpi-accent:#0ea5e9">
                 <div class="kpi-top">
                     <div class="kpi-icon" style="background:rgba(14,165,233,.15);color:#0ea5e9"><i class="bi bi-stopwatch-fill"></i></div>
                 </div>
                 <div class="kpi-value" style="font-size:18px;">{{ formatDuration($totalWorkSeconds) }}</div>
                 <div class="kpi-label">Team Total Hours</div>
-            </div> -->
+            </div>
         </div>
 
         <div class="dash-card">
@@ -153,6 +153,9 @@
                                 <th>Check-in</th>
                                 <th>Check-out</th>
                                 <th>Late Hours</th>
+                                <th>Lunch Start</th>
+                                <th>Lunch End</th>
+                                <th>Total Break</th>
                                 <th>Total Hours</th>
                                 <th>Check-in Photo</th>
                                 <th>Check-out Photo</th>
@@ -180,8 +183,8 @@
                                             {{ strtoupper($row->status ?? 'Present') }}
                                         </span>
                                     </td>
-                                    <td>{{ $row->check_in_time ? \Carbon\Carbon::parse($row->check_in_time)->format('h:i A') : '--:--' }}</td>
-                                    <td>{{ $row->check_out_time ? \Carbon\Carbon::parse($row->check_out_time)->format('h:i A') : '--:--' }}</td>
+                                    <td>{{ $row->check_in_time ? \Carbon\Carbon::parse($row->check_in_time)->format('h:i:s A') : '--:--:--' }}</td>
+                                    <td>{{ $row->check_out_time ? \Carbon\Carbon::parse($row->check_out_time)->format('h:i:s A') : '--:--:--' }}</td>
                                     <td>
                                         @if(($row->status ?? 'Present') == 'Absent')
                                             <span class="text-muted">--</span>
@@ -193,6 +196,24 @@
                                             <span class="text-success fw-bold">On-time</span>
                                         @endif
                                     </td>
+                                    <td>{{ $row->lunch_from ? \Carbon\Carbon::parse($row->lunch_from)->format('h:i:s A') : '--:--:--' }}</td>
+                                    <td>{{ $row->lunch_to ? \Carbon\Carbon::parse($row->lunch_to)->format('h:i:s A') : '--:--:--' }}</td>
+                                    <td>
+                                        @if($row->total_break_seconds > 0)
+                                            @php
+                                                $allowedSeconds = 0;
+                                                if($settings->lunch_time) {
+                                                    $allowedSeconds = $settings->lunch_time_unit == 'hours' ? $settings->lunch_time * 3600 : $settings->lunch_time * 60;
+                                                }
+                                                $isExceeded = $row->total_break_seconds > $allowedSeconds;
+                                            @endphp
+                                            <span class="{{ $isExceeded ? 'text-danger' : 'text-success' }} fw-bold">
+                                                {{ formatDuration($row->total_break_seconds) }}
+                                            </span>
+                                        @else
+                                            <span class="text-muted">--</span>
+                                        @endif
+                                    </td>
                                     <td>
                                         @if($row->check_out_time)
                                             @php
@@ -202,6 +223,12 @@
                                                     $cIn = \Carbon\Carbon::parse($row->date->format('Y-m-d') . ' ' . $row->check_in_time);
                                                     $cOut = \Carbon\Carbon::parse($row->date->format('Y-m-d') . ' ' . $row->check_out_time);
                                                     $displaySeconds = abs($cOut->diffInSeconds($cIn, false));
+
+                                                    // Subtract break if it exists
+                                                    if($row->total_break_seconds > 0) {
+                                                        $displaySeconds -= $row->total_break_seconds;
+                                                    }
+                                                    if($displaySeconds < 0) $displaySeconds = 0;
                                                 }
                                             @endphp
                                             <span class="fw-bold">{{ formatDuration(abs($displaySeconds)) }}</span>

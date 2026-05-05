@@ -35,4 +35,6 @@ Route::middleware(['auth:developer'])->prefix('developer')->name('developer.')->
     // Attendance
     Route::get('/attendance', [\App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance/give', [\App\Http\Controllers\Admin\AttendanceController::class, 'giveAttendance'])->name('attendance.give');
+    Route::post('/attendance/start-lunch', [\App\Http\Controllers\Admin\AttendanceController::class, 'startLunch'])->name('attendance.start-lunch');
+    Route::post('/attendance/end-lunch', [\App\Http\Controllers\Admin\AttendanceController::class, 'endLunch'])->name('attendance.end-lunch');
 });
