@@ -138,6 +138,7 @@
                                                 class="ra-btn" title="View/Print" target="_blank">
                                                 <i class="bi bi-printer-fill"></i>
                                             </a>
+                                            @if($routePrefix == 'admin')
                                             <a href="{{ route($routePrefix . '.invoices.copy', $invoice->id) }}"
                                                 class="ra-btn" title="Duplicate">
                                                 <i class="bi bi-files"></i>
@@ -146,15 +147,12 @@
                                                 class="ra-btn" title="Edit">
                                                 <i class="bi bi-pencil-fill"></i>
                                             </a>
-                                            <form action="{{ route($routePrefix . '.invoices.destroy', $invoice->id) }}"
-                                                method="POST" onsubmit="return confirm('Delete this invoice?')"
-                                                style="margin:0;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="ra-btn danger" title="Delete">
-                                                    <i class="bi bi-trash-fill"></i>
-                                                </button>
-                                            </form>
+                                            <button type="button" class="ra-btn danger delete-invoice-btn" 
+                                                data-url="{{ route($routePrefix . '.invoices.destroy', $invoice->id) }}"
+                                                title="Delete">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
@@ -182,5 +180,47 @@
                 </div>
             </div>
         </div>
-    </main>
+    </div>
+</main>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: var(--bg2); border: 1px solid var(--b3); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-lg);">
+            <div class="modal-body" style="padding: 40px 30px; text-align: center;">
+                <div style="width: 80px; height: 80px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 40px; border: 4px solid rgba(239, 68, 68, 0.05);">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <h3 style="color: var(--t1); font-weight: 800; margin-bottom: 12px; font-size: 22px;">Confirm Deletion</h3>
+                <p style="color: var(--t3); font-size: 15px; margin-bottom: 32px; line-height: 1.6;">Are you sure you want to delete this invoice? This action is permanent and cannot be undone.</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <button type="button" class="btn-ghost" data-bs-dismiss="modal" style="display: flex; align-items: center; justify-content: center; padding: 12px; border-radius: 12px; font-weight: 700; color: var(--t2); background: var(--bg3); border: 1px solid var(--b2); height: 48px;">
+                        No, Keep it
+                    </button>
+                    <form id="deleteInvoiceForm" method="POST" style="margin: 0;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-primary-solid" style="display: flex; align-items: center; justify-content: center; background: #ef4444; border-color: #ef4444; padding: 12px; border-radius: 12px; font-weight: 700; width: 100%; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); height: 48px;">
+                            Yes, Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+$(document).ready(function() {
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+    
+    $('.delete-invoice-btn').on('click', function() {
+        const url = $(this).data('url');
+        $('#deleteInvoiceForm').attr('action', url);
+        deleteModal.show();
+    });
+});
+</script>
 @endsection
