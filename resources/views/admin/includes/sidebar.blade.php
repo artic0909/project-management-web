@@ -37,22 +37,22 @@
         <div class="nav-section-label">Utilities</div>
         <a class="nav-item {{ request()->routeIs('admin.sources*') ? 'active' : '' }}"
           href="{{ route('admin.sources.index') }}">
-          <i class="bi bi-link-45deg"></i><span>Sources</span>
+          <i class="bi bi-broadcast"></i><span>Sources</span>
           <span class="nav-count">{{ $sourceCount }}</span>
         </a>
         <a class="nav-item {{ request()->routeIs('admin.services*') ? 'active' : '' }}"
           href="{{ route('admin.services.index') }}">
-          <i class="bi bi-diagram-3-fill"></i><span>Services</span>
+          <i class="bi bi-briefcase-fill"></i><span>Services</span>
           <span class="nav-count">{{ $serviceCount }}</span>
         </a>
         <a class="nav-item {{ request()->routeIs('admin.plans*') ? 'active' : '' }}"
           href="{{ route('admin.plans.index') }}">
-          <i class="bi bi-diagram-3-fill"></i><span>Plans</span>
+          <i class="bi bi-layers-half"></i><span>Plans</span>
           <span class="nav-count">{{ $planCount }}</span>
         </a>
         <a class="nav-item {{ request()->routeIs('admin.campaign*') ? 'active' : '' }}"
           href="{{ route('admin.campaign.index') }}">
-          <i class="bi bi-diagram-3-fill"></i><span>Campaign</span>
+          <i class="bi bi-megaphone-fill"></i><span>Campaign</span>
           <span class="nav-count">{{ $campaignCount }}</span>
         </a>
         <a class="nav-item {{ request()->routeIs('admin.status') ? 'active' : '' }}" href="{{ route('admin.status') }}">
@@ -142,7 +142,7 @@
         </a>
         <a class="nav-item {{ request()->routeIs('admin.attendance.dev-index') ? 'active' : '' }}"
           href="{{ route('admin.attendance.dev-index') }}">
-          <i class="bi bi-person-workspace"></i><span>Dev Attendance</span>
+          <i class="bi bi-calendar-check-fill"></i><span>Dev Attendance</span>
         </a>
       @else
         <a class="nav-item {{ request()->routeIs($routePrefix . 'attendance*') ? 'active' : '' }}"
