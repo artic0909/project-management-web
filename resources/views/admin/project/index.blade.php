@@ -213,7 +213,7 @@
                                 <th>Delivery</th>
                                 <th>Services</th>
                                 <!-- <th>Sources</th> -->
-                                @if($routePrefix == 'admin' || $routePrefix == 'sale')
+                                @if($routePrefix == 'admin')
                                 <th>Assigned To</th>
                                 <th>Sales Person</th>
                                 @endif
@@ -309,7 +309,7 @@
                                     </div>
                                 </td> -->
 
-                                @if($routePrefix == 'admin' || $routePrefix == 'sale')
+                                @if($routePrefix == 'admin')
                                 <td>
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         @forelse($project->developers as $dev)

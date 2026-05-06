@@ -431,7 +431,7 @@
                         </div>
                     </div> -->
 
-                    @if($routePrefix == 'admin' || $routePrefix == 'sale')
+                    @if($routePrefix == 'admin')
                     {{-- Team Members --}}
                     <div class="dash-card">
                         <div class="card-head">
