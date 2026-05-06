@@ -32,10 +32,17 @@
                         @foreach($project->services as $service)
                             <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(99,102,241,0.1);color:var(--accent);border:1px solid rgba(99,102,241,0.2);">{{ $service->name }}</span>
                         @endforeach
+<!-- only sale & admin can see this -->
+                        @if($routePrefix == 'admin' || $routePrefix == 'sale')
                         @foreach($project->sources as $source)
                             <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);">{{ $source->name }}</span>
                         @endforeach
+                        @endif
+
+
                         <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);">Primary Domain: {{ $project->domain_name ?? 'N/A' }}</span>
+                        <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);">Username: {{ $project->username ?? 'N/A' }}</span>
+                        <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);">Password: {{ $project->password ?? 'N/A' }}</span>
                     </div>
                 </div>
                 <div class="header-actions">
