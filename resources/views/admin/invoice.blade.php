@@ -234,8 +234,8 @@
             <div class="sender-info">
                 <h2>StandsWeb</h2>
                 <p>
-                    KannamangalaPost, Whitefield Main Road, Bengaluru Rural<br>
-                    Karnataka 560067 GSTIN: 29JTKPS5068C1Z1 Contact: +91 86606 32597 | Email: zentrics@gmail.com
+                    PS Qube, Action Area IID, Newtown, Kolkata, 700156<br>
+                    Contact: +91 892-704-3805 | Email: info@standsweb.com
                 </p>
             </div>
 
@@ -384,15 +384,15 @@
         <div class="invoice-footer">
             <div class="footer-item">
                 <i class="bi bi-globe"></i>
-                <span>www.standsweb.in</span>
+                <span>www.standsweb.com</span>
             </div>
             <div class="footer-item">
                 <i class="bi bi-envelope-fill"></i>
-                <span>standsweb@gmail.com</span>
+                <span>info@standsweb.com</span>
             </div>
             <div class="footer-item">
                 <i class="bi bi-telephone-fill"></i>
-                <span>+91 86606 32597</span>
+                <span>+91 892-704-3805</span>
             </div>
         </div>
     </div>
