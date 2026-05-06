@@ -108,18 +108,28 @@ class LoginController extends Controller
     {
         $sale = \Illuminate\Support\Facades\Auth::guard('sale')->user();
         
-        $request->validate([
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:sales,email,' . $sale->id,
             'current_password' => 'nullable|required_with:new_password',
             'new_password' => 'nullable|min:6|required_with:current_password|confirmed',
             'profile_image' => 'nullable|image|max:2048',
-            'aadhar_card' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
             'pan_card' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
             'voter_card' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
-            'bank_account_pic' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
             'qualification_attachments.*' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
-        ]);
+        ];
+
+        if (!$sale->kyc_submitted) {
+            $rules['phone'] = 'required|string|max:20';
+            $rules['address'] = 'required|string';
+            $rules['aadhar_card'] = 'required|file|mimes:jpeg,png,jpg,pdf|max:2048';
+            $rules['bank_account_pic'] = 'required|file|mimes:jpeg,png,jpg,pdf|max:2048';
+        } else {
+            $rules['aadhar_card'] = 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048';
+            $rules['bank_account_pic'] = 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048';
+        }
+
+        $request->validate($rules);
 
         // Profile Update
         $sale->name = $request->name;
