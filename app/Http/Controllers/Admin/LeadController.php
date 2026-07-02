@@ -450,6 +450,33 @@ class LeadController extends Controller
         return redirect()->back()->with('success', count($request->ids) . ' leads deleted successfully!');
     }
 
+    public function bulkAssign(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'exists:leads,id',
+            'assigned_to' => 'required|exists:sales,id',
+        ]);
+
+        $ids = $request->ids;
+        $salespersonId = $request->assigned_to;
+
+        DB::transaction(function () use ($ids, $salespersonId) {
+            // Delete existing assignments for these leads
+            LeadAssign::whereIn('lead_id', $ids)->delete();
+
+            // Create new assignments
+            foreach ($ids as $id) {
+                LeadAssign::create([
+                    'lead_id' => $id,
+                    'assigned_to' => $salespersonId,
+                ]);
+            }
+        });
+
+        return redirect()->back()->with('success', count($ids) . ' leads assigned successfully!');
+    }
+
 
     public function export(Request $request)
     {

@@ -201,6 +201,17 @@
                 <button type="button" class="btn-primary-solid sm" id="bulkDeleteBtn" style="display: none; background: #dc2626; border-color: #dc2626; color: white;" onclick="bulkDeleteSelected()">
                     <i class="bi bi-trash-fill"></i> Bulk Delete
                 </button>
+                <div id="bulkAssignContainer" style="display: none; align-items: center; gap: 8px;">
+                    <select id="bulkAssignSalesperson" class="filter-select" style="margin: 0; padding: 6px 12px; height: 32px; font-size: 13px; min-width: 180px;">
+                        <option value="">Assign Salesperson...</option>
+                        @foreach($sales as $sale)
+                            <option value="{{ $sale->id }}">{{ $sale->name }}</option>
+                        @endforeach
+                    </select>
+                    <button type="button" class="btn-primary-solid sm" onclick="bulkAssignSelected()">
+                        <i class="bi bi-person-plus-fill"></i> Assign
+                    </button>
+                </div>
                 <button type="button" class="btn-primary-solid sm" onclick="openImportModal()">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
@@ -713,6 +724,9 @@
 
                 if (wrap) wrap.style.opacity = '1';
                 window.history.pushState({}, '', url);
+                if (typeof updateBulkDeleteButton === 'function') {
+                    updateBulkDeleteButton();
+                }
             } catch (error) {
                 console.error('AJAX error:', error);
                 if (wrap) wrap.style.opacity = '1';
@@ -758,11 +772,54 @@
     function updateBulkDeleteButton() {
         const checkedCount = document.querySelectorAll('.lead-checkbox:checked').length;
         const bulkBtn = document.getElementById('bulkDeleteBtn');
+        const bulkAssignContainer = document.getElementById('bulkAssignContainer');
         if (checkedCount > 0) {
-            bulkBtn.style.display = 'inline-flex';
+            if (bulkBtn) bulkBtn.style.display = 'inline-flex';
+            if (bulkAssignContainer) bulkAssignContainer.style.display = 'inline-flex';
         } else {
-            bulkBtn.style.display = 'none';
+            if (bulkBtn) bulkBtn.style.display = 'none';
+            if (bulkAssignContainer) bulkAssignContainer.style.display = 'none';
         }
+    }
+
+    function bulkAssignSelected() {
+        const checkedBoxes = document.querySelectorAll('.lead-checkbox:checked');
+        if (checkedBoxes.length === 0) return;
+
+        const salespersonId = document.getElementById('bulkAssignSalesperson').value;
+        if (!salespersonId) {
+            alert('Please select a salesperson to assign the leads to.');
+            return;
+        }
+
+        const ids = Array.from(checkedBoxes).map(cb => cb.value);
+        
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{{ route('admin.leads.bulk-assign') }}";
+        
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = "{{ csrf_token() }}";
+        form.appendChild(csrfInput);
+        
+        ids.forEach(id => {
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'ids[]';
+            idInput.value = id;
+            form.appendChild(idInput);
+        });
+
+        const salespersonInput = document.createElement('input');
+        salespersonInput.type = 'hidden';
+        salespersonInput.name = 'assigned_to';
+        salespersonInput.value = salespersonId;
+        form.appendChild(salespersonInput);
+
+        document.body.appendChild(form);
+        form.submit();
     }
 
     function bulkDeleteSelected() {
