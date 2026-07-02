@@ -4,6 +4,7 @@
 
 @section('content')
 
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
     .modal-header .btn-close { filter: none; }
     [data-theme="dark"] .modal-header .btn-close { filter: invert(1); }
@@ -182,6 +183,55 @@
         background: rgba(16, 185, 129, 0.1) !important;
         color: #10b981 !important;
         border-color: #10b981 !important;
+    }
+
+    /* ── Select2 Customization ── */
+    .bulk-assign-wrap .select2-container--default .select2-selection--single {
+        background-color: var(--bg2) !important;
+        border: 1px solid var(--b1) !important;
+        border-radius: var(--r-sm, 8px) !important;
+        height: 32px !important;
+        display: inline-flex;
+        align-items: center;
+        font-size: 13px;
+        min-width: 180px;
+    }
+    .bulk-assign-wrap .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: var(--t2) !important;
+        padding-left: 8px !important;
+        padding-right: 24px !important;
+        line-height: 30px !important;
+    }
+    .bulk-assign-wrap .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 30px !important;
+        right: 4px !important;
+    }
+    .bulk-assign-wrap .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: var(--t3) !important;
+    }
+    .select2-dropdown {
+        background-color: var(--bg2) !important;
+        border: 1px solid var(--b1) !important;
+        color: var(--t1) !important;
+        font-size: 13px;
+    }
+    .select2-search__field {
+        background-color: var(--bg3) !important;
+        border: 1px solid var(--b1) !important;
+        color: var(--t1) !important;
+        border-radius: 4px !important;
+        padding: 4px 8px !important;
+    }
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: var(--accent) !important;
+        color: #fff !important;
+    }
+    .select2-container--default .select2-results__option[aria-selected=true] {
+        background-color: var(--b2) !important;
+        color: var(--t1) !important;
+    }
+    .select2-container--default .select2-results__option {
+        color: var(--t2) !important;
     }
 </style>
 
@@ -1824,5 +1874,18 @@
             const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('importLeadsModal'));
             modal.show();
         }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            if ($('#bulkAssignSalesperson').length) {
+                $('#bulkAssignSalesperson').select2({
+                    placeholder: "Assign Salesperson...",
+                    allowClear: true,
+                    width: '180px'
+                });
+            }
+        });
     </script>
 @endsection
