@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice - #{{ $invoice->invoice_no }}</title>
+    <title>Invoice - {{ $invoice->invoice_no }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -128,7 +128,7 @@
             align-items: flex-end;
         }
         .summary-label { font-weight: 800; min-width: 100px; }
-        .summary-value { border-bottom: 1px solid #999; flex: 1; text-align: right; font-weight: 700; padding: 0 5px; }
+        .summary-value {  flex: 1; text-align: right; font-weight: 700; padding: 0 5px; }
 
         .notes-section, .bank-section {
             margin-bottom: 25px;
@@ -140,7 +140,7 @@
         .bank-details { font-size: 12px; }
         .bank-row { display: flex; margin-bottom: 4px; align-items: flex-end; }
         .bank-label { font-weight: 700; width: 100px; }
-        .bank-line { border-bottom: 1px solid #ccc; flex: 1; height: 14px; }
+        .bank-line {  flex: 1; height: 14px; }
 
         .invoice-footer {
             background: var(--navy);
@@ -254,8 +254,9 @@
                 <h2>{{ $invoice->sender_name ?? 'StandsWeb' }}</h2>
                 <p>
                     {!! nl2br(e($invoice->sender_address ?? "PS Qube, Action Area IID, Newtown, Kolkata, 700156")) !!}<br>
-                    @if($invoice->sender_gstin) GSTIN: {{ $invoice->sender_gstin }} @else GSTIN: 29JTKPS5068C1Z1 @endif
-                    Contact: {{ $invoice->sender_contact ?? '+91 892-704-3805' }} | Email: {{ $invoice->sender_email ?? 'info@standsweb.com' }}
+                    @if($invoice->sender_gstin) GSTIN: {{ $invoice->sender_gstin }} @else GSTIN: 29JTKPS5068C1Z1 @endif<br>
+                    Contact: {{ $invoice->sender_contact ?? '+91 892-704-3805' }}<br>
+                    Email: {{ $invoice->sender_email ?? 'info@standsweb.com' }}
                 </p>
             </div>
 
@@ -268,11 +269,11 @@
                     </div>
                     <div class="meta-row">
                         <span class="meta-label">Address:</span>
-                        <span class="meta-value">{{ $invoice->client_address ?? '____________________________' }}</span>
+                        <span class="meta-value">{{ $invoice->client_address ?? 'Not Provided' }}</span>
                     </div>
                     <div class="meta-row">
                         <span class="meta-label">GSTIN:</span>
-                        <span class="meta-value">{{ $invoice->client_gstin ?? '____________________________' }}</span>
+                        <span class="meta-value">{{ $invoice->client_gstin ?? 'Not Provided' }}</span>
                     </div>
                 </div>
 
@@ -295,16 +296,14 @@
                     </div>
                     <div class="meta-row" style="margin-top: 10px;">
                         <span class="meta-label">Status:</span>
-                        <span class="meta-value">
-                            @php
-                                $statusColor = '#6366f1';
-                                if($invoice->status == 'PAID') $statusColor = '#10b981';
-                                if($invoice->status == 'UNPAID') $statusColor = '#ef4444';
-                                if($invoice->status == 'PROFORMA') $statusColor = '#f59e0b';
-                            @endphp
-                            <span style="display: inline-block; padding: 2px 10px; border-radius: 4px; background: {{ $statusColor }}; color: #fff; font-size: 11px; font-weight: 800; text-transform: uppercase;">
-                                {{ $invoice->status }}
-                            </span>
+                        @php
+                            $statusColor = '#6366f1';
+                            if($invoice->status == 'PAID') $statusColor = '#000000ff';
+                            if($invoice->status == 'UNPAID') $statusColor = '#000000ff';
+                            if($invoice->status == 'PROFORMA') $statusColor = '#000000ff';
+                        @endphp
+                        <span class="meta-value" style="font-weight: 800; color: {{ $statusColor }}; text-transform: uppercase;">
+                            {{ $invoice->status }}
                         </span>
                     </div>
                 </div>
