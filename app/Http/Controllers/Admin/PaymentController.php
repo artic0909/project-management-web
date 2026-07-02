@@ -118,9 +118,9 @@ class PaymentController extends Controller
         }
 
         // Generate Unique Invoice No for Payment
-        $lastPayment = Payment::orderBy('id', 'desc')->first();
-        $nextId = $lastPayment ? $lastPayment->id + 1 : 1;
-        $data['invoice_no'] = 'INV-' . date('Ymd') . '-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
+        do {
+            $data['invoice_no'] = strtoupper(\Illuminate\Support\Str::random(7));
+        } while (Payment::where('invoice_no', $data['invoice_no'])->exists());
 
         Payment::create($data);
         $routePrefix = 'admin';

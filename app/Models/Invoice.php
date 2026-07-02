@@ -20,6 +20,18 @@ class Invoice extends Model
         'bank_details' => 'array',
     ];
     
+    protected static function booted()
+    {
+        static::creating(function ($invoice) {
+            if (empty($invoice->invoice_no) || strlen($invoice->invoice_no) !== 7 || !preg_match('/^[A-Z0-9]{7}$/', $invoice->invoice_no)) {
+                do {
+                    $code = strtoupper(\Illuminate\Support\Str::random(7));
+                } while (static::where('invoice_no', $code)->exists());
+                $invoice->invoice_no = $code;
+            }
+        });
+    }
+
     public function order()
     {
         return $this->belongsTo(Order::class);

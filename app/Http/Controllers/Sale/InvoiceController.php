@@ -79,9 +79,9 @@ class InvoiceController extends Controller
         $routePrefix = 'sale';
 
         // Generate Invoice No
-        $lastInvoice = Invoice::orderBy('id', 'desc')->first();
-        $nextId = $lastInvoice ? $lastInvoice->id + 1 : 1;
-        $invoice_no = 'INV-' . date('Ymd') . '-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
+        do {
+            $invoice_no = strtoupper(\Illuminate\Support\Str::random(7));
+        } while (Invoice::where('invoice_no', $invoice_no)->exists());
 
         return view('admin.invoice.create', compact('orders', 'selectedOrder', 'invoice_no', 'routePrefix'));
     }
@@ -125,9 +125,9 @@ class InvoiceController extends Controller
         $newInvoice->sender_email = auth()->guard('sale')->user()->email;
         
         // Generate new invoice number
-        $lastInvoice = Invoice::orderBy('id', 'desc')->first();
-        $nextId = $lastInvoice ? $lastInvoice->id + 1 : 1;
-        $newInvoice->invoice_no = 'INV-' . date('Ymd') . '-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
+        do {
+            $newInvoice->invoice_no = strtoupper(\Illuminate\Support\Str::random(7));
+        } while (Invoice::where('invoice_no', $newInvoice->invoice_no)->exists());
         $newInvoice->invoice_date = now();
         
         $newInvoice->save();

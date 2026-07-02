@@ -17,6 +17,18 @@ class Payment extends Model
         'amount' => 'decimal:2',
     ];
 
+    protected static function booted()
+    {
+        static::creating(function ($payment) {
+            if (empty($payment->invoice_no) || strlen($payment->invoice_no) !== 7 || !preg_match('/^[A-Z0-9]{7}$/', $payment->invoice_no)) {
+                do {
+                    $code = strtoupper(\Illuminate\Support\Str::random(7));
+                } while (static::where('invoice_no', $code)->exists());
+                    $payment->invoice_no = $code;
+            }
+        });
+    }
+
     public function order()
     {
         return $this->belongsTo(Order::class);
