@@ -235,6 +235,17 @@
                                             <option value="">— Select —</option>
                                             <option value="WordPress" {{ old('cms_platform') == 'WordPress' ? 'selected' : '' }}>WordPress</option>
                                             <option value="Shopify" {{ old('cms_platform') == 'Shopify' ? 'selected' : '' }}>Shopify</option>
+                                            <option value="WooCommerce" {{ old('cms_platform') == 'WooCommerce' ? 'selected' : '' }}>WooCommerce</option>
+                                            <option value="Magento" {{ old('cms_platform') == 'Magento' ? 'selected' : '' }}>Magento</option>
+                                            <option value="Webflow" {{ old('cms_platform') == 'Webflow' ? 'selected' : '' }}>Webflow</option>
+                                            <option value="Wix" {{ old('cms_platform') == 'Wix' ? 'selected' : '' }}>Wix</option>
+                                            <option value="Squarespace" {{ old('cms_platform') == 'Squarespace' ? 'selected' : '' }}>Squarespace</option>
+                                            <option value="Gatsby" {{ old('cms_platform') == 'Gatsby' ? 'selected' : '' }}>Gatsby (Static)</option>
+                                            <option value="Hugo" {{ old('cms_platform') == 'Hugo' ? 'selected' : '' }}>Hugo (Static)</option>
+                                            <option value="Jekyll" {{ old('cms_platform') == 'Jekyll' ? 'selected' : '' }}>Jekyll (Static)</option>
+                                            <option value="Astro" {{ old('cms_platform') == 'Astro' ? 'selected' : '' }}>Astro (Static)</option>
+                                            <option value="Next.js" {{ old('cms_platform') == 'Next.js' ? 'selected' : '' }}>Next.js (Static)</option>
+                                            <option value="Nuxt.js" {{ old('cms_platform') == 'Nuxt.js' ? 'selected' : '' }}>Nuxt.js (Static)</option>
                                             <option value="Custom" {{ old('cms_platform') == 'Custom' ? 'selected' : '' }}>Custom</option>
                                             <option value="Others" {{ old('cms_platform') == 'Others' ? 'selected' : '' }}>Others</option>
                                         </select>

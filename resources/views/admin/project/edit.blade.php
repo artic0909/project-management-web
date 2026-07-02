@@ -313,7 +313,7 @@
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">CMS / Platform <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     @php
-                                        $standardPlatforms = ['WordPress', 'Shopify', 'Custom'];
+                                        $standardPlatforms = ['WordPress', 'Shopify', 'WooCommerce', 'Magento', 'Webflow', 'Wix', 'Squarespace', 'Gatsby', 'Hugo', 'Jekyll', 'Astro', 'Next.js', 'Nuxt.js', 'Custom'];
                                         $isOthers = !in_array($project->cms_platform, $standardPlatforms) && !empty($project->cms_platform);
                                     @endphp
                                     <div style="display:flex;gap:12px;">
@@ -321,6 +321,17 @@
                                             <option value="">— Select —</option>
                                             <option value="WordPress" {{ old('cms_platform', $project->cms_platform) == 'WordPress' ? 'selected' : '' }}>WordPress</option>
                                             <option value="Shopify" {{ old('cms_platform', $project->cms_platform) == 'Shopify' ? 'selected' : '' }}>Shopify</option>
+                                            <option value="WooCommerce" {{ old('cms_platform', $project->cms_platform) == 'WooCommerce' ? 'selected' : '' }}>WooCommerce</option>
+                                            <option value="Magento" {{ old('cms_platform', $project->cms_platform) == 'Magento' ? 'selected' : '' }}>Magento</option>
+                                            <option value="Webflow" {{ old('cms_platform', $project->cms_platform) == 'Webflow' ? 'selected' : '' }}>Webflow</option>
+                                            <option value="Wix" {{ old('cms_platform', $project->cms_platform) == 'Wix' ? 'selected' : '' }}>Wix</option>
+                                            <option value="Squarespace" {{ old('cms_platform', $project->cms_platform) == 'Squarespace' ? 'selected' : '' }}>Squarespace</option>
+                                            <option value="Gatsby" {{ old('cms_platform', $project->cms_platform) == 'Gatsby' ? 'selected' : '' }}>Gatsby (Static)</option>
+                                            <option value="Hugo" {{ old('cms_platform', $project->cms_platform) == 'Hugo' ? 'selected' : '' }}>Hugo (Static)</option>
+                                            <option value="Jekyll" {{ old('cms_platform', $project->cms_platform) == 'Jekyll' ? 'selected' : '' }}>Jekyll (Static)</option>
+                                            <option value="Astro" {{ old('cms_platform', $project->cms_platform) == 'Astro' ? 'selected' : '' }}>Astro (Static)</option>
+                                            <option value="Next.js" {{ old('cms_platform', $project->cms_platform) == 'Next.js' ? 'selected' : '' }}>Next.js (Static)</option>
+                                            <option value="Nuxt.js" {{ old('cms_platform', $project->cms_platform) == 'Nuxt.js' ? 'selected' : '' }}>Nuxt.js (Static)</option>
                                             <option value="Custom" {{ old('cms_platform', $project->cms_platform) == 'Custom' ? 'selected' : '' }}>Custom</option>
                                             <option value="Others" {{ (old('cms_platform') == 'Others' || $isOthers) ? 'selected' : '' }}>Others</option>
                                         </select>
