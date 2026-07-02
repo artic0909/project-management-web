@@ -305,6 +305,72 @@
                 </div>
                 @endif
 
+                @if($routePrefix == 'admin')
+                {{-- Payments History --}}
+                <div class="dash-card">
+                    <div class="card-head" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px 10px;">
+                        <div class="card-title">
+                            <i class="bi bi-credit-card-fill" style="color:var(--accent);margin-right:6px;"></i>Payments History
+                        </div>
+                        <span style="font-size:12px; font-weight:700; padding:4px 10px; border-radius:6px; background:rgba(16,185,129,0.1); color:#10b981;">
+                            Total Paid: ₹{{ number_format($order->payments->sum('amount'), 2) }}
+                        </span>
+                    </div>
+                    <div class="card-body" style="padding: 0 18px 18px;">
+                        <div class="table-wrap" style="border: 1px solid var(--b1); border-radius: 8px; overflow: hidden;">
+                            <table class="data-table" style="margin: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Invoice No</th>
+                                        <th>Method</th>
+                                        <th>Transaction ID</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th style="text-align: center;">Screenshot / Proof</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($order->payments as $pay)
+                                    <tr>
+                                        <td>{{ $pay->transaction_date ? $pay->transaction_date->format('d M Y') : 'N/A' }}</td>
+                                        <td><strong>{{ $pay->invoice_no ?? 'N/A' }}</strong></td>
+                                        <td><span class="src-tag google-type" style="padding: 2px 7px; font-size: 10px;">{{ $pay->payment_method ?? 'N/A' }}</span></td>
+                                        <td><span class="mono" style="font-size: 11px;">{{ $pay->transaction_id ?? 'N/A' }}</span></td>
+                                        <td><span class="money-cell" style="color:#10b981; font-weight: 700;">₹{{ number_format($pay->amount, 2) }}</span></td>
+                                        <td><span style="color:{{ $pay->status->color ?? 'var(--accent)' }}; font-weight: 700;">{{ $pay->status->name ?? 'N/A' }}</span></td>
+                                        <td style="text-align: center;">
+                                            @if($pay->screenshot)
+                                                @php
+                                                    $extension = strtolower(pathinfo($pay->screenshot, PATHINFO_EXTENSION));
+                                                    $isPdf = $extension === 'pdf';
+                                                @endphp
+                                                @if($isPdf)
+                                                    <a href="{{ asset('storage/' . $pay->screenshot) }}" target="_blank" class="ra-btn sm" title="View PDF Proof" style="padding: 4px 8px; font-size: 11px; color: #ef4444; background: rgba(239, 68, 68, 0.1); border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-weight:700;">
+                                                        <i class="bi bi-filetype-pdf"></i> PDF
+                                                    </a>
+                                                @else
+                                                    <a href="{{ asset('storage/' . $pay->screenshot) }}" target="_blank" style="display: inline-block;" title="View Image Proof">
+                                                        <img src="{{ asset('storage/' . $pay->screenshot) }}" style="width: 32px; height: 32px; object-fit: cover; border-radius: 6px; border: 1px solid var(--b1);" alt="Proof">
+                                                    </a>
+                                                @endif
+                                            @else
+                                                <span style="color:var(--t4); font-style:italic; font-size:11px">No Proof</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="7" style="text-align:center; padding:20px; color:var(--t4);">No payments recorded yet.</td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
                 {{-- ALL CONTACT POINTS --}}
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
                     <div class="dash-card" style="padding:18px;">

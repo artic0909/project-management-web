@@ -419,7 +419,7 @@ class OrderController extends Controller
     public function show($id)
     {
         $routePrefix = 'admin';
-        $order = Order::with(['status', 'services', 'sources', 'plans', 'assignments.sale', 'createdBy', 'paymentTerms', 'mktPaymentStatus', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
+        $order = Order::with(['status', 'services', 'sources', 'plans', 'assignments.sale', 'createdBy', 'paymentTerms', 'mktPaymentStatus', 'notes_history.createdBy', 'notes_history.updatedBy', 'payments.status', 'payments.createdBy'])->findOrFail($id);
         
         $orderStatuses = Status::where('type', 'order')->get();
         $paymentStatuses = Status::where('type', 'payment')->get();
