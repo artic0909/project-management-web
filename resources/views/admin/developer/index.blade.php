@@ -770,6 +770,21 @@
                                 <td>
                                     <!-- Modal Btns -->
                                     <div class="row-actions">
+                                        <button class="ra-btn" title="View KYC Details" 
+                                            data-name="{{ $developer->name }}"
+                                            data-phone="{{ $developer->phone ?? 'N/A' }}"
+                                            data-address="{{ $developer->address ?? 'N/A' }}"
+                                            data-submitted="{{ $developer->kyc_submitted ? '1' : '0' }}"
+                                            data-profile="{{ $developer->profile_image ? asset('storage/' . $developer->profile_image) : '' }}"
+                                            data-aadhar="{{ $developer->aadhar_card ? asset('storage/' . $developer->aadhar_card) : '' }}"
+                                            data-pan="{{ $developer->pan_card ? asset('storage/' . $developer->pan_card) : '' }}"
+                                            data-voter="{{ $developer->voter_card ? asset('storage/' . $developer->voter_card) : '' }}"
+                                            data-bank="{{ $developer->bank_account_pic ? asset('storage/' . $developer->bank_account_pic) : '' }}"
+                                            data-qual-text="{{ $developer->qualification_details ?? 'N/A' }}"
+                                            data-qual-files="{{ json_encode($developer->qualification_attachments ?? []) }}"
+                                            onclick="showKycDetails(this)">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </button>
                                         <!-- <button class="ra-btn" title="Toggle Power"><i class="bi bi-power"></i></button> -->
                                         <a href="{{ route($routePrefix . '.developer.edit', $developer->id) }}" class="ra-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
                                         <button class="ra-btn" title="Send Email"><i class="bi bi-envelope-fill"></i></button>
@@ -930,6 +945,192 @@
         }
     </script>
 
+    <!-- KYC Details Modal -->
+    <div class="modal fade" id="kycModal" tabindex="-1" aria-labelledby="kycModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 12px; overflow: hidden; border: none; background: var(--bg2); color: var(--t1);">
+                <div class="modal-header" style="border-bottom: 1px solid var(--b1); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <h5 class="modal-title" id="kycModalLabel" style="font-weight: 800; font-size: 16px; display: flex; align-items: center; gap: 8px; margin: 0;">
+                        <i class="bi bi-shield-check" style="color: var(--accent); font-size: 20px;"></i>
+                        KYC Verification Profile
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background: none; border: none; color: var(--t3); font-size: 20px; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center;"><i class="bi bi-x-lg"></i></button>
+                </div>
+                <div class="modal-body" style="padding: 24px;">
+                    <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; align-items: start;">
+                        <!-- Left: Profile pic and status -->
+                        <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; background: var(--bg3); padding: 20px; border-radius: 12px; border: 1px solid var(--b1);">
+                            <img id="kycProfileImage" src="" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--b2); background: var(--bg2);" alt="Profile Image">
+                            <div>
+                                <h4 id="kycName" style="font-size: 16px; font-weight: 700; margin: 0 0 4px 0;"></h4>
+                                <div id="kycStatusBadge"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right: Info columns -->
+                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div>
+                                    <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--t4); display: block; margin-bottom: 4px;">Phone Number</label>
+                                    <span id="kycPhone" style="font-size: 14px; font-weight: 600;"></span>
+                                </div>
+                                <div>
+                                    <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--t4); display: block; margin-bottom: 4px;">Address</label>
+                                    <span id="kycAddress" style="font-size: 14px; font-weight: 600;"></span>
+                                </div>
+                            </div>
+                            
+                            <div style="border-top: 1px solid var(--b1); padding-top: 16px;">
+                                <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--t4); display: block; margin-bottom: 12px;">KYC Document Proofs</label>
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                                    <!-- Aadhar -->
+                                    <div id="kycAadharBox" style="text-align: center; background: var(--bg3); padding: 12px; border-radius: 8px; border: 1px solid var(--b1); display: flex; flex-direction: column; gap: 8px; align-items: center; justify-content: center;">
+                                        <span style="font-size: 11px; font-weight: 700;">Aadhar Card</span>
+                                        <a id="kycAadharLink" href="" target="_blank" style="display: none;">
+                                            <img id="kycAadharThumb" src="" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid var(--b2);">
+                                            <span id="kycAadharPdf" class="btn-ghost sm" style="display: none; padding: 4px 8px; color: #ef4444; background: rgba(239, 68, 68, 0.1); border-radius: 4px; font-size: 11px; font-weight: 700; text-decoration: none;"><i class="bi bi-file-earmark-pdf-fill"></i> PDF</span>
+                                        </a>
+                                        <span id="kycAadharMissing" style="color: var(--t4); font-style: italic; font-size: 12px;">Not Uploaded</span>
+                                    </div>
+                                    
+                                    <!-- PAN -->
+                                    <div id="kycPanBox" style="text-align: center; background: var(--bg3); padding: 12px; border-radius: 8px; border: 1px solid var(--b1); display: flex; flex-direction: column; gap: 8px; align-items: center; justify-content: center;">
+                                        <span style="font-size: 11px; font-weight: 700;">PAN Card</span>
+                                        <a id="kycPanLink" href="" target="_blank" style="display: none;">
+                                            <img id="kycPanThumb" src="" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid var(--b2);">
+                                            <span id="kycPanPdf" class="btn-ghost sm" style="display: none; padding: 4px 8px; color: #ef4444; background: rgba(239, 68, 68, 0.1); border-radius: 4px; font-size: 11px; font-weight: 700; text-decoration: none;"><i class="bi bi-file-earmark-pdf-fill"></i> PDF</span>
+                                        </a>
+                                        <span id="kycPanMissing" style="color: var(--t4); font-style: italic; font-size: 12px;">Not Uploaded</span>
+                                    </div>
+                                    
+                                    <!-- Voter Card -->
+                                    <div id="kycVoterBox" style="text-align: center; background: var(--bg3); padding: 12px; border-radius: 8px; border: 1px solid var(--b1); display: flex; flex-direction: column; gap: 8px; align-items: center; justify-content: center;">
+                                        <span style="font-size: 11px; font-weight: 700;">Voter Card</span>
+                                        <a id="kycVoterLink" href="" target="_blank" style="display: none;">
+                                            <img id="kycVoterThumb" src="" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid var(--b2);">
+                                            <span id="kycVoterPdf" class="btn-ghost sm" style="display: none; padding: 4px 8px; color: #ef4444; background: rgba(239, 68, 68, 0.1); border-radius: 4px; font-size: 11px; font-weight: 700; text-decoration: none;"><i class="bi bi-file-earmark-pdf-fill"></i> PDF</span>
+                                        </a>
+                                        <span id="kycVoterMissing" style="color: var(--t4); font-style: italic; font-size: 12px;">Not Uploaded</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; border-top: 1px solid var(--b1); padding-top: 16px;">
+                                <!-- Bank Account -->
+                                <div style="background: var(--bg3); padding: 16px; border-radius: 10px; border: 1px solid var(--b1); display: flex; flex-direction: column; gap: 8px; align-items: center; text-align: center; justify-content: center;">
+                                    <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--t4); margin: 0;">Bank Account Proof</label>
+                                    <a id="kycBankLink" href="" target="_blank" style="display: none;">
+                                        <img id="kycBankThumb" src="" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid var(--b2);">
+                                        <span id="kycBankPdf" class="btn-ghost sm" style="display: none; padding: 4px 8px; color: #ef4444; background: rgba(239, 68, 68, 0.1); border-radius: 4px; font-size: 11px; font-weight: 700; text-decoration: none;"><i class="bi bi-file-earmark-pdf-fill"></i> PDF</span>
+                                    </a>
+                                    <span id="kycBankMissing" style="color: var(--t4); font-style: italic; font-size: 12px;">Not Uploaded</span>
+                                </div>
+
+                                <!-- Qualifications -->
+                                <div style="background: var(--bg3); padding: 16px; border-radius: 10px; border: 1px solid var(--b1); display: flex; flex-direction: column; gap: 8px;">
+                                    <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--t4); text-align: center; margin: 0;">Qualifications</label>
+                                    <div style="font-size: 13px; font-weight: 600; color: var(--t2); text-align: center;" id="kycQualificationText"></div>
+                                    <div id="kycAttachmentsArea" style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showKycDetails(btn) {
+            const name = btn.getAttribute('data-name');
+            const phone = btn.getAttribute('data-phone');
+            const address = btn.getAttribute('data-address');
+            const submitted = btn.getAttribute('data-submitted') === '1';
+            const profile = btn.getAttribute('data-profile');
+            const aadhar = btn.getAttribute('data-aadhar');
+            const pan = btn.getAttribute('data-pan');
+            const voter = btn.getAttribute('data-voter');
+            const bank = btn.getAttribute('data-bank');
+            const qualText = btn.getAttribute('data-qual-text');
+            const qualFiles = JSON.parse(btn.getAttribute('data-qual-files') || '[]');
+
+            document.getElementById('kycName').innerText = name;
+            document.getElementById('kycPhone').innerText = phone;
+            document.getElementById('kycAddress').innerText = address;
+            document.getElementById('kycQualificationText').innerText = qualText;
+
+            // Profile Image
+            const profileImg = document.getElementById('kycProfileImage');
+            profileImg.src = profile ? profile : 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+
+            // Status Badge
+            const statusBadge = document.getElementById('kycStatusBadge');
+            if (submitted) {
+                statusBadge.innerHTML = `<span style="font-size:11px; font-weight:800; padding:2px 8px; border-radius:4px; background:rgba(16,185,129,0.15); color:#10b981; text-transform:uppercase;">Verified</span>`;
+            } else {
+                statusBadge.innerHTML = `<span style="font-size:11px; font-weight:800; padding:2px 8px; border-radius:4px; background:rgba(239,68,68,0.15); color:#ef4444; text-transform:uppercase;">Not Verified</span>`;
+            }
+
+            // Helper function to setup documents
+            function setupDoc(linkId, thumbId, pdfId, missingId, fileUrl) {
+                const link = document.getElementById(linkId);
+                const thumb = document.getElementById(thumbId);
+                const pdfBadge = document.getElementById(pdfId);
+                const missing = document.getElementById(missingId);
+
+                if (fileUrl) {
+                    link.href = fileUrl;
+                    link.style.display = 'block';
+                    missing.style.display = 'none';
+
+                    const isPdf = fileUrl.toLowerCase().endsWith('.pdf');
+                    if (isPdf) {
+                        thumb.style.display = 'none';
+                        pdfBadge.style.display = 'inline-flex';
+                    } else {
+                        thumb.src = fileUrl;
+                        thumb.style.display = 'block';
+                        pdfBadge.style.display = 'none';
+                    }
+                } else {
+                    link.style.display = 'none';
+                    missing.style.display = 'block';
+                }
+            }
+
+            setupDoc('kycAadharLink', 'kycAadharThumb', 'kycAadharPdf', 'kycAadharMissing', aadhar);
+            setupDoc('kycPanLink', 'kycPanThumb', 'kycPanPdf', 'kycPanMissing', pan);
+            setupDoc('kycVoterLink', 'kycVoterThumb', 'kycVoterPdf', 'kycVoterMissing', voter);
+            setupDoc('kycBankLink', 'kycBankThumb', 'kycBankPdf', 'kycBankMissing', bank);
+
+            // Qualification Attachments Area
+            const attachmentsArea = document.getElementById('kycAttachmentsArea');
+            attachmentsArea.innerHTML = '';
+            if (qualFiles && qualFiles.length > 0) {
+                qualFiles.forEach((file, idx) => {
+                    const fileUrl = `/storage/${file}`;
+                    const isPdf = file.toLowerCase().endsWith('.pdf');
+                    const link = document.createElement('a');
+                    link.href = fileUrl;
+                    link.target = '_blank';
+                    link.title = `Attachment ${idx + 1}`;
+                    link.style.textDecoration = 'none';
+
+                    if (isPdf) {
+                        link.innerHTML = `<span class="btn-ghost sm" style="padding: 4px 8px; color: #ef4444; background: rgba(239, 68, 68, 0.1); border-radius: 4px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="bi bi-file-earmark-pdf-fill"></i> Att ${idx + 1}</span>`;
+                    } else {
+                        link.innerHTML = `<img src="${fileUrl}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid var(--b2);" alt="Attachment">`;
+                    }
+                    attachmentsArea.appendChild(link);
+                });
+            } else {
+                attachmentsArea.innerHTML = `<span style="color: var(--t4); font-style: italic; font-size: 12px;">No Attachments</span>`;
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('kycModal'));
+            modal.show();
+        }
+    </script>
 </main>
 
 @endsection
