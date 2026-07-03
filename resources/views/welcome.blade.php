@@ -1024,7 +1024,13 @@
             <h2 class="fs-title">What happens next?</h2>
             <p class="fs-desc">Our workflow is designed to deliver high-quality results, fast and efficient.</p>
        
-            <p class="fs-desc">Address and other details collect from - <a href="https://www.standsweb.com/" style="color:#FF4D1C;text-decoration:underline">www.standsweb.com</a></p>
+            <p class="fs-desc" style="margin-top: 20px; line-height: 1.6; color: rgba(255,255,255,0.7);">
+              <strong style="color: #fff;">Standsweb</strong><br>
+              +91 89270-43805<br>
+              <a href="mailto:info@standsweb.com" style="color:#FF4D1C;text-decoration:underline">info@standsweb.com</a><br>
+              PS Qube, Action Area IID, Newtown, Kolkata, 700156<br>
+              <a href="https://www.standsweb.com/" style="color:#FF4D1C;text-decoration:underline">www.standsweb.com</a>
+            </p>
 
             <!-- <div class="fs-feat">
               <div class="f-item">
