@@ -364,23 +364,27 @@
                         <div class="bank-details">
                             <div class="bank-row">
                                 <span class="bank-label">Account Name:</span>
-                                <div class="bank-line"></div>
+                                <div class="bank-line">Standsweb</div>
                             </div>
                             <div class="bank-row">
                                 <span class="bank-label">Bank Name:</span>
-                                <div class="bank-line"></div>
+                                <div class="bank-line">State Bank of India</div>
                             </div>
                             <div class="bank-row">
                                 <span class="bank-label">Account Number:</span>
-                                <div class="bank-line"></div>
+                                <div class="bank-line">44128332491</div>
                             </div>
                             <div class="bank-row">
                                 <span class="bank-label">IFSC Code:</span>
-                                <div class="bank-line"></div>
+                                <div class="bank-line">SBIN0003242</div>
                             </div>
                             <div class="bank-row">
                                 <span class="bank-label">Branch:</span>
-                                <div class="bank-line"></div>
+                                <div class="bank-line">ACB Debagram</div>
+                            </div>
+                            <div class="bank-row">
+                                <span class="bank-label">SWIFT Code:</span>
+                                <div class="bank-line">SBININBB812</div>
                             </div>
                         </div>
                     </div>

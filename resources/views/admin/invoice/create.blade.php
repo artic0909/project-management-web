@@ -292,19 +292,23 @@ Rates are subject to change without prior notification.</textarea>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl sm-lbl">Bank Name</label>
-                                    <input type="text" name="bank_details[bank_name]" class="form-inp sm" value="ICICI Bank">
+                                    <input type="text" name="bank_details[bank_name]" class="form-inp sm" value="State Bank of India">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl sm-lbl">Account Number</label>
-                                    <input type="text" name="bank_details[account_number]" class="form-inp sm" value="XXXXXXXXXXXX">
+                                    <input type="text" name="bank_details[account_number]" class="form-inp sm" value="44128332491">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl sm-lbl">IFSC Code</label>
-                                    <input type="text" name="bank_details[ifsc]" class="form-inp sm" value="XXXXXXXX">
+                                    <input type="text" name="bank_details[ifsc]" class="form-inp sm" value="SBIN0003242">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl sm-lbl">Branch</label>
-                                    <input type="text" name="bank_details[branch]" class="form-inp sm" value="Main Branch">
+                                    <input type="text" name="bank_details[branch]" class="form-inp sm" value="ACB Debagram">
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl sm-lbl">SWIFT Code</label>
+                                    <input type="text" name="bank_details[swift]" class="form-inp sm" value="SBININBB812">
                                 </div>
                             </div>
                         </div>

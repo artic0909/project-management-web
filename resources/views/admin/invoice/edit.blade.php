@@ -297,23 +297,27 @@
                             <div style="display: flex; flex-direction: column; gap: 10px;">
                                 <div class="form-row">
                                     <label class="form-lbl sm-lbl">Account Name</label>
-                                    <input type="text" name="bank_details[account_name]" class="form-inp sm" value="{{ $invoice->bank_details['account_name'] ?? '' }}">
+                                    <input type="text" name="bank_details[account_name]" class="form-inp sm" value="{{ $invoice->bank_details['account_name'] ?? 'Standsweb' }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl sm-lbl">Bank Name</label>
-                                    <input type="text" name="bank_details[bank_name]" class="form-inp sm" value="{{ $invoice->bank_details['bank_name'] ?? '' }}">
+                                    <input type="text" name="bank_details[bank_name]" class="form-inp sm" value="{{ $invoice->bank_details['bank_name'] ?? 'State Bank of India' }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl sm-lbl">Account Number</label>
-                                    <input type="text" name="bank_details[account_number]" class="form-inp sm" value="{{ $invoice->bank_details['account_number'] ?? '' }}">
+                                    <input type="text" name="bank_details[account_number]" class="form-inp sm" value="{{ $invoice->bank_details['account_number'] ?? '44128332491' }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl sm-lbl">IFSC Code</label>
-                                    <input type="text" name="bank_details[ifsc]" class="form-inp sm" value="{{ $invoice->bank_details['ifsc'] ?? '' }}">
+                                    <input type="text" name="bank_details[ifsc]" class="form-inp sm" value="{{ $invoice->bank_details['ifsc'] ?? 'SBIN0003242' }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl sm-lbl">Branch</label>
-                                    <input type="text" name="bank_details[branch]" class="form-inp sm" value="{{ $invoice->bank_details['branch'] ?? '' }}">
+                                    <input type="text" name="bank_details[branch]" class="form-inp sm" value="{{ $invoice->bank_details['branch'] ?? 'ACB Debagram' }}">
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-lbl sm-lbl">SWIFT Code</label>
+                                    <input type="text" name="bank_details[swift]" class="form-inp sm" value="{{ $invoice->bank_details['swift'] ?? 'SBININBB812' }}">
                                 </div>
                             </div>
                         </div>

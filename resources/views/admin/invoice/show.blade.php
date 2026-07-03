@@ -403,23 +403,27 @@
                         <div class="bank-details">
                             <div class="bank-row">
                                 <span class="bank-label">Account Name:</span>
-                                <div class="bank-line">{{ $invoice->bank_details['account_name'] ?? '' }}</div>
+                                <div class="bank-line">{{ $invoice->bank_details['account_name'] ?? 'Standsweb' }}</div>
                             </div>
                             <div class="bank-row">
                                 <span class="bank-label">Bank Name:</span>
-                                <div class="bank-line">{{ $invoice->bank_details['bank_name'] ?? '' }}</div>
+                                <div class="bank-line">{{ $invoice->bank_details['bank_name'] ?? 'State Bank of India' }}</div>
                             </div>
                             <div class="bank-row">
                                 <span class="bank-label">Account Number:</span>
-                                <div class="bank-line">{{ $invoice->bank_details['account_number'] ?? '' }}</div>
+                                <div class="bank-line">{{ $invoice->bank_details['account_number'] ?? '44128332491' }}</div>
                             </div>
                             <div class="bank-row">
                                 <span class="bank-label">IFSC Code:</span>
-                                <div class="bank-line">{{ $invoice->bank_details['ifsc'] ?? '' }}</div>
+                                <div class="bank-line">{{ $invoice->bank_details['ifsc'] ?? 'SBIN0003242' }}</div>
                             </div>
                             <div class="bank-row">
                                 <span class="bank-label">Branch:</span>
-                                <div class="bank-line">{{ $invoice->bank_details['branch'] ?? '' }}</div>
+                                <div class="bank-line">{{ $invoice->bank_details['branch'] ?? 'ACB Debagram' }}</div>
+                            </div>
+                            <div class="bank-row">
+                                <span class="bank-label">SWIFT Code:</span>
+                                <div class="bank-line">{{ $invoice->bank_details['swift'] ?? 'SBININBB812' }}</div>
                             </div>
                         </div>
                     </div>
