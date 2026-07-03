@@ -50,7 +50,7 @@
 
         /* Content Area */
         .content {
-            padding: 30px 40px;
+            padding: 30px 40px 80px 40px;
             position: relative;
             z-index: 2;
             margin-top: -120px;
@@ -137,8 +137,8 @@
         .summary-label { font-weight: 800; min-width: 100px; }
         .summary-value {  flex: 1; text-align: right; font-weight: 700; padding: 0 5px; }
 
-        .notes-section, .bank-section {
-            margin-bottom: 25px;
+        .notes-section, .bank-section, .terms-section {
+            margin-bottom: 20px;
         }
         .section-title { font-size: 14px; font-weight: 800; margin-bottom: 8px;  padding-bottom: 4px; }
         .notes-list { list-style: none; font-size: 12px; color: var(--text-muted); }
@@ -323,6 +323,42 @@
                         </ul>
                     </div>
 
+                    <div class="terms-section">
+                        <div class="section-title">Terms & Conditions:</div>
+                        <ol style="font-size: 11px; color: var(--text-muted); padding-left: 15px; margin: 0; line-height: 1.5;">
+                            <li style="margin-bottom: 4px;">Once payment is done, the amount is not refundable.</li>
+                            <li style="margin-bottom: 4px;">A 100% advance payment will be required at the time of signing the contract.</li>
+                            <li style="margin-bottom: 4px;">Retainer fees (does not include any advertising budget or tools used on the client's behalf)</li>
+                            <li style="margin-bottom: 4px;">This amount is payable by Cheque, RTGS, NEFT or IMPS, UPI</li>
+                            <li style="margin-bottom: 4px;">The retainer amount is subject to increment if the scope of work or duration increases beyond the expected deliverables or duration.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="right-col">
+                    <div class="summary-box" style="margin-bottom: 25px;">
+                        <div class="summary-row">
+                            <span class="summary-label">Subtotal:</span>
+                            <span class="summary-value">{{ number_format($payment->amount, 2) }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">CGST (9%):</span>
+                            <span class="summary-value">0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">SGST (9%):</span>
+                            <span class="summary-value">0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Adjustment:</span>
+                            <span class="summary-value">0.00</span>
+                        </div>
+                        <div class="summary-row" style="margin-top:10px; color:var(--navy); font-size:16px;">
+                            <span class="summary-label">Total:</span>
+                            <span class="summary-value">₹{{ number_format($payment->amount, 2) }}</span>
+                        </div>
+                    </div>
+
                     <div class="bank-section">
                         <div class="section-title">Bank Details:</div>
                         <div class="bank-details">
@@ -346,42 +382,6 @@
                                 <span class="bank-label">Branch:</span>
                                 <div class="bank-line"></div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="terms-section" style="margin-top: 25px;">
-                        <div class="section-title">Terms & Conditions:</div>
-                        <ol style="font-size: 11px; color: var(--text-muted); padding-left: 15px; margin: 0; line-height: 1.5;">
-                            <li style="margin-bottom: 4px;">Once payment is done, the amount is not refundable.</li>
-                            <li style="margin-bottom: 4px;">A 100% advance payment will be required at the time of signing the contract.</li>
-                            <li style="margin-bottom: 4px;">Retainer fees (does not include any advertising budget or tools used on the client's behalf)</li>
-                            <li style="margin-bottom: 4px;">This amount is payable by Cheque, RTGS, NEFT or IMPS, UPI</li>
-                            <li style="margin-bottom: 4px;">The retainer amount is subject to increment if the scope of work or duration increases beyond the expected deliverables or duration.</li>
-                        </ol>
-                    </div>
-                </div>
-
-                <div class="right-col">
-                    <div class="summary-box">
-                        <div class="summary-row">
-                            <span class="summary-label">Subtotal:</span>
-                            <span class="summary-value">{{ number_format($payment->amount, 2) }}</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="summary-label">CGST (9%):</span>
-                            <span class="summary-value">0.00</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="summary-label">SGST (9%):</span>
-                            <span class="summary-value">0.00</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="summary-label">Adjustment:</span>
-                            <span class="summary-value">0.00</span>
-                        </div>
-                        <div class="summary-row" style="margin-top:10px; color:var(--navy); font-size:16px;">
-                            <span class="summary-label">Total:</span>
-                            <span class="summary-value">₹{{ number_format($payment->amount, 2) }}</span>
                         </div>
                     </div>
                 </div>
