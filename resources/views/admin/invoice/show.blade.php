@@ -251,11 +251,11 @@
 
         <div class="content">
             <div class="sender-info">
-                <h2>{{ $invoice->sender_name ?? 'StandsWeb' }}</h2>
+                <h2>{{ $invoice->sender_name ?? 'Standsweb' }}</h2>
                 <p>
                     {!! nl2br(e($invoice->sender_address ?? "PS Qube, Action Area IID, Newtown, Kolkata, 700156")) !!}<br>
                     @if($invoice->sender_gstin) GSTIN: {{ $invoice->sender_gstin }} @else GSTIN: 29JTKPS5068C1Z1 @endif<br>
-                    Contact: {{ $invoice->sender_contact ?? '+91 892-704-3805' }}<br>
+                    Contact: {{ $invoice->sender_contact ?? '+91 89270-43805' }}<br>
                     Email: {{ $invoice->sender_email ?? 'info@standsweb.com' }}
                 </p>
             </div>
@@ -379,6 +379,17 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="terms-section" style="margin-top: 25px;">
+                        <div class="section-title">Terms & Conditions:</div>
+                        <ol style="font-size: 11px; color: var(--text-muted); padding-left: 15px; margin: 0; line-height: 1.5;">
+                            <li style="margin-bottom: 4px;">Once payment is done, the amount is not refundable.</li>
+                            <li style="margin-bottom: 4px;">A 100% advance payment will be required at the time of signing the contract.</li>
+                            <li style="margin-bottom: 4px;">Retainer fees (does not include any advertising budget or tools used on the client's behalf)</li>
+                            <li style="margin-bottom: 4px;">This amount is payable by Cheque, RTGS, NEFT or IMPS, UPI</li>
+                            <li style="margin-bottom: 4px;">The retainer amount is subject to increment if the scope of work or duration increases beyond the expected deliverables or duration.</li>
+                        </ol>
+                    </div>
                 </div>
 
                 <div class="right-col">
@@ -427,7 +438,7 @@
             </div>
             <div class="footer-item">
                 <i class="bi bi-telephone-fill"></i>
-                <span>+91 892-704-3805</span>
+                <span>+91 89270-43805</span>
             </div>
         </div>
     </div>

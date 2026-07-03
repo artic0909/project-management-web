@@ -183,13 +183,13 @@
                     <div class="dash-card">
                         <div class="card-head">
                             <div class="card-title"><i class="bi bi-building"></i> Sender Details (Optional)</div>
-                            <span style="font-size:11px; opacity:0.6;">Leave blank to use default (StandsWeb)</span>
+                            <span style="font-size:11px; opacity:0.6;">Leave blank to use default (Standsweb)</span>
                         </div>
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row">
                                     <label class="form-lbl">Company Name</label>
-                                    <input type="text" name="sender_name" value="{{ old('sender_name') }}" class="form-inp" placeholder="StandsWeb">
+                                    <input type="text" name="sender_name" value="{{ old('sender_name') }}" class="form-inp" placeholder="Standsweb">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">GSTIN</label>
@@ -288,7 +288,7 @@ Rates are subject to change without prior notification.</textarea>
                             <div style="display: flex; flex-direction: column; gap: 10px;">
                                 <div class="form-row">
                                     <label class="form-lbl sm-lbl">Account Name</label>
-                                    <input type="text" name="bank_details[account_name]" class="form-inp sm" value="StandsWeb">
+                                    <input type="text" name="bank_details[account_name]" class="form-inp sm" value="Standsweb">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl sm-lbl">Bank Name</label>

@@ -95,7 +95,7 @@
         }
         .meta-label { font-weight: 700; color: #000; width: 120px; flex-shrink: 0; }
         .meta-value { flex: 1; text-align: left; }
-        .dots { border-bottom: 1px solid #999; flex: 1; height: 14px; margin-left: 5px; }
+        .dots {  flex: 1; height: 14px; margin-left: 5px; }
 
         /* Table */
         .invoice-table {
@@ -135,19 +135,19 @@
             align-items: flex-end;
         }
         .summary-label { font-weight: 800; min-width: 100px; }
-        .summary-value { border-bottom: 1px solid #999; flex: 1; text-align: right; font-weight: 700; padding: 0 5px; }
+        .summary-value {  flex: 1; text-align: right; font-weight: 700; padding: 0 5px; }
 
         .notes-section, .bank-section {
             margin-bottom: 25px;
         }
-        .section-title { font-size: 14px; font-weight: 800; margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+        .section-title { font-size: 14px; font-weight: 800; margin-bottom: 8px;  padding-bottom: 4px; }
         .notes-list { list-style: none; font-size: 12px; color: var(--text-muted); }
         .notes-list li { margin-bottom: 4px; display: flex; gap: 8px; }
 
         .bank-details { font-size: 12px; }
         .bank-row { display: flex; margin-bottom: 4px; align-items: flex-end; }
         .bank-label { font-weight: 700; width: 100px; }
-        .bank-line { border-bottom: 1px solid #ccc; flex: 1; height: 14px; }
+        .bank-line {  flex: 1; height: 14px; }
 
         /* Footer */
         .invoice-footer {
@@ -232,10 +232,10 @@
         <div class="content">
             <!-- Sender -->
             <div class="sender-info">
-                <h2>StandsWeb</h2>
+                <h2>Standsweb</h2>
                 <p>
                     PS Qube, Action Area IID, Newtown, Kolkata, 700156<br>
-                    Contact: +91 892-704-3805 | Email: info@standsweb.com
+                    Contact: +91 89270-43805 | Email: info@standsweb.com
                 </p>
             </div>
 
@@ -249,11 +249,11 @@
                     </div>
                     <div class="meta-row">
                         <span class="meta-label">Address:</span>
-                        <span class="meta-value">{{ $payment->order->full_address ?? '____________________________' }}</span>
+                        <span class="meta-value">{{ $payment->order->full_address ?? 'Not Provided' }}</span>
                     </div>
                     <div class="meta-row">
                         <span class="meta-label">GSTIN:</span>
-                        <span class="meta-value">____________________________</span>
+                        <span class="meta-value">{{ $payment->order->gst_number ?? 'Not Provided' }}</span>
                     </div>
                 </div>
 
@@ -268,11 +268,11 @@
                     </div>
                     <div class="meta-row">
                         <span class="meta-label">Due Date:</span>
-                        <span class="meta-value">_________________</span>
+                        <span class="meta-value">{{ $payment->order->due_date ? $payment->order->due_date->format('d-m-Y') : 'Not Provided' }}</span>
                     </div>
                     <div class="meta-row">
                         <span class="meta-label">Place of Supply:</span>
-                        <span class="meta-value">{{ $payment->order->state ?? '_________________' }}</span>
+                        <span class="meta-value">{{ $payment->order->state ?? 'Not Provided' }}</span>
                     </div>
                 </div>
             </div>
@@ -348,6 +348,17 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="terms-section" style="margin-top: 25px;">
+                        <div class="section-title">Terms & Conditions:</div>
+                        <ol style="font-size: 11px; color: var(--text-muted); padding-left: 15px; margin: 0; line-height: 1.5;">
+                            <li style="margin-bottom: 4px;">Once payment is done, the amount is not refundable.</li>
+                            <li style="margin-bottom: 4px;">A 100% advance payment will be required at the time of signing the contract.</li>
+                            <li style="margin-bottom: 4px;">Retainer fees (does not include any advertising budget or tools used on the client's behalf)</li>
+                            <li style="margin-bottom: 4px;">This amount is payable by Cheque, RTGS, NEFT or IMPS, UPI</li>
+                            <li style="margin-bottom: 4px;">The retainer amount is subject to increment if the scope of work or duration increases beyond the expected deliverables or duration.</li>
+                        </ol>
+                    </div>
                 </div>
 
                 <div class="right-col">
@@ -392,7 +403,7 @@
             </div>
             <div class="footer-item">
                 <i class="bi bi-telephone-fill"></i>
-                <span>+91 892-704-3805</span>
+                <span>+91 89270-43805</span>
             </div>
         </div>
     </div>

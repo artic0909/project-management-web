@@ -213,13 +213,13 @@
                     <div class="dash-card">
                         <div class="card-head">
                             <div class="card-title"><i class="bi bi-building"></i> Sender Details (Optional)</div>
-                            <span style="font-size:11px; opacity:0.6;">Leave blank to use default (StandsWeb)</span>
+                            <span style="font-size:11px; opacity:0.6;">Leave blank to use default (Standsweb)</span>
                         </div>
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row">
                                     <label class="form-lbl">Company Name</label>
-                                    <input type="text" name="sender_name" value="{{ old('sender_name', $invoice->sender_name) }}" class="form-inp" placeholder="StandsWeb">
+                                    <input type="text" name="sender_name" value="{{ old('sender_name', $invoice->sender_name) }}" class="form-inp" placeholder="Standsweb">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">GSTIN</label>
