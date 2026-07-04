@@ -468,6 +468,16 @@
         padding: 0 24px;
       }
     }
+
+    @media(max-width:480px) {
+      .portal-card {
+        padding: 32px 20px;
+      }
+      
+      body {
+        padding: 90px 16px 40px 16px;
+      }
+    }
   </style>
 </head>
 <body>

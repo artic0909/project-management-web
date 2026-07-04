@@ -290,7 +290,8 @@
     }
 
     .form-body {
-      padding: 48px
+      padding: 48px;
+      min-width: 0;
     }
 
     .form-section {
@@ -378,6 +379,12 @@
       align-items: center;
       gap: 6px;
       margin-bottom: 6px;
+    }
+
+    .multi-row .f-input {
+      flex: 1;
+      min-width: 0;
+      width: auto;
     }
 
     .phone-wrap {
@@ -899,16 +906,22 @@
 
     @media(max-width:1060px) {
       .form-card {
-        grid-template-columns: 1fr
+        grid-template-columns: 1fr;
       }
 
       .form-sidebar {
-        display: none
+        display: block !important;
+        border-radius: var(--r-lg) var(--r-lg) 0 0;
+        padding: 40px 30px;
+      }
+
+      .form-body {
+        padding: 30px;
       }
 
       .order-page {
         padding-left: 24px;
-        padding-right: 24px
+        padding-right: 24px;
       }
 
       footer {
@@ -918,7 +931,7 @@
       }
 
       nav {
-        padding: 0 24px
+        padding: 0 24px;
       }
 
       .ftop {
@@ -929,11 +942,18 @@
 
     @media(max-width:640px) {
       .form-grid {
-        grid-template-columns: 1fr
+        grid-template-columns: 1fr;
       }
 
       .form-body {
-        padding: 24px
+        padding: 24px 16px;
+      }
+
+      .order-page {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 90px;
+        padding-bottom: 40px;
       }
 
       .page-inner {
@@ -941,7 +961,11 @@
       }
 
       .page-title {
-        font-size: 36px;
+        font-size: 30px;
+      }
+
+      .page-subtitle {
+        font-size: 14.5px;
       }
 
       .ftop {
@@ -958,7 +982,7 @@
       }
 
       .psgrid {
-        grid-template-columns: 1fr
+        grid-template-columns: 1fr;
       }
 
       .submit-wrap {
@@ -970,6 +994,21 @@
       .s-btn {
         width: 100%;
         justify-content: center;
+      }
+
+      nav {
+        padding: 0 16px;
+        height: 60px;
+      }
+
+      .brand-logo {
+        width: 140px;
+        height: auto;
+      }
+
+      .btn-support {
+        padding: 7px 14px;
+        font-size: 12px;
       }
     }
 
