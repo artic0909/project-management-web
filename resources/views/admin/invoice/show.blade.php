@@ -48,97 +48,97 @@
         }
 
         .content {
-            padding: 30px 40px 80px 40px;
+            padding: 20px 30px 60px 30px;
             position: relative;
             z-index: 2;
             margin-top: -120px;
         }
 
         .sender-info {
-            margin-bottom: 25px;
+            margin-bottom: 15px;
         }
         .sender-info h2 {
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 800;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
             text-transform: uppercase;
         }
         .sender-info p {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
             max-width: 350px;
-            line-height: 1.5;
+            line-height: 1.4;
         }
 
         .meta-grid {
             display: grid;
             grid-template-columns: 1.2fr 0.8fr;
-            gap: 40px;
-            margin-bottom: 30px;
+            gap: 20px;
+            margin-bottom: 15px;
         }
 
         .bill-to h3, .invoice-meta h3 {
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 800;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
 
         .meta-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 4px;
-            font-size: 13px;
+            margin-bottom: 3px;
+            font-size: 11px;
         }
-        .meta-label { font-weight: 700; color: #000; width: 120px; flex-shrink: 0; }
+        .meta-label { font-weight: 700; color: #000; width: 110px; flex-shrink: 0; }
         .meta-value { flex: 1; text-align: left; }
 
         .invoice-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
         .invoice-table th {
             background: #e2e8f0;
-            padding: 10px 15px;
+            padding: 6px 10px;
             text-align: left;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 800;
             border: 1px solid #ccc;
         }
         .invoice-table td {
-            padding: 10px 15px;
-            font-size: 13px;
+            padding: 6px 10px;
+            font-size: 11px;
             border: 1px solid #ccc;
-            height: 35px;
+            height: 28px;
         }
 
         .bottom-section {
             display: grid;
             grid-template-columns: 1.2fr 0.8fr;
-            gap: 40px;
+            gap: 20px;
         }
 
         .summary-box {
-            font-size: 14px;
+            font-size: 12px;
         }
         .summary-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             align-items: flex-end;
         }
         .summary-label { font-weight: 800; min-width: 100px; }
         .summary-value {  flex: 1; text-align: right; font-weight: 700; padding: 0 5px; }
 
         .notes-section, .bank-section, .terms-section {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
-        .section-title { font-size: 14px; font-weight: 800; margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
-        .notes-list { list-style: none; font-size: 12px; color: var(--text-muted); }
-        .notes-list li { margin-bottom: 4px; display: flex; gap: 8px; }
+        .section-title { font-size: 12px; font-weight: 800; margin-bottom: 5px; border-bottom: 1px solid #eee; padding-bottom: 2px; }
+        .notes-list { list-style: none; font-size: 11px; color: var(--text-muted); }
+        .notes-list li { margin-bottom: 3px; display: flex; gap: 6px; }
 
-        .bank-details { font-size: 12px; }
-        .bank-row { display: flex; margin-bottom: 4px; align-items: flex-end; }
+        .bank-details { font-size: 11px; }
+        .bank-row { display: flex; margin-bottom: 2px; align-items: flex-end; }
         .bank-label { font-weight: 700; width: 100px; }
         .bank-line {  flex: 1; height: 14px; }
 
@@ -347,58 +347,7 @@
 
             <div class="bottom-section">
                 <div class="left-col">
-                    @if($invoice->notes)
-                    <div class="notes-section">
-                        <div class="section-title">Notes:</div>
-                        <div style="font-size: 12px; color: var(--text-muted);">
-                            {!! nl2br(e($invoice->notes)) !!}
-                        </div>
-                    </div>
-                    @endif
-
-                    <div class="terms-section">
-                        <div class="section-title">Terms & Conditions:</div>
-                        <ol style="font-size: 11px; color: var(--text-muted); padding-left: 15px; margin: 0; line-height: 1.5;">
-                            <li style="margin-bottom: 4px;">Once payment is done, the amount is not refundable.</li>
-                            <li style="margin-bottom: 4px;">A 100% advance payment will be required at the time of signing the contract.</li>
-                            <li style="margin-bottom: 4px;">Retainer fees (does not include any advertising budget or tools used on the client's behalf)</li>
-                            <li style="margin-bottom: 4px;">This amount is payable by Cheque, RTGS, NEFT or IMPS, UPI</li>
-                            <li style="margin-bottom: 4px;">The retainer amount is subject to increment if the scope of work or duration increases beyond the expected deliverables or duration.</li>
-                        </ol>
-                    </div>
-                </div>
-
-                <div class="right-col">
-                    <div class="summary-box" style="margin-bottom: 25px;">
-                        <div class="summary-row">
-                            <span class="summary-label">Subtotal:</span>
-                            <span class="summary-value">{{ number_format($invoice->subtotal, 2) }}</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="summary-label">CGST (9%):</span>
-                            <span class="summary-value">{{ number_format($invoice->cgst, 2) }}</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="summary-label">SGST (9%):</span>
-                            <span class="summary-value">{{ number_format($invoice->sgst, 2) }}</span>
-                        </div>
-                        @if($invoice->igst > 0)
-                        <div class="summary-row">
-                            <span class="summary-label">IGST (18%):</span>
-                            <span class="summary-value">{{ number_format($invoice->igst, 2) }}</span>
-                        </div>
-                        @endif
-                        <div class="summary-row">
-                            <span class="summary-label">Adjustment:</span>
-                            <span class="summary-value">{{ number_format($invoice->adjustment, 2) }}</span>
-                        </div>
-                        <div class="summary-row" style="margin-top:10px; color:var(--navy); font-size:16px;">
-                            <span class="summary-label">Total:</span>
-                            <span class="summary-value">₹{{ number_format($invoice->total, 2) }}</span>
-                        </div>
-                    </div>
-
-                    <div class="bank-section">
+                    <div class="bank-section" style="margin-bottom: 0;">
                         <div class="section-title">Bank Details:</div>
                         <div class="bank-details">
                             <div class="bank-row">
@@ -428,6 +377,48 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="right-col">
+                    <div class="summary-box">
+                        <div class="summary-row">
+                            <span class="summary-label">Subtotal:</span>
+                            <span class="summary-value">{{ number_format($invoice->subtotal, 2) }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">CGST (9%):</span>
+                            <span class="summary-value">{{ number_format($invoice->cgst, 2) }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">SGST (9%):</span>
+                            <span class="summary-value">{{ number_format($invoice->sgst, 2) }}</span>
+                        </div>
+                        @if($invoice->igst > 0)
+                        <div class="summary-row">
+                            <span class="summary-label">IGST (18%):</span>
+                            <span class="summary-value">{{ number_format($invoice->igst, 2) }}</span>
+                        </div>
+                        @endif
+                        <div class="summary-row">
+                            <span class="summary-label">Adjustment:</span>
+                            <span class="summary-value">{{ number_format($invoice->adjustment, 2) }}</span>
+                        </div>
+                        <div class="summary-row" style="margin-top:5px; color:var(--navy); font-size:13px;">
+                            <span class="summary-label">Total:</span>
+                            <span class="summary-value">₹{{ number_format($invoice->total, 2) }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="terms-section" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
+                <div class="section-title" style="border-bottom: none; margin-bottom: 4px; padding-bottom: 0;">Terms & Conditions:</div>
+                <ol style="font-size: 9.5px; color: var(--text-muted); padding-left: 15px; margin: 0; line-height: 1.4;">
+                    <li style="margin-bottom: 2px;">Once payment is done, the amount is not refundable.</li>
+                    <li style="margin-bottom: 2px;">A 100% advance payment will be required at the time of signing the contract.</li>
+                    <li style="margin-bottom: 2px;">Retainer fees (does not include any advertising budget or tools used on the client's behalf)</li>
+                    <li style="margin-bottom: 2px;">This amount is payable by Cheque, RTGS, NEFT or IMPS, UPI</li>
+                    <li style="margin-bottom: 2px;">The retainer amount is subject to increment if the scope of work or duration increases beyond the expected deliverables or duration.</li>
+                </ol>
             </div>
         </div>
 
