@@ -18,12 +18,13 @@ class PaymentController extends Controller
         // Search Filter
         if ($request->filled('q')) {
             $q = $request->q;
+            $cleanInvoiceNo = str_ireplace('STW', '', $q);
             $cleanId = ltrim(str_ireplace(['#ORD-', '#PAY-'], '', $q), '0');
             if (empty($cleanId)) $cleanId = $q;
 
-            $query->where(function($sub) use ($q, $cleanId) {
+            $query->where(function($sub) use ($q, $cleanId, $cleanInvoiceNo) {
                 // Payment fields
-                $sub->where('invoice_no', 'LIKE', "%$q%")
+                $sub->where('invoice_no', 'LIKE', "%$cleanInvoiceNo%")
                     ->orWhere('transaction_id', 'LIKE', "%$q%")
                     ->orWhere('payment_method', 'LIKE', "%$q%")
                     ->orWhere('amount', 'LIKE', "%$q%")
@@ -119,7 +120,7 @@ class PaymentController extends Controller
 
         // Generate Unique Invoice No for Payment
         do {
-            $data['invoice_no'] = strtoupper(\Illuminate\Support\Str::random(7));
+            $data['invoice_no'] = random_int(1000000000, 9999999999);
         } while (Payment::where('invoice_no', $data['invoice_no'])->exists());
 
         Payment::create($data);

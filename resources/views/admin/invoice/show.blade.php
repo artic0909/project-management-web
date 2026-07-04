@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice - {{ $invoice->invoice_no }}</title>
+    <title>Invoice - STW{{ $invoice->invoice_no }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -280,7 +280,7 @@
                 <div class="invoice-meta">
                     <div class="meta-row">
                         <span class="meta-label">Invoice No:</span>
-                        <span class="meta-value">{{ $invoice->invoice_no }}</span>
+                        <span class="meta-value">STW{{ $invoice->invoice_no }}</span>
                     </div>
                     <div class="meta-row">
                         <span class="meta-label">Invoice Date:</span>

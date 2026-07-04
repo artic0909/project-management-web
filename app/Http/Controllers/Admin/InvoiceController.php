@@ -18,8 +18,9 @@ class InvoiceController extends Controller
         // Filters
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('invoice_no', 'LIKE', "%$search%")
+            $cleanSearch = str_ireplace('STW', '', $search);
+            $query->where(function($q) use ($search, $cleanSearch) {
+                $q->where('invoice_no', 'LIKE', "%$cleanSearch%")
                   ->orWhere('client_name', 'LIKE', "%$search%")
                   ->orWhere('status', 'LIKE', "%$search%")
                   ->orWhereHas('order', function($sq) use ($search) {
@@ -54,7 +55,7 @@ class InvoiceController extends Controller
 
         // Generate Invoice No
         do {
-            $invoice_no = strtoupper(\Illuminate\Support\Str::random(7));
+            $invoice_no = random_int(1000000000, 9999999999);
         } while (Invoice::where('invoice_no', $invoice_no)->exists());
 
         return view('admin.invoice.create', compact('orders', 'payments', 'selectedOrder', 'invoice_no', 'routePrefix'));
@@ -89,7 +90,7 @@ class InvoiceController extends Controller
         
         // Generate new invoice number
         do {
-            $newInvoice->invoice_no = strtoupper(\Illuminate\Support\Str::random(7));
+            $newInvoice->invoice_no = random_int(1000000000, 9999999999);
         } while (Invoice::where('invoice_no', $newInvoice->invoice_no)->exists());
         $newInvoice->invoice_date = now();
         

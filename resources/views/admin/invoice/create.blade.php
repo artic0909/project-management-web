@@ -107,7 +107,10 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Invoice No <span class="text-danger">*</span></label>
-                                    <input type="text" name="invoice_no" value="{{ old('invoice_no', $invoice_no) }}" class="form-inp" required>
+                                    <div style="display: flex; align-items: stretch;">
+                                        <span style="background: var(--bg3, #f8f9fa); border: 1px solid var(--b3, #dee2e6); border-right: none; padding: 0 12px; display: flex; align-items: center; font-weight: 700; color: var(--t1); border-radius: 8px 0 0 8px; font-size: 14px;">STW</span>
+                                        <input type="text" name="invoice_no" value="{{ old('invoice_no', $invoice_no) }}" class="form-inp" style="border-top-left-radius: 0; border-bottom-left-radius: 0; flex: 1; height: 42px;" required>
+                                    </div>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Invoice Date <span class="text-danger">*</span></label>

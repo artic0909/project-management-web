@@ -96,7 +96,7 @@
                                     <td style="color:var(--t4);font-size:12px;font-weight:600;">
                                         {{ $loop->iteration + ($invoices->currentPage() - 1) * $invoices->perPage() }}</td>
                                     <td>
-                                        <div style="font-weight: 700; color: var(--accent);">{{ $invoice->invoice_no }}
+                                        <div style="font-weight: 700; color: var(--accent);">STW{{ $invoice->invoice_no }}
                                         </div>
                                     </td>
                                     <td><span

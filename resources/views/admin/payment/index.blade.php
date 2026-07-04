@@ -136,7 +136,7 @@
                                             <div class="ls">{{ $pay->transaction_date->format('d M Y') }}</div>
                                         </td>
                                         <td>
-                                            <span class="mono" style="font-size:12px; font-weight:700; color:var(--t1);">{{ $pay->invoice_no ?? 'N/A' }}</span>
+                                            <span class="mono" style="font-size:12px; font-weight:700; color:var(--t1);">{{ $pay->invoice_no ? 'STW'.$pay->invoice_no : 'N/A' }}</span>
                                         </td>
                                         <td>
                                             <a href="{{ route($routePrefix . '.orders.show', $pay->order_id) }}"

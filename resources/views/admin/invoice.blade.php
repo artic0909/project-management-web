@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice - {{ $payment->invoice_no ?? 'INV-'.str_pad($payment->id, 5, '0', STR_PAD_LEFT) }}</title>
+    <title>Invoice - STW{{ $payment->invoice_no ?? str_pad($payment->id, 10, '0', STR_PAD_LEFT) }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -260,7 +260,7 @@
                 <div class="invoice-meta">
                     <div class="meta-row">
                         <span class="meta-label">Invoice No:</span>
-                        <span class="meta-value">{{ $payment->invoice_no ?? 'INV-'.str_pad($payment->id, 5, '0', STR_PAD_LEFT) }}</span>
+                        <span class="meta-value">STW{{ $payment->invoice_no ?? str_pad($payment->id, 10, '0', STR_PAD_LEFT) }}</span>
                     </div>
                     <div class="meta-row">
                         <span class="meta-label">Invoice Date:</span>
