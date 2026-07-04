@@ -271,8 +271,8 @@
                         <span class="meta-value">{{ $payment->order->due_date ? $payment->order->due_date->format('d-m-Y') : 'Not Provided' }}</span>
                     </div>
                     <div class="meta-row">
-                        <span class="meta-label">Place of Supply:</span>
-                        <span class="meta-value">{{ $payment->order->state ?? 'Not Provided' }}</span>
+                        <span class="meta-label">Payment:</span>
+                        <span class="meta-value" style="font-weight: 800; text-transform: uppercase;">{{ $payment->status->name ?? 'PAID' }}</span>
                     </div>
                 </div>
             </div>

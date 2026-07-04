@@ -291,20 +291,8 @@
                         <span class="meta-value">{{ $invoice->due_date ? $invoice->due_date->format('d-m-Y') : '_________________' }}</span>
                     </div>
                     <div class="meta-row">
-                        <span class="meta-label">Place of Supply:</span>
-                        <span class="meta-value">{{ $invoice->place_of_supply ?? '_________________' }}</span>
-                    </div>
-                    <div class="meta-row" style="margin-top: 10px;">
-                        <span class="meta-label">Status:</span>
-                        @php
-                            $statusColor = '#6366f1';
-                            if($invoice->status == 'PAID') $statusColor = '#000000ff';
-                            if($invoice->status == 'UNPAID') $statusColor = '#000000ff';
-                            if($invoice->status == 'PROFORMA') $statusColor = '#000000ff';
-                        @endphp
-                        <span class="meta-value" style="font-weight: 800; color: {{ $statusColor }}; text-transform: uppercase;">
-                            {{ $invoice->status }}
-                        </span>
+                        <span class="meta-label">Payment:</span>
+                        <span class="meta-value" style="font-weight: 800; text-transform: uppercase;">{{ $invoice->status }}</span>
                     </div>
                 </div>
             </div>
