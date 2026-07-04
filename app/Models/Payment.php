@@ -20,9 +20,9 @@ class Payment extends Model
     protected static function booted()
     {
         static::creating(function ($payment) {
-            if (empty($payment->invoice_no) || strlen($payment->invoice_no) !== 7 || !preg_match('/^[A-Z0-9]{7}$/', $payment->invoice_no)) {
+            if (empty($payment->invoice_no) || strlen($payment->invoice_no) !== 10 || !preg_match('/^[0-9]{10}$/', $payment->invoice_no)) {
                 do {
-                    $code = strtoupper(\Illuminate\Support\Str::random(7));
+                    $code = (string)random_int(1000000000, 9999999999);
                 } while (static::where('invoice_no', $code)->exists());
                     $payment->invoice_no = $code;
             }

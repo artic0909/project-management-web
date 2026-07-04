@@ -64,7 +64,7 @@ class InvoiceController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'invoice_no' => 'required|unique:invoices,invoice_no',
+            'invoice_no' => 'required|numeric|digits:10|unique:invoices,invoice_no',
             'invoice_date' => 'required|date',
             'client_name' => 'required|string',
             'items' => 'required|array|min:1',
@@ -120,7 +120,7 @@ class InvoiceController extends Controller
         $invoice = Invoice::findOrFail($id);
         
         $request->validate([
-            'invoice_no' => 'required|unique:invoices,invoice_no,' . $id,
+            'invoice_no' => 'required|numeric|digits:10|unique:invoices,invoice_no,' . $id,
             'invoice_date' => 'required|date',
             'client_name' => 'required|string',
             'items' => 'required|array|min:1',
