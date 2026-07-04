@@ -1002,9 +1002,6 @@
     </div>
     <div class="nav-btns">
       <button class="btn-support" onclick="location.href='{{ route('support.create') }}'">Get Support</button>
-      <button class="btn-cta" onclick="document.getElementById('orderForm').scrollIntoView({behavior:'smooth'})">
-        <i class="bi bi-plus-circle"></i> Start Project
-      </button>
     </div>
   </nav>
 
@@ -1181,55 +1178,11 @@
   </main>
 
   <!-- FOOTER -->
-  <footer>
+  <footer style="background: var(--paper); color: var(--t3); padding: 40px 24px; text-align: center; border-top: 1px solid var(--border);">
     <div class="footer-inner">
-      <!-- PANEL LOGIN STRIP -->
-      <div class="pstrip" style="text-align: center; border-top: 1px solid rgba(255, 255, 255, .08); padding: 28px 0;">
-        <a href="{{ route('allusers') }}" class="fclink" style="display: inline-flex; justify-content: center; font-weight: 600; color: rgba(255,255,255,0.45); gap: 8px; font-size: 14.5px; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">
-          <i class="bi bi-shield-lock-fill"></i> Team Portal Access
-        </a>
-      </div>
+      <div style="font-size: 13.5px;">&copy; {{ date('Y') }} Standsweb. All rights reserved.</div>
     </div>
   </footer>
-
-  <!-- LOGIN MODAL -->
-  <div class="mbg" id="lmodal" onclick="closeL()">
-    <div class="lbox" onclick="event.stopPropagation()">
-      <div class="lmh">
-        <div style="display:flex;align-items:center;gap:13px">
-          <div class="lmhico" id="lico"></div>
-          <div>
-            <div class="lmhtit" id="ltit">Login</div>
-            <div class="lmhsub" id="lsub">Enter credentials to continue</div>
-          </div>
-        </div>
-        <div class="lmclose" onclick="closeL()"><i class="bi bi-x-lg"></i></div>
-      </div>
-      <div class="lmbody">
-        <span class="rtag" id="ltag"></span>
-        <form id="loginForm" method="POST" action="">
-          @csrf
-          <div style="margin-bottom:18px">
-            <label class="f-label">Email Address</label>
-            <input type="email" name="email" class="f-input" id="lemail" placeholder="yourname@oriontech.in" required>
-          </div>
-          <div style="margin-bottom:16px">
-            <label class="f-label">Password</label>
-            <input type="password" name="password" class="f-input" id="lpass" placeholder="Enter your password"
-              required>
-          </div>
-          <div style="margin-bottom:20px; display:flex; align-items:center; gap:8px;">
-            <input type="checkbox" name="remember" id="remember" style="width:16px; height:16px; accent-color:var(--ink); cursor:pointer;">
-            <label for="remember" style="font-size:13px; font-weight:600; color:var(--t2); cursor:pointer;">Remember Me</label>
-          </div>
-          <button type="submit" class="lsubmit" id="lbtn">
-            <span id="lbtntxt">Sign In</span>
-          </button>
-        </form>
-      </div>
-      <div class="lmfoot">🔒 Secured with 256-bit encryption</div>
-    </div>
-  </div>
 
   <!-- JQuery & Select2 -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -1441,26 +1394,6 @@
       });
     });
 
-    // Login modal logic
-    const LC = {
-      admin: { t: 'Admin Panel', tag: '🛡 ADMIN', tc: '#ff4d1c', ico: 'bi-shield-fill', ib: '#fff4f1', ic: '#ff4d1c', bb: '#ff4d1c', bt: 'Sign in as Admin', action: '{{ route('admin.login.post') }}' },
-      sales: { t: 'Sales Panel', tag: '📊 SALES', tc: '#1a56ff', ico: 'bi-graph-up-arrow', ib: '#f0f4ff', ic: '#1a56ff', bb: '#1a56ff', bt: 'Sign in to Sales', action: '{{ route('sale.login.post') }}' },
-      dev: { t: 'Developer Panel', tag: '💻 DEV', tc: '#00c37f', ico: 'bi-code-slash', ib: '#e8fdf4', ic: '#00c37f', bb: '#00c37f', bt: 'Sign in as Dev', action: '{{ route('developer.login.post') }}' }
-    }
-    function openL(p) {
-      const c = LC[p]
-      document.getElementById('ltit').textContent = c.t
-      const tg = document.getElementById('ltag')
-      tg.textContent = c.tag
-      tg.style.cssText = `background:${c.tc}18;color:${c.tc};border-color:${c.tc}33`
-      const ic = document.getElementById('lico')
-      ic.innerHTML = `<i class="bi ${c.ico}" style="color:${c.ic}"></i>`
-      ic.style.background = c.ib
-      document.getElementById('lbtn').style.background = c.bb
-      document.getElementById('lbtntxt').textContent = c.bt
-      document.getElementById('loginForm').action = c.action
-      document.getElementById('lmodal').classList.add('open')
-    }
     function closeL() { $('.mbg').removeClass('open'); }
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeL() })
   </script>

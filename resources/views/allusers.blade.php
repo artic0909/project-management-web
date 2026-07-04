@@ -56,11 +56,72 @@
       overflow-x: hidden;
       line-height: 1.6;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      padding: 24px;
+      padding: 110px 24px 50px 24px;
       background-attachment: fixed;
+    }
+
+    /* NAVBAR styling (Exactly as welcome.blade.php) */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      height: 68px;
+      padding: 0 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(252, 252, 250, .85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border2);
+      transition: all .3s;
+    }
+
+    .nav-sc {
+      background: rgba(252, 252, 250, .96);
+      box-shadow: 0 2px 20px rgba(0, 0, 0, .04);
+    }
+
+    .nbrand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--fd);
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--t1);
+      letter-spacing: -.3px;
+    }
+
+    .nav-btns {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-support {
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 600;
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--t2);
+      cursor: pointer;
+      transition: all .2s;
+      outline: none;
+    }
+
+    .btn-support:hover {
+      background: var(--paper2);
+      border-color: var(--t1);
+      color: var(--t1);
     }
 
     /* CARD CONTAINER */
@@ -82,7 +143,7 @@
       display: inline-flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       font-family: var(--fd);
       font-size: 23px;
       font-weight: 700;
@@ -234,6 +295,7 @@
       font-weight: 600;
       color: var(--t3);
       transition: color .2s;
+      text-decoration: none;
     }
 
     .back-home:hover {
@@ -400,17 +462,35 @@
       font-size: 12px;
       color: var(--t4);
     }
+
+    @media(max-width:1060px) {
+      nav {
+        padding: 0 24px;
+      }
+    }
   </style>
 </head>
 <body>
 
+  <!-- NAVBAR -->
+  <nav id="nav">
+    <div class="nbrand">
+      <a href="{{ url('/') }}" style="display: flex; align-items: center;">
+        <img src="{{ asset('./logo.png') }}" alt="Logo" class="brand-logo" width="195">
+      </a>
+    </div>
+    <div class="nav-btns">
+      <button class="btn-support" onclick="location.href='{{ route('support.create') }}'">Get Support</button>
+    </div>
+  </nav>
+
   <div class="portal-card">
-    <div class="portal-logo">
+    <!-- <div class="portal-logo">
       <div class="portal-logo-ico">
         <i class="bi bi-rocket-takeoff-fill"></i>
       </div>
       <span>Standsweb</span>
-    </div>
+    </div> -->
     
     <h1 class="portal-title">Team Portal</h1>
     <p class="portal-subtitle">Secure access for administrative and team modules</p>
@@ -489,6 +569,13 @@
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('nav');
+      if (nav) {
+        nav.classList.toggle('nav-sc', window.scrollY > 10);
+      }
+    });
+
     const LC = {
       admin: { t: 'Admin Panel', tag: '🛡 ADMIN', tc: '#ff4d1c', ico: 'bi-shield-fill', ib: '#fff4f1', ic: '#ff4d1c', bb: '#ff4d1c', bt: 'Sign in as Admin', action: '{{ route('admin.login.post') }}' },
       sales: { t: 'Sales Panel', tag: '📊 SALES', tc: '#1a56ff', ico: 'bi-graph-up-arrow', ib: '#f0f4ff', ic: '#1a56ff', bb: '#1a56ff', bt: 'Sign in to Sales', action: '{{ route('sale.login.post') }}' },
