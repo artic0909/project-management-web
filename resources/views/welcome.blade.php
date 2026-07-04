@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>StandsWeb — Start Your Project</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
@@ -15,7 +15,7 @@
 
   <!-- favicon png -->
   <link rel="icon" type="image/png" href="{{ asset('./logo.png') }}">
-    
+
   <style>
     :root {
       --ink: #07080c;
@@ -47,7 +47,8 @@
     *::after {
       box-sizing: border-box;
       margin: 0;
-      padding: 0
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     html {
@@ -57,7 +58,7 @@
     body {
       font-family: var(--fb);
       background-color: var(--paper);
-      background-image: 
+      background-image:
         linear-gradient(var(--border) 1px, transparent 1px),
         linear-gradient(90deg, var(--border) 1px, transparent 1px);
       background-size: 40px 40px;
@@ -88,6 +89,7 @@
       align-items: center;
       justify-content: space-between;
       background: rgba(252, 252, 250, .85);
+      -webkit-backdrop-filter: blur(20px);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border2);
       transition: all .3s
@@ -381,10 +383,11 @@
       margin-bottom: 6px;
     }
 
-    .multi-row .f-input {
+    .multi-row .f-input,
+    .multi-row .phone-wrap {
       flex: 1;
       min-width: 0;
-      width: auto;
+      width: 0;
     }
 
     .phone-wrap {
@@ -395,6 +398,13 @@
       border-radius: var(--r-sm);
       overflow: hidden;
       background: var(--paper);
+      transition: all .2s;
+    }
+
+    .phone-wrap:focus-within {
+      border-color: var(--accent);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(255, 77, 28, .08);
     }
 
     .country-sel {
@@ -431,6 +441,7 @@
       align-items: center;
       justify-content: center;
       transition: all .2s;
+      flex-shrink: 0;
     }
 
     .row-add-btn {
@@ -946,6 +957,10 @@
         grid-template-columns: 1fr;
       }
 
+      .form-sidebar {
+        padding: 30px 16px !important;
+      }
+
       .form-body {
         padding: 24px 16px;
       }
@@ -963,6 +978,10 @@
 
       .page-title {
         font-size: 30px;
+      }
+
+      .page-title br {
+        display: none;
       }
 
       .page-subtitle {
@@ -992,6 +1011,10 @@
         text-align: center;
       }
 
+      .s-info {
+        justify-content: center;
+      }
+
       .s-btn {
         width: 100%;
         justify-content: center;
@@ -1010,6 +1033,24 @@
       .btn-support {
         padding: 7px 14px;
         font-size: 12px;
+      }
+
+      /* Prevent iOS auto-zoom on form inputs */
+      .f-input,
+      .f-select,
+      .f-area,
+      .phone-num-inp,
+      .country-sel {
+        font-size: 16px !important;
+      }
+
+      .country-sel {
+        width: 95px !important;
+      }
+
+      /* Modal styling updates on mobile */
+      .lbox {
+        padding: 30px 20px !important;
       }
     }
 
@@ -1034,8 +1075,8 @@
   <nav id="nav">
     <div class="nbrand">
 
-        <img src="{{ asset('./logo.png') }}" alt="Logo" class="brand-logo" width="195">
-        <!-- <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"
+      <img src="{{ asset('./logo.png') }}" alt="Logo" class="brand-logo" width="195">
+      <!-- <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"
           stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
         </svg> -->
@@ -1051,7 +1092,8 @@
       <div class="page-head">
         <div class="eyebrow"><i class="bi bi-lightning-fill"></i> Fast Delivery System</div>
         <h1 class="page-title">Ready to <br>Start Your Project?</h1>
-        <p class="page-subtitle">Fill out the order form below to get started. Our team will review your requirements and contact you within 30 minutes to move things forward.</p>
+        <p class="page-subtitle">Fill out the order form below to get started. Our team will review your requirements
+          and contact you within 30 minutes to move things forward.</p>
       </div>
 
       <div class="form-card" id="orderForm">
@@ -1060,11 +1102,12 @@
           <div class="fs-head">
             <h2 class="fs-title">What happens next?</h2>
             <p class="fs-desc">Our workflow is designed to deliver high-quality results, fast and efficient.</p>
-       
+
             <p class="fs-desc" style="margin-top: 20px; line-height: 1.6; color: rgba(255,255,255,0.7);">
               <strong style="color: #fff;">Standsweb</strong><br>
               +91 89270-43805<br>
-              <a href="mailto:info@standsweb.com" style="color:#FF4D1C;text-decoration:underline">info@standsweb.com</a><br>
+              <a href="mailto:info@standsweb.com"
+                style="color:#FF4D1C;text-decoration:underline">info@standsweb.com</a><br>
               PS Qube, Action Area IID, Newtown, Kolkata, 700156<br>
               <a href="https://www.standsweb.com/" style="color:#FF4D1C;text-decoration:underline">www.standsweb.com</a>
             </p>
@@ -1102,7 +1145,8 @@
           </div>
 
           <div style="font-size:12px; color:rgba(255,255,255,.3); margin-top:40px;">
-            <i class="bi bi-info-circle"></i> Need help? <a href="https://www.standsweb.com/" style="color:#fff;text-decoration:underline">Contact Us</a>
+            <i class="bi bi-info-circle"></i> Need help? <a href="https://www.standsweb.com/"
+              style="color:#fff;text-decoration:underline">Contact Us</a>
           </div>
         </aside>
 
@@ -1218,9 +1262,11 @@
   </main>
 
   <!-- FOOTER -->
-  <footer style="background: var(--paper); color: var(--t3); padding: 40px 24px; text-align: center; border-top: 1px solid var(--border);">
+  <footer
+    style="background: var(--paper); color: var(--t3); padding: 40px 24px; text-align: center; border-top: 1px solid var(--border);">
     <div class="footer-inner">
-      <div style="font-size: 13.5px;">&copy; {{ date('Y') }} <a href="/allusers">Standsweb. All rights reserved.</a></div>
+      <div style="font-size: 13.5px;">&copy; {{ date('Y') }} <a href="/allusers">Standsweb. All rights reserved.</a>
+      </div>
     </div>
   </footer>
 
@@ -1299,7 +1345,7 @@
 
       // FORM VALIDATION & SUBMISSION
       const form = $('#mainOrder');
-      
+
       form.on('submit', function (e) {
         e.preventDefault(); // Prevent standard submit
 
@@ -1412,8 +1458,8 @@
           url: "{{ route('order.inquiry.store') }}",
           method: "POST",
           data: form.serialize(),
-          success: function(res) {
-            if(res.success) {
+          success: function (res) {
+            if (res.success) {
               $('#successTitle').text(res.title);
               $('#successMsg').text(res.message);
               $('#successModal').addClass('open');
@@ -1424,10 +1470,10 @@
               addPhoneRow('phone-list');
             }
           },
-          error: function(xhr) {
+          error: function (xhr) {
             alert('Something went wrong. Please check your data and try again.');
           },
-          complete: function() {
+          complete: function () {
             submitBtn.prop('disabled', false).html(originalText);
           }
         });
@@ -1441,15 +1487,20 @@
   <!-- SUCCESS MODAL -->
   <div class="mbg" id="successModal">
     <div class="lbox" style="text-align:center; padding: 40px 30px;">
-        <div style="width:80px;height:80px;background:var(--green);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 24px;box-shadow:0 10px 30px rgba(0,195,127,0.3)">
-            <i class="bi bi-check-lg"></i>
-        </div>
-        <h2 id="successTitle" style="font-family:var(--fd);font-size:24px;margin-bottom:12px;color:var(--t1)">Success!</h2>
-        <p id="successMsg" style="color:var(--t3);font-size:15px;line-height:1.6;margin-bottom:32px">Your request has been captured.</p>
-        <button class="s-btn" onclick="window.location.href='https://www.standsweb.com/'" style="width:100%;justify-content:center;">
-            Go to Homepage <i class="bi bi-box-arrow-up-right" style="margin-left: 6px;"></i>
-        </button>
+      <div
+        style="width:80px;height:80px;background:var(--green);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 24px;box-shadow:0 10px 30px rgba(0,195,127,0.3)">
+        <i class="bi bi-check-lg"></i>
+      </div>
+      <h2 id="successTitle" style="font-family:var(--fd);font-size:24px;margin-bottom:12px;color:var(--t1)">Success!
+      </h2>
+      <p id="successMsg" style="color:var(--t3);font-size:15px;line-height:1.6;margin-bottom:32px">Your request has been
+        captured.</p>
+      <button class="s-btn" onclick="window.location.href='https://www.standsweb.com/'"
+        style="width:100%;justify-content:center;">
+        Go to Homepage <i class="bi bi-box-arrow-up-right" style="margin-left: 6px;"></i>
+      </button>
     </div>
   </div>
 </body>
+
 </html>
