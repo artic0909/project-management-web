@@ -797,6 +797,7 @@
       background: #fff;
       border-radius: var(--r-lg);
       width: 400px;
+      max-width: 100%;
       box-shadow: var(--shadow-lg);
       overflow: hidden;
       animation: mslide .22s cubic-bezier(.34, 1.56, .64, 1)
@@ -1433,20 +1434,20 @@
       });
     });
 
-    function closeL() { $('.mbg').removeClass('open'); }
+    function closeL() { $('#lmodal').removeClass('open'); }
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeL() })
   </script>
 
   <!-- SUCCESS MODAL -->
-  <div class="mbg" id="successModal" onclick="closeL()">
-    <div class="lbox" onclick="event.stopPropagation()" style="text-align:center; padding: 40px 30px;">
+  <div class="mbg" id="successModal">
+    <div class="lbox" style="text-align:center; padding: 40px 30px;">
         <div style="width:80px;height:80px;background:var(--green);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 24px;box-shadow:0 10px 30px rgba(0,195,127,0.3)">
             <i class="bi bi-check-lg"></i>
         </div>
         <h2 id="successTitle" style="font-family:var(--fd);font-size:24px;margin-bottom:12px;color:var(--t1)">Success!</h2>
         <p id="successMsg" style="color:var(--t3);font-size:15px;line-height:1.6;margin-bottom:32px">Your request has been captured.</p>
-        <button class="s-btn" onclick="closeL()" style="width:100%;justify-content:center">
-            Got it, Thanks!
+        <button class="s-btn" onclick="window.location.href='https://www.standsweb.com/'" style="width:100%;justify-content:center;">
+            Go to Homepage <i class="bi bi-box-arrow-up-right" style="margin-left: 6px;"></i>
         </button>
     </div>
   </div>
