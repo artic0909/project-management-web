@@ -11,6 +11,10 @@ Route::get('/', function () {
     return view('welcome', compact('services', 'sources', 'plans', 'paymentStatuses'));
 })->name('home');
 
+Route::get('/allusers', function () {
+    return view('allusers');
+})->name('allusers');
+
 Route::post('/order-inquiry', [OrderInquiryController::class, 'store'])->name('order.inquiry.store');
 
 Route::get('/support', [\App\Http\Controllers\SupportController::class, 'create'])->name('support.create');

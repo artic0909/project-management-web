@@ -1184,34 +1184,10 @@
   <footer>
     <div class="footer-inner">
       <!-- PANEL LOGIN STRIP -->
-      <div class="pstrip">
-        <div class="pslabel">Team Portal Access</div>
-        <div class="psgrid">
-          <button class="psbtn adm" onclick="openL('admin')">
-            <div class="psico"><i class="bi bi-shield-fill"></i></div>
-            <div>
-              <div class="pstitle">Admin Login</div>
-              <div class="pssub">Full system access · Management</div>
-            </div>
-            <i class="bi bi-arrow-right psarr"></i>
-          </button>
-          <button class="psbtn sal" onclick="openL('sales')">
-            <div class="psico"><i class="bi bi-graph-up-arrow"></i></div>
-            <div>
-              <div class="pstitle">Sales Login</div>
-              <div class="pssub">Leads, orders & attendance</div>
-            </div>
-            <i class="bi bi-arrow-right psarr"></i>
-          </button>
-          <button class="psbtn dev" onclick="openL('dev')">
-            <div class="psico"><i class="bi bi-code-slash"></i></div>
-            <div>
-              <div class="pstitle">Developer Login</div>
-              <div class="pssub">Projects, tasks & commits</div>
-            </div>
-            <i class="bi bi-arrow-right psarr"></i>
-          </button>
-        </div>
+      <div class="pstrip" style="text-align: center; border-top: 1px solid rgba(255, 255, 255, .08); padding: 28px 0;">
+        <a href="{{ route('allusers') }}" class="fclink" style="display: inline-flex; justify-content: center; font-weight: 600; color: rgba(255,255,255,0.45); gap: 8px; font-size: 14.5px; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">
+          <i class="bi bi-shield-lock-fill"></i> Team Portal Access
+        </a>
       </div>
     </div>
   </footer>
