@@ -243,7 +243,7 @@
                     <p style="color: var(--t3); font-size: 15px; margin-top: 8px;">{{ session('success') }}</p>
                     <div class="tkt-number">{{ session('ticket_no') }}</div>
                     <p style="color: var(--t4); font-size: 13px;">Please save this ticket number for future reference.</p>
-                    <button class="submit-btn" style="width: 100%; margin-top: 10px;" onclick="document.getElementById('tktSuccessModal').style.display='none'">Got it, Thanks!</button>
+                    <button class="submit-btn" style="width: 100%; margin-top: 10px;" onclick="window.open('https://www.standsweb.com/', '_blank'); document.getElementById('tktSuccessModal').style.display='none'">Go to Homepage!</button>
                 </div>
             </div>
         @endif
