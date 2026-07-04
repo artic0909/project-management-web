@@ -1220,7 +1220,7 @@
   <!-- FOOTER -->
   <footer style="background: var(--paper); color: var(--t3); padding: 40px 24px; text-align: center; border-top: 1px solid var(--border);">
     <div class="footer-inner">
-      <div style="font-size: 13.5px;">&copy; {{ date('Y') }} Standsweb. All rights reserved.</div>
+      <div style="font-size: 13.5px;">&copy; {{ date('Y') }} <a href="/allusers">Standsweb. All rights reserved.</a></div>
     </div>
   </footer>
 
