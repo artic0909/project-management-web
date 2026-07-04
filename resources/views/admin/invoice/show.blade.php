@@ -51,7 +51,7 @@
             padding: 20px 30px 60px 30px;
             position: relative;
             z-index: 2;
-            margin-top: -120px;
+            margin-top: -105px;
         }
 
         .sender-info {
