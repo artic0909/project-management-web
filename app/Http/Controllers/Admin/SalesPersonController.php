@@ -110,10 +110,21 @@ class SalesPersonController extends Controller
 
     public function delete($id)
     {
-        $sale = Sale::findOrFail($id);
-        $sale->delete();
+        try {
+            $sale = Sale::findOrFail($id);
+            $sale->delete();
 
-        return redirect()->back()->with('success', 'Sales Person deleted successfully!');
+            return redirect()->back()->with('success', 'Sales Person deleted successfully!');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'Sales Person not found.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[0] === '23000' || $e->getCode() == '23000') {
+                return redirect()->back()->with('error', 'Cannot delete sales person because they are currently assigned to leads, orders, or meetings.');
+            }
+            return redirect()->back()->with('error', 'Failed to delete sales person. Please try again.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to delete sales person. Please try again.');
+        }
     }
 
     public function bulkDestroy(Request $request)
@@ -123,8 +134,16 @@ class SalesPersonController extends Controller
             'ids.*' => 'exists:sales,id',
         ]);
 
-        Sale::whereIn('id', $request->ids)->delete();
-
-        return back()->with('success', 'Selected Sales Persons deleted successfully!');
+        try {
+            Sale::whereIn('id', $request->ids)->delete();
+            return back()->with('success', 'Selected Sales Persons deleted successfully!');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[0] === '23000' || $e->getCode() == '23000') {
+                return redirect()->back()->with('error', 'One or more selected sales persons cannot be deleted because they are assigned to leads, orders, or meetings.');
+            }
+            return redirect()->back()->with('error', 'Failed to delete selected sales persons. Please try again.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to delete selected sales persons. Please try again.');
+        }
     }
 }

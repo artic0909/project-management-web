@@ -113,10 +113,21 @@ class DeveloperController extends Controller
 
     public function delete($id)
     {
-        $developer = Developer::findOrFail($id);
-        $developer->delete();
+        try {
+            $developer = Developer::findOrFail($id);
+            $developer->delete();
 
-        return redirect()->back()->with('success', 'Developer deleted successfully!');
+            return redirect()->back()->with('success', 'Developer deleted successfully!');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'Developer not found.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[0] === '23000' || $e->getCode() == '23000') {
+                return redirect()->back()->with('error', 'Cannot delete developer because they are currently assigned to one or more projects, tasks, or attendance records.');
+            }
+            return redirect()->back()->with('error', 'Failed to delete developer. Please try again.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to delete developer. Please try again.');
+        }
     }
 
     public function bulkDestroy(Request $request)
@@ -126,8 +137,16 @@ class DeveloperController extends Controller
             'ids.*' => 'exists:developers,id',
         ]);
 
-        Developer::whereIn('id', $request->ids)->delete();
-
-        return back()->with('success', 'Selected Developers deleted successfully!');
+        try {
+            Developer::whereIn('id', $request->ids)->delete();
+            return back()->with('success', 'Selected Developers deleted successfully!');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[0] === '23000' || $e->getCode() == '23000') {
+                return redirect()->back()->with('error', 'One or more selected developers cannot be deleted because they are assigned to projects, tasks, or attendance records.');
+            }
+            return redirect()->back()->with('error', 'Failed to delete selected developers. Please try again.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to delete selected developers. Please try again.');
+        }
     }
 }

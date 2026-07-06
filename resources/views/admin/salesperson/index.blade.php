@@ -678,6 +678,13 @@
         </div>
         @endif
 
+        @if (session('error'))
+        <div style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fecaca; display: flex; align-items: center; gap: 8px;">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            {{ session('error') }}
+        </div>
+        @endif
+
         @if ($errors->any())
         <div style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fecaca;">
             <ul style="margin: 0; padding-left: 20px;">
