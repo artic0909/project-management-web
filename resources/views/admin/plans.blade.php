@@ -867,7 +867,7 @@
 <script>
     // ── Edit Modal ──
     function openEditModal(id, name, created_by) {
-        document.getElementById('editForm').action = `{{ url($routePrefix . '/plans') }}/${id}`;
+        document.getElementById('editForm').action = `{{ url($routePrefix . '/add-plans') }}/${id}`;
         document.getElementById('editNameInput').value = name;
         document.getElementById('edit_created_by').value = created_by;
         openModal('editModal');
@@ -875,7 +875,7 @@
 
     // ── Delete Modal ──
     function openDeleteModal(id, name) {
-        document.getElementById('deleteForm').action = `{{ url($routePrefix . '/plans') }}/${id}`;
+        document.getElementById('deleteForm').action = `{{ url($routePrefix . '/add-plans') }}/${id}`;
         document.getElementById('deletePlanName').textContent = name;
         openModal('deleteModal');
     }
