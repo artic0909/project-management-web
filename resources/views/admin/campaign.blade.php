@@ -707,11 +707,11 @@
                             <td>
                                 <div class="row-actions">
                                     {{-- Edit: pass id and name --}}
-                                    <button class="ra-btn" onclick="openEditModal({{ $campaign->id }}, '{{ addslashes($campaign->name) }}')">
+                                    <button class="ra-btn" onclick="openEditModal({{ $campaign->id }}, {{ json_encode($campaign->name) }})">
                                         <i class="bi bi-pencil-fill"></i>
                                     </button>
                                     {{-- Delete: pass id and name --}}
-                                    <button class="ra-btn danger" onclick="openDeleteModal({{ $campaign->id }}, '{{ addslashes($campaign->name) }}')">
+                                    <button class="ra-btn danger" onclick="openDeleteModal({{ $campaign->id }}, {{ json_encode($campaign->name) }})">
                                         <i class="bi bi-trash-fill"></i>
                                     </button>
                                 </div>

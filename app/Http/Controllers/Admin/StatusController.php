@@ -82,6 +82,11 @@ class StatusController extends Controller
             return redirect()->back()->with('success', 'Status "' . $name . '" deleted successfully.');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return redirect()->back()->with('error', 'Status not found.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[0] === '23000' || $e->getCode() == '23000') {
+                return redirect()->back()->with('error', 'Cannot delete status because it is currently in use by one or more leads/orders/payments/projects.');
+            }
+            return redirect()->back()->with('error', 'Failed to delete status. Please try again.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to delete status. Please try again.');
         }

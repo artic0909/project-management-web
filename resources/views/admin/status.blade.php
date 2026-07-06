@@ -91,10 +91,10 @@
                                 <td><span class="type-badge {{ $status->type }}">{{ ucfirst($status->type) }}</span></td>
                                 <td>
                                     <div class="row-actions">
-                                        <button class="ra-btn" onclick="openEditModal({{ $status->id }},'{{ addslashes($status->name) }}','{{ $status->type }}')" title="Edit">
+                                        <button class="ra-btn" onclick="openEditModal({{ $status->id }}, {{ json_encode($status->name) }}, {{ json_encode($status->type) }})" title="Edit">
                                             <i class="bi bi-pencil-fill"></i>
                                         </button>
-                                        <button class="ra-btn danger" onclick="openDeleteModal({{ $status->id }},'{{ addslashes($status->name) }}')" title="Delete">
+                                        <button class="ra-btn danger" onclick="openDeleteModal({{ $status->id }}, {{ json_encode($status->name) }})" title="Delete">
                                             <i class="bi bi-trash-fill"></i>
                                         </button>
                                     </div>

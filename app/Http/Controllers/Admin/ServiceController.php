@@ -66,6 +66,11 @@ class ServiceController extends Controller
             return redirect()->back()->with('success', 'Service deleted successfully.');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return redirect()->back()->with('error', 'Service not found.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[0] === '23000' || $e->getCode() == '23000') {
+                return redirect()->back()->with('error', 'Cannot delete service because it is currently in use by one or more leads/orders.');
+            }
+            return redirect()->back()->with('error', 'Failed to delete Service. Please try again.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to delete Service. Please try again.');
         }

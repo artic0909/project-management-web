@@ -31,7 +31,7 @@ class CampaignController extends Controller
 
             return redirect()->back()->with('success', 'Campaign created successfully.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to create source. Please try again.')->withInput();
+            return redirect()->back()->with('error', 'Failed to create campaign. Please try again.')->withInput();
         }
     }
 
@@ -43,8 +43,8 @@ class CampaignController extends Controller
         ]);
 
         try {
-            $source = Campaign::findOrFail($id);
-            $source->update([
+            $campaign = Campaign::findOrFail($id);
+            $campaign->update([
                 'name' => $request->name,
                 'created_by' => $request->created_by,
             ]);
@@ -53,21 +53,26 @@ class CampaignController extends Controller
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return redirect()->back()->with('error', 'Campaign not found.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to update source. Please try again.')->withInput();
+            return redirect()->back()->with('error', 'Failed to update campaign. Please try again.')->withInput();
         }
     }
 
     public function delete(Request $request, $id)
     {
         try {
-            $source = Campaign::findOrFail($id);
-            $source->delete();
+            $campaign = Campaign::findOrFail($id);
+            $campaign->delete();
 
             return redirect()->back()->with('success', 'Campaign deleted successfully.');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return redirect()->back()->with('error', 'Campaign not found.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[0] === '23000' || $e->getCode() == '23000') {
+                return redirect()->back()->with('error', 'Cannot delete campaign because it is currently in use by one or more leads.');
+            }
+            return redirect()->back()->with('error', 'Failed to delete campaign. Please try again.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to delete source. Please try again.');
+            return redirect()->back()->with('error', 'Failed to delete campaign. Please try again.');
         }
     }
 }

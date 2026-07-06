@@ -31,7 +31,7 @@ class PlanController extends Controller
 
             return redirect()->back()->with('success', 'Plan created successfully.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to create source. Please try again.')->withInput();
+            return redirect()->back()->with('error', 'Failed to create plan. Please try again.')->withInput();
         }
     }
 
@@ -43,8 +43,8 @@ class PlanController extends Controller
         ]);
 
         try {
-            $source = Plan::findOrFail($id);
-            $source->update([
+            $plan = Plan::findOrFail($id);
+            $plan->update([
                 'name' => $request->name,
                 'created_by' => $request->created_by,
             ]);
@@ -53,21 +53,26 @@ class PlanController extends Controller
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return redirect()->back()->with('error', 'Plan not found.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to update source. Please try again.')->withInput();
+            return redirect()->back()->with('error', 'Failed to update plan. Please try again.')->withInput();
         }
     }
 
     public function delete(Request $request, $id)
     {
         try {
-            $source = Plan::findOrFail($id);
-            $source->delete();
+            $plan = Plan::findOrFail($id);
+            $plan->delete();
 
             return redirect()->back()->with('success', 'Plan deleted successfully.');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return redirect()->back()->with('error', 'Plan not found.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[0] === '23000' || $e->getCode() == '23000') {
+                return redirect()->back()->with('error', 'Cannot delete plan because it is currently in use by one or more leads/orders.');
+            }
+            return redirect()->back()->with('error', 'Failed to delete plan. Please try again.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to delete source. Please try again.');
+            return redirect()->back()->with('error', 'Failed to delete plan. Please try again.');
         }
     }
 }
