@@ -449,7 +449,10 @@
                         <div class="card-head">
                             <div class="card-title"><i class="bi bi-people-fill" style="color:#6366f1;margin-right:6px;"></i>Assignments</div>
                         </div>
+                        
                         <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
+
+                        
                             <div class="form-row">
                                 <label class="form-lbl">Assign to Sales</label>
                                 @php $assignedSaleIds = $project->salesPersons->pluck('id')->toArray(); @endphp

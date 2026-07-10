@@ -430,7 +430,7 @@ class ProjectController extends Controller
         $data['phones'] = $phones;
 
         // Ensure project_name and client_name are updated
-        $data['project_name'] = $request->domain_name;
+        $data['project_name'] = $request->project_name ?: ($request->domain_name ?: ($request->company_name ?: ($project->project_name ?: 'Unnamed Project')));
         $data['client_name'] = trim($request->first_name . ' ' . $request->last_name);
 
         // Map statuses to names
