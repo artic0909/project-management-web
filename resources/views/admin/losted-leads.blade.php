@@ -316,7 +316,7 @@
                                     <div class="lead-cell">
                                         @php
                                             $initials = strtoupper(substr($lead->company, 0, 1) . substr($lead->contact_person, 0, 1));
-                                            $emails = is_array($lead->emails) ? $lead->emails[0] : (json_decode($lead->emails)[0] ?? 'N/A');
+                                            $emails = is_array($lead->emails) ? ($lead->emails[0] ?? 'N/A') : (json_decode($lead->emails)[0] ?? 'N/A');
                                         @endphp
                                         <div class="mini-ava" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">{{ $initials }}</div>
                                         <div>
