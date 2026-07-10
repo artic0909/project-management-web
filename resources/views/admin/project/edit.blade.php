@@ -636,7 +636,9 @@
 
 <script>
     function toggleCustomCms() {
-        const val = document.getElementById('cmsSelect').value;
+        const select = document.getElementById('cmsSelect');
+        if (!select) return;
+        const val = select.value;
         const input = document.getElementById('cmsCustomInput');
         if (input) {
             input.style.display = (val === 'Others') ? 'block' : 'none';

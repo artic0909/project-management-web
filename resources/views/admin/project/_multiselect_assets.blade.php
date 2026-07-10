@@ -243,6 +243,7 @@ Include this at the bottom of create.blade.php and edit.blade.php
 
     function updateMs(wrapId) {
         const wrap = document.getElementById(wrapId);
+        if (!wrap) return;
         const pillsEl = wrap.querySelector('.ms-pills');
         const checkboxes = wrap.querySelectorAll('.ms-opt input[type="checkbox"]:checked');
         pillsEl.innerHTML = '';
