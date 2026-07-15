@@ -9,7 +9,7 @@ class Lead extends Model
     protected $fillable = [
         'company', 'contact_person', 'business_type', 'emails', 'phones',
         'address', 'state', 'zip_code', 'service_id', 'source_id', 'status_id', 'campaign_id',
-        'priority', 'created_by', 'created_by_type', 'notes',
+        'priority', 'created_by', 'created_by_type', 'notes', 'is_losted',
     ];
 
     protected $casts = [

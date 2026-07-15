@@ -53,7 +53,7 @@ class FollowupController extends Controller
             $this->checkAccess($model);
             $typeLabel = 'Lead';
             $backRoute = route($routePrefix . '.leads.index');
-            $statuses = Status::where('type', 'lead')->get();
+            $statuses = Status::where('type', 'lead')->where('name', '!=', 'lost')->get();
             $orderStatuses = [];
             $paymentStatuses = [];
         }

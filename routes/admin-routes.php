@@ -83,6 +83,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::post('/add-lead', [LeadController::class, 'store'])->name('leads.store');
     Route::get('/view-lead/{id}', [LeadController::class, 'show'])->name('leads.show');
     Route::patch('/view-lead/{id}/status', [LeadController::class, 'updateStatus'])->name('leads.updateStatus');
+    Route::post('/view-lead/{id}/mark-as-lost', [LeadController::class, 'markAsLosted'])->name('leads.markAsLosted');
     Route::get('/edit-lead/{id}', [LeadController::class, 'edit'])->name('leads.edit');
     Route::put('/edit-lead/{id}', [LeadController::class, 'update'])->name('leads.update');
     Route::delete('/delete-lead/{id}', [LeadController::class, 'destroy'])->name('leads.destroy');

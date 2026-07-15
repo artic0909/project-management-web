@@ -62,9 +62,9 @@ class AppServiceProvider extends ServiceProvider
             $upcomingRenewals = collect();
 
             if (auth()->guard('admin')->check()) {
-                $leadCount = \App\Models\Lead::whereHas('status', function($q){ $q->where('name','!=','lost'); })->count();
+                $leadCount = \App\Models\Lead::where('is_losted', 0)->count();
                 $orderCount = \App\Models\Order::count();
-                $lostLeadCount = \App\Models\Lead::whereHas('status', function($q){ $q->where('name','lost'); })->count();
+                $lostLeadCount = \App\Models\Lead::where('is_losted', 1)->count();
                 $projectCount = \App\Models\Project::count();
                 $meetingCount = \App\Models\Meeting::where('status', 'pending')->count();
                 $supportCount = \App\Models\Support::where('status', '!=', 'resolved')->count();
@@ -87,7 +87,7 @@ class AppServiceProvider extends ServiceProvider
                     })->orWhereHas('assignments', function($sq) use ($saleId) {
                         $sq->where('assigned_to', $saleId);
                     });
-                })->whereHas('status', function($q){ $q->where('name','!=','lost'); })->count();
+                })->where('is_losted', 0)->count();
                 
                 $orderCount = \App\Models\Order::where(function($q) use ($saleId, $saleType) {
                     $q->where(function($sq) use ($saleId, $saleType) {
@@ -103,7 +103,7 @@ class AppServiceProvider extends ServiceProvider
                     })->orWhereHas('assignments', function($sq) use ($saleId) {
                         $sq->where('assigned_to', $saleId);
                     });
-                })->whereHas('status', function($q){ $q->where('name','lost'); })->count();
+                })->where('is_losted', 1)->count();
                 
                 $projectCount = \App\Models\Project::where(function($q) use ($saleId, $saleType) {
                     $q->where('created_by', $saleId)->where('created_by_type', $saleType);

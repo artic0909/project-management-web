@@ -25,6 +25,12 @@
 
             <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                     <div style="display:flex; gap:10px; margin-bottom:5px;">
+                        <form action="{{ route($routePrefix . '.leads.markAsLosted', $lead->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to mark this lead as losted?');">
+                            @csrf
+                            <button type="submit" class="btn-primary-solid" style="background:#ef4444; border-color:#ef4444; display:flex; align-items:center; gap:6px;">
+                                <i class="bi bi-x-circle"></i> Mark as Losted
+                            </button>
+                        </form>
                         <a href="{{ route($routePrefix . '.orders.create', ['lead_id' => $lead->id]) }}" class="btn-primary-solid">
                             <i class="bi bi-box-arrow-in-right"></i> Convert To Order
                         </a>

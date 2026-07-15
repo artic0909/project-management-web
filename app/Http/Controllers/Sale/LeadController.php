@@ -34,9 +34,7 @@ class LeadController extends Controller
     public function index(Request $request)
     {
         $query = $this->getFilteredLeads()->with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])->withCount('followups')
-            ->whereHas('status', function($sq) {
-                $sq->where('name', '!=', 'lost');
-            });
+            ->where('is_losted', 0);
 
         // Search filter
         if ($request->has('q') && !empty($request->q)) {
@@ -166,7 +164,7 @@ class LeadController extends Controller
 
     public function create()
     {
-        $statuses = Status::where('type', 'lead')->get();
+        $statuses = Status::where('type', 'lead')->where('name', '!=', 'lost')->get();
         $sales = Sale::all();
         $sources = Source::all();
         $services = Service::all();
@@ -271,7 +269,7 @@ class LeadController extends Controller
     public function show($id)
     {
         $lead = $this->getFilteredLeads()->with(['status', 'sources', 'services', 'campaign', 'createdBy', 'assignments.sale', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
-        $statuses = Status::where('type', 'lead')->get();
+        $statuses = Status::where('type', 'lead')->where('name', '!=', 'lost')->get();
         $routePrefix = 'sale';
         return view('admin.leads.show', compact('lead', 'statuses', 'routePrefix'));
     }
@@ -281,7 +279,7 @@ class LeadController extends Controller
         $lead = $this->getFilteredLeads()->with(['assignments', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         $sources = Source::all();
         $services = Service::all();
-        $statuses = Status::where('type', 'lead')->get();
+        $statuses = Status::where('type', 'lead')->where('name', '!=', 'lost')->get();
         $campaigns = Campaign::all();
         $sales = Sale::all();
         
@@ -367,9 +365,7 @@ class LeadController extends Controller
     public function lostedLeads(Request $request)
     {
         $query = $this->getFilteredLeads()->with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])
-            ->whereHas('status', function($sq) {
-                $sq->where('name', 'lost');
-            });
+            ->where('is_losted', 1);
 
         // Search filter
         if ($request->has('q') && !empty($request->q)) {
@@ -445,6 +441,13 @@ class LeadController extends Controller
         return redirect()->back()->with('success', 'Lead status updated!');
     }
 
+    public function markAsLosted($id)
+    {
+        $lead = $this->getFilteredLeads()->findOrFail($id);
+        $lead->update(['is_losted' => 1]);
+        return redirect()->route('sale.losted-leads')->with('success', 'Lead marked as losted successfully!');
+    }
+
     public function destroy($id)
     {
         $lead = $this->getFilteredLeads()->findOrFail($id);
@@ -470,9 +473,7 @@ class LeadController extends Controller
     public function export(Request $request)
     {
         $query = $this->getFilteredLeads()->with(['status', 'services', 'sources', 'campaign', 'assignments.sale', 'createdBy'])
-            ->whereHas('status', function($sq) {
-                $sq->where('name', '!=', 'lost');
-            });
+            ->where('is_losted', 0);
 
         // Search filter
         if ($request->has('q') && !empty($request->q)) {
@@ -632,9 +633,7 @@ class LeadController extends Controller
     public function lostedLeadExport(Request $request)
     {
         $query = $this->getFilteredLeads()->with(['status', 'services', 'sources', 'campaign', 'assignments.sale', 'createdBy'])
-            ->whereHas('status', function($sq) {
-                $sq->where('name', 'lost');
-            });
+            ->where('is_losted', 1);
 
         // Search filter
         if ($request->has('q') && !empty($request->q)) {
