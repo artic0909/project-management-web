@@ -11,11 +11,19 @@
         <div class="page-header">
             <div>
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                    @if(request()->routeIs($routePrefix . '.losted-leads.show'))
+                    <a href="{{ route($routePrefix . '.losted-leads') }}"
+                        style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--t3);text-decoration:none;transition:var(--transition);"
+                        onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--t3)'">
+                        <i class="bi bi-arrow-left"></i> Losted Leads
+                    </a>
+                    @else
                     <a href="{{ route($routePrefix . '.leads.index') }}"
                         style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--t3);text-decoration:none;transition:var(--transition);"
                         onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--t3)'">
                         <i class="bi bi-arrow-left"></i> All Leads
                     </a>
+                    @endif
                     <span style="color:var(--t4);font-size:11px;">›</span>
                     <span style="font-size:13px;font-weight:600;color:var(--t2);">{{ $lead->company }}</span>
                 </div>
@@ -25,15 +33,24 @@
 
             <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                     <div style="display:flex; gap:10px; margin-bottom:5px;">
-                        <form action="{{ route($routePrefix . '.leads.markAsLosted', $lead->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to mark this lead as losted?');">
-                            @csrf
-                            <button type="submit" class="btn-primary-solid" style="background:#ef4444; border-color:#ef4444; display:flex; align-items:center; gap:6px;">
+                        @if($lead->is_losted)
+                            <form id="markAsLeadForm" action="{{ route($routePrefix . '.losted-leads.markAsLead', $lead->id) }}" method="POST" style="display:none;">
+                                @csrf
+                            </form>
+                            <button type="button" class="btn-primary-solid" style="background:#10b981; border-color:#10b981; display:flex; align-items:center; gap:6px;" onclick="openModal('markLeadModal')">
+                                <i class="bi bi-arrow-return-left"></i> Move to Leads
+                            </button>
+                        @else
+                            <form id="markAsLostedForm" action="{{ route($routePrefix . '.leads.markAsLosted', $lead->id) }}" method="POST" style="display:none;">
+                                @csrf
+                            </form>
+                            <button type="button" class="btn-primary-solid" style="background:#ef4444; border-color:#ef4444; display:flex; align-items:center; gap:6px;" onclick="openModal('markLostedModal')">
                                 <i class="bi bi-x-circle"></i> Mark as Losted
                             </button>
-                        </form>
-                        <a href="{{ route($routePrefix . '.orders.create', ['lead_id' => $lead->id]) }}" class="btn-primary-solid">
-                            <i class="bi bi-box-arrow-in-right"></i> Convert To Order
-                        </a>
+                            <a href="{{ route($routePrefix . '.orders.create', ['lead_id' => $lead->id]) }}" class="btn-primary-solid">
+                                <i class="bi bi-box-arrow-in-right"></i> Convert To Order
+                            </a>
+                        @endif
                     </div>
                 </div>
         </div>
@@ -294,6 +311,52 @@
                     </a>
                 @endforeach
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- MARK AS LOSTED MODAL -->
+<div class="modal-backdrop" id="markLostedModal">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-hd" style="border-bottom:1px solid #fecaca;">
+            <span style="color:#dc2626;">Mark Lead as Losted</span>
+            <button class="modal-close" onclick="closeModal('markLostedModal')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-bd" style="text-align:center;padding:32px 24px;">
+            <div style="width:64px;height:64px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                <i class="bi bi-x-circle" style="font-size:28px;color:#dc2626;"></i>
+            </div>
+            <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:var(--t1);">Mark this lead as losted?</h3>
+            <p style="margin:0;font-size:14px;color:var(--t3);line-height:1.6;">Are you sure you want to mark this lead as losted?<br>It will be moved to the losted leads list.</p>
+        </div>
+        <div class="modal-ft" style="border-top:1px solid #fecaca; display:flex; justify-content:flex-end; gap:10px; padding:16px 24px;">
+            <button class="btn-ghost" onclick="closeModal('markLostedModal')">Cancel</button>
+            <button style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="document.getElementById('markAsLostedForm').submit()">
+                <i class="bi bi-check2"></i> Yes, Mark as Losted
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MARK AS LEAD MODAL -->
+<div class="modal-backdrop" id="markLeadModal">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-hd" style="border-bottom:1px solid #d1fae5;">
+            <span style="color:#10b981;">Move to Leads</span>
+            <button class="modal-close" onclick="closeModal('markLeadModal')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-bd" style="text-align:center;padding:32px 24px;">
+            <div style="width:64px;height:64px;background:#d1fae5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                <i class="bi bi-arrow-return-left" style="font-size:28px;color:#10b981;"></i>
+            </div>
+            <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:var(--t1);">Move back to active leads?</h3>
+            <p style="margin:0;font-size:14px;color:var(--t3);line-height:1.6;">Are you sure you want to move this lead back?<br>It will be restored to your active leads pipeline.</p>
+        </div>
+        <div class="modal-ft" style="border-top:1px solid #d1fae5; display:flex; justify-content:flex-end; gap:10px; padding:16px 24px;">
+            <button class="btn-ghost" onclick="closeModal('markLeadModal')">Cancel</button>
+            <button style="background:#10b981;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="document.getElementById('markAsLeadForm').submit()">
+                <i class="bi bi-check2"></i> Yes, Move to Leads
+            </button>
         </div>
     </div>
 </div>

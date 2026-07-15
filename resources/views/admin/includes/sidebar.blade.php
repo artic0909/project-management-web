@@ -107,7 +107,7 @@
         <span class="nav-count">{{ $projectCount }}</span>
       </a>
 
-      <a class="nav-item {{ request()->routeIs($routePrefix . 'losted-leads') ? 'active' : '' }}"
+      <a class="nav-item {{ request()->routeIs($routePrefix . 'losted-leads') || request()->routeIs($routePrefix . 'losted-leads.show') ? 'active' : '' }}"
         href="{{ route($routePrefix . 'losted-leads') }}">
         <i class="bi bi-ban"></i><span>Losted Leads</span>
         <span class="nav-count">{{ $lostLeadCount }}</span>

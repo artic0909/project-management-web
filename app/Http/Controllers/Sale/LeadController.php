@@ -448,6 +448,21 @@ class LeadController extends Controller
         return redirect()->route('sale.losted-leads')->with('success', 'Lead marked as losted successfully!');
     }
 
+    public function showLosted($id)
+    {
+        $lead = $this->getFilteredLeads()->with(['status', 'sources', 'services', 'campaign', 'createdBy', 'assignments.sale', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
+        $statuses = Status::where('type', 'lead')->where('name', '!=', 'lost')->get();
+        $routePrefix = 'sale';
+        return view('admin.leads.show', compact('lead', 'statuses', 'routePrefix'));
+    }
+
+    public function markAsLead($id)
+    {
+        $lead = $this->getFilteredLeads()->findOrFail($id);
+        $lead->update(['is_losted' => 0]);
+        return redirect()->route('sale.leads.index')->with('success', 'Lead successfully moved back to active leads!');
+    }
+
     public function destroy($id)
     {
         $lead = $this->getFilteredLeads()->findOrFail($id);

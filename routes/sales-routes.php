@@ -41,6 +41,8 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     
     // Losted Leads
     Route::get('/losted-leads', [LeadController::class, 'lostedLeads'])->name('losted-leads');
+    Route::get('/losted-leads/{id}', [LeadController::class, 'showLosted'])->name('losted-leads.show');
+    Route::post('/losted-leads/{id}/mark-as-lead', [LeadController::class, 'markAsLead'])->name('losted-leads.markAsLead');
     Route::get('/export-losted-leads', [LeadController::class, 'lostedLeadExport'])->name('losted-leads.export');
 
     // Orders

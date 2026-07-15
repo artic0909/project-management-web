@@ -355,7 +355,7 @@
                                 </td>
                                 <td>
                                     <div class="row-actions">
-                                        <a href="{{ route($routePrefix . '.leads.show', $lead->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
+                                        <a href="{{ route($routePrefix . '.losted-leads.show', $lead->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
                                         <a href="{{ route($routePrefix . '.leads.followup', $lead->id) }}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
                                         <a class="ra-btn" title="Edit" href="{{ route($routePrefix . '.leads.edit', $lead->id) }}"><i class="bi bi-pencil-fill"></i></a>
                                         @if($routePrefix == 'admin')
