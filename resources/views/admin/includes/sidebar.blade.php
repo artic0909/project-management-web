@@ -21,6 +21,14 @@
   @php
     $guard = auth()->guard('admin')->check() ? 'admin' : (auth()->guard('sale')->check() ? 'sale' : 'web');
     $routePrefix = $guard === 'admin' ? 'admin.' : ($guard === 'sale' ? 'sale.' : '');
+
+    $isLeadsActive = request()->routeIs($routePrefix . 'leads*');
+    $isLostedLeadsActive = request()->routeIs($routePrefix . 'losted-leads') || request()->routeIs($routePrefix . 'losted-leads.show');
+
+    if (request()->routeIs($routePrefix . 'leads.followup') && isset($model) && $model->is_losted) {
+        $isLeadsActive = false;
+        $isLostedLeadsActive = true;
+    }
   @endphp
 
   <nav class="sidebar-nav" id="sidebarNav">
@@ -62,7 +70,7 @@
       @endif
 
       <div class="nav-section-label">Business</div>
-      <a class="nav-item {{ request()->routeIs($routePrefix . 'leads*') ? 'active' : '' }}"
+      <a class="nav-item {{ $isLeadsActive ? 'active' : '' }}"
         href="{{ route($routePrefix . 'leads.index') }}">
         <i class="bi bi-person-lines-fill"></i><span>{{ $guard === 'sale' ? 'My Leads' : 'Leads' }}</span>
         <span class="nav-count">{{ $leadCount }}</span>
@@ -107,7 +115,7 @@
         <span class="nav-count">{{ $projectCount }}</span>
       </a>
 
-      <a class="nav-item {{ request()->routeIs($routePrefix . 'losted-leads') || request()->routeIs($routePrefix . 'losted-leads.show') ? 'active' : '' }}"
+      <a class="nav-item {{ $isLostedLeadsActive ? 'active' : '' }}"
         href="{{ route($routePrefix . 'losted-leads') }}">
         <i class="bi bi-ban"></i><span>Losted Leads</span>
         <span class="nav-count">{{ $lostLeadCount }}</span>
