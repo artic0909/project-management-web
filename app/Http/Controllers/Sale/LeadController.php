@@ -445,7 +445,7 @@ class LeadController extends Controller
     {
         $lead = $this->getFilteredLeads()->findOrFail($id);
         $lead->update(['is_losted' => 1]);
-        return redirect()->back()->with('success', 'Lead marked as losted successfully!');
+        return redirect()->route('admin.leads.index')->with('success', 'Lead marked as losted successfully!');
     }
 
     public function showLosted($id)
@@ -460,7 +460,7 @@ class LeadController extends Controller
     {
         $lead = $this->getFilteredLeads()->findOrFail($id);
         $lead->update(['is_losted' => 0]);
-        return redirect()->back()->with('success', 'Lead successfully moved back to active leads!');
+        return redirect()->route('admin.losted-leads')->with('success', 'Lead successfully moved back to active leads!');
     }
 
     public function destroy($id)
