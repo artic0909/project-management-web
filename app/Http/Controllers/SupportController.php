@@ -159,6 +159,7 @@ class SupportController extends Controller
         }
         $ticket->delete();
 
+        return back()->with('success', 'Ticket deleted successfully!');
     }
 
     /**
