@@ -77,6 +77,9 @@ class InvoiceController extends Controller
 
         $data = $request->all();
         $data['items'] = array_values($request->items);
+        
+        $data['created_by'] = auth()->guard('admin')->id();
+        $data['created_by_type'] = \App\Models\Admin::class;
 
         $invoice = Invoice::create($data);
 
@@ -88,6 +91,9 @@ class InvoiceController extends Controller
         $invoice = Invoice::findOrFail($id);
         $newInvoice = $invoice->replicate();
         
+        $newInvoice->created_by = auth()->guard('admin')->id();
+        $newInvoice->created_by_type = \App\Models\Admin::class;
+
         // Generate new invoice number
         do {
             $newInvoice->invoice_no = random_int(1000000000, 9999999999);

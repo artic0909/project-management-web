@@ -10,7 +10,8 @@ class Invoice extends Model
         'invoice_no', 'invoice_date', 'due_date', 'client_name', 'client_address',
         'client_gstin', 'place_of_supply', 'items', 'subtotal', 'cgst', 'sgst',
         'igst', 'adjustment', 'total', 'status', 'notes', 'bank_details', 'order_id', 'payment_id',
-        'sender_name', 'sender_address', 'sender_gstin', 'sender_contact', 'sender_email'
+        'sender_name', 'sender_address', 'sender_gstin', 'sender_contact', 'sender_email',
+        'created_by', 'created_by_type'
     ];
     
     protected $casts = [

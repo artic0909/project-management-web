@@ -23,7 +23,11 @@ class InvoiceController extends Controller
                 })->orWhereHas('assignments', function($sq) use ($saleId) {
                     $sq->where('assigned_to', $saleId);
                 });
-            })->orWhere('sender_email', auth()->guard('sale')->user()->email); // Also show if they created it manually
+            })
+            ->orWhere(function($sq) use ($saleId, $saleType) {
+                $sq->where('created_by', $saleId)->where('created_by_type', $saleType);
+            })
+            ->orWhere('sender_email', auth()->guard('sale')->user()->email); // Legacy support for older invoices
         });
     }
 
@@ -104,10 +108,8 @@ class InvoiceController extends Controller
         $data = $request->all();
         $data['items'] = array_values($request->items);
         
-        // Auto-set sender email for Sales to ensure they can view it later
-        if (!isset($data['sender_email']) || empty($data['sender_email'])) {
-            $data['sender_email'] = auth()->guard('sale')->user()->email;
-        }
+        $data['created_by'] = auth()->guard('sale')->id();
+        $data['created_by_type'] = \App\Models\Sale::class;
         
         // Universal creation: we don't strictly block order_id here anymore
         // allowing it to be standalone or linked if the ID is known.
@@ -123,7 +125,8 @@ class InvoiceController extends Controller
         $newInvoice = $invoice->replicate();
         
         // Ensure ownership
-        $newInvoice->sender_email = auth()->guard('sale')->user()->email;
+        $newInvoice->created_by = auth()->guard('sale')->id();
+        $newInvoice->created_by_type = \App\Models\Sale::class;
         
         // Generate new invoice number
         do {
