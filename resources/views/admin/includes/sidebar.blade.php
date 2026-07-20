@@ -70,11 +70,38 @@
       @endif
 
       <div class="nav-section-label">Business</div>
-      <a class="nav-item {{ $isLeadsActive ? 'active' : '' }}"
-        href="{{ route($routePrefix . 'leads.index') }}">
-        <i class="bi bi-person-lines-fill"></i><span>{{ $guard === 'sale' ? 'My Leads' : 'Leads' }}</span>
-        <span class="nav-count">{{ $leadCount }}</span>
-      </a>
+      @if($guard === 'sale')
+        <div class="nav-dropdown {{ $isLeadsActive ? 'open' : '' }}">
+          <a class="nav-item nav-dropdown-toggle {{ $isLeadsActive ? 'active' : '' }}" href="javascript:void(0)" onclick="toggleNavDropdown(this)">
+            <i class="bi bi-person-lines-fill"></i>
+            <span>Leads</span>
+            <i class="bi bi-chevron-down nav-dropdown-chevron" style="margin-left: auto; font-size: 11px; transition: transform 0.2s ease; {{ $isLeadsActive ? 'transform: rotate(180deg);' : '' }}"></i>
+          </a>
+          <div class="nav-dropdown-menu" style="padding-left: 14px; {{ $isLeadsActive ? 'display: block;' : 'display: none;' }}">
+            <a class="nav-item nav-sub-item {{ ($isLeadsActive && request('type') === 'new') ? 'active' : '' }}"
+              href="{{ route('sale.leads.index', ['type' => 'new']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-plus-circle" style="font-size: 13px;"></i><span>New Leads</span>
+              <span class="nav-count">{{ $newLeadCount ?? 0 }}</span>
+            </a>
+            <a class="nav-item nav-sub-item {{ ($isLeadsActive && (request('type') === 'my' || !request('type'))) ? 'active' : '' }}"
+              href="{{ route('sale.leads.index', ['type' => 'my']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-person" style="font-size: 13px;"></i><span>My Leads</span>
+              <span class="nav-count">{{ $myLeadCount ?? 0 }}</span>
+            </a>
+            <a class="nav-item nav-sub-item {{ ($isLeadsActive && request('type') === 'total') ? 'active' : '' }}"
+              href="{{ route('sale.leads.index', ['type' => 'total']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-collection" style="font-size: 13px;"></i><span>Total Leads</span>
+              <span class="nav-count">{{ $totalLeadCount ?? 0 }}</span>
+            </a>
+          </div>
+        </div>
+      @else
+        <a class="nav-item {{ $isLeadsActive ? 'active' : '' }}"
+          href="{{ route($routePrefix . 'leads.index') }}">
+          <i class="bi bi-person-lines-fill"></i><span>Leads</span>
+          <span class="nav-count">{{ $leadCount }}</span>
+        </a>
+      @endif
       <a class="nav-item {{ request()->routeIs($routePrefix . 'orders.index') ? 'active' : '' }}"
         href="{{ route($routePrefix . 'orders.index') }}">
         <i class="bi bi-bag-check-fill"></i><span>{{ $guard === 'sale' ? 'My Orders' : 'Orders' }}</span>

@@ -341,6 +341,16 @@
             display: none;
         }
 
+        .nav-dropdown-toggle {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .sidebar.collapsed .nav-dropdown-menu,
+        .sidebar.collapsed .nav-dropdown-chevron {
+            display: none !important;
+        }
+
         .nav-item {
             display: flex;
             align-items: center;
@@ -3203,6 +3213,23 @@
         function closeSidebar() {
             document.getElementById('sidebar').classList.remove('mobile-open');
             document.getElementById('sidebarOverlay').classList.remove('show');
+        }
+
+        function toggleNavDropdown(btn) {
+            const parent = btn.closest('.nav-dropdown');
+            if (!parent) return;
+            const menu = parent.querySelector('.nav-dropdown-menu');
+            const chevron = parent.querySelector('.nav-dropdown-chevron');
+            const isOpen = parent.classList.contains('open');
+            if (isOpen) {
+                parent.classList.remove('open');
+                if (menu) menu.style.display = 'none';
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+            } else {
+                parent.classList.add('open');
+                if (menu) menu.style.display = 'block';
+                if (chevron) chevron.style.transform = 'rotate(180deg)';
+            }
         }
 
         /* ── PANEL SWITCHER ── */

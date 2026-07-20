@@ -59,10 +59,14 @@ class AppServiceProvider extends ServiceProvider
             $invoiceCount = 0;
 
 
+            $newLeadCount = 0;
+            $myLeadCount = 0;
+            $totalLeadCount = 0;
             $upcomingRenewals = collect();
 
             if (auth()->guard('admin')->check()) {
                 $leadCount = \App\Models\Lead::where('is_losted', 0)->count();
+                $totalLeadCount = $leadCount;
                 $orderCount = \App\Models\Order::count();
                 $lostLeadCount = \App\Models\Lead::where('is_losted', 1)->count();
                 $projectCount = \App\Models\Project::count();
@@ -88,6 +92,18 @@ class AppServiceProvider extends ServiceProvider
                         $sq->where('assigned_to', $saleId);
                     });
                 })->where('is_losted', 0)->count();
+
+                $newLeadCount = \App\Models\Lead::where('is_losted', 0)
+                    ->doesntHave('assignments')
+                    ->doesntHave('followups')
+                    ->count();
+
+                $myLeadCount = \App\Models\Lead::where('is_losted', 0)
+                    ->whereHas('assignments', function($sq) use ($saleId) {
+                        $sq->where('assigned_to', $saleId);
+                    })->count();
+
+                $totalLeadCount = \App\Models\Lead::where('is_losted', 0)->count();
                 
                 $orderCount = \App\Models\Order::where(function($q) use ($saleId, $saleType) {
                     $q->where(function($sq) use ($saleId, $saleType) {
@@ -152,6 +168,9 @@ class AppServiceProvider extends ServiceProvider
                 'developerCount' => $developerCount,
                 'salesPersonCount' => $salesPersonCount,
                 'leadCount' => $leadCount,
+                'newLeadCount' => $newLeadCount,
+                'myLeadCount' => $myLeadCount,
+                'totalLeadCount' => $totalLeadCount,
                 'orderCount' => $orderCount,
                 'lostLeadCount' => $lostLeadCount,
                 'projectCount' => $projectCount,

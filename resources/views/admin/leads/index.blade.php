@@ -434,7 +434,19 @@
             <div class="dash-card span-12">
                 <div class="card-head">
                     <div>
-                        <div class="card-title">Lead Pipeline</div>
+                        <div class="card-title">
+                            @if(isset($routePrefix) && $routePrefix === 'sale')
+                                @if(request('type') === 'new')
+                                    New Leads
+                                @elseif(request('type') === 'total')
+                                    Total Leads
+                                @else
+                                    My Leads
+                                @endif
+                            @else
+                                Lead Pipeline
+                            @endif
+                        </div>
                         <div class="card-sub" id="drpActiveSub">
                             @if(request('start_date') && request('end_date'))
                                 {{ \Carbon\Carbon::parse(request('start_date'))->format('M d') }} – {{ \Carbon\Carbon::parse(request('end_date'))->format('M d, Y') }}
@@ -448,6 +460,9 @@
                         </div>
                     </div>
                     <form action="{{ route($routePrefix . '.leads.index') }}" method="GET" class="card-actions mb-2">
+                        @if(request()->filled('type'))
+                            <input type="hidden" name="type" value="{{ request('type') }}">
+                        @endif
                         <div class="global-search">
                             <i class="bi bi-search"></i>
                             <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search..." autocomplete="off">

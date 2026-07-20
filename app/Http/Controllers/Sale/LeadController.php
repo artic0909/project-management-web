@@ -33,8 +33,25 @@ class LeadController extends Controller
 
     public function index(Request $request)
     {
-        $query = $this->getFilteredLeads()->with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])->withCount('followups')
-            ->where('is_losted', 0);
+        $saleId = auth()->guard('sale')->id();
+        $type = $request->get('type', 'my');
+
+        if ($type === 'new') {
+            $query = Lead::where('is_losted', 0)
+                ->doesntHave('assignments')
+                ->doesntHave('followups');
+        } elseif ($type === 'my') {
+            $query = Lead::where('is_losted', 0)
+                ->whereHas('assignments', function($q) use ($saleId) {
+                    $q->where('assigned_to', $saleId);
+                });
+        } elseif ($type === 'total') {
+            $query = Lead::where('is_losted', 0);
+        } else {
+            $query = $this->getFilteredLeads()->where('is_losted', 0);
+        }
+
+        $query->with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])->withCount('followups');
 
         // Search filter
         if ($request->has('q') && !empty($request->q)) {
@@ -487,8 +504,25 @@ class LeadController extends Controller
 
     public function export(Request $request)
     {
-        $query = $this->getFilteredLeads()->with(['status', 'services', 'sources', 'campaign', 'assignments.sale', 'createdBy'])
-            ->where('is_losted', 0);
+        $saleId = auth()->guard('sale')->id();
+        $type = $request->get('type', 'my');
+
+        if ($type === 'new') {
+            $query = Lead::where('is_losted', 0)
+                ->doesntHave('assignments')
+                ->doesntHave('followups');
+        } elseif ($type === 'my') {
+            $query = Lead::where('is_losted', 0)
+                ->whereHas('assignments', function($q) use ($saleId) {
+                    $q->where('assigned_to', $saleId);
+                });
+        } elseif ($type === 'total') {
+            $query = Lead::where('is_losted', 0);
+        } else {
+            $query = $this->getFilteredLeads()->where('is_losted', 0);
+        }
+
+        $query->with(['status', 'services', 'sources', 'campaign', 'assignments.sale', 'createdBy']);
 
         // Search filter
         if ($request->has('q') && !empty($request->q)) {
