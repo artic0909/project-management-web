@@ -23,15 +23,9 @@ class FollowupController extends Controller
             if (!$hasAccess) {
                 $hasAccess = $model->assignments()->where('assigned_to', $saleId)->exists();
             }
-        } else {
-            $hasAccess = $model->created_by == $saleId && $model->created_by_type == $saleType;
             if (!$hasAccess) {
-                $hasAccess = $model->assignments()->where('assigned_to', $saleId)->exists();
+                abort(403, 'Unauthorized access to this followup.');
             }
-        }
-
-        if (!$hasAccess) {
-            abort(403, 'Unauthorized access to this followup.');
         }
     }
 
@@ -82,9 +76,9 @@ class FollowupController extends Controller
         $this->checkAccess($model);
 
         // Exclusive Re-assignment logic: 
-        // If assigned to more than one sales person, re-assign exclusively to the one who makes the followup.
+        // If unassigned or assigned to more than one sales person, re-assign exclusively to the one who makes the followup.
         $currentSaleId = auth()->guard('sale')->id();
-        if ($model->assignments()->count() > 1) {
+        if ($model->assignments()->count() === 0 || $model->assignments()->count() > 1) {
             $model->assignments()->delete();
             $model->assignments()->create([
                 'assigned_to' => $currentSaleId

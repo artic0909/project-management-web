@@ -285,7 +285,7 @@ class LeadController extends Controller
 
     public function show($id)
     {
-        $lead = $this->getFilteredLeads()->with(['status', 'sources', 'services', 'campaign', 'createdBy', 'assignments.sale', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
+        $lead = Lead::with(['status', 'sources', 'services', 'campaign', 'createdBy', 'assignments.sale', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         $statuses = Status::where('type', 'lead')->where('name', '!=', 'lost')->get();
         $routePrefix = 'sale';
         return view('admin.leads.show', compact('lead', 'statuses', 'routePrefix'));
@@ -293,7 +293,7 @@ class LeadController extends Controller
 
     public function edit($id)
     {
-        $lead = $this->getFilteredLeads()->with(['assignments', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
+        $lead = Lead::with(['assignments', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         $sources = Source::all();
         $services = Service::all();
         $statuses = Status::where('type', 'lead')->where('name', '!=', 'lost')->get();
@@ -327,7 +327,7 @@ class LeadController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $lead = $this->getFilteredLeads()->findOrFail($id);
+        $lead = Lead::findOrFail($id);
 
         // Process phones
         $phones = [];
@@ -448,7 +448,7 @@ class LeadController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        $lead = $this->getFilteredLeads()->findOrFail($id);
+        $lead = Lead::findOrFail($id);
         
         $lead->update([
             'status_id' => $request->status_id,
@@ -460,14 +460,14 @@ class LeadController extends Controller
 
     public function markAsLosted($id)
     {
-        $lead = $this->getFilteredLeads()->findOrFail($id);
+        $lead = Lead::findOrFail($id);
         $lead->update(['is_losted' => 1]);
         return redirect()->route('sale.leads.index')->with('success', 'Lead marked as losted successfully!');
     }
 
     public function showLosted($id)
     {
-        $lead = $this->getFilteredLeads()->with(['status', 'sources', 'services', 'campaign', 'createdBy', 'assignments.sale', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
+        $lead = Lead::with(['status', 'sources', 'services', 'campaign', 'createdBy', 'assignments.sale', 'notes_history.createdBy', 'notes_history.updatedBy'])->findOrFail($id);
         $statuses = Status::where('type', 'lead')->where('name', '!=', 'lost')->get();
         $routePrefix = 'sale';
         return view('admin.leads.show', compact('lead', 'statuses', 'routePrefix'));
@@ -475,14 +475,14 @@ class LeadController extends Controller
 
     public function markAsLead($id)
     {
-        $lead = $this->getFilteredLeads()->findOrFail($id);
+        $lead = Lead::findOrFail($id);
         $lead->update(['is_losted' => 0]);
         return redirect()->route('sale.losted-leads')->with('success', 'Lead successfully moved back to active leads!');
     }
 
     public function destroy($id)
     {
-        $lead = $this->getFilteredLeads()->findOrFail($id);
+        $lead = Lead::findOrFail($id);
         $lead->delete();
 
         return redirect()->back()->with('success', 'Lead deleted successfully!');
