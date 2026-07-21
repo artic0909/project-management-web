@@ -95,6 +95,12 @@ class FollowupController extends Controller
             'created_by_type' => \App\Models\Sale::class,
         ]);
 
+        if (!$isOrder) {
+            session()->put('highlight_lead_id', $model->id);
+            return redirect()->route($routePrefix . '.leads.index', ['type' => 'my'])
+                             ->with('success', 'Followup added successfully!');
+        }
+
         return redirect()->back()->with('success', 'Followup added successfully!');
     }
 }
