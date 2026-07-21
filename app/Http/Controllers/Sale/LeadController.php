@@ -262,12 +262,6 @@ class LeadController extends Controller
                     'assigned_to' => $person,
                 ]);
             }
-        } else {
-            // Auto assign to self if not specified? User didn't ask, but it makes sense for Sale person.
-            LeadAssign::create([
-                'lead_id' => $lead->id,
-                'assigned_to' => auth()->guard('sale')->id(),
-            ]);
         }
 
         // Add initial note to history if present
