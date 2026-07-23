@@ -63,17 +63,28 @@
                                             <i class="bi bi-shield-lock-fill" style="margin-right: 8px; color: #f59e0b;"></i>Security & Password
                                         </h4>
 
+                                        @if($routePrefix !== 'sale')
                                         <div class="form-row">
                                             <label class="form-lbl">Current Password</label>
-                                            <input type="password" name="current_password" class="form-inp" placeholder="Enter Current Password" value="{{ old('current_password') }}" autocomplete="new-password">
+                                            <div style="position: relative;">
+                                                <input type="password" name="current_password" class="form-inp" placeholder="Enter Current Password" value="{{ old('current_password') }}" autocomplete="new-password">
+                                                <i class="bi bi-eye-slash toggle-password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--t3);"></i>
+                                            </div>
                                         </div>
+                                        @endif
                                         <div class="form-row">
                                             <label class="form-lbl">New Password</label>
-                                            <input type="password" name="new_password" class="form-inp" placeholder="Enter New Password" value="{{ old('new_password') }}" autocomplete="new-password">
+                                            <div style="position: relative;">
+                                                <input type="password" name="new_password" class="form-inp" placeholder="Enter New Password" value="{{ old('new_password') }}" autocomplete="new-password">
+                                                <i class="bi bi-eye-slash toggle-password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--t3);"></i>
+                                            </div>
                                         </div>
                                         <div class="form-row">
                                             <label class="form-lbl">Confirm Password</label>
-                                            <input type="password" name="new_password_confirmation" class="form-inp" placeholder="Confirm Password">
+                                            <div style="position: relative;">
+                                                <input type="password" name="new_password_confirmation" class="form-inp" placeholder="Confirm Password">
+                                                <i class="bi bi-eye-slash toggle-password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--t3);"></i>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -223,15 +234,24 @@
                                 <h4 style="margin: 24px 0 16px; color: var(--t1); font-size: 15px; font-weight: 700;">Password Change (Optional)</h4>
                                 <div class="form-row">
                                     <label class="form-lbl">Current Password</label>
-                                    <input type="password" name="current_password" class="form-inp" placeholder="Enter Current Password" value="{{ old('current_password') }}" autocomplete="new-password">
+                                    <div style="position: relative;">
+                                        <input type="password" name="current_password" class="form-inp" placeholder="Enter Current Password" value="{{ old('current_password') }}" autocomplete="new-password">
+                                        <i class="bi bi-eye-slash toggle-password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--t3);"></i>
+                                    </div>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">New Password</label>
-                                    <input type="password" name="new_password" class="form-inp" placeholder="Enter New Password" value="{{ old('new_password') }}" autocomplete="new-password">
+                                    <div style="position: relative;">
+                                        <input type="password" name="new_password" class="form-inp" placeholder="Enter New Password" value="{{ old('new_password') }}" autocomplete="new-password">
+                                        <i class="bi bi-eye-slash toggle-password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--t3);"></i>
+                                    </div>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Confirm Password</label>
-                                    <input type="password" name="new_password_confirmation" class="form-inp" placeholder="Confirm Password">
+                                    <div style="position: relative;">
+                                        <input type="password" name="new_password_confirmation" class="form-inp" placeholder="Confirm Password">
+                                        <i class="bi bi-eye-slash toggle-password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--t3);"></i>
+                                    </div>
                                 </div>
                             @endif
 
@@ -248,5 +268,22 @@
 
 </main>
 
-
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.toggle-password').forEach(function(icon) {
+        icon.addEventListener('click', function() {
+            var input = this.previousElementSibling;
+            if (input.type === 'password') {
+                input.type = 'text';
+                this.classList.remove('bi-eye-slash');
+                this.classList.add('bi-eye');
+            } else {
+                input.type = 'password';
+                this.classList.remove('bi-eye');
+                this.classList.add('bi-eye-slash');
+            }
+        });
+    });
+});
+</script>
 @endsection

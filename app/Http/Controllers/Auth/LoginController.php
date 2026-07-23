@@ -111,8 +111,7 @@ class LoginController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:sales,email,' . $sale->id,
-            'current_password' => 'nullable|required_with:new_password',
-            'new_password' => 'nullable|min:6|required_with:current_password|confirmed',
+            'new_password' => 'nullable|min:6|confirmed',
             'profile_image' => 'nullable|image|max:2048',
             'pan_card' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
             'voter_card' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
@@ -166,9 +165,6 @@ class LoginController extends Controller
 
         // Password Update
         if ($request->filled('new_password')) {
-            if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $sale->password)) {
-                return back()->withErrors(['current_password' => 'The provided current password does not match.']);
-            }
             $sale->password = \Illuminate\Support\Facades\Hash::make($request->new_password);
         }
 
