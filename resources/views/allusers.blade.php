@@ -562,7 +562,10 @@
           </div>
           <div style="margin-bottom:16px">
             <label class="f-label">Password</label>
-            <input type="password" name="password" class="f-input" id="lpass" placeholder="Enter your password" required>
+            <div style="position: relative;">
+              <input type="password" name="password" class="f-input" id="lpass" placeholder="Enter your password" required>
+              <i class="bi bi-eye-slash" id="togglePassword" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--t3);"></i>
+            </div>
           </div>
           <div style="margin-bottom:20px; display:flex; align-items:center; gap:8px;">
             <input type="checkbox" name="remember" id="remember" style="width:16px; height:16px; accent-color:var(--ink); cursor:pointer;">
@@ -607,6 +610,15 @@
     }
     function closeL() { $('.mbg').removeClass('open'); }
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeL() })
+    
+    // Password visibility toggle
+    document.getElementById('togglePassword').addEventListener('click', function () {
+        const passwordInput = document.getElementById('lpass');
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.classList.toggle('bi-eye');
+        this.classList.toggle('bi-eye-slash');
+    });
   </script>
 
 </body>
