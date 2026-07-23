@@ -486,6 +486,13 @@
                                 <option value="{{ $source->id }}" {{ request('source_id') == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
                             @endforeach
                         </select>
+                        
+                        <select name="campaign_id" class="filter-select" onchange="updateFilters()">
+                            <option value="">All Campaigns</option>
+                            @foreach($campaigns as $campaign)
+                                <option value="{{ $campaign->id }}" {{ request('campaign_id') == $campaign->id ? 'selected' : '' }}>{{ $campaign->name }}</option>
+                            @endforeach
+                        </select>
 
                         <select name="service_id" class="filter-select" onchange="updateFilters()">
                             <option value="">All Services</option>

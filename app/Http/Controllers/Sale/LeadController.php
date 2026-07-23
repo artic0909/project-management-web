@@ -93,6 +93,9 @@ class LeadController extends Controller
                 $q->where('services.id', $request->service_id);
             });
         }
+        if ($request->has('campaign_id') && !empty($request->campaign_id)) {
+            $query->where('campaign_id', $request->campaign_id);
+        }
         if ($request->has('priority') && !empty($request->priority)) {
             $query->where('priority', $request->priority);
         }
