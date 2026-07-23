@@ -63,7 +63,7 @@
                                     @error('company')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Contact Person <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Contact Person</label>
                                     <input type="text" name="contact_person" class="form-inp @error('contact_person') is-invalid @enderror" value="{{ old('contact_person', $lead->contact_person) }}" placeholder="Full name">
                                     @error('contact_person')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
@@ -117,7 +117,7 @@
                         <div class="card-body">
                             <div class="form-grid">
                                 <div class="form-row" style="grid-column:1/-1">
-                                    <label class="form-lbl">Service Need <span style="color:#ef4444">*</span></label>
+                                    <label class="form-lbl">Service Need</label>
                                     @php $selectedServiceIds = $lead->services->pluck('id')->toArray(); @endphp
                                     <div class="ms-wrap" id="serviceWrap">
                                         <div class="ms-trigger @error('service_ids') is-invalid @enderror" onclick="toggleMs('serviceWrap')" data-placeholder="Select services…">

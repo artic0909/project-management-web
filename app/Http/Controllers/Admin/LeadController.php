@@ -168,7 +168,7 @@ class LeadController extends Controller
     {
         $request->validate([
             'company' => 'nullable|string|max:255',
-            'contact_person' => 'required|string|max:255',
+            'contact_person' => 'nullable|string|max:255',
             'business_type' => 'nullable|string|max:255',
             'email' => 'nullable|array',
             'email.*' => 'nullable|email|max:255',
@@ -177,7 +177,7 @@ class LeadController extends Controller
             'address' => 'nullable|string',
             'state' => 'nullable|string|max:100',
             'zip_code' => 'nullable|numeric|digits:6',
-            'service_ids' => 'required|array|min:1',
+            'service_ids' => 'nullable|array|min:1',
             'service_ids.*' => 'exists:services,id',
             'source_ids' => 'nullable|array',
             'source_ids.*' => 'exists:sources,id',
@@ -220,8 +220,8 @@ class LeadController extends Controller
             'created_by_type' => get_class(auth()->user()),
         ]);
 
-        $lead->services()->sync($request->service_ids);
-        $lead->sources()->sync($request->source_ids);
+        $lead->services()->sync($request->service_ids ?? []);
+        $lead->sources()->sync($request->source_ids ?? []);
 
         // Add initial note to history if present
         if (!empty($request->notes)) {
@@ -306,7 +306,7 @@ class LeadController extends Controller
     {
         $request->validate([
             'company' => 'nullable|string|max:255',
-            'contact_person' => 'required|string|max:255',
+            'contact_person' => 'nullable|string|max:255',
             'business_type' => 'nullable|string|max:255',
             'email' => 'nullable|array',
             'email.*' => 'nullable|email|max:255',
@@ -315,7 +315,7 @@ class LeadController extends Controller
             'address' => 'nullable|string',
             'state' => 'nullable|string|max:100',
             'zip_code' => 'nullable|numeric|digits:6',
-            'service_ids' => 'required|array|min:1',
+            'service_ids' => 'nullable|array|min:1',
             'service_ids.*' => 'exists:services,id',
             'source_ids' => 'nullable|array',
             'source_ids.*' => 'exists:sources,id',
@@ -360,8 +360,8 @@ class LeadController extends Controller
             'notes' => $request->notes,
         ]);
 
-        $lead->services()->sync($request->service_ids);
-        $lead->sources()->sync($request->source_ids);
+        $lead->services()->sync($request->service_ids ?? []);
+        $lead->sources()->sync($request->source_ids ?? []);
 
         // Update assignments
         LeadAssign::where('lead_id', $id)->delete();

@@ -74,10 +74,7 @@ $(document).ready(function() {
         }
 
         // Validation Rules
-        const contactPerson = $('[name="contact_person"]');
-        if (!contactPerson.val() || contactPerson.val().trim() === '') {
-            markError(contactPerson, 'Contact Person is required.');
-        }
+
 
         // Email Validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -104,10 +101,7 @@ $(document).ready(function() {
             markError($('input[name="phone[]"]').first(), 'At least one Phone Number is required.');
         }
 
-        // Service Need Validation
-        if ($('input[name="service_ids[]"]:checked').length === 0) {
-            markError($('input[name="service_ids[]"]').first(), 'At least one Service Need must be selected.');
-        }
+
 
         if (!isValid) {
             e.preventDefault();
