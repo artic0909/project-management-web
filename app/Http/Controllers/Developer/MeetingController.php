@@ -36,7 +36,7 @@ class MeetingController extends Controller
                   ->orWhere('meeting_title', 'like', "%$s%")
                   ->orWhere('meeting_description', 'like', "%$s%")
                   ->orWhereHas('project', function($pq) use ($s) {
-                      $pq->where('project_name', 'like', "%$s%");
+                      $pq->where('project_name', 'like', "%$s%")->orWhere('client_name', 'like', "%$s%")->orWhere('phones', 'like', "%$s%");
                   });
             });
         }
@@ -93,7 +93,7 @@ class MeetingController extends Controller
                   ->orWhere('meeting_title', 'like', "%$s%")
                   ->orWhere('meeting_description', 'like', "%$s%")
                   ->orWhereHas('project', function($pq) use ($s) {
-                      $pq->where('project_name', 'like', "%$s%");
+                      $pq->where('project_name', 'like', "%$s%")->orWhere('client_name', 'like', "%$s%")->orWhere('phones', 'like', "%$s%");
                   });
             });
         }

@@ -46,13 +46,13 @@ class MeetingController extends Controller
                   ->orWhere('status', 'like', "%$s%")
                   ->orWhere('meeting_type', 'like', "%$s%")
                   ->orWhereHas('lead', function($lq) use ($s) {
-                      $lq->where('company', 'like', "%$s%")->orWhere('contact_person', 'like', "%$s%");
+                      $lq->where('company', 'like', "%$s%")->orWhere('contact_person', 'like', "%$s%")->orWhere('phones', 'like', "%$s%");
                   })
                   ->orWhereHas('order', function($oq) use ($s) {
-                      $oq->where('company_name', 'like', "%$s%")->orWhere('client_name', 'like', "%$s%");
+                      $oq->where('company_name', 'like', "%$s%")->orWhere('client_name', 'like', "%$s%")->orWhere('phones', 'like', "%$s%");
                   })
                   ->orWhereHas('project', function($pq) use ($s) {
-                      $pq->where('project_name', 'like', "%$s%");
+                      $pq->where('project_name', 'like', "%$s%")->orWhere('client_name', 'like', "%$s%")->orWhere('phones', 'like', "%$s%");
                   });
 
                 foreach($devIds as $dId) {
