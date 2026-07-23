@@ -133,7 +133,7 @@ class MeetingController extends Controller
     {
         $request->validate([
             'meeting_type' => 'required|in:lead,order,project',
-            'meeting_title' => 'required|string|max:255',
+            'meeting_title' => 'nullable|string|max:255',
             'meeting_date' => 'required|date',
             'meeting_time' => 'required',
             'status' => 'required|string',
@@ -216,7 +216,7 @@ class MeetingController extends Controller
 
         $request->validate([
             'meeting_type' => 'required|in:lead,order,project',
-            'meeting_title' => 'required|string|max:255',
+            'meeting_title' => 'nullable|string|max:255',
             'meeting_date' => 'required|date',
             'meeting_time' => 'required',
             'status' => 'required|string',
