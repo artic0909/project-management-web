@@ -195,11 +195,16 @@
         <i class="bi bi-chat-left-text-fill"></i><span>Order Inquiries</span>
         <span class="nav-count">{{ $inquiryCount }}</span>
       </a>
+      @endif
 
       <!-- Notes -->
-       <a class="nav-item {{ request()->routeIs('admin.notes*') ? 'active' : '' }}" href="{{ route('admin.notes.index') }}">
+      @if($guard === 'admin' || $guard === 'sale')
+       <a class="nav-item {{ request()->routeIs($routePrefix . 'notes*') ? 'active' : '' }}" href="{{ route($routePrefix . 'notes.index') }}">
           <i class="bi bi-sticky-fill"></i><span>Notes</span>
         </a>
+      @endif
+
+      @if($guard === 'admin')
 
         <a class="nav-item {{ request()->routeIs('admin.supports*') ? 'active' : '' }}" href="{{ route('admin.supports.index') }}">
           <i class="bi bi-headset"></i><span>Support</span>

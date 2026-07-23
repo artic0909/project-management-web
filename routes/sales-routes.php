@@ -121,4 +121,9 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     Route::patch('/meetings/{id}/status', [MeetingController::class, 'updateStatus'])->name('meetings.updateStatus');
     Route::get('/export-meetings', [MeetingController::class, 'export'])->name('meetings.export');
     Route::resource('meetings', \App\Http\Controllers\Sale\MeetingController::class);
+
+    // Notes
+    Route::get('/notes', [\App\Http\Controllers\Sale\NoteController::class, 'index'])->name('notes.index');
+    Route::post('/notes', [\App\Http\Controllers\Sale\NoteController::class, 'store'])->name('notes.store');
+    Route::delete('/notes/{id}', [\App\Http\Controllers\Sale\NoteController::class, 'destroy'])->name('notes.destroy');
 });

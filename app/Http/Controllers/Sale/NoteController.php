@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Sale;
 
 use App\Http\Controllers\Controller;
 use App\Models\AdminNote;
@@ -13,11 +13,11 @@ class NoteController extends Controller
     public function index()
     {
         $notes = AdminNote::with('createdBy')
-            ->where('created_by', Auth::guard('admin')->id())
-            ->where('created_by_type', get_class(Auth::guard('admin')->user()))
+            ->where('created_by', Auth::guard('sale')->id())
+            ->where('created_by_type', get_class(Auth::guard('sale')->user()))
             ->latest()
             ->paginate(10);
-        $routePrefix = 'admin';
+        $routePrefix = 'sale';
         return view('admin.notes.index', compact('notes', 'routePrefix'));
     }
 
@@ -45,8 +45,8 @@ class NoteController extends Controller
             'title' => $request->title,
             'content' => $request->content,
             'attachments' => $attachments,
-            'created_by' => Auth::guard('admin')->id(),
-            'created_by_type' => get_class(Auth::guard('admin')->user()),
+            'created_by' => Auth::guard('sale')->id(),
+            'created_by_type' => get_class(Auth::guard('sale')->user()),
         ]);
 
         return redirect()->back()->with('success', 'Note added successfully!');
@@ -55,8 +55,8 @@ class NoteController extends Controller
     public function destroy($id)
     {
         $note = AdminNote::where('id', $id)
-            ->where('created_by', Auth::guard('admin')->id())
-            ->where('created_by_type', get_class(Auth::guard('admin')->user()))
+            ->where('created_by', Auth::guard('sale')->id())
+            ->where('created_by_type', get_class(Auth::guard('sale')->user()))
             ->firstOrFail();
         
         if (!empty($note->attachments)) {

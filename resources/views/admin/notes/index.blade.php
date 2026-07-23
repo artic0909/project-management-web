@@ -6,7 +6,7 @@
 <main class="page-area">
     <div class="page-header">
         <div>
-            <h1 class="page-title">Management Notes</h1>
+            <h1 class="page-title">{{ isset($routePrefix) && $routePrefix == 'sale' ? 'Sales Notes' : 'Management Notes' }}</h1>
             <p class="page-desc">Internal documentation and shared notes for administrative staff.</p>
         </div>
     </div>
@@ -18,7 +18,7 @@
                     <div class="card-title">Create New Note</div>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('admin.notes.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route(($routePrefix ?? 'admin') . '.notes.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="form-row">
                             <label class="form-lbl">Title (Optional)</label>
@@ -62,7 +62,7 @@
                                         </div>
                                     </div>
                                     <div class="note-actions">
-                                        <button type="button" onclick="confirmSingleDelete('{{ route('admin.notes.destroy', $note->id) }}')" style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #fee2e2; background: #fff5f5; color: #ef4444; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center;">
+                                        <button type="button" onclick="confirmSingleDelete('{{ route(($routePrefix ?? 'admin') . '.notes.destroy', $note->id) }}')" style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #fee2e2; background: #fff5f5; color: #ef4444; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center;">
                                             <i class="bi bi-trash-fill"></i>
                                         </button>
                                     </div>
