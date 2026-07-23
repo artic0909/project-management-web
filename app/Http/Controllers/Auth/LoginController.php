@@ -83,8 +83,7 @@ class LoginController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:admins,email,' . $admin->id,
-            'current_password' => 'nullable|required_with:new_password',
-            'new_password' => 'nullable|min:6|required_with:current_password|confirmed',
+            'new_password' => 'nullable|min:6|confirmed',
         ]);
 
         // Profile Update
@@ -93,9 +92,6 @@ class LoginController extends Controller
 
         // Password Update
         if ($request->filled('new_password')) {
-            if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $admin->password)) {
-                return back()->withErrors(['current_password' => 'The provided current password does not match.']);
-            }
             $admin->password = \Illuminate\Support\Facades\Hash::make($request->new_password);
         }
 

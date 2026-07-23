@@ -63,15 +63,7 @@
                                             <i class="bi bi-shield-lock-fill" style="margin-right: 8px; color: #f59e0b;"></i>Security & Password
                                         </h4>
 
-                                        @if($routePrefix === 'admin')
-                                        <div class="form-row">
-                                            <label class="form-lbl">Current Password</label>
-                                            <div style="position: relative;">
-                                                <input type="password" name="current_password" class="form-inp" placeholder="Enter Current Password" value="{{ old('current_password') }}" autocomplete="new-password">
-                                                <i class="bi bi-eye-slash toggle-password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--t3);"></i>
-                                            </div>
-                                        </div>
-                                        @endif
+
                                         <div class="form-row">
                                             <label class="form-lbl">New Password</label>
                                             <div style="position: relative;">
@@ -232,13 +224,7 @@
                                 </div>
 
                                 <h4 style="margin: 24px 0 16px; color: var(--t1); font-size: 15px; font-weight: 700;">Password Change (Optional)</h4>
-                                <div class="form-row">
-                                    <label class="form-lbl">Current Password</label>
-                                    <div style="position: relative;">
-                                        <input type="password" name="current_password" class="form-inp" placeholder="Enter Current Password" value="{{ old('current_password') }}" autocomplete="new-password">
-                                        <i class="bi bi-eye-slash toggle-password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--t3);"></i>
-                                    </div>
-                                </div>
+
                                 <div class="form-row">
                                     <label class="form-lbl">New Password</label>
                                     <div style="position: relative;">
