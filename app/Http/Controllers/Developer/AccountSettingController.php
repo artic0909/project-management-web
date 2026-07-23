@@ -22,7 +22,6 @@ class AccountSettingController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:developers,email,' . $developer->id,
             'designation' => 'nullable|string|max:255',
-            'current_password' => 'nullable|required_with:new_password',
             'new_password' => 'nullable|min:8|confirmed',
             'profile_image' => 'nullable|image|max:2048',
             'pan_card' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
@@ -74,9 +73,6 @@ class AccountSettingController extends Controller
         }
 
         if ($request->filled('new_password')) {
-            if (!\Hash::check($request->current_password, $developer->password)) {
-                return back()->withErrors(['current_password' => 'Current password does not match.']);
-            }
             $data['password'] = \Hash::make($request->new_password);
         }
 

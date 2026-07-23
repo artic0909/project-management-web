@@ -63,7 +63,7 @@
                                             <i class="bi bi-shield-lock-fill" style="margin-right: 8px; color: #f59e0b;"></i>Security & Password
                                         </h4>
 
-                                        @if($routePrefix !== 'sale')
+                                        @if($routePrefix === 'admin')
                                         <div class="form-row">
                                             <label class="form-lbl">Current Password</label>
                                             <div style="position: relative;">
