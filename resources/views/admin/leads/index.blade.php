@@ -435,16 +435,16 @@
                 <div class="card-head">
                     <div>
                         <div class="card-title">
-                            @if(isset($routePrefix) && $routePrefix === 'sale')
-                                @if(request('type') === 'new')
-                                    New Leads
-                                @elseif(request('type') === 'total')
-                                    Total Leads
-                                @else
-                                    My Leads
-                                @endif
+                            @if(request('type') === 'new')
+                                New Leads
+                            @elseif(request('type') === 'total')
+                                Total Leads
                             @else
-                                Lead Pipeline
+                                @if(isset($routePrefix) && $routePrefix === 'sale')
+                                    My Leads
+                                @else
+                                    Total Leads
+                                @endif
                             @endif
                         </div>
                         <div class="card-sub" id="drpActiveSub">

@@ -18,8 +18,19 @@ class LeadController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Lead::with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])->withCount('followups')
-            ->where('is_losted', 0);
+        $type = $request->get('type', 'total'); // Default to total leads for admin
+
+        if ($type === 'new') {
+            $query = Lead::with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])
+                ->withCount('followups')
+                ->where('is_losted', 0)
+                ->doesntHave('assignments')
+                ->doesntHave('followups');
+        } else {
+            $query = Lead::with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])
+                ->withCount('followups')
+                ->where('is_losted', 0);
+        }
 
         // Search filter
         if ($request->has('q') && !empty($request->q)) {
@@ -502,8 +513,17 @@ class LeadController extends Controller
 
     public function export(Request $request)
     {
-        $query = Lead::with(['status', 'services', 'sources', 'campaign', 'assignments.sale', 'createdBy'])
-            ->where('is_losted', 0);
+        $type = $request->get('type', 'total');
+
+        if ($type === 'new') {
+            $query = Lead::with(['status', 'services', 'sources', 'campaign', 'assignments.sale', 'createdBy'])
+                ->where('is_losted', 0)
+                ->doesntHave('assignments')
+                ->doesntHave('followups');
+        } else {
+            $query = Lead::with(['status', 'services', 'sources', 'campaign', 'assignments.sale', 'createdBy'])
+                ->where('is_losted', 0);
+        }
 
         // Search filter
         if ($request->has('q') && !empty($request->q)) {

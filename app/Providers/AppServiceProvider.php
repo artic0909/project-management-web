@@ -67,6 +67,10 @@ class AppServiceProvider extends ServiceProvider
             if (auth()->guard('admin')->check()) {
                 $leadCount = \App\Models\Lead::where('is_losted', 0)->count();
                 $totalLeadCount = $leadCount;
+                $newLeadCount = \App\Models\Lead::where('is_losted', 0)
+                    ->doesntHave('assignments')
+                    ->doesntHave('followups')
+                    ->count();
                 $orderCount = \App\Models\Order::count();
                 $lostLeadCount = \App\Models\Lead::where('is_losted', 1)->count();
                 $projectCount = \App\Models\Project::count();

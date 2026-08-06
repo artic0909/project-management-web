@@ -95,6 +95,26 @@
             </a>
           </div>
         </div>
+      @elseif($guard === 'admin')
+        <div class="nav-dropdown {{ $isLeadsActive ? 'open' : '' }}">
+          <a class="nav-item nav-dropdown-toggle {{ $isLeadsActive ? 'active' : '' }}" href="javascript:void(0)" onclick="toggleNavDropdown(this)">
+            <i class="bi bi-person-lines-fill"></i>
+            <span>Leads</span>
+            <i class="bi bi-chevron-down nav-dropdown-chevron" style="margin-left: auto; font-size: 11px; transition: transform 0.2s ease; {{ $isLeadsActive ? 'transform: rotate(180deg);' : '' }}"></i>
+          </a>
+          <div class="nav-dropdown-menu" style="padding-left: 14px; {{ $isLeadsActive ? 'display: block;' : 'display: none;' }}">
+            <a class="nav-item nav-sub-item {{ ($isLeadsActive && request('type') === 'new') ? 'active' : '' }}"
+              href="{{ route('admin.leads.index', ['type' => 'new']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-plus-circle" style="font-size: 13px;"></i><span>New Leads</span>
+              <span class="nav-count">{{ $newLeadCount ?? 0 }}</span>
+            </a>
+            <a class="nav-item nav-sub-item {{ ($isLeadsActive && (request('type') === 'total' || !request('type'))) ? 'active' : '' }}"
+              href="{{ route('admin.leads.index', ['type' => 'total']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-collection" style="font-size: 13px;"></i><span>Total Leads</span>
+              <span class="nav-count">{{ $totalLeadCount ?? 0 }}</span>
+            </a>
+          </div>
+        </div>
       @else
         <a class="nav-item {{ $isLeadsActive ? 'active' : '' }}"
           href="{{ route($routePrefix . 'leads.index') }}">
