@@ -549,15 +549,23 @@
                                 @endif
                                 <th>SL</th>
                                 <th>Date</th>
+                                @if(!($routePrefix == 'sale'))
                                 <th>Lead</th>
+                                @endif
                                 <th>Campaign / Source</th>
+                                @if(!($routePrefix == 'sale'))
                                 <th>Contact Person</th>
+                                @endif
                                 <th>Phone</th>
+                                @if(!($routePrefix == 'sale'))
                                 <th>Services</th>
+                                @endif
                                 <th>Priority</th>
                                 <th>Status</th>
                                 <th>Created By</th>
+                                @if(!($routePrefix == 'sale' && in_array(request('type', 'new'), ['my', 'new'])))
                                 <th>Sales Person</th>
+                                @endif
                                 <th>Followup</th>
                                 <th>Action</th>
                             </tr>
@@ -576,6 +584,7 @@
                                 @endif
                                 <td>{{ $leads->firstItem() + $index }}</td>
                                 <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $lead->created_at->format('d M Y') }}</div></td>
+                                @if(!($routePrefix == 'sale'))
                                 <td>
                                     <div class="lead-cell">
                                         @php
@@ -591,6 +600,7 @@
                                         </div>
                                     </div>
                                 </td>
+                                @endif
                                 <td>
                                     <span class="src-tag">{{ $lead->campaign->name ?? 'N/A' }}</span>
                                     <div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:4px;">
@@ -599,7 +609,9 @@
                                         @endforeach
                                     </div>
                                 </td>
+                                @if(!($routePrefix == 'sale'))
                                 <td><strong style="color:var(--t2)">{{ $lead->contact_person }}</strong></td>
+                                @endif
                                 <td>
                                     @foreach($lead->phones as $p)
                                         <strong style="color:var(--t2)">
@@ -607,6 +619,7 @@
                                         </strong><br>
                                     @endforeach
                                 </td>
+                                @if(!($routePrefix == 'sale'))
                                 <td>
                                     <div style="display:flex; flex-wrap:wrap; gap:4px;">
                                         @foreach($lead->services as $srv)
@@ -617,6 +630,7 @@
                                         @endif
                                     </div>
                                 </td>
+                                @endif
                                 <td>
                                     @php
                                         $pCls = strtolower(str_replace([' ', '🔥'], '', $lead->priority));
@@ -627,20 +641,28 @@
                                 <td>
                                     @if($lead->createdBy)
                                         <div class="ln">{{ $lead->createdBy->name }}</div>
+                                        @if(!($routePrefix == 'sale'))
                                         <div class="ls" style="font-size:10px">{{ $lead->createdBy->email }}</div>
+                                        @endif
                                     @else
                                         <div class="ln">System</div>
                                     @endif
                                 </td>
+                                @if(!($routePrefix == 'sale' && in_array(request('type', 'new'), ['my', 'new'])))
                                 <td>
                                     @foreach($lead->assignments as $assign)
-                                        <div class="ln">{{ $assign->sale->name ?? 'N/A' }} - {{ $assign->sale->email ?? 'N/A' }}</div>
-                                        
+                                        <div class="ln">
+                                            {{ $assign->sale->name ?? 'N/A' }}
+                                            @if(!($routePrefix == 'sale'))
+                                             - {{ $assign->sale->email ?? 'N/A' }}
+                                            @endif
+                                        </div>
                                     @endforeach
                                     @if($lead->assignments->isEmpty())
                                         <span style="color:var(--t4)">Unassigned</span>
                                     @endif
                                 </td>
+                                @endif
                                 <td>
                                     <button type="button" class="badge" onclick="openFollowupTimelineModal({{ $lead->id }}, '{{ addslashes($lead->company) }}')" style="background:rgba(99, 102, 241, 0.1); color:var(--accent); padding:4px 10px; border-radius:6px; font-weight:700; font-family:var(--font-mono); font-size:12px; cursor:pointer; border:none; outline:none; transition:var(--transition);" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">
                                         {{ $lead->followups_count }}
