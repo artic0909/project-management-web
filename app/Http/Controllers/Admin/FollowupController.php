@@ -68,6 +68,10 @@ class FollowupController extends Controller
             'created_by_type' => get_class(Auth::user()),
         ]);
 
+        if (!$isOrder) {
+            session()->put('highlight_lead_id', $model->id);
+        }
+
         $redirectUrl = $request->input('return_url');
         if ($redirectUrl) {
             $hash = '#lead-' . $model->id;
