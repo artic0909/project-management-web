@@ -305,7 +305,7 @@
                         </thead>
                         <tbody>
                             @forelse($leads as $index => $lead)
-                            <tr>
+                            <tr id="lead-{{ $lead->id }}">
                                 @if($routePrefix == 'admin')
                                 <td style="text-align: center;">
                                     <input type="checkbox" class="lead-checkbox" name="lead_ids[]" value="{{ $lead->id }}" onclick="updateBulkDeleteButtonLeads()" style="cursor: pointer;">
@@ -365,7 +365,7 @@
                                 <td>
                                     <div class="row-actions">
                                         <a href="{{ route($routePrefix . '.losted-leads.show', $lead->id) }}" class="ra-btn" title="View"><i class="bi bi-eye-fill"></i></a>
-                                        <a href="{{ route($routePrefix . '.leads.followup', $lead->id) }}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
+                                        <a href="{{ route($routePrefix . '.leads.followup', ['id' => $lead->id, 'return_url' => request()->fullUrl()]) }}" class="ra-btn" title="Followup"><i class="bi bi-arrow-counterclockwise"></i></a>
                                         <a class="ra-btn" title="Edit" href="{{ route($routePrefix . '.leads.edit', $lead->id) }}"><i class="bi bi-pencil-fill"></i></a>
                                         @if($routePrefix == 'admin')
                                         <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route($routePrefix . '.leads.destroy', $lead->id) }}')"><i class="bi bi-trash-fill"></i></button>

@@ -11,7 +11,7 @@
         <div class="page-header">
             <div>
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-                    <a href="{{ $backRoute }}"
+                    <a href="{{ $returnUrl ?? $backRoute }}"
                         style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--t3);transition:var(--transition);text-decoration:none;"
                         onmouseover="this.style.color='var(--accent)'"
                         onmouseout="this.style.color='var(--t3)'">
@@ -305,6 +305,9 @@
                     <div class="card-body" style="padding:14px 18px 20px;">
                         <form action="{{ $isOrder ? route($routePrefix . '.orders.followup.store', $model->id) : route($routePrefix . '.leads.followup.store', $model->id) }}" method="POST">
                             @csrf
+                            @if(!empty($returnUrl))
+                                <input type="hidden" name="return_url" value="{{ $returnUrl }}">
+                            @endif
                             <div class="form-grid">
                                 <div class="form-row">
                                     <label class="form-lbl">Transaction Date *</label>

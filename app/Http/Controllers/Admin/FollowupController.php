@@ -13,10 +13,11 @@ use Illuminate\Support\Facades\Route;
 
 class FollowupController extends Controller
 {
-    public function index($id)
+    public function index(Request $request, $id)
     {
         $routePrefix = 'admin';
         $isOrder = Route::is($routePrefix . '.orders.*');
+        $returnUrl = $request->query('return_url');
         
         if ($isOrder) {
             $model = Order::with(['status', 'services', 'sources', 'assignments.sale', 'followups.creator', 'paymentTerms', 'mktPaymentStatus'])->findOrFail($id);
@@ -37,7 +38,7 @@ class FollowupController extends Controller
         $totalFollowups = $model->followups->count();
         $lastFollowup = $model->followups->first();
         
-        return view('admin.followup', compact('model', 'totalFollowups', 'lastFollowup', 'isOrder', 'typeLabel', 'backRoute', 'orderStatuses', 'paymentStatuses', 'statuses', 'routePrefix'));
+        return view('admin.followup', compact('model', 'totalFollowups', 'lastFollowup', 'isOrder', 'typeLabel', 'backRoute', 'orderStatuses', 'paymentStatuses', 'statuses', 'routePrefix', 'returnUrl'));
     }
 
     public function store(Request $request, $id)
@@ -66,6 +67,17 @@ class FollowupController extends Controller
             'created_by_id' => Auth::id(),
             'created_by_type' => get_class(Auth::user()),
         ]);
+
+        $redirectUrl = $request->input('return_url');
+        if ($redirectUrl) {
+            $hash = '#lead-' . $model->id;
+            if (strpos($redirectUrl, '#') === false) {
+                $redirectUrl .= $hash;
+            } else {
+                $redirectUrl = preg_replace('/#.*/', $hash, $redirectUrl);
+            }
+            return redirect($redirectUrl)->with('success', 'Followup added successfully!');
+        }
 
         return redirect()->back()->with('success', 'Followup added successfully!');
     }
