@@ -642,9 +642,76 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <span class="badge" style="background:rgba(99, 102, 241, 0.1); color:var(--accent); padding:4px 10px; border-radius:6px; font-weight:700; font-family:var(--font-mono); font-size:12px;">
+                                    <button type="button" class="badge" onclick="openFollowupTimelineModal({{ $lead->id }}, '{{ addslashes($lead->company) }}')" style="background:rgba(99, 102, 241, 0.1); color:var(--accent); padding:4px 10px; border-radius:6px; font-weight:700; font-family:var(--font-mono); font-size:12px; cursor:pointer; border:none; outline:none; transition:var(--transition);" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">
                                         {{ $lead->followups_count }}
-                                    </span>
+                                    </button>
+                                    
+                                    <template id="followup-timeline-{{ $lead->id }}">
+                                        @php
+                                            $leadFollowups = $lead->followups()->with('creator')->orderBy('followup_date', 'desc')->get();
+                                        @endphp
+                                        <div style="position:relative;padding-left:26px;">
+                                            <div style="position:absolute;left:10px;top:4px;bottom:0;width:2px;background:var(--b2);border-radius:2px;"></div>
+                                            @forelse($leadFollowups as $followup)
+                                                @php 
+                                                    $typeColor = $followup->followup_type == 'Calling' ? '#10b981' : ($followup->followup_type == 'Message' ? '#f59e0b' : '#6366f1');
+                                                    $typeBg = $followup->followup_type == 'Calling' ? 'rgba(16,185,129,.1)' : ($followup->followup_type == 'Message' ? 'rgba(245,158,11,.1)' : 'rgba(99,102,241,.1)');
+                                                @endphp
+                                                <div style="position:relative;margin-bottom:20px;">
+                                                    <div style="position:absolute;left:-23px;top:14px;width:14px;height:14px;border-radius:50%;background:var(--bg1);border:3px solid {{ $typeColor }};"></div>
+                                                    
+                                                    <div class="history-item-box" style="background:var(--bg3);border:1px solid var(--b1);border-radius:14px;overflow:hidden;">
+                                                        <div style="padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;">
+                                                            <div style="display:flex;align-items:center;gap:8px;">
+                                                                <div style="font-size:12px;font-weight:700;color:{{ $typeColor }};background:{{ $typeBg }};padding:3px 10px;border-radius:6px;border:1px solid {{ str_replace('0.1','0.2',$typeBg) }};">
+                                                                    {{ $followup->followup_date->format('d M Y, h:i A') }}
+                                                                </div>
+                                                                <span style="font-size:11px;color:var(--t3);font-weight:600;">
+                                                                    @if($followup->followup_type == 'Calling') <i class="bi bi-telephone-outbound"></i> Call 
+                                                                    @elseif($followup->followup_type == 'Message') <i class="bi bi-chat-dots"></i> Message
+                                                                    @else <i class="bi bi-intersect"></i> Unified
+                                                                    @endif
+                                                                </span>
+                                                            </div>
+                                                            <div style="font-size:10px;color:var(--t4);">
+                                                                Logged by: 
+                                                                @if($followup->creator)
+                                                                    {{ $followup->creator->name }} - {{ $followup->creator->email }}
+                                                                @else
+                                                                    System
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div style="padding:12px 14px;display:flex;flex-direction:column;gap:10px;">
+                                                            @if($followup->calling_note)
+                                                                <div style="border-left:3px solid #10b981;padding-left:10px;">
+                                                                    <p style="font-size:10.5px;font-weight:800;color:var(--t4);margin:0 0 2px;text-transform:uppercase;">Call Intelligence</p>
+                                                                    <p style="font-size:13.5px;color:var(--t2);margin:0;line-height:1.6;font-weight:500;">{{ $followup->calling_note }}</p>
+                                                                </div>
+                                                            @endif
+                                                            @if($followup->message_note)
+                                                                <div style="border-left:3px solid #f59e0b;padding-left:10px;">
+                                                                    <p style="font-size:10.5px;font-weight:800;color:var(--t4);margin:0 0 2px;text-transform:uppercase;">Messengers Records</p>
+                                                                    <p style="font-size:13.5px;color:var(--t2);margin:0;line-height:1.6;font-weight:500;">{{ $followup->message_note }}</p>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @empty
+                                                <div style="padding:20px;text-align:center;color:var(--t4);font-style:italic;">No interactions recorded yet.</div>
+                                            @endforelse
+                                            <div style="position:relative;margin-top:10px;">
+                                                <div style="position:absolute;left:-23px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;">
+                                                    <i class="bi bi-star-fill" style="font-size:7px;color:#fff;"></i>
+                                                </div>
+                                                <div style="padding-left:2px;">
+                                                    <span style="font-size:12px;color:var(--t3);font-weight:600;">Lead journey started on <strong style="color:var(--t1);">{{ $lead->created_at->format('d M Y') }}</strong></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
                                 </td>
                                 <td>
                                     <div class="row-actions">
@@ -754,7 +821,29 @@
 </main>
 
 
+<!-- TIMELINE MODAL -->
+<div class="modal-backdrop" id="timelineModal" onclick="closeModal('timelineModal')">
+    <div class="modal-box" onclick="event.stopPropagation()" style="max-width:760px; max-height:85vh; display:flex; flex-direction:column; padding:0;">
+        <div class="modal-hd" style="padding:20px 24px; border-bottom:1px solid var(--b1);">
+            <div style="display:flex; flex-direction:column;">
+                <span id="timelineModalTitle" style="font-size:18px; font-weight:800; color:var(--t1);">Engagement Timeline</span>
+                <span style="font-size:12px; color:var(--t3); font-weight:500; margin-top:2px;">Complete log of all touches for this lead</span>
+            </div>
+            <button class="modal-close" onclick="closeModal('timelineModal')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-bd" style="overflow-y:auto; padding:24px 32px;" id="timelineModalBody">
+            <!-- Dynamic Content -->
+        </div>
+    </div>
+</div>
+
 <script>
+    function openFollowupTimelineModal(leadId, companyName) {
+        document.getElementById('timelineModalTitle').innerText = 'Engagement Timeline: ' + companyName;
+        document.getElementById('timelineModalBody').innerHTML = document.getElementById('followup-timeline-' + leadId).innerHTML;
+        openModal('timelineModal');
+    }
+
     (function() {
         // AJAX filtering logic remains
         window.updateFilters = function() {
