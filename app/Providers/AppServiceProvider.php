@@ -44,6 +44,9 @@ class AppServiceProvider extends ServiceProvider
             $leadCount = 0;
             $orderCount = 0;
             $projectCount = 0;
+            $activeProjectCount = 0;
+            $completeProjectCount = 0;
+            $noteCount = 0;
             $taskCount = 0;
             $lostLeadCount = 0;
             $sourceCount = \App\Models\Source::count();
@@ -74,6 +77,15 @@ class AppServiceProvider extends ServiceProvider
                 $orderCount = \App\Models\Order::count();
                 $lostLeadCount = \App\Models\Lead::where('is_losted', 1)->count();
                 $projectCount = \App\Models\Project::count();
+                $activeProjectCount = \App\Models\Project::whereHas('projectStatus', function ($q) {
+                    $q->where('name', '!=', 'complete')->where('name', '!=', 'completed');
+                })->count();
+                $completeProjectCount = \App\Models\Project::whereHas('projectStatus', function ($q) {
+                    $q->whereIn('name', ['complete', 'completed']);
+                })->count();
+                $noteCount = \App\Models\AdminNote::where('created_by', auth()->guard('admin')->id())
+                    ->where('created_by_type', get_class(auth()->guard('admin')->user()))
+                    ->count();
                 $meetingCount = \App\Models\Meeting::where('status', 'pending')->count();
                 $supportCount = \App\Models\Support::where('status', '!=', 'resolved')->count();
                 $inquiryCount = \App\Models\OrderInquiry::count();
@@ -130,7 +142,7 @@ class AppServiceProvider extends ServiceProvider
                     });
                 })->where('is_losted', 1)->count();
                 
-                $projectCount = \App\Models\Project::where(function($q) use ($saleId, $saleType) {
+                $saleProjectQuery = \App\Models\Project::where(function($q) use ($saleId, $saleType) {
                     $q->where('created_by', $saleId)->where('created_by_type', $saleType);
                 })->orWhereHas('salesPersons', function($q) use ($saleId) {
                     $q->where('sale_id', $saleId);
@@ -139,7 +151,21 @@ class AppServiceProvider extends ServiceProvider
                       ->orWhereHas('assignments', function($sq) use ($saleId) {
                           $sq->where('assigned_to', $saleId);
                       });
+                });
+                
+                $projectCount = (clone $saleProjectQuery)->count();
+                
+                $activeProjectCount = (clone $saleProjectQuery)->whereHas('projectStatus', function ($q) {
+                    $q->where('name', '!=', 'complete')->where('name', '!=', 'completed');
                 })->count();
+                
+                $completeProjectCount = (clone $saleProjectQuery)->whereHas('projectStatus', function ($q) {
+                    $q->whereIn('name', ['complete', 'completed']);
+                })->count();
+                
+                $noteCount = \App\Models\AdminNote::where('created_by', auth()->guard('sale')->id())
+                    ->where('created_by_type', get_class(auth()->guard('sale')->user()))
+                    ->count();
 
                 $meetingCount = \App\Models\Meeting::whereJsonContains('assignsale_ids', (int)$saleId)
                     ->where('status', 'pending')->count();
@@ -157,9 +183,23 @@ class AppServiceProvider extends ServiceProvider
                 ])->get();
             } elseif (auth()->guard('developer')->check()) {
                 $devId = auth()->guard('developer')->id();
-                $projectCount = \App\Models\Project::whereHas('developers', function($q) use ($devId) {
+                $devProjectQuery = \App\Models\Project::whereHas('developers', function($q) use ($devId) {
                     $q->where('assigned_to', $devId);
+                });
+                
+                $projectCount = (clone $devProjectQuery)->count();
+                
+                $activeProjectCount = (clone $devProjectQuery)->whereHas('projectStatus', function ($q) {
+                    $q->where('name', '!=', 'complete')->where('name', '!=', 'completed');
                 })->count();
+                
+                $completeProjectCount = (clone $devProjectQuery)->whereHas('projectStatus', function ($q) {
+                    $q->whereIn('name', ['complete', 'completed']);
+                })->count();
+                
+                $noteCount = \App\Models\AdminNote::where('created_by', auth()->guard('developer')->id())
+                    ->where('created_by_type', get_class(auth()->guard('developer')->user()))
+                    ->count();
 
                 $meetingCount = \App\Models\Meeting::whereJsonContains('assigndev_ids', (int)$devId)
                     ->where('status', 'pending')->count();
@@ -183,6 +223,9 @@ class AppServiceProvider extends ServiceProvider
                 'orderCount' => $orderCount,
                 'lostLeadCount' => $lostLeadCount,
                 'projectCount' => $projectCount,
+                'activeProjectCount' => $activeProjectCount,
+                'completeProjectCount' => $completeProjectCount,
+                'noteCount' => $noteCount,
                 'meetingCount' => $meetingCount,
                 'taskCount' => $taskCount,
                 'supportCount' => $supportCount,

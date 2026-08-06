@@ -171,10 +171,12 @@
           <a class="nav-item nav-sub-item {{ ($isProjectsActive && $isActiveProjects) ? 'active' : '' }}"
             href="{{ route($routePrefix . 'projects.index', ['status' => 'active']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
             <i class="bi bi-kanban" style="font-size: 13px;"></i><span>Active Projects</span>
+            <span class="nav-count">{{ $activeProjectCount ?? 0 }}</span>
           </a>
           <a class="nav-item nav-sub-item {{ ($isProjectsActive && $isCompleteProjects) ? 'active' : '' }}"
             href="{{ route($routePrefix . 'projects.index', ['status' => 'complete']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
             <i class="bi bi-check2-circle" style="font-size: 13px;"></i><span>Complete Projects</span>
+            <span class="nav-count">{{ $completeProjectCount ?? 0 }}</span>
           </a>
         </div>
       </div>
@@ -236,8 +238,9 @@
 
       <!-- Notes -->
       @if($guard === 'admin' || $guard === 'sale')
-       <a class="nav-item {{ request()->routeIs($routePrefix . 'notes*') ? 'active' : '' }}" href="{{ route($routePrefix . 'notes.index') }}">
+        <a class="nav-item {{ request()->routeIs($routePrefix . 'notes*') ? 'active' : '' }}" href="{{ route($routePrefix . 'notes.index') }}">
           <i class="bi bi-sticky-fill"></i><span>Notes</span>
+          <span class="nav-count">{{ $noteCount ?? 0 }}</span>
         </a>
       @endif
 
