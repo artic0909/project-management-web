@@ -203,8 +203,8 @@
                                     @error('status_id')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Campaign</label>
-                                    <select name="campaign_id" class="form-inp @error('campaign_id') is-invalid @enderror">
+                                    <label class="form-lbl">Campaign <span style="color:#ef4444">*</span></label>
+                                    <select name="campaign_id" class="form-inp @error('campaign_id') is-invalid @enderror" required>
                                         <option value="">— Select Campaign —</option>
                                         @foreach($campaigns as $campaign)
                                             <option value="{{ $campaign->id }}" {{ old('campaign_id', $lead->campaign_id) == $campaign->id ? 'selected' : '' }}>{{ $campaign->name }}</option>

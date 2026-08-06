@@ -215,6 +215,7 @@ class LeadController extends Controller
             'service_ids.*' => 'exists:services,id',
             'source_ids' => 'nullable|array',
             'source_ids.*' => 'exists:sources,id',
+            'campaign_id' => 'required|exists:campaigns,id',
             'priority' => 'nullable|string',
             'status_id' => 'nullable|exists:statuses,id',
         ]);
@@ -319,7 +320,7 @@ class LeadController extends Controller
             'source_ids' => 'nullable|array',
             'source_ids.*' => 'exists:sources,id',
             'status_id' => 'nullable|exists:statuses,id',
-            'campaign_id' => 'nullable|exists:campaigns,id',
+            'campaign_id' => 'required|exists:campaigns,id',
             'priority' => 'nullable|string',
             'notes' => 'nullable|string',
         ]);
