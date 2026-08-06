@@ -257,6 +257,7 @@
                                     <div class="form-row">
                                         <label class="form-lbl">Interaction Vector <span style="color:#ef4444">*</span></label>
                                         <select name="followup_type" class="form-inp" required>
+                                            <option value="None">None (Update Status/Priority Only)</option>
                                             <option value="Calling">Calling</option>
                                             <option value="Message">Message</option>
                                             <option value="Both">Both (Call & Message)</option>
@@ -519,6 +520,9 @@ document.addEventListener('DOMContentLoaded', function() {
             messageInp.required = true;
             callingLbl.innerHTML = callingOrig + star;
             messageLbl.innerHTML = messageOrig + star;
+        } else if (val === 'None') {
+            callingArea.style.display = 'none';
+            messageArea.style.display = 'none';
         }
     }
 

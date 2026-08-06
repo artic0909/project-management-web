@@ -65,8 +65,8 @@ class FollowupController extends Controller
         $isOrder = Route::is($routePrefix . '.orders.*');
         
         $rules = [
-            'followup_date' => 'required|date',
-            'followup_type' => 'required|string|in:Calling,Message,Both',
+            'followup_date' => 'required_unless:followup_type,None|date',
+            'followup_type' => 'required|string|in:Calling,Message,Both,None',
             'calling_note' => 'required_if:followup_type,Calling,Both|nullable|string',
             'message_note' => 'required_if:followup_type,Message,Both|nullable|string',
         ];
@@ -101,15 +101,17 @@ class FollowupController extends Controller
             ]);
         }
 
-        $model->followups()->create([
-            'followup_date' => $request->followup_date,
-            'followup_type' => $request->followup_type,
-            'calling_note' => $request->calling_note,
-            'message_note' => $request->message_note,
-            'status' => 'pending',
-            'created_by_id' => auth()->guard('sale')->id(),
-            'created_by_type' => \App\Models\Sale::class,
-        ]);
+        if ($request->followup_type !== 'None') {
+            $model->followups()->create([
+                'followup_date' => $request->followup_date,
+                'followup_type' => $request->followup_type,
+                'calling_note' => $request->calling_note,
+                'message_note' => $request->message_note,
+                'status' => 'pending',
+                'created_by_id' => auth()->guard('sale')->id(),
+                'created_by_type' => \App\Models\Sale::class,
+            ]);
+        }
 
         if (!$isOrder) {
             session()->put('highlight_lead_id', $model->id);
