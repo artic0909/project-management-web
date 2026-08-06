@@ -88,6 +88,19 @@ class ProjectController extends Controller
         if ($request->filled('project_status_id')) {
             $query->where('project_status_id', $request->project_status_id);
         }
+        
+        if ($request->filled('status')) {
+            $statusName = $request->status;
+            if (strtolower($statusName) === 'active') {
+                $query->whereHas('projectStatus', function ($q) {
+                    $q->where('name', '!=', 'complete')->where('name', '!=', 'completed');
+                });
+            } elseif (strtolower($statusName) === 'complete') {
+                $query->whereHas('projectStatus', function ($q) {
+                    $q->whereIn('name', ['complete', 'completed']);
+                });
+            }
+        }
 
         if ($request->filled('service_id')) {
             $query->whereHas('services', function ($q) use ($request) {

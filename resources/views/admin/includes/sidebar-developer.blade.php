@@ -28,10 +28,28 @@
       </a>
 
       <div class="nav-section-label">Personal</div>
-      <a class="nav-item {{ request()->routeIs('developer.projects*') ? 'active' : '' }}" href="{{ route('developer.projects.index') }}">
-        <i class="bi bi-kanban-fill"></i><span>My Projects</span>
-        <span class="nav-count">{{ $projectCount }}</span>
-      </a>
+      @php
+        $isProjectsActive = request()->routeIs('developer.projects*');
+        $isCompleteProjects = request('status') === 'complete';
+        $isActiveProjects = !$isCompleteProjects;
+      @endphp
+      <div class="nav-dropdown {{ $isProjectsActive ? 'open' : '' }}">
+        <a class="nav-item nav-dropdown-toggle {{ $isProjectsActive ? 'active' : '' }}" href="javascript:void(0)" onclick="toggleNavDropdown(this)">
+          <i class="bi bi-kanban-fill"></i>
+          <span>My Projects</span>
+          <i class="bi bi-chevron-down nav-dropdown-chevron" style="margin-left: auto; font-size: 11px; transition: transform 0.2s ease; {{ $isProjectsActive ? 'transform: rotate(180deg);' : '' }}"></i>
+        </a>
+        <div class="nav-dropdown-menu" style="padding-left: 14px; {{ $isProjectsActive ? 'display: block;' : 'display: none;' }}">
+          <a class="nav-item nav-sub-item {{ ($isProjectsActive && $isActiveProjects) ? 'active' : '' }}"
+            href="{{ route('developer.projects.index', ['status' => 'active']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+            <i class="bi bi-kanban" style="font-size: 13px;"></i><span>Active Projects</span>
+          </a>
+          <a class="nav-item nav-sub-item {{ ($isProjectsActive && $isCompleteProjects) ? 'active' : '' }}"
+            href="{{ route('developer.projects.index', ['status' => 'complete']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+            <i class="bi bi-check2-circle" style="font-size: 13px;"></i><span>Complete Projects</span>
+          </a>
+        </div>
+      </div>
 
       <a class="nav-item {{ request()->routeIs('developer.tasks.completed*') ? 'active' : '' }}" href="{{ route('developer.tasks.completed') }}">
         <i class="bi bi-list-task"></i><span>My Task</span>
