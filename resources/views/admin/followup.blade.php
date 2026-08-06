@@ -222,7 +222,7 @@
                                     <div class="form-row">
                                         <label class="form-lbl">Change Status <span style="color:#ef4444">*</span></label>
                                         <select name="status_id" class="form-inp" required>
-                                            <option value="">-- Select Status --</option>
+                                            <option value="" {{ empty($model->status_id) ? 'selected' : '' }} disabled hidden>Select Status</option>
                                             @foreach($statuses as $status)
                                                 <option value="{{ $status->id }}" {{ $model->status_id == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
                                             @endforeach
@@ -231,7 +231,7 @@
                                     <div class="form-row">
                                         <label class="form-lbl">Set Priority <span style="color:#ef4444">*</span></label>
                                         <select name="priority" class="form-inp" required>
-                                            <option value="">-- Select Priority --</option>
+                                            <option value="" {{ empty($model->priority) ? 'selected' : '' }} disabled hidden>Select Priority</option>
                                             <option value="Hot 🔥" {{ $model->priority == 'Hot 🔥' ? 'selected' : '' }}>Hot 🔥</option>
                                             <option value="Warm" {{ $model->priority == 'Warm' ? 'selected' : '' }}>Warm</option>
                                             <option value="Cold" {{ $model->priority == 'Cold' ? 'selected' : '' }}>Cold</option>

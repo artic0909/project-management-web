@@ -225,6 +225,7 @@
                                 <div class="form-row">
                                     <label class="form-lbl">Change Status</label>
                                     <select name="status_id" class="form-inp">
+                                        <option value="" {{ empty($lead->status_id) ? 'selected' : '' }} disabled hidden>Select Status</option>
                                         @foreach($statuses as $status)
                                             <option value="{{ $status->id }}" {{ $lead->status_id == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
                                         @endforeach
@@ -233,6 +234,7 @@
                                 <div class="form-row">
                                     <label class="form-lbl">Set Priority</label>
                                     <select name="priority" class="form-inp">
+                                        <option value="" {{ empty($lead->priority) ? 'selected' : '' }} disabled hidden>Select Priority</option>
                                         <option value="Hot 🔥" {{ $lead->priority == 'Hot 🔥' ? 'selected' : '' }}>Hot 🔥</option>
                                         <option value="Warm" {{ $lead->priority == 'Warm' ? 'selected' : '' }}>Warm</option>
                                         <option value="Cold" {{ $lead->priority == 'Cold' ? 'selected' : '' }}>Cold</option>
