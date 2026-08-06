@@ -62,19 +62,34 @@ class FollowupController extends Controller
     public function store(Request $request, $id)
     {
         $routePrefix = 'sale';
-        $request->validate([
+        $isOrder = Route::is($routePrefix . '.orders.*');
+        
+        $rules = [
             'followup_date' => 'required|date',
             'followup_type' => 'required|string|in:Calling,Message,Both',
             'calling_note' => 'required_if:followup_type,Calling,Both|nullable|string',
             'message_note' => 'required_if:followup_type,Message,Both|nullable|string',
-        ], [
+        ];
+
+        if (!$isOrder) {
+            $rules['status_id'] = 'required|exists:statuses,id';
+            $rules['priority'] = 'required|string';
+        }
+
+        $request->validate($rules, [
             'calling_note.required_if' => 'The calling note is required when interaction involves calling.',
             'message_note.required_if' => 'The message note is required when interaction involves messaging.',
         ]);
 
-        $isOrder = Route::is($routePrefix . '.orders.*');
         $model = $isOrder ? Order::findOrFail($id) : Lead::findOrFail($id);
         $this->checkAccess($model);
+
+        if (!$isOrder) {
+            $model->update([
+                'status_id' => $request->status_id,
+                'priority' => $request->priority,
+            ]);
+        }
 
         // Exclusive Re-assignment logic: 
         // If unassigned or assigned to more than one sales person, re-assign exclusively to the one who makes the followup.

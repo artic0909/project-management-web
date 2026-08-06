@@ -203,44 +203,82 @@
  
                 {{-- QUICK UPDATE CARD --}}
                 @if(!$isOrder)
-                    {{-- Quick Intelligence Update (Lead) --}}
-                    <div class="dash-card">
-                        <div class="card-head" style="padding:16px 18px;">
-                            <div>
-                                <div class="card-title">Quick Intelligence Update</div>
-                                <div class="card-sub">Fast update status, priority and brief notes</div>
+                    {{-- Unified Form for Lead (Status Update + Followup) --}}
+                    <form action="{{ route($routePrefix . '.leads.followup.store', $model->id) }}" method="POST">
+                        @csrf
+                        @if(!empty($returnUrl))
+                            <input type="hidden" name="return_url" value="{{ $returnUrl }}">
+                        @endif
+
+                        <div class="dash-card">
+                            <div class="card-head" style="padding:16px 18px;">
+                                <div>
+                                    <div class="card-title">Quick Intelligence Update</div>
+                                    <div class="card-sub">Fast update status, priority and brief notes</div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="card-body" style="padding:14px 18px 20px;">
-                            <form action="{{ route($routePrefix . '.leads.updateStatus', $model->id) }}" method="POST">
-                                @csrf
-                                @method('PATCH')
+                            <div class="card-body" style="padding:14px 18px 20px;">
                                 <div class="form-grid">
                                     <div class="form-row">
-                                        <label class="form-lbl">Change Status</label>
-                                        <select name="status_id" class="form-inp">
+                                        <label class="form-lbl">Change Status <span style="color:#ef4444">*</span></label>
+                                        <select name="status_id" class="form-inp" required>
+                                            <option value="">-- Select Status --</option>
                                             @foreach($statuses as $status)
                                                 <option value="{{ $status->id }}" {{ $model->status_id == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="form-row">
-                                        <label class="form-lbl">Set Priority</label>
-                                        <select name="priority" class="form-inp">
+                                        <label class="form-lbl">Set Priority <span style="color:#ef4444">*</span></label>
+                                        <select name="priority" class="form-inp" required>
+                                            <option value="">-- Select Priority --</option>
                                             <option value="Hot 🔥" {{ $model->priority == 'Hot 🔥' ? 'selected' : '' }}>Hot 🔥</option>
                                             <option value="Warm" {{ $model->priority == 'Warm' ? 'selected' : '' }}>Warm</option>
                                             <option value="Cold" {{ $model->priority == 'Cold' ? 'selected' : '' }}>Cold</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div style="display:flex;justify-content:flex-end;margin-top:20px;">
+                            </div>
+
+                            <div style="border-top:1px solid var(--b1); margin: 0 18px;"></div>
+
+                            <div class="card-head" style="padding:16px 18px;">
+                                <div>
+                                    <div class="card-title">Log New Interaction</div>
+                                    <div class="card-sub">Record communication and schedule future contact</div>
+                                </div>
+                            </div>
+                            <div class="card-body" style="padding:14px 18px 20px;">
+                                <div class="form-grid">
+                                    <div class="form-row">
+                                        <label class="form-lbl">Transaction Date <span style="color:#ef4444">*</span></label>
+                                        <input type="datetime-local" name="followup_date" class="form-inp" value="{{ date('Y-m-d\TH:i') }}" max="{{ date('Y-m-d\TH:i') }}" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <label class="form-lbl">Interaction Vector <span style="color:#ef4444">*</span></label>
+                                        <select name="followup_type" class="form-inp" required>
+                                            <option value="Calling">Calling</option>
+                                            <option value="Message">Message</option>
+                                            <option value="Both">Both (Call & Message)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-row" style="grid-column:1/-1;">
+                                        <label class="form-lbl" id="callingLabel">Voice Communication Intelligence (Calling Note)</label>
+                                        <textarea name="calling_note" class="form-inp" rows="2" placeholder="What was discussed during the call?"></textarea>
+                                    </div>
+                                    <div class="form-row" style="grid-column:1/-1;margin-bottom:0;">
+                                        <label class="form-lbl" id="messageLabel">Text Communication Records (Message Note)</label>
+                                        <textarea name="message_note" class="form-inp" rows="2" placeholder="Summary of messages, emails, or drafts sent…"></textarea>
+                                    </div>
+                                </div>
+                                <div style="display:flex;justify-content:flex-end;margin-top:16px;">
                                     <button type="submit" class="btn-primary-solid">
-                                        <i class="bi bi-save"></i> Synchronize Updates
+                                        <i class="bi bi-plus-lg"></i> Record Followup & Update
                                     </button>
                                 </div>
-                            </form>
+                            </div>
                         </div>
-                    </div>
+                    </form>
                 @else
                     {{-- Quick Status Update (Order) --}}
                     <div class="dash-card">
@@ -291,53 +329,52 @@
                             </form>
                         </div>
                     </div>
-                @endif
 
-
-                                <!-- Add Followup Card -->
-                <div class="dash-card">
-                    <div class="card-head" style="padding:16px 18px;">
-                        <div>
-                            <div class="card-title">Log New Interaction</div>
-                            <div class="card-sub">Record communication and schedule future contact</div>
+                    <!-- Add Followup Card (For Order) -->
+                    <div class="dash-card">
+                        <div class="card-head" style="padding:16px 18px;">
+                            <div>
+                                <div class="card-title">Log New Interaction</div>
+                                <div class="card-sub">Record communication and schedule future contact</div>
+                            </div>
+                        </div>
+                        <div class="card-body" style="padding:14px 18px 20px;">
+                            <form action="{{ route($routePrefix . '.orders.followup.store', $model->id) }}" method="POST">
+                                @csrf
+                                @if(!empty($returnUrl))
+                                    <input type="hidden" name="return_url" value="{{ $returnUrl }}">
+                                @endif
+                                <div class="form-grid">
+                                    <div class="form-row">
+                                        <label class="form-lbl">Transaction Date <span style="color:#ef4444">*</span></label>
+                                        <input type="datetime-local" name="followup_date" class="form-inp" value="{{ date('Y-m-d\TH:i') }}" max="{{ date('Y-m-d\TH:i') }}" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <label class="form-lbl">Interaction Vector</label>
+                                        <select name="followup_type" class="form-inp">
+                                            <option value="Calling">Calling</option>
+                                            <option value="Message">Message</option>
+                                            <option value="Both">Both (Call & Message)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-row" style="grid-column:1/-1;">
+                                        <label class="form-lbl" id="callingLabel">Voice Communication Intelligence (Calling Note)</label>
+                                        <textarea name="calling_note" class="form-inp" rows="2" placeholder="What was discussed during the call?"></textarea>
+                                    </div>
+                                    <div class="form-row" style="grid-column:1/-1;margin-bottom:0;">
+                                        <label class="form-lbl" id="messageLabel">Text Communication Records (Message Note)</label>
+                                        <textarea name="message_note" class="form-inp" rows="2" placeholder="Summary of messages, emails, or drafts sent…"></textarea>
+                                    </div>
+                                </div>
+                                <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+                                    <button type="submit" class="btn-primary-solid">
+                                        <i class="bi bi-plus-lg"></i> Record Followup
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                    <div class="card-body" style="padding:14px 18px 20px;">
-                        <form action="{{ $isOrder ? route($routePrefix . '.orders.followup.store', $model->id) : route($routePrefix . '.leads.followup.store', $model->id) }}" method="POST">
-                            @csrf
-                            @if(!empty($returnUrl))
-                                <input type="hidden" name="return_url" value="{{ $returnUrl }}">
-                            @endif
-                            <div class="form-grid">
-                                <div class="form-row">
-                                    <label class="form-lbl">Transaction Date *</label>
-                                    <input type="datetime-local" name="followup_date" class="form-inp" value="{{ date('Y-m-d\TH:i') }}" max="{{ date('Y-m-d\TH:i') }}" required>
-                                </div>
-                                <div class="form-row">
-                                    <label class="form-lbl">Interaction Vector</label>
-                                    <select name="followup_type" class="form-inp">
-                                        <option value="Calling">Calling</option>
-                                        <option value="Message">Message</option>
-                                        <option value="Both">Both (Call & Message)</option>
-                                    </select>
-                                </div>
-                                <div class="form-row" style="grid-column:1/-1;">
-                                    <label class="form-lbl" id="callingLabel">Voice Communication Intelligence (Calling Note)</label>
-                                    <textarea name="calling_note" class="form-inp" rows="2" placeholder="What was discussed during the call?"></textarea>
-                                </div>
-                                <div class="form-row" style="grid-column:1/-1;margin-bottom:0;">
-                                    <label class="form-lbl" id="messageLabel">Text Communication Records (Message Note)</label>
-                                    <textarea name="message_note" class="form-inp" rows="2" placeholder="Summary of messages, emails, or drafts sent…"></textarea>
-                                </div>
-                            </div>
-                            <div style="display:flex;justify-content:flex-end;margin-top:16px;">
-                                <button type="submit" class="btn-primary-solid">
-                                    <i class="bi bi-plus-lg"></i> Record Followup
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                @endif
 
 
                 <!-- Followup History Card -->
