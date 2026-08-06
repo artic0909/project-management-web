@@ -103,6 +103,11 @@ class AppServiceProvider extends ServiceProvider
                     ->count();
 
                 $myLeadCount = \App\Models\Lead::where('is_losted', 0)
+                    ->where(function ($q) {
+                        $q->whereHas('status', function ($sq) {
+                            $sq->where('name', '!=', 'Converted');
+                        })->orWhereNull('status_id');
+                    })
                     ->whereHas('assignments', function($sq) use ($saleId) {
                         $sq->where('assigned_to', $saleId);
                     })->count();

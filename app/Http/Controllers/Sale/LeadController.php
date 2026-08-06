@@ -42,6 +42,11 @@ class LeadController extends Controller
                 ->doesntHave('followups');
         } elseif ($type === 'my') {
             $query = Lead::where('is_losted', 0)
+                ->where(function ($q) {
+                    $q->whereHas('status', function ($sq) {
+                        $sq->where('name', '!=', 'Converted');
+                    })->orWhereNull('status_id');
+                })
                 ->whereHas('assignments', function($q) use ($saleId) {
                     $q->where('assigned_to', $saleId);
                 });
@@ -146,7 +151,7 @@ class LeadController extends Controller
             $status->leads_count = (clone $statsQuery)->where('status_id', $status->id)->count();
         }
 
-        $convertedLeads = $statuses->where('name', 'Booked')->first()->leads_count ?? 0;
+        $convertedLeads = $statuses->where('name', 'Converted')->first()->leads_count ?? 0;
         
         $sources = Source::all();
         foreach($sources as $source) {
@@ -511,6 +516,11 @@ class LeadController extends Controller
                 ->doesntHave('followups');
         } elseif ($type === 'my') {
             $query = Lead::where('is_losted', 0)
+                ->where(function ($q) {
+                    $q->whereHas('status', function ($sq) {
+                        $sq->where('name', '!=', 'Converted');
+                    })->orWhereNull('status_id');
+                })
                 ->whereHas('assignments', function($q) use ($saleId) {
                     $q->where('assigned_to', $saleId);
                 });

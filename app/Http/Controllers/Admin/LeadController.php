@@ -130,7 +130,7 @@ class LeadController extends Controller
             $status->leads_count = (clone $statsQuery)->where('status_id', $status->id)->count();
         }
 
-        $convertedLeads = $statuses->where('name', 'Booked')->first()->leads_count ?? 0;
+        $convertedLeads = $statuses->where('name', 'Converted')->first()->leads_count ?? 0;
         
         $sources = Source::all();
         foreach($sources as $source) {

@@ -262,10 +262,12 @@ class OrderController extends Controller
         $saleId = auth()->guard('sale')->id();
         $saleType = \App\Models\Sale::class;
 
-        $lead = $lead_id ? Lead::where(function ($q) use ($saleId, $saleType) {
-            $q->where('created_by', $saleId)->where('created_by_type', $saleType);
-        })->orWhereHas('assignments', function ($q) use ($saleId) {
-            $q->where('assigned_to', $saleId);
+        $lead = $lead_id ? Lead::where(function($q) use ($saleId, $saleType) {
+            $q->where(function ($q2) use ($saleId, $saleType) {
+                $q2->where('created_by', $saleId)->where('created_by_type', $saleType);
+            })->orWhereHas('assignments', function ($q3) use ($saleId) {
+                $q3->where('assigned_to', $saleId);
+            });
         })->with(['status', 'sources', 'services', 'assignments'])->find($lead_id) : null;
 
         $inquiry = null;
@@ -401,6 +403,14 @@ class OrderController extends Controller
                 'order_id' => $order->id,
                 'assigned_to' => auth()->guard('sale')->id(),
             ]);
+        }
+
+        // Update Lead Status to "Converted" (Converted) if lead_id is present
+        if ($request->lead_id) {
+            $bookedStatus = \App\Models\Status::where('type', 'lead')->where('name', 'Converted')->first();
+            if ($bookedStatus) {
+                \App\Models\Lead::where('id', $request->lead_id)->update(['status_id' => $bookedStatus->id]);
+            }
         }
 
         // Add initial note to history if present
