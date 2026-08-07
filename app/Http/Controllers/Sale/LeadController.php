@@ -384,7 +384,10 @@ class LeadController extends Controller
 
     public function lostedLeads(Request $request)
     {
-        $query = $this->getFilteredLeads()->with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])
+        $saleId = auth()->guard('sale')->id();
+        $query = Lead::whereHas('assignments', function($q) use ($saleId) {
+            $q->where('assigned_to', $saleId);
+        })->with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])
             ->where('is_losted', 1);
 
         // Search filter
