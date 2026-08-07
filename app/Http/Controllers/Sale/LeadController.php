@@ -437,19 +437,71 @@ class LeadController extends Controller
             $query->where('priority', $request->priority);
         }
 
-        $totalLostLeads = $query->count();
+        $statsQuery = clone $query;
+        $totalLostLeads = $statsQuery->count();
+
+        // Total Followups for filtered salesperson
+        $totalCallingFollowupsFiltered = 0;
+        $totalMessageFollowupsFiltered = 0;
+        if ($request->filled('assigned_to')) {
+            $followupCounts = \App\Models\Followup::whereHasMorph(
+                'followable',
+                [\App\Models\Lead::class],
+                function ($q) use ($request) {
+                    $q->whereHas('assignments', function($sq) use ($request) {
+                        $sq->where('assigned_to', $request->assigned_to);
+                    });
+                }
+            )->select('followup_type', \Illuminate\Support\Facades\DB::raw('count(*) as count'))
+            ->groupBy('followup_type')
+            ->pluck('count', 'followup_type');
+
+            $totalCallingFollowupsFiltered = ($followupCounts['Calling'] ?? 0) + ($followupCounts['Both'] ?? 0);
+            $totalMessageFollowupsFiltered = ($followupCounts['Message'] ?? 0) + ($followupCounts['Both'] ?? 0);
+        }
+
+        $priorityCounts = (clone $statsQuery)->groupBy('priority')
+            ->select('priority', \Illuminate\Support\Facades\DB::raw('count(*) as total'))
+            ->pluck('total', 'priority')
+            ->toArray();
+
+        $statuses = \App\Models\Status::where('type', 'lead')->where('name', '!=', 'lost')->get();
+        foreach($statuses as $status) {
+            $status->leads_count = (clone $statsQuery)->where('status_id', $status->id)->count();
+        }
+
+        $sources = \App\Models\Source::all();
+        foreach($sources as $source) {
+            $source->leads_count = (clone $statsQuery)->whereHas('sources', function($q) use ($source) {
+                $q->where('sources.id', $source->id);
+            })->count();
+        }
+
+        $services = \App\Models\Service::all();
+        foreach($services as $service) {
+            $service->leads_count = (clone $statsQuery)->whereHas('services', function($q) use ($service) {
+                $q->where('services.id', $service->id);
+            })->count();
+        }
+        
+        $campaigns = \App\Models\Campaign::all();
+        foreach($campaigns as $campaign) {
+            $campaign->leads_count = (clone $statsQuery)->where('campaign_id', $campaign->id)->count();
+        }
+
         $perPage = $request->get('per_page', 20);
         if ($perPage === 'all') {
             $perPage = $totalLostLeads ?: 20;
         }
         $leads = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
 
-        $sources = Source::all();
-        $services = Service::all();
-        $sales = Sale::all();
-
+        $sales = \App\Models\Sale::all();
         $routePrefix = 'sale';
-        return view('admin.losted-leads', compact('leads', 'totalLostLeads', 'sources', 'services', 'sales', 'routePrefix'));
+        return view('admin.losted-leads', compact(
+            'leads', 'totalLostLeads', 'statuses', 
+            'sources', 'services', 'campaigns', 'priorityCounts', 'sales', 
+            'totalCallingFollowupsFiltered', 'totalMessageFollowupsFiltered', 'routePrefix'
+        ));
     }
 
     public function updateStatus(Request $request, $id)

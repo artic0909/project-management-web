@@ -215,14 +215,140 @@
         </div>
 
         <!-- SUMMARY STAT BOXES -->
-        <div id="statsWrap" class="stat-grid-wrap">
-            <div class="stat-box" style="--sb-color:#ef4444;">
+        <div id="statsWrap" class="stat-grid-wrap" style="margin-bottom:20px;">
+            @if(request('assigned_to'))
+                @php
+                    $selectedSalesPerson = $sales->where('id', request('assigned_to'))->first();
+                @endphp
+                @if($selectedSalesPerson)
+                <div class="stat-box" style="--sb-color:#10b981; border: 2px solid var(--accent);">
+                    <div class="sb-icon"><i class="bi bi-person-badge-fill"></i></div>
+                    <div class="sb-content">
+                        <div class="sb-cat" style="--cat-color:#10b981;">Filtered Sales Person</div>
+                        <div class="sb-val">{{ $totalLostLeads }}</div>
+                        <div class="sb-lbl">{{ $selectedSalesPerson->name }}</div>
+                    </div>
+                </div>
+
+                <div class="stat-box" style="--sb-color:#0ea5e9; border: 2px solid #0ea5e9;">
+                    <div class="sb-icon"><i class="bi bi-telephone-fill"></i></div>
+                    <div class="sb-content">
+                        <div class="sb-cat" style="--cat-color:#0ea5e9;">Total Calling</div>
+                        <div class="sb-val">{{ $totalCallingFollowupsFiltered ?? 0 }}</div>
+                        <div class="sb-lbl">Assigned Calling</div>
+                    </div>
+                </div>
+
+                <div class="stat-box" style="--sb-color:#f43f5e; border: 2px solid #f43f5e;">
+                    <div class="sb-icon"><i class="bi bi-chat-dots-fill"></i></div>
+                    <div class="sb-content">
+                        <div class="sb-cat" style="--cat-color:#f43f5e;">Total Message</div>
+                        <div class="sb-val">{{ $totalMessageFollowupsFiltered ?? 0 }}</div>
+                        <div class="sb-lbl">Assigned Message</div>
+                    </div>
+                </div>
+                @endif
+            @endif
+
+            {{-- Row 1: Overview (2) + Priority (4) = 6 --}}
+
+            <div class="stat-box" style="--sb-color:#6366f1;">
                 <div class="sb-icon"><i class="bi bi-people-fill"></i></div>
                 <div class="sb-content">
+                    <div class="sb-cat" style="--cat-color:#6366f1;">Overview</div>
                     <div class="sb-val">{{ $totalLostLeads }}</div>
                     <div class="sb-lbl">Total Losted Leads</div>
                 </div>
             </div>
+
+            @if(($priorityCounts['Hot 🔥'] ?? 0) > 0)
+            <div class="stat-box" style="--sb-color:#ef4444;">
+                <div class="sb-icon"><i class="bi bi-fire"></i></div>
+                <div class="sb-content">
+                    <div class="sb-cat" style="--cat-color:#ef4444;">Priority</div>
+                    <div class="sb-val" style="color:#ef4444;">{{ $priorityCounts['Hot 🔥'] ?? 0 }}</div>
+                    <div class="sb-lbl">Hot 🔥</div>
+                </div>
+            </div>
+            @endif
+
+            @if(($priorityCounts['Warm'] ?? 0) > 0)
+            <div class="stat-box" style="--sb-color:#f59e0b;">
+                <div class="sb-icon"><i class="bi bi-thermometer-half"></i></div>
+                <div class="sb-content">
+                    <div class="sb-cat" style="--cat-color:#f59e0b;">Priority</div>
+                    <div class="sb-val" style="color:#f59e0b;">{{ $priorityCounts['Warm'] ?? 0 }}</div>
+                    <div class="sb-lbl">Warm</div>
+                </div>
+            </div>
+            @endif
+
+            @if(($priorityCounts['Cold'] ?? 0) > 0)
+            <div class="stat-box" style="--sb-color:#06b6d4;">
+                <div class="sb-icon"><i class="bi bi-snow"></i></div>
+                <div class="sb-content">
+                    <div class="sb-cat" style="--cat-color:#06b6d4;">Priority</div>
+                    <div class="sb-val" style="color:#06b6d4;">{{ $priorityCounts['Cold'] ?? 0 }}</div>
+                    <div class="sb-lbl">Cold</div>
+                </div>
+            </div>
+            @endif
+
+            {{-- Row 2+: Status (Dynamic) --}}
+            @if(isset($statuses))
+            @foreach($statuses as $st)
+                @if($st->leads_count > 0)
+                <div class="stat-box" style="--sb-color:#6366f1;">
+                    <div class="sb-icon"><i class="bi bi-hash"></i></div>
+                    <div class="sb-content">
+                        <div class="sb-cat" style="--cat-color:#6366f1;">Status</div>
+                        <div class="sb-val">{{ $st->leads_count }}</div>
+                        <div class="sb-lbl">{{ $st->name }}</div>
+                    </div>
+                </div>
+                @endif
+            @endforeach
+            @endif
+
+            {{-- Additional Dynamics --}}
+            @foreach($sources as $src)
+                @if($src->leads_count > 0)
+                <div class="stat-box" style="--sb-color:#8b5cf6;">
+                    <div class="sb-icon"><i class="bi bi-box-arrow-in-right"></i></div>
+                    <div class="sb-content">
+                        <div class="sb-cat" style="--cat-color:#8b5cf6;">Source</div>
+                        <div class="sb-val">{{ $src->leads_count }}</div>
+                        <div class="sb-lbl">{{ $src->name }}</div>
+                    </div>
+                </div>
+                @endif
+            @endforeach
+
+            @foreach($services as $srv)
+                @if($srv->leads_count > 0)
+                <div class="stat-box" style="--sb-color:#ec4899;">
+                    <div class="sb-icon"><i class="bi bi-briefcase"></i></div>
+                    <div class="sb-content">
+                        <div class="sb-cat" style="--cat-color:#ec4899;">Service</div>
+                        <div class="sb-val">{{ $srv->leads_count }}</div>
+                        <div class="sb-lbl">{{ $srv->name }}</div>
+                    </div>
+                </div>
+                @endif
+            @endforeach
+
+            @foreach($campaigns as $cmp)
+                @if($cmp->leads_count > 0)
+                <div class="stat-box" style="--sb-color:#f59e0b;">
+                    <div class="sb-icon"><i class="bi bi-megaphone"></i></div>
+                    <div class="sb-content">
+                        <div class="sb-cat" style="--cat-color:#f59e0b;">Campaign</div>
+                        <div class="sb-val">{{ $cmp->leads_count }}</div>
+                        <div class="sb-lbl">{{ $cmp->name }}</div>
+                    </div>
+                </div>
+                @endif
+            @endforeach
         </div>
 
 
@@ -234,18 +360,35 @@
                         <div class="card-title">Losted Lead Pipeline</div>
                         <div class="card-sub" id="tableSub">{{ $leads->count() }} total leads identified as lost</div>
                     </div>
-                    <div class="card-actions mb-2">
-                        <form action="{{ route($routePrefix . '.losted-leads') }}" method="GET" class="card-actions mb-0">
-                             <div class="global-search">
-                                 <i class="bi bi-search"></i>
-                                 <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search...">
-                                 <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
-                             </div>
+                    <form action="{{ route($routePrefix . '.losted-leads') }}" method="GET" class="card-actions mb-2">
+                         <div class="global-search">
+                             <i class="bi bi-search"></i>
+                             <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search..." autocomplete="off">
+                             <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
+                         </div>
+
+                             <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
+                             <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
+                                 <i class="bi bi-calendar3"></i>
+                                 <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'Last 7 Days' }}</span>
+                                 <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
+                             </button>
+
+                             <!-- Hidden inputs for date range from the custom picker -->
+                             <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
+                             <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
 
                              <select name="source_id" class="filter-select" onchange="updateFilters()">
                                  <option value="">Lead Source</option>
                                  @foreach($sources as $source)
                                      <option value="{{ $source->id }}" {{ request('source_id') == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
+                                 @endforeach
+                             </select>
+                             
+                             <select name="campaign_id" class="filter-select" onchange="updateFilters()">
+                                 <option value="">All Campaigns</option>
+                                 @foreach($campaigns as $campaign)
+                                     <option value="{{ $campaign->id }}" {{ request('campaign_id') == $campaign->id ? 'selected' : '' }}>{{ $campaign->name }}</option>
                                  @endforeach
                              </select>
 
@@ -262,6 +405,16 @@
                                  <option value="Warm" {{ request('priority') == 'Warm' ? 'selected' : '' }}>Warm</option>
                                  <option value="Cold" {{ request('priority') == 'Cold' ? 'selected' : '' }}>Cold</option>
                              </select>
+                             
+                             @if(isset($statuses))
+                             <select name="status_id" class="filter-select" onchange="updateFilters()">
+                                 <option value="">All Statuses</option>
+                                 @foreach($statuses as $status)
+                                     <option value="{{ $status->id }}" {{ request('status_id') == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
+                                 @endforeach
+                             </select>
+                             @endif
+
                              <select name="assigned_to" class="filter-select" onchange="updateFilters()">
                                  <option value="">Assign To</option>
                                  @foreach($sales as $sale)
@@ -275,7 +428,10 @@
                                 <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 Rows</option>
                                 <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>All Rows</option>
                              </select>
-                        </form>
+                    </form>
+                    
+                    <div style="position:relative;">
+                        @include('admin.includes.date-range-picker')
                     </div>
                 </div>
 
@@ -604,370 +760,6 @@
 
 <script>
     /* ═══════════════════════════════════════════
-   DATE RANGE PICKER LOGIC
-═══════════════════════════════════════════ */
-    (function() {
-        const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        const MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        let view1 = new Date(today.getFullYear(), today.getMonth(), 1);
-        let view2 = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-        let rangeStart = null,
-            rangeEnd = null,
-            hoverDate = null;
-        let selecting = false,
-            activePreset = 'last7';
-
-        function fmt(d) {
-            return d ? d.getDate() + ' ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear() : '—';
-        }
-
-        function sameDay(a, b) {
-            return a && b && a.toDateString() === b.toDateString();
-        }
-
-        function between(d, a, b) {
-            return a && b && d > a && d < b;
-        }
-
-        function clone(d) {
-            return d ? new Date(d.getTime()) : null;
-        }
-
-        const presetMap = {
-            today: () => {
-                const d = clone(today);
-                return [d, d];
-            },
-            yesterday: () => {
-                const d = new Date(today);
-                d.setDate(d.getDate() - 1);
-                return [d, d];
-            },
-            today_yesterday: () => {
-                const a = new Date(today);
-                a.setDate(a.getDate() - 1);
-                return [a, clone(today)];
-            },
-            last7: () => {
-                const a = new Date(today);
-                a.setDate(a.getDate() - 6);
-                return [a, clone(today)];
-            },
-            last14: () => {
-                const a = new Date(today);
-                a.setDate(a.getDate() - 13);
-                return [a, clone(today)];
-            },
-            last28: () => {
-                const a = new Date(today);
-                a.setDate(a.getDate() - 27);
-                return [a, clone(today)];
-            },
-            last30: () => {
-                const a = new Date(today);
-                a.setDate(a.getDate() - 29);
-                return [a, clone(today)];
-            },
-            this_week: () => {
-                const a = new Date(today);
-                a.setDate(a.getDate() - a.getDay());
-                return [a, clone(today)];
-            },
-            last_week: () => {
-                const a = new Date(today);
-                a.setDate(a.getDate() - a.getDay() - 7);
-                const b = new Date(a);
-                b.setDate(b.getDate() + 6);
-                return [a, b];
-            },
-            this_month: () => [new Date(today.getFullYear(), today.getMonth(), 1), clone(today)],
-            last_month: () => [new Date(today.getFullYear(), today.getMonth() - 1, 1), new Date(today.getFullYear(), today.getMonth(), 0)],
-            this_year: () => [new Date(today.getFullYear(), 0, 1), clone(today)],
-            custom: () => [null, null],
-        };
-
-        const presetLabels = {
-            today: 'Today',
-            yesterday: 'Yesterday',
-            today_yesterday: 'Today & Yesterday',
-            last7: 'Last 7 Days',
-            last14: 'Last 14 Days',
-            last28: 'Last 28 Days',
-            last30: 'Last 30 Days',
-            this_week: 'This Week',
-            last_week: 'Last Week',
-            this_month: 'This Month',
-            last_month: 'Last Month',
-            this_year: 'This Year',
-            custom: 'Custom Range',
-        };
-
-        function populateSelects() {
-            ['month1Sel', 'month2Sel'].forEach(id => {
-                const sel = document.getElementById(id);
-                if (!sel || sel.options.length) return;
-                MONTHS.forEach((m, i) => {
-                    const o = document.createElement('option');
-                    o.value = i;
-                    o.textContent = m;
-                    sel.appendChild(o);
-                });
-            });
-            ['year1Sel', 'year2Sel'].forEach(id => {
-                const sel = document.getElementById(id);
-                if (!sel || sel.options.length) return;
-                for (let y = today.getFullYear() - 10; y <= today.getFullYear() + 2; y++) {
-                    const o = document.createElement('option');
-                    o.value = y;
-                    o.textContent = y;
-                    sel.appendChild(o);
-                }
-            });
-        }
-
-        function syncSelects() {
-            document.getElementById('month1Sel').value = view1.getMonth();
-            document.getElementById('year1Sel').value = view1.getFullYear();
-            document.getElementById('month2Sel').value = view2.getMonth();
-            document.getElementById('year2Sel').value = view2.getFullYear();
-        }
-
-        function renderCal(tableId, viewDate) {
-            const tbl = document.getElementById(tableId);
-            tbl.innerHTML = '';
-            const thead = document.createElement('thead');
-            const hRow = document.createElement('tr');
-            DAYS.forEach(d => {
-                const th = document.createElement('th');
-                th.textContent = d;
-                hRow.appendChild(th);
-            });
-            thead.appendChild(hRow);
-            tbl.appendChild(thead);
-
-            const tbody = document.createElement('tbody');
-            const year = viewDate.getFullYear(),
-                month = viewDate.getMonth();
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-            let day = 1,
-                row = document.createElement('tr');
-            for (let i = 0; i < firstDay; i++) row.appendChild(document.createElement('td'));
-
-            while (day <= daysInMonth) {
-                const cell = document.createElement('td');
-                const d = new Date(year, month, day);
-                const span = document.createElement('span');
-                span.className = 'drp-day';
-                span.textContent = day;
-                span.dataset.ts = d.getTime();
-
-                if (sameDay(d, today)) span.classList.add('drp-day-today');
-
-                const effEnd = hoverDate && selecting && !rangeEnd ? (hoverDate >= rangeStart ? hoverDate : rangeStart) : rangeEnd;
-                const effStart = hoverDate && selecting && !rangeEnd ? (hoverDate < rangeStart ? hoverDate : rangeStart) : rangeStart;
-
-                if (sameDay(d, effStart) && sameDay(d, effEnd)) span.classList.add('drp-day-selected', 'drp-day-range-start', 'drp-day-range-end');
-                else if (sameDay(d, effStart)) span.classList.add('drp-day-range-start');
-                else if (sameDay(d, effEnd)) span.classList.add('drp-day-range-end');
-                else if (effStart && effEnd && between(d, effStart, effEnd)) span.classList.add('drp-day-in-range');
-
-                span.addEventListener('click', onDayClick);
-                span.addEventListener('mouseenter', onDayHover);
-                cell.appendChild(span);
-                row.appendChild(cell);
-
-                if ((firstDay + day) % 7 === 0) {
-                    tbody.appendChild(row);
-                    row = document.createElement('tr');
-                }
-                day++;
-            }
-            if (row.children.length) tbody.appendChild(row);
-            tbl.appendChild(tbody);
-        }
-
-        function render() {
-            populateSelects();
-            syncSelects();
-            renderCal('cal1', view1);
-            renderCal('cal2', view2);
-            updateRangeDisplay();
-        }
-
-        function onDayClick(e) {
-            const d = new Date(parseInt(e.currentTarget.dataset.ts));
-            if (!selecting || rangeEnd) {
-                rangeStart = d;
-                rangeEnd = null;
-                selecting = true;
-                setCustomPreset();
-            } else {
-                if (d < rangeStart) {
-                    rangeEnd = rangeStart;
-                    rangeStart = d;
-                } else {
-                    rangeEnd = d;
-                }
-                selecting = false;
-                setCustomPreset();
-            }
-            render();
-        }
-
-        function onDayHover(e) {
-            if (!selecting) return;
-            hoverDate = new Date(parseInt(e.currentTarget.dataset.ts));
-            render();
-        }
-
-        function setCustomPreset() {
-            document.querySelectorAll('.drp-preset').forEach(el => el.classList.remove('active'));
-            const el = document.querySelector('.drp-preset[data-preset="custom"]');
-            if (el) {
-                el.classList.add('active');
-                activePreset = 'custom';
-            }
-        }
-
-        function updateRangeDisplay() {
-            document.getElementById('rangeStartDisplay').textContent = fmt(rangeStart);
-            document.getElementById('rangeEndDisplay').textContent = fmt(rangeEnd);
-            if (rangeStart && rangeEnd) updateCompareDisplay();
-        }
-
-        function updateCompareDisplay() {
-            const sel = document.getElementById('comparePreset');
-            if (!sel || !document.getElementById('compareToggle').checked) return;
-            const diff = Math.round((rangeEnd - rangeStart) / 86400000);
-            let cs, ce;
-            if (sel.value === 'preceding') {
-                ce = new Date(rangeStart);
-                ce.setDate(ce.getDate() - 1);
-                cs = new Date(ce);
-                cs.setDate(cs.getDate() - diff);
-            } else if (sel.value === 'prev_year') {
-                cs = new Date(rangeStart);
-                cs.setFullYear(cs.getFullYear() - 1);
-                ce = new Date(rangeEnd);
-                ce.setFullYear(ce.getFullYear() - 1);
-            } else return;
-            document.getElementById('cmpStart').value = fmt(cs);
-            document.getElementById('cmpEnd').value = fmt(ce);
-        }
-
-        window.shiftMonths = function(dir) {
-            view1 = new Date(view1.getFullYear(), view1.getMonth() + dir, 1);
-            view2 = new Date(view2.getFullYear(), view2.getMonth() + dir, 1);
-            render();
-        };
-        window.onMonthChange = function(idx) {
-            if (idx === 0) view1 = new Date(view1.getFullYear(), parseInt(document.getElementById('month1Sel').value), 1);
-            else view2 = new Date(view2.getFullYear(), parseInt(document.getElementById('month2Sel').value), 1);
-            render();
-        };
-        window.onYearChange = function(idx) {
-            if (idx === 0) view1 = new Date(parseInt(document.getElementById('year1Sel').value), view1.getMonth(), 1);
-            else view2 = new Date(parseInt(document.getElementById('year2Sel').value), view2.getMonth(), 1);
-            render();
-        };
-
-        document.querySelectorAll('.drp-preset').forEach(el => {
-            el.addEventListener('click', function() {
-                activePreset = this.dataset.preset;
-                document.querySelectorAll('.drp-preset').forEach(p => p.classList.remove('active'));
-                this.classList.add('active');
-                const [s, e] = presetMap[activePreset]();
-                rangeStart = s;
-                rangeEnd = e;
-                selecting = false;
-                hoverDate = null;
-                if (s) {
-                    view1 = new Date(s.getFullYear(), s.getMonth(), 1);
-                    view2 = new Date(s.getFullYear(), s.getMonth() + 1, 1);
-                }
-                render();
-            });
-        });
-
-        window.toggleCompare = function() {
-            const on = document.getElementById('compareToggle').checked;
-            document.getElementById('compareInputs').style.display = on ? 'flex' : 'none';
-            if (on) updateCompareDisplay();
-        };
-
-        window.toggleDatePicker = function() {
-            const panel = document.getElementById('dateRangePanel');
-            const trigger = document.getElementById('dateRangeTrigger');
-            if (panel.style.display !== 'none') {
-                closeDatePicker();
-                return;
-            }
-
-            const rect = trigger.getBoundingClientRect();
-            panel.style.top = (rect.bottom + 6) + 'px';
-            panel.style.left = rect.left + 'px';
-            panel.style.display = 'flex';
-
-            // Clamp to viewport
-            const pw = panel.offsetWidth;
-            if (rect.left + pw > window.innerWidth - 16)
-                panel.style.left = Math.max(8, window.innerWidth - pw - 16) + 'px';
-
-            trigger.classList.add('open');
-            render();
-        };
-
-        function closeDatePicker() {
-            document.getElementById('dateRangePanel').style.display = 'none';
-            document.getElementById('dateRangeTrigger').classList.remove('open');
-        }
-
-        window.cancelDatePicker = function() {
-            closeDatePicker();
-        };
-
-        window.applyDatePicker = function() {
-            let display = presetLabels[activePreset] || 'Custom Range';
-            if (activePreset === 'custom' && rangeStart && rangeEnd)
-                display = fmt(rangeStart) + ' — ' + fmt(rangeEnd);
-            document.getElementById('drpLabel').textContent = display;
-
-            // Update card subtitle
-            const sub = document.getElementById('drpActiveSub');
-            if (sub) sub.textContent = display + ' · 147 total · 38 hot leads';
-
-            closeDatePicker();
-            document.dispatchEvent(new CustomEvent('dateRangeApplied', {
-                detail: {
-                    preset: activePreset,
-                    start: rangeStart,
-                    end: rangeEnd
-                }
-            }));
-        };
-
-        document.addEventListener('click', function(e) {
-            const panel = document.getElementById('dateRangePanel');
-            const trigger = document.getElementById('dateRangeTrigger');
-            if (panel && panel.style.display !== 'none' &&
-                !panel.contains(e.target) && !trigger.contains(e.target))
-                closeDatePicker();
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            populateSelects();
-            const [s, e] = presetMap['last7']();
-            rangeStart = s;
-            rangeEnd = e;
-            document.getElementById('drpLabel').textContent = 'Last 7 Days';
-        });
     })();
 
 
