@@ -134,12 +134,8 @@ class AppServiceProvider extends ServiceProvider
                     });
                 })->count();
                 
-                $lostLeadCount = \App\Models\Lead::where(function($q) use ($saleId, $saleType) {
-                    $q->where(function($sq) use ($saleId, $saleType) {
-                        $sq->where('created_by', $saleId)->where('created_by_type', $saleType);
-                    })->orWhereHas('assignments', function($sq) use ($saleId) {
-                        $sq->where('assigned_to', $saleId);
-                    });
+                $lostLeadCount = \App\Models\Lead::whereHas('assignments', function($q) use ($saleId) {
+                    $q->where('assigned_to', $saleId);
                 })->where('is_losted', 1)->count();
                 
                 $saleProjectQuery = \App\Models\Project::where(function($q) use ($saleId, $saleType) {
