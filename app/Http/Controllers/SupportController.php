@@ -29,7 +29,7 @@ class SupportController extends Controller
             'your_name'    => 'required|string|max:255',
             'email'        => 'required|email|max:255',
             'phone'        => 'required|string|max:20',
-            'domain_name'  => 'nullable|string|max:255',
+            'domain_name'  => 'required|string|max:255',
             'subject'      => 'required|string|max:255',
             'priority'     => 'required|in:high,medium,low',
             'message'      => 'required|string',

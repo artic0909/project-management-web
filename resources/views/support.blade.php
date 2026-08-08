@@ -273,8 +273,9 @@
                         @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Domain Name</label>
-                        <input type="text" name="domain_name" class="form-control" placeholder="example.com" value="{{ old('domain_name') }}">
+                        <label class="form-label">Domain Name <span class="text-danger">*</span></label>
+                        <input type="text" name="domain_name" class="form-control @error('domain_name') is-invalid @enderror" placeholder="example.com" required value="{{ old('domain_name') }}">
+                        @error('domain_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
