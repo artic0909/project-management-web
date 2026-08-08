@@ -205,13 +205,13 @@
                                 @endif -->
                                 <th>SL.</th>
                                 <th>Project ID</th>
-                                <th>Project / Domain</th>
+                                <th>Domain Name</th>
+                                <th>Project Name</th>
                                 <th>Client</th>
                                 <th>CMS</th>
                                 <th>Order Date</th>
                                 <th>Start Date</th>
                                 <th>Delivery</th>
-                                <th>Services</th>
                                 <!-- <th>Sources</th> -->
                                 @if($routePrefix == 'admin')
                                 <th>Assigned To</th>
@@ -223,7 +223,6 @@
                                 <!-- <th>Advance</th> -->
                                 <!-- <th>Remaining</th> -->
                                 <!-- <th>Payment</th> -->
-                                <th>Created By</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -238,6 +237,9 @@
                                 @endif -->
                                 <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration + ($projects->currentPage() - 1) * $projects->perPage() }}</td>
                                 <td><span class="mono">#PRJ-{{ str_pad($project->id, 4, '0', STR_PAD_LEFT) }}</span></td>
+                                <td>
+                                    <div class="ln">{{ $project->primary_domain_name ?? 'N/A' }}</div>
+                                </td>
                                 <td>
                                     <div class="lead-cell">
                                         @php
@@ -286,17 +288,6 @@
                                         <span style="color:var(--t4);font-size:11px;">N/A</span>
                                     @endif
                                 </td>
-                                <td>
-                                    <div style="display:flex;flex-wrap:wrap;gap:4px;max-width:200px;">
-                                        @forelse($project->services as $service)
-                                            <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;background:rgba(99,102,241,0.1);color:#6366f1;border:1px solid rgba(99,102,241,0.2);white-space:nowrap;">
-                                                {{ $service->name }}
-                                            </span>
-                                        @empty
-                                            <span style="color:var(--t4);font-size:11px;">—</span>
-                                        @endforelse
-                                    </div>
-                                </td>
                                 <!-- <td>
                                     <div style="display:flex;flex-wrap:wrap;gap:4px;max-width:180px;">
                                         @forelse($project->sources as $source)
@@ -314,7 +305,7 @@
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         @forelse($project->developers as $dev)
                                             <div style="font-size:12px; white-space:nowrap;">
-                                                <span style="font-weight:600;color:var(--t1);">{{ $dev->name }} - {{ $dev->email }}</span>
+                                                <span style="font-weight:600;color:var(--t1);">{{ $dev->name }}</span>
                                                 @if($dev->designation)
                                                     <span style="font-size:10px;color:var(--t3);"> - {{ $dev->designation }}</span>
                                                 @endif
@@ -328,7 +319,7 @@
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         @forelse($project->salesPersons as $sale)
                                             <div style="font-size:12px; white-space:nowrap;">
-                                                <span style="font-weight:600;color:var(--t1);">{{ $sale->name }}-{{ $sale->email }}</span>
+                                                <span style="font-weight:600;color:var(--t1);">{{ $sale->name }}</span>
                                             </div>
                                         @empty
                                             <span style="color:var(--t4);font-size:11px;">Unassigned</span>
@@ -354,14 +345,6 @@
                                     @endphp
                                     <span class="status-pill {{ $payClass }}">{{ $displayPayStatus }}</span>
                                 </td> -->
-                                <td>
-                                    @if($project->createdBy)
-                                        <div class="ln">{{ $project->createdBy->name }}</div>
-                                        <div class="ls" style="font-size:10px">{{ $project->createdBy->email }}</div>
-                                    @else
-                                        <div class="ln">System</div>
-                                    @endif
-                                </td>
                                 <td>
                                     <div class="row-actions">
                                         @php
