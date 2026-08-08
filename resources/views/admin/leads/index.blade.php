@@ -664,9 +664,15 @@
                                 </td>
                                 @endif
                                 <td>
-                                    <button type="button" class="badge" onclick="openFollowupTimelineModal({{ $lead->id }}, '{{ addslashes($lead->company) }}')" style="background:rgba(99, 102, 241, 0.1); color:var(--accent); padding:4px 10px; border-radius:6px; font-weight:700; font-family:var(--font-mono); font-size:12px; cursor:pointer; border:none; outline:none; transition:var(--transition);" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">
-                                        {{ $lead->followups_count }}
-                                    </button>
+                                    @if($routePrefix === 'sale' && request('type') === 'total')
+                                        <span class="badge" style="background:rgba(99, 102, 241, 0.1); color:var(--accent); padding:4px 10px; border-radius:6px; font-weight:700; font-family:var(--font-mono); font-size:12px; border:none; outline:none; display:inline-block;">
+                                            {{ $lead->followups_count }}
+                                        </span>
+                                    @else
+                                        <button type="button" class="badge" onclick="openFollowupTimelineModal({{ $lead->id }}, '{{ addslashes($lead->company) }}')" style="background:rgba(99, 102, 241, 0.1); color:var(--accent); padding:4px 10px; border-radius:6px; font-weight:700; font-family:var(--font-mono); font-size:12px; cursor:pointer; border:none; outline:none; transition:var(--transition);" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">
+                                            {{ $lead->followups_count }}
+                                        </button>
+                                    @endif
                                     
                                     <template id="followup-timeline-{{ $lead->id }}">
                                         @php
