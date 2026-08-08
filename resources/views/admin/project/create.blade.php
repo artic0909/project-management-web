@@ -403,7 +403,7 @@
                                     </div>
                                 </div>
                             </div>
-                            @if($routePrefix === 'admin')
+                          
                             <div class="form-row">
                                 <label class="form-lbl">Assign to Developers</label>
                                 <div class="ms-wrap" id="devAssignWrap">
@@ -441,7 +441,7 @@
                                     </div>
                                 </div>
                             </div>
-                            @endif
+                        
                         </div>
                     </div>
 

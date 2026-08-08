@@ -493,7 +493,7 @@
                                 </div>
                             </div>
                           
-                            @if($routePrefix === 'admin')
+                           
                             <div class="form-row">
                                 <label class="form-lbl">Assign to Developers</label>
                                 @php $assignedDevIds = $project->developers->pluck('id')->toArray(); @endphp
@@ -533,7 +533,7 @@
                                     </div>
                                 </div>
                             </div>
-                            @endif
+                          
                             
                         </div>
                     </div>
