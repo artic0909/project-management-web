@@ -244,7 +244,7 @@ class ProjectController extends Controller
             'domain_provider_name' => 'nullable|string|max:255',
             'domain_renewal_price' => 'nullable|numeric|min:0',
             'hosting_provider_name' => 'nullable|string|max:255',
-            'hosting_renewal_price' => 'nullable|numeric|min:0',
+
             'primary_domain_name' => 'nullable|string|max:255',
             'cms_platform' => 'nullable|string|max:255',
             'order_date_create' => 'required|date',
@@ -393,7 +393,7 @@ class ProjectController extends Controller
             'domain_provider_name' => 'nullable|string|max:255',
             'domain_renewal_price' => 'nullable|numeric|min:0',
             'hosting_provider_name' => 'nullable|string|max:255',
-            'hosting_renewal_price' => 'nullable|numeric|min:0',
+
             'primary_domain_name' => 'nullable|string|max:255',
             'cms_platform' => 'nullable|string|max:255',
             'order_date_create' => 'required|date',
@@ -607,10 +607,9 @@ class ProjectController extends Controller
                 'Domain Name',
                 'Primary Domain Name',
                 'Domain Provider Name',
-                'Domain Renewal Price',
+                'Domain & Hosting Renewal Price',
                 'Domain Server Book',
                 'Hosting Provider Name',
-                'Hosting Renewal Price',
                 'CMS Platform',
                 'CMS Custom',
                 'No Of Pages',
@@ -704,7 +703,7 @@ class ProjectController extends Controller
                     $project->domain_renewal_price,
                     $project->domain_server_book,
                     $project->hosting_provider_name,
-                    $project->hosting_renewal_price,
+
                     $project->cms_platform,
                     $project->cms_custom,
                     $project->no_of_pages,

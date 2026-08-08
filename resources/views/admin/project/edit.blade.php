@@ -357,8 +357,8 @@
                                     @error('domain_provider_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Domain Renewal Price <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
-                                    <input type="number" name="domain_renewal_price" class="form-inp" placeholder="₹ Amount" value="{{ old('domain_renewal_price', $project->domain_renewal_price) }}">
+                                    <label class="form-lbl">Domain & Hosting Renewal Price <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <input type="number" name="domain_renewal_price" class="form-inp" placeholder="₹ Amount" step="0.01" min="0" value="{{ old('domain_renewal_price', $project->domain_renewal_price) }}">
                                     @error('domain_renewal_price')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
@@ -366,12 +366,8 @@
                                     <input type="text" name="hosting_provider_name" class="form-inp" placeholder="e.g. Hostinger" value="{{ old('hosting_provider_name', $project->hosting_provider_name) }}">
                                     @error('hosting_provider_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
+
                                 <div class="form-row">
-                                    <label class="form-lbl">Hosting Renewal Price <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
-                                    <input type="number" name="hosting_renewal_price" class="form-inp" placeholder="₹ Amount" value="{{ old('hosting_renewal_price', $project->hosting_renewal_price) }}">
-                                    @error('hosting_renewal_price')<span class="field-error">{{ $message }}</span>@enderror
-                                </div>
-                                <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Primary Domain Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <input type="text" name="primary_domain_name" class="form-inp" placeholder="Primary domain" value="{{ old('primary_domain_name', $project->primary_domain_name) }}">
                                     @error('primary_domain_name')<span class="field-error">{{ $message }}</span>@enderror

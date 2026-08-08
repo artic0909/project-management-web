@@ -278,12 +278,12 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Domain & Hosting Renewal Price <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
-                                    <input type="number" name="domain_renewal_price" class="form-inp" placeholder="₹ Amount" value="{{ old('domain_renewal_price') }}">
+                                    <input type="number" name="domain_renewal_price" class="form-inp" placeholder="₹ Amount" step="0.01" min="0" value="{{ old('domain_renewal_price') }}">
                                     @error('domain_renewal_price')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
-                                <div class="form-row" style="grid-column:1/-1">
+                                <div class="form-row">
                                     <label class="form-lbl">Primary Domain Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
-                                    <input type="text" name="primary_domain_name" class="form-inp" placeholder="Primary domain" value="{{ old('primary_domain_name', $order->domain_name ?? '') }}">
+                                    <input type="text" name="primary_domain_name" class="form-inp" placeholder="Primary domain" value="{{ old('primary_domain_name') }}">
                                     @error('primary_domain_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                             </div>

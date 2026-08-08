@@ -85,9 +85,8 @@ $(document).ready(function() {
             { name: 'password', label: 'Website Password' },
             { name: 'cms_platform', label: 'CMS / Platform' },
             { name: 'domain_provider_name', label: 'Domain Provider Name' },
-            { name: 'domain_renewal_price', label: 'Domain Renewal Price' },
+            { name: 'domain_renewal_price', label: 'Domain & Hosting Renewal Price' },
             { name: 'hosting_provider_name', label: 'Hosting Provider Name' },
-            { name: 'hosting_renewal_price', label: 'Hosting Renewal Price' },
             { name: 'primary_domain_name', label: 'Primary Domain Name' },
             { name: 'project_status_id', label: 'Project Status' },
             { name: 'order_date_create', label: 'Order Creation Date' }

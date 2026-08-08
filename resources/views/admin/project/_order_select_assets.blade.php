@@ -216,7 +216,7 @@
 
         setVal('input[name="company_name"]', order.company_name);
         setVal('input[name="domain_name"]', order.domain_name);
-        setVal('input[name="primary_domain_name"]', order.domain_name);
+
         setVal('input[name="plan_name"]', order.plan_name);
         setVal('input[name="username"]', order.mkt_username);
         setVal('input[name="password"]', order.mkt_password);

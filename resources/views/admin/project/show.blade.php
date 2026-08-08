@@ -161,10 +161,6 @@
                                             <label>Hosting Provider</label>
                                             <div class="val-text">{{ $project->hosting_provider_name ?? ($project->hosting_provider ?? 'N/A') }}</div>
                                         </div>
-                                        <div class="kv-item" style="margin-bottom:0;">
-                                            <label>Renewal Cost</label>
-                                            <div class="val-text" style="color:#10b981; font-weight:700;">₹{{ number_format($project->hosting_renewal_price ?? 0, 0) }}</div>
-                                        </div>
                                     </div>
 
                                     {{-- Domain Card --}}
@@ -182,7 +178,7 @@
                                             <div class="val-text">{{ $project->domain_provider_name ?? 'N/A' }}</div>
                                         </div>
                                         <div class="kv-item" style="margin-bottom:0;">
-                                            <label>Registrar Renewal</label>
+                                            <label>Domain & Hosting Renewal</label>
                                             <div class="val-text" style="color:#10b981; font-weight:700;">₹{{ number_format($project->domain_renewal_price ?? 0, 0) }}</div>
                                         </div>
                                     </div>
