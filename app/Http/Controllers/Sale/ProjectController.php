@@ -183,7 +183,7 @@ class ProjectController extends Controller
                 ->orWhereHas('assignments', function ($sq) use ($saleId) {
                     $sq->where('assigned_to', $saleId);
                 });
-        })->latest()->get();
+        })->doesntHave('project')->latest()->get();
 
         $developers = Developer::latest()->get();
         $salesPersons = Sale::latest()->get();
@@ -225,7 +225,7 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'order_id' => 'required|exists:orders,id',
+            'order_id' => 'required|exists:orders,id|unique:projects,order_id',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'company_name' => 'required|string|max:255',
@@ -330,6 +330,8 @@ class ProjectController extends Controller
                 ->orWhereHas('assignments', function ($sq) use ($saleId) {
                     $sq->where('assigned_to', $saleId);
                 });
+        })->whereDoesntHave('project', function($q) use ($project) {
+            $q->where('id', '!=', $project->id);
         })->latest()->get();
 
         $developers = Developer::all();
@@ -374,7 +376,7 @@ class ProjectController extends Controller
         $project = $this->getFilteredProjects()->findOrFail($id);
 
         $request->validate([
-            'order_id' => 'required|exists:orders,id',
+            'order_id' => 'required|exists:orders,id|unique:projects,order_id,' . $project->id,
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'company_name' => 'required|string|max:255',

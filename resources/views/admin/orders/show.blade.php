@@ -21,9 +21,11 @@
             </div>
             <div style="display:flex;gap:10px;">
                 
+                @if(!$order->project()->exists())
                 <a href="{{ route($routePrefix . '.projects.create', $order->id) }}" class="btn-primary-solid sm" style="background:#8b5cf6;border-color:#8b5cf6;">
                     <i class="bi bi-plus-square-fill"></i> Convert to Project
                 </a>
+                @endif
                 <a href="{{ route($routePrefix . '.payments.create', $order->id) }}" class="btn-primary-solid sm">
                     <i class="bi bi-wallet2"></i> Add Payment
                 </a>

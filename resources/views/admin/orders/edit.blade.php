@@ -20,9 +20,11 @@
                 <p class="page-desc">Modify details for {{ $order->company_name }}</p>
             </div>
             <div class="header-actions">
+                @if(!$order->project()->exists())
                 <a href="{{ route($routePrefix . '.projects.create', $order->id) }}" class="btn-primary-solid sm" style="background:#8b5cf6;border-color:#8b5cf6;">
                     <i class="bi bi-plus-square-fill"></i> Convert to Project
                 </a>
+                @endif
             </div>
         </div>
 

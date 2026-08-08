@@ -88,4 +88,9 @@ class Order extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    public function project()
+    {
+        return $this->hasOne(Project::class);
+    }
 }

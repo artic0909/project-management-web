@@ -165,7 +165,7 @@ class ProjectController extends Controller
     public function create($order_id = null)
     {
         $order = $order_id ? Order::find($order_id) : null;
-        $orders = Order::latest()->get();
+        $orders = Order::doesntHave('project')->latest()->get();
         $developers = Developer::latest()->get();
         $salesPersons = \App\Models\Sale::latest()->get();
         $statuses = $this->getStatusOptions();
@@ -207,7 +207,7 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'order_id' => 'required|exists:orders,id',
+            'order_id' => 'required|exists:orders,id|unique:projects,order_id',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'company_name' => 'required|string|max:255',
@@ -351,7 +351,9 @@ class ProjectController extends Controller
     public function edit($id)
     {
         $project = Project::with(['developers', 'salesPersons'])->findOrFail($id);
-        $orders = Order::latest()->get();
+        $orders = Order::whereDoesntHave('project', function($q) use ($project) {
+            $q->where('id', '!=', $project->id);
+        })->latest()->get();
         $developers = Developer::latest()->get();
         $salesPersons = \App\Models\Sale::latest()->get();
         $statuses = $this->getStatusOptions();
@@ -395,7 +397,7 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
 
         $request->validate([
-            'order_id' => 'required|exists:orders,id',
+            'order_id' => 'required|exists:orders,id|unique:projects,order_id,' . $project->id,
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'company_name' => 'required|string|max:255',
