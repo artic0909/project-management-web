@@ -678,6 +678,82 @@
                                         @php
                                             $leadFollowups = $lead->followups()->with('creator')->orderBy('followup_date', 'desc')->get();
                                         @endphp
+
+                                        <form action="{{ route($routePrefix . '.leads.followup.store', $lead->id) }}" method="POST" style="margin-bottom: 24px;">
+                                            @csrf
+                                            <input type="hidden" name="return_url" value="{{ request()->fullUrl() }}">
+                                            
+                                            <div class="dash-card" style="background:var(--bg2); border:1px solid var(--b1); border-radius:12px; overflow:hidden;">
+                                                <div class="card-head" style="padding:16px 18px; border-bottom:1px solid var(--b1);">
+                                                    <div>
+                                                        <div class="card-title" style="font-weight:700; color:var(--t1); font-size: 15px;">Quick Intelligence Update</div>
+                                                        <div class="card-sub" style="font-size:12px; color:var(--t3);">Fast update status, priority and brief notes</div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body" style="padding:14px 18px 20px;">
+                                                    <div class="form-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                                                        <div class="form-row">
+                                                            <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Change Status <span style="color:#ef4444">*</span></label>
+                                                            <select name="status_id" class="form-inp" required style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
+                                                                <option value="" {{ empty($lead->status_id) ? 'selected' : '' }} disabled hidden>Select Status</option>
+                                                                @foreach($statuses as $status)
+                                                                    <option value="{{ $status->id }}" {{ $lead->status_id == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-row">
+                                                            <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Set Priority <span style="color:#ef4444">*</span></label>
+                                                            <select name="priority" class="form-inp" required style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
+                                                                <option value="" {{ empty($lead->priority) ? 'selected' : '' }} disabled hidden>Select Priority</option>
+                                                                <option value="Hot 🔥" {{ $lead->priority == 'Hot 🔥' ? 'selected' : '' }}>Hot 🔥</option>
+                                                                <option value="Warm" {{ $lead->priority == 'Warm' ? 'selected' : '' }}>Warm</option>
+                                                                <option value="Cold" {{ $lead->priority == 'Cold' ? 'selected' : '' }}>Cold</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div style="border-top:1px solid var(--b1); margin: 0 18px;"></div>
+
+                                                <div class="card-head" style="padding:16px 18px; border-bottom:1px solid var(--b1);">
+                                                    <div>
+                                                        <div class="card-title" style="font-weight:700; color:var(--t1); font-size: 15px;">Log New Interaction</div>
+                                                        <div class="card-sub" style="font-size:12px; color:var(--t3);">Record communication and schedule future contact</div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body" style="padding:14px 18px 20px;">
+                                                    <div class="form-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                                                        <div class="form-row">
+                                                            <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Transaction Date <span style="color:#ef4444">*</span></label>
+                                                            <input type="datetime-local" name="followup_date" class="form-inp" value="{{ date('Y-m-d\TH:i') }}" max="{{ date('Y-m-d\TH:i') }}" required style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
+                                                        </div>
+                                                        <div class="form-row">
+                                                            <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Interaction Vector <span style="color:#ef4444">*</span></label>
+                                                            <select name="followup_type" class="form-inp" required style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
+                                                                <option value="None">None (Update Status/Priority Only)</option>
+                                                                <option value="Calling">Calling</option>
+                                                                <option value="Message">Message</option>
+                                                                <option value="Both">Both (Call & Message)</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-row" style="grid-column:1/-1; display:none;">
+                                                            <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Voice Communication Intelligence (Calling Note)</label>
+                                                            <textarea name="calling_note" class="form-inp" rows="2" placeholder="What was discussed during the call?" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none; resize:vertical;"></textarea>
+                                                        </div>
+                                                        <div class="form-row" style="grid-column:1/-1;margin-bottom:0; display:none;">
+                                                            <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Text Communication Records (Message Note)</label>
+                                                            <textarea name="message_note" class="form-inp" rows="2" placeholder="Summary of messages, emails, or drafts sent…" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none; resize:vertical;"></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+                                                        <button type="submit" class="btn-primary-solid" style="background:var(--accent); color:#fff; border:none; border-radius:6px; padding:10px 18px; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:8px;">
+                                                            <i class="bi bi-plus-lg"></i> Record Followup & Update
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+
                                         <div style="position:relative;padding-left:26px;">
                                             <div style="position:absolute;left:10px;top:4px;bottom:0;width:2px;background:var(--b2);border-radius:2px;"></div>
                                             @forelse($leadFollowups as $followup)
@@ -2010,6 +2086,30 @@
             const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
             modal.show();
         }
+
+        document.addEventListener('change', function(e) {
+            if (e.target.name === 'followup_type') {
+                const form = e.target.closest('form');
+                if (!form) return;
+                const type = e.target.value;
+                const callingNote = form.querySelector('[name="calling_note"]');
+                const messageNote = form.querySelector('[name="message_note"]');
+                
+                if (type === 'None') {
+                    if (callingNote) callingNote.closest('.form-row').style.display = 'none';
+                    if (messageNote) messageNote.closest('.form-row').style.display = 'none';
+                } else if (type === 'Calling') {
+                    if (callingNote) callingNote.closest('.form-row').style.display = 'block';
+                    if (messageNote) messageNote.closest('.form-row').style.display = 'none';
+                } else if (type === 'Message') {
+                    if (callingNote) callingNote.closest('.form-row').style.display = 'none';
+                    if (messageNote) messageNote.closest('.form-row').style.display = 'block';
+                } else if (type === 'Both') {
+                    if (callingNote) callingNote.closest('.form-row').style.display = 'block';
+                    if (messageNote) messageNote.closest('.form-row').style.display = 'block';
+                }
+            }
+        });
 
         function openImportModal() {
             const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('importLeadsModal'));
