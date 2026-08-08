@@ -138,15 +138,18 @@ class AppServiceProvider extends ServiceProvider
                     $q->where('assigned_to', $saleId);
                 })->where('is_losted', 1)->count();
                 
-                $saleProjectQuery = \App\Models\Project::where(function($q) use ($saleId, $saleType) {
-                    $q->where('created_by', $saleId)->where('created_by_type', $saleType);
-                })->orWhereHas('salesPersons', function($q) use ($saleId) {
-                    $q->where('sale_id', $saleId);
-                })->orWhereHas('order', function($q) use ($saleId, $saleType) {
-                    $q->where('created_by', $saleId)->where('created_by_type', $saleType)
-                      ->orWhereHas('assignments', function($sq) use ($saleId) {
-                          $sq->where('assigned_to', $saleId);
-                      });
+                $saleProjectQuery = \App\Models\Project::where(function ($master) use ($saleId, $saleType) {
+                    $master->where(function ($q) use ($saleId, $saleType) {
+                        $q->where('created_by', $saleId)->where('created_by_type', $saleType);
+                    })->orWhereHas('salesPersons', function ($q) use ($saleId) {
+                        $q->where('sale_id', $saleId);
+                    })->orWhereHas('order', function ($q) use ($saleId, $saleType) {
+                        $q->where(function ($sq) use ($saleId, $saleType) {
+                            $sq->where('created_by', $saleId)->where('created_by_type', $saleType);
+                        })->orWhereHas('assignments', function ($sq) use ($saleId) {
+                            $sq->where('assigned_to', $saleId);
+                        });
+                    });
                 });
                 
                 $projectCount = (clone $saleProjectQuery)->count();
