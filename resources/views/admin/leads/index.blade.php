@@ -557,12 +557,17 @@
                                 <th>Contact Person</th>
                                 @endif
                                 <th>Phone</th>
-                                @if(!($routePrefix == 'sale'))
+                                @php
+                                    $isAdminNewOrTotal = $routePrefix === 'admin' && in_array(request('type', 'total'), ['new', 'total']);
+                                @endphp
+                                @if(!($routePrefix == 'sale' || $isAdminNewOrTotal))
                                 <th>Services</th>
                                 @endif
                                 <th>Priority</th>
                                 <th>Status</th>
+                                @if(!$isAdminNewOrTotal)
                                 <th>Created By</th>
+                                @endif
                                 @if(!($routePrefix == 'sale' && in_array(request('type', 'new'), ['my', 'new'])))
                                 <th>Sales Person</th>
                                 @endif
@@ -619,7 +624,7 @@
                                         </strong><br>
                                     @endforeach
                                 </td>
-                                @if(!($routePrefix == 'sale'))
+                                @if(!($routePrefix == 'sale' || $isAdminNewOrTotal))
                                 <td>
                                     <div style="display:flex; flex-wrap:wrap; gap:4px;">
                                         @foreach($lead->services as $srv)
@@ -638,6 +643,7 @@
                                     <span class="lead-stage {{ $pCls }}">{{ $lead->priority }}</span>
                                 </td>
                                 <td><strong style="color:var(--accent)">{{ $lead->status->name ?? 'N/A' }}</strong></td>
+                                @if(!$isAdminNewOrTotal)
                                 <td>
                                     @if($lead->createdBy)
                                         <div class="ln">{{ $lead->createdBy->name }}</div>
@@ -648,12 +654,13 @@
                                         <div class="ln">System</div>
                                     @endif
                                 </td>
+                                @endif
                                 @if(!($routePrefix == 'sale' && in_array(request('type', 'new'), ['my', 'new'])))
                                 <td>
                                     @foreach($lead->assignments as $assign)
                                         <div class="ln">
                                             {{ $assign->sale->name ?? 'N/A' }}
-                                            @if(!($routePrefix == 'sale'))
+                                            @if(!($routePrefix == 'sale' || $isAdminNewOrTotal))
                                              - {{ $assign->sale->email ?? 'N/A' }}
                                             @endif
                                         </div>
