@@ -427,7 +427,7 @@
                         </div>
                     </div> -->
 
-                    @if($routePrefix == 'admin')
+                   
                     {{-- Team Members --}}
                     <div class="dash-card">
                         <div class="card-head">
@@ -487,7 +487,7 @@
                             </div>
                         </div>
                     </div>
-                    @endif
+                  
 
                     {{-- Timeline --}}
                     <div class="dash-card">
