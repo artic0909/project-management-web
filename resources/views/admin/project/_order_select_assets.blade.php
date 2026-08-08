@@ -68,9 +68,7 @@
         top: calc(100% + 5px);
         left: 0;
         right: 0;
-        background: #fff;
-        /* Solid fallback */
-        background-color: var(--bg1, #ffffff);
+        background: var(--bg2);
         opacity: 1 !important;
         border: 1px solid var(--b2);
         border-radius: var(--r);
