@@ -267,14 +267,12 @@
                                 <th>SL.</th>
                                 <th>Order ID</th>
                                 <th>Date</th>
-                                <th>Type</th>
+                                <th>Domain Name</th>
                                 <th>Company</th>
                                 <th>Contact Person</th>
-                                <th>Service</th>
                                 <th>Value</th>
                                 <th>Advance</th>
                                 <th>Status</th>
-                                <th>Created By</th>
                                 <th>Sales Person</th>
                                 <th>Followup</th>
                                 <th>Action</th>
@@ -295,9 +293,7 @@
                                 <td><span class="mono">{{ $order->order_number ?? '#ORD-'.$order->id }}</span></td>
                                 <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $order->created_at->format('d M Y') }}</div></td>
                                 <td>
-                                    <span class="type-badge {{ $order->is_marketing ? 'marketing-type' : 'website-type' }}">
-                                        {{ $order->is_marketing ? 'Marketing' : 'Website' }}
-                                    </span>
+                                    <div class="ln">{{ $order->domain_name ?? 'N/A' }}</div>
                                 </td>
                                 <td>
                                     <div class="lead-cell">
@@ -317,11 +313,6 @@
                                     <div class="ln">{{ $order->client_name }}</div>
                                     <div class="ls">{{ $order->phones[0]['number'] ?? 'N/A' }}</div>
                                 </td>
-                                <td>
-                                    @foreach($order->services as $service)
-                                        <span class="status-pill mb-2" style="background:{{ ($service->color ?? '#6366f1') }}20; color:{{ $service->color ?? '#6366f1' }};">{{ $service->name }}</span>
-                                    @endforeach
-                                </td>
                                 <td><span class="src-tag">₹{{ number_format($order->order_value, 0) }}</span></td>
                                 <td><span class="src-tag" style="background:#10b98120; color:#10b981;">₹{{ number_format($order->advance_payment, 0) }}</span></td>
                                 <td>
@@ -330,18 +321,9 @@
                                     </span>
                                 </td>
                                 <td>
-                                    @if($order->createdBy)
-                                        <div class="ln">{{ $order->createdBy->name }}</div>
-                                        <div class="ls" style="font-size:10px">{{ $order->createdBy->email }}</div>
-                                    @else
-                                        <div class="ln">System</div>
-                                    @endif
-                                </td>
-                                <td>
                                     <div style="display:flex;flex-direction:column;gap:2px;">
                                         @foreach($order->assignments as $assign)
                                             <div class="ln" style="font-size:12.5px;">{{ $assign->sale->name }}</div>
-                                            <div class="ls" style="font-size:10px;">{{ $assign->sale->email }}</div>
                                         @endforeach
                                     </div>
                                 </td>
