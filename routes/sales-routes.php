@@ -17,6 +17,16 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Inquiries
+    Route::get('/inquiries', [\App\Http\Controllers\OrderInquiryController::class, 'index'])->name('inquiry.index');
+    Route::get('/inquiries/export', [\App\Http\Controllers\OrderInquiryController::class, 'export'])->name('inquiry.export');
+    Route::get('/inquiries/{id}', [\App\Http\Controllers\OrderInquiryController::class, 'show'])->name('inquiry.show');
+    Route::get('/inquiries/{id}/edit', [\App\Http\Controllers\OrderInquiryController::class, 'edit'])->name('inquiry.edit');
+    Route::put('/inquiries/{id}', [\App\Http\Controllers\OrderInquiryController::class, 'update'])->name('inquiry.update');
+    Route::post('/inquiries/{id}/status', [\App\Http\Controllers\OrderInquiryController::class, 'updateStatus'])->name('inquiry.status');
+    Route::post('/inquiries/{id}/assign', [\App\Http\Controllers\OrderInquiryController::class, 'assign'])->name('inquiry.assign');
+    Route::delete('/inquiries/{id}', [\App\Http\Controllers\OrderInquiryController::class, 'destroy'])->name('inquiry.destroy');
  
     // Leads
     Route::get('/all-leads', [LeadController::class, 'index'])->name('leads.index');

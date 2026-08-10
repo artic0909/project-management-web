@@ -24,4 +24,9 @@ class OrderInquiry extends Model
     {
         return $this->hasMany(InquiryAssign::class, 'order_inquiry_id');
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'inquiry_id');
+    }
 }

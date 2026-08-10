@@ -10,7 +10,7 @@
         <div class="page-header">
             <div>
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                    <a href="{{ route('admin.inquiry.index') }}"
+                    <a href="{{ route($routePrefix . '.inquiry.index') }}"
                         style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--t3);text-decoration:none;transition:var(--transition);"
                         onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--t3)'">
                         <i class="bi bi-arrow-left"></i> All Inquiries
@@ -20,14 +20,14 @@
                 <p class="page-desc">Viewing request from <strong>{{ $inquiry->company_name }}</strong></p>
             </div>
             <div style="display:flex; gap:10px; align-items:center;">
-                @if(auth('admin')->check() && $inquiry->status != 'converted')
+                @if(auth('admin')->check() || auth('sale')->check())
                     <div class="conv-btn-wrap">
-                        <a href="{{ route('admin.orders.create', ['inquiry_id' => $inquiry->id]) }}" class="conv-btn order">
+                        <a href="{{ route($routePrefix . '.orders.create', ['inquiry_id' => $inquiry->id]) }}" class="conv-btn order">
                             <i class="bi bi-check-circle-fill"></i> <span>Convert to Order</span>
                         </a>
                     </div>
                 @endif
-                <a href="{{ route('admin.inquiry.edit', $inquiry->id) }}" class="btn-ghost sm">
+                <a href="{{ route($routePrefix . '.inquiry.edit', $inquiry->id) }}" class="btn-ghost sm">
                     <i class="bi bi-pencil-square"></i>Edit Inquiry
                 </a>
             </div>
@@ -86,6 +86,17 @@
                             <div>
                                 <div class="detail-lbl">Domain / URL</div>
                                 <div class="detail-val"><a href="https://{{ $inquiry->domain_name }}" target="_blank" style="color:var(--accent); text-decoration:none;">{{ $inquiry->domain_name ?? 'N/A' }}</a></div>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-icon"><i class="bi bi-layers-fill"></i></div>
+                            <div>
+                                <div class="detail-lbl">Generated Orders</div>
+                                <div class="detail-val">
+                                    <span style="display:inline-block; padding: 2px 8px; border-radius:12px; background: rgba(16, 185, 129, 0.15); color: #10b981; font-size:12px; font-weight:700;">
+                                        {{ $inquiry->orders()->count() }} Order(s)
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <div class="detail-row">
@@ -179,7 +190,7 @@
                         <div class="card-sub" style="margin:0; opacity:0.7;">Assign sales staff to this inquiry</div>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('admin.inquiry.assign', $inquiry->id) }}" method="POST">
+                        <form action="{{ route($routePrefix . '.inquiry.assign', $inquiry->id) }}" method="POST">
                             @csrf
                             <div class="form-row" style="margin-bottom:20px; position:relative; z-index:99;">
                                 <label class="form-lbl">Sales Person</label>
@@ -234,7 +245,7 @@
                 <div class="card-sub" style="margin:0; opacity:0.7;">Quickly update status or project notes</div>
             </div>
             <div class="card-body">
-                <form action="{{ route('admin.inquiry.status', $inquiry->id) }}" method="POST">
+                <form action="{{ route($routePrefix . '.inquiry.status', $inquiry->id) }}" method="POST">
                     @csrf
                     <div style="display:grid; grid-template-columns: 1fr 240px; gap:20px; align-items:start;">
                         {{-- Notes on Left (Swapped) --}}

@@ -233,12 +233,37 @@
       
 
       <div class="nav-section-label">Others</div>
-      @if($guard === 'admin')
-      <a class="nav-item {{ request()->routeIs('admin.inquiry*') ? 'active' : '' }}"
-        href="{{ route('admin.inquiry.index') }}">
-        <i class="bi bi-chat-left-text-fill"></i><span>Order Inquiries</span>
-        <span class="nav-count">{{ $inquiryCount }}</span>
-      </a>
+      @if($guard === 'admin' || $guard === 'sale')
+        @php
+          $isInquiryActive = request()->routeIs($routePrefix . 'inquiry*');
+        @endphp
+        <div class="nav-dropdown {{ $isInquiryActive ? 'open' : '' }}">
+          <a class="nav-item nav-dropdown-toggle {{ $isInquiryActive ? 'active' : '' }}" href="javascript:void(0)" onclick="toggleNavDropdown(this)">
+            <i class="bi bi-chat-left-text-fill"></i>
+            <span>Order Inquiries</span>
+            <i class="bi bi-chevron-down nav-dropdown-chevron" style="margin-left: auto; font-size: 11px; transition: transform 0.2s ease; {{ $isInquiryActive ? 'transform: rotate(180deg);' : '' }}"></i>
+          </a>
+          <div class="nav-dropdown-menu" style="padding-left: 14px; {{ $isInquiryActive ? 'display: block;' : 'display: none;' }}">
+            <a class="nav-item nav-sub-item {{ request('filter') == 'new' ? 'active' : '' }}"
+               href="{{ route($routePrefix . 'inquiry.index', ['filter' => 'new']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-envelope-plus" style="font-size: 13px;"></i><span>New Inquiries</span>
+            </a>
+            
+            @if($guard === 'sale')
+            <a class="nav-item nav-sub-item {{ request('filter') == 'my' ? 'active' : '' }}"
+               href="{{ route($routePrefix . 'inquiry.index', ['filter' => 'my']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-person-badge" style="font-size: 13px;"></i><span>My Inquiries</span>
+            </a>
+            @endif
+
+            @if($guard === 'admin')
+            <a class="nav-item nav-sub-item {{ request('filter') == 'total' ? 'active' : '' }}"
+               href="{{ route($routePrefix . 'inquiry.index', ['filter' => 'total']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-check2-all" style="font-size: 13px;"></i><span>Total Inquiries</span>
+            </a>
+            @endif
+          </div>
+        </div>
       @endif
 
       <!-- Notes -->

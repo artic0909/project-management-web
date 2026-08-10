@@ -14,7 +14,7 @@
             </div>
 
             <div class="d-flex gap-2">
-                <a href="{{ route('admin.inquiry.export', request()->all()) }}" class="btn-primary-solid sm">
+                <a href="{{ route($routePrefix . '.inquiry.export', request()->all()) }}" class="btn-primary-solid sm">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export Inquiries
                 </a>
             </div>
@@ -57,7 +57,7 @@
                     </div>
                     
                     <div class="card-actions mb-2">
-                        <form action="{{ route('admin.inquiry.index') }}" method="GET" id="filterForm" class="card-actions mb-0" onsubmit="event.preventDefault(); updateFilters()">
+                        <form action="{{ route($routePrefix . '.inquiry.index') }}" method="GET" id="filterForm" class="card-actions mb-0" onsubmit="event.preventDefault(); updateFilters()">
                             <div class="global-search">
                                 <i class="bi bi-search"></i>
                                 <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search all fields..." autocomplete="off">
@@ -147,9 +147,9 @@
                                             <i class="bi bi-envelope-fill"></i>
                                         </a>
 
-                                        <a href="{{ route('admin.inquiry.show', $in->id) }}" class="ra-btn" title="View Details"><i class="bi bi-eye-fill"></i></a>
-                                        <a href="{{ route('admin.inquiry.edit', $in->id) }}" class="ra-btn" title="Edit Inquiry"><i class="bi bi-pencil-fill"></i></a>
-                                        <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route('admin.inquiry.destroy', $in->id) }}')"><i class="bi bi-trash-fill"></i></button>
+                                        <a href="{{ route($routePrefix . '.inquiry.show', $in->id) }}" class="ra-btn" title="View Details"><i class="bi bi-eye-fill"></i></a>
+                                        <a href="{{ route($routePrefix . '.inquiry.edit', $in->id) }}" class="ra-btn" title="Edit Inquiry"><i class="bi bi-pencil-fill"></i></a>
+                                        <button class="ra-btn danger" title="Delete" onclick="confirmDelete('{{ route($routePrefix . '.inquiry.destroy', $in->id) }}')"><i class="bi bi-trash-fill"></i></button>
                                     </div>
                                 </td>
                             </tr>

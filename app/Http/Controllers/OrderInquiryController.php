@@ -41,10 +41,33 @@ class OrderInquiryController extends Controller
             $query->where('created_at', '>=', now()->subDays(7));
         }
 
+        $filter = $request->get('filter');
+
+        // Apply filters based on new requirements
+        if ($filter === 'new') {
+            $query->doesntHave('assignments');
+        } elseif ($filter === 'my' && auth('sale')->check()) {
+            $query->whereHas('assignments', function ($q) {
+                $q->where('assigned_to', auth('sale')->id());
+            });
+        } elseif ($filter === 'total' && auth('admin')->check()) {
+            $query->where('status', 'converted');
+        }
+
         $inquiries = $query->latest()->paginate(15)->appends($request->all());
 
         // Stats - clone for filtering boxes
         $statsQuery = OrderInquiry::query();
+        if ($filter === 'new') {
+            $statsQuery->doesntHave('assignments');
+        } elseif ($filter === 'my' && auth('sale')->check()) {
+            $statsQuery->whereHas('assignments', function ($q) {
+                $q->where('assigned_to', auth('sale')->id());
+            });
+        } elseif ($filter === 'total' && auth('admin')->check()) {
+            $statsQuery->where('status', 'converted');
+        }
+        
         if ($request->filled('q')) {
             $q = $request->q;
             $statsQuery->where(function($qq) use ($q) {
@@ -72,7 +95,9 @@ class OrderInquiryController extends Controller
             'rejected'  => (clone $statsQuery)->where('status', 'rejected')->count(),
         ];
 
-        return view('admin.inquiry.index', compact('inquiries', 'stats'));
+        $routePrefix = request()->routeIs('sale.*') ? 'sale' : 'admin';
+
+        return view('admin.inquiry.index', compact('inquiries', 'stats', 'routePrefix'));
     }
 
     /**
@@ -156,7 +181,9 @@ class OrderInquiryController extends Controller
         $sales = \App\Models\Sale::all();
         $assignedIds = $inquiry->assignments()->pluck('assigned_to')->toArray();
 
-        return view('admin.inquiry.show', compact('inquiry', 'services', 'sources', 'sales', 'assignedIds'));
+        $routePrefix = request()->routeIs('sale.*') ? 'sale' : 'admin';
+
+        return view('admin.inquiry.show', compact('inquiry', 'services', 'sources', 'sales', 'assignedIds', 'routePrefix'));
     }
 
     /**
@@ -190,7 +217,10 @@ class OrderInquiryController extends Controller
         $inquiry = OrderInquiry::findOrFail($id);
         $services = \App\Models\Service::all();
         $sources = \App\Models\Source::all();
-        return view('admin.inquiry.edit', compact('inquiry', 'services', 'sources'));
+        
+        $routePrefix = request()->routeIs('sale.*') ? 'sale' : 'admin';
+
+        return view('admin.inquiry.edit', compact('inquiry', 'services', 'sources', 'routePrefix'));
     }
 
     /**
