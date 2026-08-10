@@ -29,6 +29,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::put('/inquiries/{id}', [OrderInquiryController::class, 'update'])->name('inquiry.update');
     Route::delete('/inquiries/{id}', [OrderInquiryController::class, 'destroy'])->name('inquiry.destroy');
     Route::post('/inquiries/{id}/status', [OrderInquiryController::class, 'updateStatus'])->name('inquiry.status');
+    Route::post('/inquiries/{id}/assign', [OrderInquiryController::class, 'assign'])->name('inquiry.assign');
 
     // Support Ticket Routes
     Route::get('/supports', [\App\Http\Controllers\SupportController::class, 'adminIndex'])->name('supports.index');

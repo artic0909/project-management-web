@@ -173,7 +173,59 @@
                     </div>
                 </div>
 
-                        {{-- Quick Action Center --}}
+                <div class="dash-card" style="margin-bottom: 20px;">
+                    <div class="card-head" style="display:flex; align-items:baseline; gap:12px;">
+                        <div class="card-title" style="margin:0;">Assign Personnel</div>
+                        <div class="card-sub" style="margin:0; opacity:0.7;">Assign sales staff to this inquiry</div>
+                    </div>
+                    <div class="card-body">
+                        <form action="{{ route('admin.inquiry.assign', $inquiry->id) }}" method="POST">
+                            @csrf
+                            <div class="form-row" style="margin-bottom:20px; position:relative; z-index:99;">
+                                <label class="form-lbl">Sales Person</label>
+                                <div class="ms-wrap" id="salesWrap">
+                                    <div class="ms-trigger" onclick="toggleMs('salesWrap')">
+                                        <div class="ms-pills"><span class="ms-placeholder">Select staff members…</span></div>
+                                        <i class="bi bi-chevron-down ms-arrow"></i>
+                                    </div>
+                                    <div class="ms-dropdown" id="salesDropdown">
+                                        <div class="ms-search-wrap">
+                                            <i class="bi bi-search"></i>
+                                            <input type="text" class="ms-search" placeholder="Search staff…" oninput="filterMs(this,'salesDropdown')">
+                                            <span class="ms-all-btn" onclick="toggleAllMs('salesWrap','salesDropdown')">Select All</span>
+                                        </div>
+                                        <div class="ms-opts">
+                                            @foreach($sales as $m)
+                                                @php 
+                                                    $initials = strtoupper(substr($m->name, 0, 2)); 
+                                                    $colors = ['#6366f1','#ec4899','#10b981','#f59e0b','#ef4444','#8b5cf6'];
+                                                    $bg = $colors[$m->id % count($colors)];
+                                                @endphp
+                                                <label class="ms-opt">
+                                                    <input type="checkbox" name="sales_person[]" value="{{ $m->id }}" 
+                                                        data-name="{{ $m->name }}" data-initials="{{ $initials }}"
+                                                        onchange="updateMs('salesWrap')"
+                                                        {{ in_array($m->id, $assignedIds) ? 'checked' : '' }}>
+                                                    <span class="ms-ava" style="background:{{ $bg }}">{{ $initials }}</span>
+                                                    <div>
+                                                        <div style="font-size:12.5px;font-weight:600;color:var(--t1);">{{ $m->name }}</div>
+                                                        <div style="font-size:10.5px;color:var(--t3);">{{ $m->email }}</div>
+                                                    </div>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                                @error('sales_person')<span class="field-error">{{ $message }}</span>@enderror
+                            </div>
+                            <button type="submit" class="btn-primary-solid sm w-100" style="height:42px;">
+                                <i class="bi bi-check2-circle"></i> Save Assignments
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                {{-- Quick Action Center --}}
         <div class="dash-card" style="margin-bottom: 20px;">
             <div class="card-head" style="display:flex; align-items:baseline; gap:12px;">
                 <div class="card-title" style="margin:0;">Action Center</div>
@@ -236,5 +288,7 @@
     .ra-btn.sm { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px; }
     .w-100 { width: 100%; }
 </style>
+
+@include('admin.orders.multiselect-assets')
 
 @endsection

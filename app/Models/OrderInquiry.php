@@ -19,4 +19,9 @@ class OrderInquiry extends Model
         'service_ids' => 'array',
         'source_ids' => 'array',
     ];
+
+    public function assignments()
+    {
+        return $this->hasMany(InquiryAssign::class, 'order_inquiry_id');
+    }
 }

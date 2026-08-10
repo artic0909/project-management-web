@@ -153,7 +153,33 @@ class OrderInquiryController extends Controller
             $inquiry->update(['status' => 'reviewed']);
         }
 
-        return view('admin.inquiry.show', compact('inquiry', 'services', 'sources'));
+        $sales = \App\Models\Sale::all();
+        $assignedIds = $inquiry->assignments()->pluck('assigned_to')->toArray();
+
+        return view('admin.inquiry.show', compact('inquiry', 'services', 'sources', 'sales', 'assignedIds'));
+    }
+
+    /**
+     * Assign sales personnel to an inquiry.
+     */
+    public function assign(Request $request, $id)
+    {
+        $inquiry = OrderInquiry::findOrFail($id);
+        
+        $salesPersonIds = $request->input('sales_person', []);
+        
+        // Remove old assignments
+        \App\Models\InquiryAssign::where('order_inquiry_id', $inquiry->id)->delete();
+        
+        // Add new assignments
+        foreach ($salesPersonIds as $saleId) {
+            \App\Models\InquiryAssign::create([
+                'order_inquiry_id' => $inquiry->id,
+                'assigned_to' => $saleId,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Assigned sales personnel updated successfully.');
     }
 
     /**
