@@ -176,7 +176,7 @@
                                                 @php $phones = is_array($meeting->lead->phones) ? $meeting->lead->phones : (json_decode($meeting->lead->phones, true) ?? []); @endphp
                                                 @foreach($phones as $p)
                                                     <div style="font-size:11px; color:var(--t3); margin-top:2px;">
-                                                        <i class="bi bi-telephone"></i> {{ ($codes[$p['code_idx']] ?? '') . $p['number'] }}
+                                                        <i class="bi bi-telephone"></i> {{ is_array($p) ? (($codes[$p['code_idx'] ?? ''] ?? '') . ($p['number'] ?? $p['num'] ?? '')) : $p }}
                                                     </div>
                                                 @endforeach
                                             @elseif($meeting->meeting_type == 'order' && $meeting->order)
@@ -186,7 +186,7 @@
                                                 @php $phones = is_array($meeting->order->phones) ? $meeting->order->phones : (json_decode($meeting->order->phones, true) ?? []); @endphp
                                                 @foreach($phones as $p)
                                                     <div style="font-size:11px; color:var(--t3); margin-top:2px;">
-                                                        <i class="bi bi-telephone"></i> {{ ($codes[$p['code_idx']] ?? '') . $p['number'] }}
+                                                        <i class="bi bi-telephone"></i> {{ is_array($p) ? (($codes[$p['code_idx'] ?? ''] ?? '') . ($p['number'] ?? $p['num'] ?? '')) : $p }}
                                                     </div>
                                                 @endforeach
                                             @elseif($meeting->meeting_type == 'project' && $meeting->project)
@@ -196,7 +196,7 @@
                                                 @php $phones = is_array($meeting->project->phones) ? $meeting->project->phones : (json_decode($meeting->project->phones, true) ?? []); @endphp
                                                 @foreach($phones as $p)
                                                     <div style="font-size:11px; color:var(--t3); margin-top:2px;">
-                                                        <i class="bi bi-telephone"></i> {{ ($codes[$p['code_idx']] ?? '') . $p['number'] }}
+                                                        <i class="bi bi-telephone"></i> {{ is_array($p) ? (($codes[$p['code_idx'] ?? ''] ?? '') . ($p['number'] ?? $p['num'] ?? '')) : $p }}
                                                     </div>
                                                 @endforeach
                                             @else
