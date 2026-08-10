@@ -218,9 +218,11 @@
                                 </div>
                                 @error('sales_person')<span class="field-error">{{ $message }}</span>@enderror
                             </div>
-                            <button type="submit" class="btn-primary-solid sm w-100" style="height:42px;">
-                                <i class="bi bi-check2-circle"></i> Save Assignments
-                            </button>
+                            <div style="display:flex; justify-content:flex-end;">
+                                <button type="submit" class="btn-primary-solid sm" style="height:42px; padding:0 20px;">
+                                    <i class="bi bi-check2-circle"></i> Save Assignments
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>

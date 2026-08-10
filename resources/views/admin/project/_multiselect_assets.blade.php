@@ -308,4 +308,10 @@ Include this at the bottom of create.blade.php and edit.blade.php
             if (!wrap.contains(e.target)) wrap.classList.remove('open');
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.ms-wrap').forEach(wrap => {
+            if(wrap.id) updateMs(wrap.id);
+        });
+    });
 </script>
