@@ -247,12 +247,14 @@
             <a class="nav-item nav-sub-item {{ request('filter') == 'new' ? 'active' : '' }}"
                href="{{ route($routePrefix . 'inquiry.index', ['filter' => 'new']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
               <i class="bi bi-envelope-plus" style="font-size: 13px;"></i><span>New Inquiries</span>
+              <span class="nav-count">{{ $newInquiryCount ?? 0 }}</span>
             </a>
             
             @if($guard === 'sale')
             <a class="nav-item nav-sub-item {{ request('filter') == 'my' ? 'active' : '' }}"
                href="{{ route($routePrefix . 'inquiry.index', ['filter' => 'my']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
               <i class="bi bi-person-badge" style="font-size: 13px;"></i><span>My Inquiries</span>
+              <span class="nav-count">{{ $myInquiryCount ?? 0 }}</span>
             </a>
             @endif
 
@@ -260,6 +262,7 @@
             <a class="nav-item nav-sub-item {{ request('filter') == 'total' ? 'active' : '' }}"
                href="{{ route($routePrefix . 'inquiry.index', ['filter' => 'total']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
               <i class="bi bi-check2-all" style="font-size: 13px;"></i><span>Total Inquiries</span>
+              <span class="nav-count">{{ $totalInquiryCount ?? 0 }}</span>
             </a>
             @endif
           </div>

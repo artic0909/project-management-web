@@ -89,6 +89,10 @@ class AppServiceProvider extends ServiceProvider
                 $meetingCount = \App\Models\Meeting::where('status', 'pending')->count();
                 $supportCount = \App\Models\Support::where('status', '!=', 'resolved')->count();
                 $inquiryCount = \App\Models\OrderInquiry::count();
+                $newInquiryCount = \App\Models\OrderInquiry::doesntHave('assignments')->count();
+                $totalInquiryCount = \App\Models\OrderInquiry::where(function($q) {
+                    $q->whereHas('assignments')->orWhere('status', 'converted');
+                })->count();
                 $invoiceCount = \App\Models\Invoice::count();
 
                 // Fetch orders with renewal_date within the next 3 days
@@ -180,6 +184,11 @@ class AppServiceProvider extends ServiceProvider
                     now()->startOfDay(),
                     now()->addDays(3)->endOfDay()
                 ])->get();
+
+                $newInquiryCount = \App\Models\OrderInquiry::doesntHave('assignments')->count();
+                $myInquiryCount = \App\Models\OrderInquiry::whereHas('assignments', function($sq) use ($saleId) {
+                    $sq->where('assigned_to', $saleId);
+                })->count();
             } elseif (auth()->guard('developer')->check()) {
                 $devId = auth()->guard('developer')->id();
                 $devProjectQuery = \App\Models\Project::whereHas('developers', function($q) use ($devId) {
@@ -227,9 +236,12 @@ class AppServiceProvider extends ServiceProvider
                 'noteCount' => $noteCount,
                 'meetingCount' => $meetingCount,
                 'taskCount' => $taskCount,
-                'supportCount' => $supportCount,
-                'inquiryCount' => $inquiryCount,
-                'invoiceCount' => $invoiceCount,
+                'supportCount' => $supportCount ?? 0,
+                'inquiryCount' => $inquiryCount ?? 0,
+                'newInquiryCount' => $newInquiryCount ?? 0,
+                'totalInquiryCount' => $totalInquiryCount ?? 0,
+                'myInquiryCount' => $myInquiryCount ?? 0,
+                'invoiceCount' => $invoiceCount ?? 0,
                 'upcomingRenewals' => $upcomingRenewals,
             ]);
         });
