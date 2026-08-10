@@ -85,7 +85,8 @@ $(document).ready(function() {
             { name: 'status_id', label: 'Order Status' },
             { name: 'transaction_date', label: 'Payment Date' },
             { name: 'amount', label: 'Amount Received' },
-            { name: 'payment_method', label: 'Payment Mode' }
+            { name: 'payment_method', label: 'Payment Mode' },
+            { name: 'screenshot', label: 'Payment Proof / Screenshot' }
         ];
 
         requiredFields.forEach(f => {
