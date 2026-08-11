@@ -205,7 +205,9 @@
                                 @endif -->
                                 <th>SL.</th>
                                 <th>Project ID</th>
-                                <th>Domain Name</th>
+                                @if($routePrefix == 'admin')
+                                <th>Primary Domain</th>
+                                @endif
                                 <th>Project Name</th>
                                 <th>Client</th>
                                 <th>CMS</th>
@@ -237,9 +239,11 @@
                                 @endif -->
                                 <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration + ($projects->currentPage() - 1) * $projects->perPage() }}</td>
                                 <td><span class="mono">#PRJ-{{ str_pad($project->id, 4, '0', STR_PAD_LEFT) }}</span></td>
+                                @if($routePrefix == 'admin')
                                 <td>
                                     <div class="ln">{{ $project->primary_domain_name ?? 'N/A' }}</div>
                                 </td>
+                                @endif
                                 <td>
                                     <div class="lead-cell">
                                         @php

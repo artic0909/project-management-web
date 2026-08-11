@@ -175,7 +175,7 @@
                             </div>
                         </div>
                     </div>
-@if($routePrefix === 'admin')
+
                     {{-- Section 3: Website & Platform --}}
                     <div class="dash-card">
                         <div class="card-head">
@@ -256,7 +256,7 @@
                             </div>
                         </div>
                     </div>
-                    @endif
+                
 
                     @if($routePrefix === 'admin')
                     {{-- Section 4: Hosting & Domain Provider --}}
