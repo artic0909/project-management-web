@@ -691,12 +691,12 @@
                                             <input type="hidden" name="return_url" value="{{ request()->fullUrl() }}">
                                             
                                             <div class="dash-card" style="background:var(--bg2); border:1px solid var(--b1); border-radius:12px; overflow:hidden;">
-                                                <div class="card-head" style="padding:16px 18px; border-bottom:1px solid var(--b1);">
+                                                <!-- <div class="card-head" style="padding:16px 18px; border-bottom:1px solid var(--b1);">
                                                     <div>
                                                         <div class="card-title" style="font-weight:700; color:var(--t1); font-size: 15px;">Quick Intelligence Update</div>
                                                         <div class="card-sub" style="font-size:12px; color:var(--t3);">Fast update status, priority and brief notes</div>
                                                     </div>
-                                                </div>
+                                                </div> -->
                                                 <div class="card-body" style="padding:14px 18px 20px;">
                                                     <div class="form-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                                                         <div class="form-row">
@@ -720,14 +720,14 @@
                                                     </div>
                                                 </div>
 
-                                                <div style="border-top:1px solid var(--b1); margin: 0 18px;"></div>
+                                                <!-- <div style="border-top:1px solid var(--b1); margin: 0 18px;"></div>
 
                                                 <div class="card-head" style="padding:16px 18px; border-bottom:1px solid var(--b1);">
                                                     <div>
                                                         <div class="card-title" style="font-weight:700; color:var(--t1); font-size: 15px;">Log New Interaction</div>
                                                         <div class="card-sub" style="font-size:12px; color:var(--t3);">Record communication and schedule future contact</div>
                                                     </div>
-                                                </div>
+                                                </div> -->
                                                 <div class="card-body" style="padding:14px 18px 20px;">
                                                     <div class="form-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                                                         <div class="form-row">
@@ -744,11 +744,11 @@
                                                             </select>
                                                         </div>
                                                         <div class="form-row" style="grid-column:1/-1; display:none;">
-                                                            <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Voice Communication Intelligence (Calling Note)</label>
+                                                            <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Calling Note <span style="color:#ef4444">*</span></label>
                                                             <textarea name="calling_note" class="form-inp" rows="2" placeholder="What was discussed during the call?" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none; resize:vertical;"></textarea>
                                                         </div>
                                                         <div class="form-row" style="grid-column:1/-1;margin-bottom:0; display:none;">
-                                                            <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Text Communication Records (Message Note)</label>
+                                                            <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Message Note <span style="color:#ef4444">*</span></label>
                                                             <textarea name="message_note" class="form-inp" rows="2" placeholder="Summary of messages, emails, or drafts sent…" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none; resize:vertical;"></textarea>
                                                         </div>
                                                     </div>
