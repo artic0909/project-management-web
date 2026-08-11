@@ -41,6 +41,11 @@
         </a>
         <div class="nav-dropdown-menu" style="padding-left: 14px; {{ $isProjectsActive ? 'display: block;' : 'display: none;' }}">
           
+          <a class="nav-item nav-sub-item {{ ($isProjectsActive && request('status') === 'new') ? 'active' : '' }}"
+            href="{{ route('developer.projects.index', ['status' => 'new']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+            <i class="bi bi-star" style="font-size: 13px;"></i><span>New Projects</span>
+            <span class="nav-count">{{ $newProjectCount ?? 0 }}</span>
+          </a>
           <a class="nav-item nav-sub-item {{ ($isProjectsActive && request('status') === 'active') ? 'active' : '' }}"
             href="{{ route('developer.projects.index', ['status' => 'active']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
             <i class="bi bi-kanban" style="font-size: 13px;"></i><span>Active Projects</span>

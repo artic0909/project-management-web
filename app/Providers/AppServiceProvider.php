@@ -44,6 +44,7 @@ class AppServiceProvider extends ServiceProvider
             $leadCount = 0;
             $orderCount = 0;
             $projectCount = 0;
+            $newProjectCount = 0;
             $activeProjectCount = 0;
             $completeProjectCount = 0;
             $noteCount = 0;
@@ -77,6 +78,9 @@ class AppServiceProvider extends ServiceProvider
                 $orderCount = \App\Models\Order::count();
                 $lostLeadCount = \App\Models\Lead::where('is_losted', 1)->count();
                 $projectCount = \App\Models\Project::count();
+                $newProjectCount = \App\Models\Project::whereHas('projectStatus', function ($q) {
+                    $q->where('name', 'new');
+                })->count();
                 $activeProjectCount = \App\Models\Project::whereHas('projectStatus', function ($q) {
                     $q->where('name', '!=', 'complete')->where('name', '!=', 'completed');
                 })->count();
@@ -158,6 +162,10 @@ class AppServiceProvider extends ServiceProvider
                 
                 $projectCount = (clone $saleProjectQuery)->count();
                 
+                $newProjectCount = (clone $saleProjectQuery)->whereHas('projectStatus', function ($q) {
+                    $q->where('name', 'new');
+                })->count();
+                
                 $activeProjectCount = (clone $saleProjectQuery)->whereHas('projectStatus', function ($q) {
                     $q->where('name', '!=', 'complete')->where('name', '!=', 'completed');
                 })->count();
@@ -197,6 +205,10 @@ class AppServiceProvider extends ServiceProvider
                 
                 $projectCount = (clone $devProjectQuery)->count();
                 
+                $newProjectCount = (clone $devProjectQuery)->whereHas('projectStatus', function ($q) {
+                    $q->where('name', 'new');
+                })->count();
+                
                 $activeProjectCount = (clone $devProjectQuery)->whereHas('projectStatus', function ($q) {
                     $q->where('name', '!=', 'complete')->where('name', '!=', 'completed');
                 })->count();
@@ -231,6 +243,7 @@ class AppServiceProvider extends ServiceProvider
                 'orderCount' => $orderCount,
                 'lostLeadCount' => $lostLeadCount,
                 'projectCount' => $projectCount,
+                'newProjectCount' => $newProjectCount,
                 'activeProjectCount' => $activeProjectCount,
                 'completeProjectCount' => $completeProjectCount,
                 'noteCount' => $noteCount,

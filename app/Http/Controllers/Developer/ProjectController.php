@@ -98,6 +98,10 @@ class ProjectController extends Controller
                 $query->whereHas('projectStatus', function ($q) {
                     $q->whereIn('name', ['complete', 'completed']);
                 });
+            } elseif (strtolower($statusName) === 'new') {
+                $query->whereHas('projectStatus', function ($q) {
+                    $q->where('name', 'new');
+                });
             }
         }
 
