@@ -40,7 +40,7 @@
                         @endif
 
                         @if($routePrefix == 'admin' || $routePrefix == 'sale')
-                        <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);">Primary Domain: {{ $project->domain_name ?? 'N/A' }}</span>
+                        <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);">Primary Domain: {{ $project->primary_domain_name ?? 'N/A' }}</span>
                         @endif
                         <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);">Username: {{ $project->username ?? 'N/A' }}</span>
                         <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);">Password: {{ $project->password ?? 'N/A' }}</span>
