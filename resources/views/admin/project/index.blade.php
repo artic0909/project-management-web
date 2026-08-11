@@ -270,7 +270,6 @@
                                                 $displayPhone = $phoneCode && $num != 'N/A' ? $phoneCode . ' ' . $num : $num;
                                             @endphp
                                             {{ $displayPhone }}
-                                            @if(count($project->phones) > 1) <small class="text-muted">(+{{ count($project->phones)-1 }})</small> @endif
                                         @elseif($project->phones)
                                             {{ $project->phones }}
                                         @else
