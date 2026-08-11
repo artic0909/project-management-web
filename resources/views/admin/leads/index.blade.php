@@ -740,16 +740,16 @@
                                                                 <option value="None">None (Update Status/Priority Only)</option>
                                                                 <option value="Calling">Calling</option>
                                                                 <option value="Message">Message</option>
-                                                                <option value="Both">Both (Call & Message)</option>
+                                                                <option value="Both" selected>Both (Call & Message)</option>
                                                             </select>
                                                         </div>
-                                                        <div class="form-row" style="grid-column:1/-1; display:none;">
+                                                        <div class="form-row" style="display:block;">
                                                             <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Calling Note <span style="color:#ef4444">*</span></label>
-                                                            <textarea name="calling_note" class="form-inp" rows="2" placeholder="What was discussed during the call?" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none; resize:vertical;"></textarea>
+                                                            <textarea name="calling_note" class="form-inp" rows="2" placeholder="What was discussed during the call?" required style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none; resize:vertical;"></textarea>
                                                         </div>
-                                                        <div class="form-row" style="grid-column:1/-1;margin-bottom:0; display:none;">
+                                                        <div class="form-row" style="margin-bottom:0; display:block;">
                                                             <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Message Note <span style="color:#ef4444">*</span></label>
-                                                            <textarea name="message_note" class="form-inp" rows="2" placeholder="Summary of messages, emails, or drafts sent…" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none; resize:vertical;"></textarea>
+                                                            <textarea name="message_note" class="form-inp" rows="2" placeholder="Summary of messages, emails, or drafts sent…" required style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none; resize:vertical;"></textarea>
                                                         </div>
                                                     </div>
                                                     <div style="display:flex;justify-content:flex-end;margin-top:16px;">
@@ -2103,17 +2103,17 @@
                 const messageNote = form.querySelector('[name="message_note"]');
                 
                 if (type === 'None') {
-                    if (callingNote) callingNote.closest('.form-row').style.display = 'none';
-                    if (messageNote) messageNote.closest('.form-row').style.display = 'none';
+                    if (callingNote) { callingNote.closest('.form-row').style.display = 'none'; callingNote.required = false; }
+                    if (messageNote) { messageNote.closest('.form-row').style.display = 'none'; messageNote.required = false; }
                 } else if (type === 'Calling') {
-                    if (callingNote) callingNote.closest('.form-row').style.display = 'block';
-                    if (messageNote) messageNote.closest('.form-row').style.display = 'none';
+                    if (callingNote) { callingNote.closest('.form-row').style.display = 'block'; callingNote.required = true; }
+                    if (messageNote) { messageNote.closest('.form-row').style.display = 'none'; messageNote.required = false; }
                 } else if (type === 'Message') {
-                    if (callingNote) callingNote.closest('.form-row').style.display = 'none';
-                    if (messageNote) messageNote.closest('.form-row').style.display = 'block';
+                    if (callingNote) { callingNote.closest('.form-row').style.display = 'none'; callingNote.required = false; }
+                    if (messageNote) { messageNote.closest('.form-row').style.display = 'block'; messageNote.required = true; }
                 } else if (type === 'Both') {
-                    if (callingNote) callingNote.closest('.form-row').style.display = 'block';
-                    if (messageNote) messageNote.closest('.form-row').style.display = 'block';
+                    if (callingNote) { callingNote.closest('.form-row').style.display = 'block'; callingNote.required = true; }
+                    if (messageNote) { messageNote.closest('.form-row').style.display = 'block'; messageNote.required = true; }
                 }
             }
         });
