@@ -168,11 +168,7 @@
           <i class="bi bi-chevron-down nav-dropdown-chevron" style="margin-left: auto; font-size: 11px; transition: transform 0.2s ease; {{ $isProjectsActive ? 'transform: rotate(180deg);' : '' }}"></i>
         </a>
         <div class="nav-dropdown-menu" style="padding-left: 14px; {{ $isProjectsActive ? 'display: block;' : 'display: none;' }}">
-          <a class="nav-item nav-sub-item {{ ($isProjectsActive && !request('status')) ? 'active' : '' }}"
-            href="{{ route($routePrefix . 'projects.index') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
-            <i class="bi bi-collection" style="font-size: 13px;"></i><span>All Projects</span>
-            <span class="nav-count">{{ $projectCount ?? 0 }}</span>
-          </a>
+
           <a class="nav-item nav-sub-item {{ ($isProjectsActive && request('status') === 'active') ? 'active' : '' }}"
             href="{{ route($routePrefix . 'projects.index', ['status' => 'active']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
             <i class="bi bi-kanban" style="font-size: 13px;"></i><span>Active Projects</span>
@@ -182,6 +178,12 @@
             href="{{ route($routePrefix . 'projects.index', ['status' => 'complete']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
             <i class="bi bi-check2-circle" style="font-size: 13px;"></i><span>Complete Projects</span>
             <span class="nav-count">{{ $completeProjectCount ?? 0 }}</span>
+          </a>
+
+                    <a class="nav-item nav-sub-item {{ ($isProjectsActive && !request('status')) ? 'active' : '' }}"
+            href="{{ route($routePrefix . 'projects.index') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+            <i class="bi bi-collection" style="font-size: 13px;"></i><span>All Projects</span>
+            <span class="nav-count">{{ $projectCount ?? 0 }}</span>
           </a>
         </div>
       </div>

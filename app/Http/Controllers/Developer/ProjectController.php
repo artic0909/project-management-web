@@ -92,7 +92,7 @@ class ProjectController extends Controller
             $statusName = $request->status;
             if (strtolower($statusName) === 'active') {
                 $query->whereHas('projectStatus', function ($q) {
-                    $q->where('name', '!=', 'complete')->where('name', '!=', 'completed');
+                    $q->where('name', '!=', 'complete')->where('name', '!=', 'completed')->where('name', '!=', 'new');
                 });
             } elseif (strtolower($statusName) === 'complete') {
                 $query->whereHas('projectStatus', function ($q) {

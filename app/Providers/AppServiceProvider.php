@@ -82,7 +82,7 @@ class AppServiceProvider extends ServiceProvider
                     $q->where('name', 'new');
                 })->count();
                 $activeProjectCount = \App\Models\Project::whereHas('projectStatus', function ($q) {
-                    $q->where('name', '!=', 'complete')->where('name', '!=', 'completed');
+                    $q->where('name', '!=', 'complete')->where('name', '!=', 'completed')->where('name', '!=', 'new');
                 })->count();
                 $completeProjectCount = \App\Models\Project::whereHas('projectStatus', function ($q) {
                     $q->whereIn('name', ['complete', 'completed']);
@@ -167,7 +167,7 @@ class AppServiceProvider extends ServiceProvider
                 })->count();
                 
                 $activeProjectCount = (clone $saleProjectQuery)->whereHas('projectStatus', function ($q) {
-                    $q->where('name', '!=', 'complete')->where('name', '!=', 'completed');
+                    $q->where('name', '!=', 'complete')->where('name', '!=', 'completed')->where('name', '!=', 'new');
                 })->count();
                 
                 $completeProjectCount = (clone $saleProjectQuery)->whereHas('projectStatus', function ($q) {
@@ -210,7 +210,7 @@ class AppServiceProvider extends ServiceProvider
                 })->count();
                 
                 $activeProjectCount = (clone $devProjectQuery)->whereHas('projectStatus', function ($q) {
-                    $q->where('name', '!=', 'complete')->where('name', '!=', 'completed');
+                    $q->where('name', '!=', 'complete')->where('name', '!=', 'completed')->where('name', '!=', 'new');
                 })->count();
                 
                 $completeProjectCount = (clone $devProjectQuery)->whereHas('projectStatus', function ($q) {
