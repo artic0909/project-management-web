@@ -143,14 +143,15 @@
                     </div>
 
                     {{-- Technical & Infrastructure Specs ── --}}
-                    @if(auth()->guard('admin')->check())
+                    {{-- Technical & Infrastructure Specs ── --}}
                     <div class="dash-card">
                         <div class="card-head">
                             <div class="card-title"><i class="bi bi-grid-3x3-gap-fill" style="color:#06b6d4;margin-right:8px;"></i>Infrastructure & Platform</div>
                         </div>
                         
                         <div class="card-body">
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;">
+                            <div style="display:grid;grid-template-columns: @if($routePrefix == 'admin') 1fr 1fr @else 1fr @endif;gap:30px;">
+                                @if($routePrefix == 'admin')
                                 <div>
                                     {{-- Hosting Card --}}
                                     <div style="background:var(--bg3); padding:14px; border-radius:12px; border:1px solid var(--b1); margin-bottom:18px;">
@@ -185,6 +186,7 @@
                                     </div>
                                    
                                 </div>
+                                @endif
                               
                                 <div>
                                     <div class="kv-item">
@@ -221,6 +223,7 @@
                                             @endif
                                         </div>
                                     </div>
+                                    @if($routePrefix == 'admin' || $routePrefix == 'sale')
                                     <div class="kv-item">
                                         <label>Lead Source(s)</label>
                                         <div class="val-list">
@@ -231,6 +234,7 @@
                                             @endforelse
                                         </div>
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -239,6 +243,7 @@
                     
 
                     {{-- Credentials & Access --}}
+                    @if($routePrefix == 'admin')
                     <div class="dash-card" style="border-left:4px solid #f59e0b;">
                         <div class="card-head">
                             <div class="card-title" style="color:#b45309;"><i class="bi bi-shield-lock-fill"
