@@ -76,7 +76,11 @@ class SupportController extends Controller
         }
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            if ($request->status === 'active') {
+                $query->where('status', '!=', 'closed');
+            } else {
+                $query->where('status', $request->status);
+            }
         }
 
         if ($request->filled('priority')) {
@@ -92,7 +96,7 @@ class SupportController extends Controller
 
         // Stats for boxes
         $total = Support::count();
-        $active = Support::where('status', 'active')->count();
+        $active = Support::where('status', '!=', 'closed')->count();
         $closed = Support::where('status', 'closed')->count();
         $pending = Support::where('status', 'pending')->count();
 

@@ -280,11 +280,32 @@
       @endif
 
       @if($guard === 'admin')
+        @php
+          $isSupportActive = request()->routeIs('admin.supports*');
+          $isClosedSupport = request('status') === 'closed';
+        @endphp
+        <div class="nav-dropdown {{ $isSupportActive ? 'open' : '' }}">
+          <a class="nav-item nav-dropdown-toggle {{ $isSupportActive ? 'active' : '' }}" href="javascript:void(0)" onclick="toggleNavDropdown(this)">
+            <i class="bi bi-headset"></i>
+            <span>Support</span>
+            <i class="bi bi-chevron-down nav-dropdown-chevron" style="margin-left: auto; font-size: 11px; transition: transform 0.2s ease; {{ $isSupportActive ? 'transform: rotate(180deg);' : '' }}"></i>
+          </a>
+          <div class="nav-dropdown-menu" style="padding-left: 14px; {{ $isSupportActive ? 'display: block;' : 'display: none;' }}">
+            
+            <a class="nav-item nav-sub-item {{ ($isSupportActive && request('status') !== 'closed') ? 'active' : '' }}"
+              href="{{ route('admin.supports.index', ['status' => 'active']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-activity" style="font-size: 13px;"></i><span>Active</span>
+              <span class="nav-count">{{ $supportActiveCount ?? 0 }}</span>
+            </a>
 
-        <a class="nav-item {{ request()->routeIs('admin.supports*') ? 'active' : '' }}" href="{{ route('admin.supports.index') }}">
-          <i class="bi bi-headset"></i><span>Support</span>
-          <span class="nav-count">{{ $supportCount }}</span>
-        </a>
+            <a class="nav-item nav-sub-item {{ ($isSupportActive && $isClosedSupport) ? 'active' : '' }}"
+              href="{{ route('admin.supports.index', ['status' => 'closed']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-check2-circle" style="font-size: 13px;"></i><span>Closed</span>
+              <span class="nav-count">{{ $supportClosedCount ?? 0 }}</span>
+            </a>
+
+          </div>
+        </div>
       @endif
 
       <a class="nav-item {{ request()->routeIs($routePrefix . 'account-settings*') ? 'active' : '' }}"

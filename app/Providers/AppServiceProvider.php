@@ -91,7 +91,8 @@ class AppServiceProvider extends ServiceProvider
                     ->where('created_by_type', get_class(auth()->guard('admin')->user()))
                     ->count();
                 $meetingCount = \App\Models\Meeting::where('status', 'pending')->count();
-                $supportCount = \App\Models\Support::where('status', '!=', 'resolved')->count();
+                $supportActiveCount = \App\Models\Support::where('status', '!=', 'closed')->count();
+                $supportClosedCount = \App\Models\Support::where('status', 'closed')->count();
                 $inquiryCount = \App\Models\OrderInquiry::count();
                 $newInquiryCount = \App\Models\OrderInquiry::doesntHave('assignments')
                     ->where('status', '!=', 'converted')
@@ -253,7 +254,8 @@ class AppServiceProvider extends ServiceProvider
                 'noteCount' => $noteCount,
                 'meetingCount' => $meetingCount,
                 'taskCount' => $taskCount,
-                'supportCount' => $supportCount ?? 0,
+                'supportActiveCount' => $supportActiveCount ?? 0,
+                'supportClosedCount' => $supportClosedCount ?? 0,
                 'inquiryCount' => $inquiryCount ?? 0,
                 'newInquiryCount' => $newInquiryCount ?? 0,
                 'totalInquiryCount' => $totalInquiryCount ?? 0,
