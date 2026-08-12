@@ -413,6 +413,14 @@ class OrderController extends Controller
             }
         }
 
+        // Update Inquiry Status if inquiry_id is present
+        if ($request->filled('inquiry_id')) {
+            $inquiry = \App\Models\OrderInquiry::find($request->inquiry_id);
+            if ($inquiry) {
+                $inquiry->update(['status' => 'converted']);
+            }
+        }
+
         // Add initial note to history if present
         if (!empty($request->notes)) {
             \App\Models\OrderNote::create([
