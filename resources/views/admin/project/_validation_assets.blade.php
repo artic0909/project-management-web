@@ -87,7 +87,9 @@ $(document).ready(function() {
             { name: 'domain_provider_name', label: 'Domain Provider Name' },
             { name: 'domain_renewal_price', label: 'Domain & Hosting Renewal Price' },
             { name: 'hosting_provider_name', label: 'Hosting Provider Name' },
+            @if(auth()->guard('admin')->check() || !auth()->guard('sale')->check())
             { name: 'primary_domain_name', label: 'Primary Domain Name' },
+            @endif
             { name: 'project_status_id', label: 'Project Status' },
             { name: 'order_date_create', label: 'Order Creation Date' }
         ];

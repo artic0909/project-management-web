@@ -282,7 +282,7 @@
                                     @error('domain_renewal_price')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Primary Domain Name <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                    <label class="form-lbl">Primary Domain Name @if(auth()->guard('admin')->check() || !auth()->guard('sale')->check())<span style="color:#ef4444"> <span style="color:#ef4444">*</span></span>@endif</label>
                                     <input type="text" name="primary_domain_name" class="form-inp" placeholder="Primary domain" value="{{ old('primary_domain_name') }}">
                                     @error('primary_domain_name')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
