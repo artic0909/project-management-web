@@ -49,7 +49,8 @@ class SupportController extends Controller
             $data['attachment'] = $attachments;
         }
 
-        $data['ticket_no'] = 'TKT-' . strtoupper(Str::random(8));
+        $nextId = (\App\Models\Support::max('id') ?? 0) + 1;
+        $data['ticket_no'] = 'STW-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
 
         $support = Support::create($data);
 
