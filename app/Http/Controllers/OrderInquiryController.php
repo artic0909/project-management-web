@@ -45,7 +45,7 @@ class OrderInquiryController extends Controller
 
         // Apply filters based on new requirements
         if ($filter === 'new') {
-            $query->doesntHave('assignments');
+            $query->doesntHave('assignments')->where('status', '!=', 'converted');
         } elseif ($filter === 'my' && auth('sale')->check()) {
             $query->whereHas('assignments', function ($q) {
                 $q->where('assigned_to', auth('sale')->id());
@@ -61,7 +61,7 @@ class OrderInquiryController extends Controller
         // Stats - clone for filtering boxes
         $statsQuery = OrderInquiry::query();
         if ($filter === 'new') {
-            $statsQuery->doesntHave('assignments');
+            $statsQuery->doesntHave('assignments')->where('status', '!=', 'converted');
         } elseif ($filter === 'my' && auth('sale')->check()) {
             $statsQuery->whereHas('assignments', function ($q) {
                 $q->where('assigned_to', auth('sale')->id());

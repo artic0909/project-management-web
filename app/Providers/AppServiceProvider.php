@@ -93,7 +93,9 @@ class AppServiceProvider extends ServiceProvider
                 $meetingCount = \App\Models\Meeting::where('status', 'pending')->count();
                 $supportCount = \App\Models\Support::where('status', '!=', 'resolved')->count();
                 $inquiryCount = \App\Models\OrderInquiry::count();
-                $newInquiryCount = \App\Models\OrderInquiry::doesntHave('assignments')->count();
+                $newInquiryCount = \App\Models\OrderInquiry::doesntHave('assignments')
+                    ->where('status', '!=', 'converted')
+                    ->count();
                 $totalInquiryCount = \App\Models\OrderInquiry::where(function($q) {
                     $q->whereHas('assignments')->orWhere('status', 'converted');
                 })->count();
@@ -193,7 +195,9 @@ class AppServiceProvider extends ServiceProvider
                     now()->addDays(3)->endOfDay()
                 ])->get();
 
-                $newInquiryCount = \App\Models\OrderInquiry::doesntHave('assignments')->count();
+                $newInquiryCount = \App\Models\OrderInquiry::doesntHave('assignments')
+                    ->where('status', '!=', 'converted')
+                    ->count();
                 $myInquiryCount = \App\Models\OrderInquiry::whereHas('assignments', function($sq) use ($saleId) {
                     $sq->where('assigned_to', $saleId);
                 })->count();
