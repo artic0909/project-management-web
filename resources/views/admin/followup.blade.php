@@ -260,7 +260,7 @@
                                             <option value="None">None (Update Status/Priority Only)</option>
                                             <option value="Calling">Calling</option>
                                             <option value="Message">Message</option>
-                                            <option value="Both">Both (Call & Message)</option>
+                                            <option value="Both" selected>Both (Call & Message)</option>
                                         </select>
                                     </div>
                                     <div class="form-row" style="grid-column:1/-1;">
@@ -355,7 +355,7 @@
                                         <select name="followup_type" class="form-inp">
                                             <option value="Calling">Calling</option>
                                             <option value="Message">Message</option>
-                                            <option value="Both">Both (Call & Message)</option>
+                                            <option value="Both" selected>Both (Call & Message)</option>
                                         </select>
                                     </div>
                                     <div class="form-row" style="grid-column:1/-1;">
