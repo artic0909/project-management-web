@@ -94,9 +94,7 @@ class AppServiceProvider extends ServiceProvider
                 $supportCount = \App\Models\Support::where('status', '!=', 'resolved')->count();
                 $inquiryCount = \App\Models\OrderInquiry::count();
                 $newInquiryCount = \App\Models\OrderInquiry::doesntHave('assignments')->count();
-                $totalInquiryCount = \App\Models\OrderInquiry::where(function($q) {
-                    $q->whereHas('assignments')->orWhere('status', 'converted');
-                })->count();
+                $totalInquiryCount = \App\Models\OrderInquiry::where('status', 'converted')->count();
                 $invoiceCount = \App\Models\Invoice::count();
 
                 // Fetch orders with renewal_date within the next 3 days

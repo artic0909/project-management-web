@@ -51,9 +51,7 @@ class OrderInquiryController extends Controller
                 $q->where('assigned_to', auth('sale')->id());
             });
         } elseif ($filter === 'total' && auth('admin')->check()) {
-            $query->where(function($q) {
-                $q->whereHas('assignments')->orWhere('status', 'converted');
-            });
+            $query->where('status', 'converted');
         }
 
         $inquiries = $query->latest()->paginate(15)->appends($request->all());
