@@ -219,23 +219,36 @@
       </a>
 
 
-      <a class="nav-item {{ request()->routeIs($routePrefix . 'payments*') ? 'active' : '' }}"
-        href="{{ route($routePrefix . 'payments.index') }}">
-        <i class="bi bi-wallet2"></i><span>Payments</span>
-      </a>
+      @php
+        $isPaymentsActive = request()->routeIs($routePrefix . 'payments*') || request()->routeIs($routePrefix . 'invoices*');
+      @endphp
+      <div class="nav-dropdown {{ $isPaymentsActive ? 'open' : '' }}">
+        <a class="nav-item nav-dropdown-toggle {{ $isPaymentsActive ? 'active' : '' }}" href="javascript:void(0)" onclick="toggleNavDropdown(this)">
+          <i class="bi bi-wallet2"></i>
+          <span>Payments & Invoices</span>
+          <i class="bi bi-chevron-down nav-dropdown-chevron" style="margin-left: auto; font-size: 11px; transition: transform 0.2s ease; {{ $isPaymentsActive ? 'transform: rotate(180deg);' : '' }}"></i>
+        </a>
+        <div class="nav-dropdown-menu" style="padding-left: 14px; {{ $isPaymentsActive ? 'display: block;' : 'display: none;' }}">
+          
+          <a class="nav-item nav-sub-item {{ request()->routeIs($routePrefix . 'payments*') ? 'active' : '' }}"
+            href="{{ route($routePrefix . 'payments.index') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+            <i class="bi bi-wallet" style="font-size: 13px;"></i><span>Payments</span>
+          </a>
 
-      @if($guard === 'admin')
-      <a class="nav-item {{ request()->routeIs('admin.invoices*') ? 'active' : '' }}"
-        href="{{ route('admin.invoices.index') }}">
-        <i class="bi bi-receipt"></i><span>Invoices</span>
-        <span class="nav-count">{{ $invoiceCount }}</span>
-      </a>
-      @elseif($guard === 'sale')
-      <a class="nav-item {{ request()->routeIs('sale.invoices*') ? 'active' : '' }}"
-        href="{{ route('sale.invoices.index') }}">
-        <i class="bi bi-receipt"></i><span>Invoices</span>
-      </a>
-      @endif
+          @if($guard === 'admin')
+          <a class="nav-item nav-sub-item {{ request()->routeIs('admin.invoices*') ? 'active' : '' }}"
+            href="{{ route('admin.invoices.index') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+            <i class="bi bi-receipt" style="font-size: 13px;"></i><span>Invoices</span>
+            <span class="nav-count">{{ $invoiceCount }}</span>
+          </a>
+          @elseif($guard === 'sale')
+          <a class="nav-item nav-sub-item {{ request()->routeIs('sale.invoices*') ? 'active' : '' }}"
+            href="{{ route('sale.invoices.index') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+            <i class="bi bi-receipt" style="font-size: 13px;"></i><span>Invoices</span>
+          </a>
+          @endif
+        </div>
+      </div>
 
 
       @php
