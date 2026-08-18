@@ -35,10 +35,20 @@ class LeadController extends Controller
                         ->where('followable_type', \App\Models\Lead::class);
                 });
                 
+                $today = \Carbon\Carbon::today();
+                $now = \Carbon\Carbon::now();
+                
                 if ($type === 'followup_today') {
                     $q->whereDate('next_schedule_date', $today);
                 } elseif ($type === 'followup_pending') {
-                    $q->whereDate('next_schedule_date', '<', $today);
+                    $q->where(function($subq) use ($today, $now) {
+                        $subq->whereDate('next_schedule_date', '<', $today)
+                             ->orWhere(function($subq2) use ($today, $now) {
+                                 $subq2->whereDate('next_schedule_date', $today)
+                                       ->whereTime('next_schedule_date', '!=', '00:00:00')
+                                       ->where('next_schedule_date', '<', $now);
+                             });
+                    });
                 } elseif ($type === 'followup_future') {
                     $q->whereDate('next_schedule_date', '>', $today);
                 }
