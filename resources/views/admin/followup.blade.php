@@ -251,7 +251,7 @@
                             <div class="card-body" style="padding:14px 18px 20px;">
                                 <div class="form-grid">
                                     <div class="form-row">
-                                        <label class="form-lbl">Transaction Date <span style="color:#ef4444">*</span></label>
+                                        <label class="form-lbl">Followup Date <span style="color:#ef4444">*</span></label>
                                         <input type="datetime-local" name="followup_date" class="form-inp" value="{{ date('Y-m-d\TH:i') }}" max="{{ date('Y-m-d\TH:i') }}" required>
                                     </div>
                                     <div class="form-row">

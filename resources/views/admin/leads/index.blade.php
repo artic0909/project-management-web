@@ -731,7 +731,7 @@
                                                 <div class="card-body" style="padding:14px 18px 20px;">
                                                     <div class="form-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                                                         <div class="form-row">
-                                                            <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Transaction Date <span style="color:#ef4444">*</span></label>
+                                                            <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Followup Date <span style="color:#ef4444">*</span></label>
                                                             <input type="datetime-local" name="followup_date" class="form-inp" value="{{ date('Y-m-d\TH:i') }}" max="{{ date('Y-m-d\TH:i') }}" required style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
                                                         </div>
                                                         <div class="form-row">
