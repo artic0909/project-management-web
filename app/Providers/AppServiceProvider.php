@@ -66,6 +66,9 @@ class AppServiceProvider extends ServiceProvider
             $newLeadCount = 0;
             $myLeadCount = 0;
             $totalLeadCount = 0;
+            $todayFollowupCount = 0;
+            $pendingFollowupCount = 0;
+            $futureFollowupCount = 0;
             $upcomingRenewals = collect();
 
             if (auth()->guard('admin')->check()) {
@@ -107,6 +110,43 @@ class AppServiceProvider extends ServiceProvider
                     now()->startOfDay(),
                     now()->addDays(3)->endOfDay()
                 ])->get();
+
+                $today = \Carbon\Carbon::today();
+                $now = \Carbon\Carbon::now();
+                
+                $todayFollowupCount = \App\Models\Lead::where('is_losted', 0)
+                    ->whereHas('followups', function ($q) use ($today) {
+                        $q->whereIn('id', function($sub) {
+                            $sub->selectRaw('max(id)')->from('followups')
+                                ->whereColumn('followable_id', 'leads.id')
+                                ->where('followable_type', \App\Models\Lead::class);
+                        })->whereDate('next_schedule_date', $today);
+                    })->count();
+                
+                $pendingFollowupCount = \App\Models\Lead::where('is_losted', 0)
+                    ->whereHas('followups', function ($q) use ($today, $now) {
+                        $q->whereIn('id', function($sub) {
+                            $sub->selectRaw('max(id)')->from('followups')
+                                ->whereColumn('followable_id', 'leads.id')
+                                ->where('followable_type', \App\Models\Lead::class);
+                        })->where(function($subq) use ($today, $now) {
+                            $subq->whereDate('next_schedule_date', '<', $today)
+                                 ->orWhere(function($subq2) use ($today, $now) {
+                                     $subq2->whereDate('next_schedule_date', $today)
+                                           ->whereTime('next_schedule_date', '!=', '00:00:00')
+                                           ->where('next_schedule_date', '<', $now);
+                                 });
+                        });
+                    })->count();
+                
+                $futureFollowupCount = \App\Models\Lead::where('is_losted', 0)
+                    ->whereHas('followups', function ($q) use ($today) {
+                        $q->whereIn('id', function($sub) {
+                            $sub->selectRaw('max(id)')->from('followups')
+                                ->whereColumn('followable_id', 'leads.id')
+                                ->where('followable_type', \App\Models\Lead::class);
+                        })->whereDate('next_schedule_date', '>', $today);
+                    })->count();
 
             } elseif (auth()->guard('sale')->check()) {
                 $saleId = auth()->guard('sale')->id();
@@ -202,6 +242,49 @@ class AppServiceProvider extends ServiceProvider
                 $myInquiryCount = \App\Models\OrderInquiry::whereHas('assignments', function($sq) use ($saleId) {
                     $sq->where('assigned_to', $saleId);
                 })->count();
+
+                $today = \Carbon\Carbon::today();
+                $now = \Carbon\Carbon::now();
+                
+                $baseSaleLeadQuery = \App\Models\Lead::where('is_losted', 0)
+                    ->whereHas('assignments', function($q) use ($saleId) {
+                        $q->where('assigned_to', $saleId);
+                    });
+
+                $todayFollowupCount = (clone $baseSaleLeadQuery)
+                    ->whereHas('followups', function ($q) use ($today) {
+                        $q->whereIn('id', function($sub) {
+                            $sub->selectRaw('max(id)')->from('followups')
+                                ->whereColumn('followable_id', 'leads.id')
+                                ->where('followable_type', \App\Models\Lead::class);
+                        })->whereDate('next_schedule_date', $today);
+                    })->count();
+                
+                $pendingFollowupCount = (clone $baseSaleLeadQuery)
+                    ->whereHas('followups', function ($q) use ($today, $now) {
+                        $q->whereIn('id', function($sub) {
+                            $sub->selectRaw('max(id)')->from('followups')
+                                ->whereColumn('followable_id', 'leads.id')
+                                ->where('followable_type', \App\Models\Lead::class);
+                        })->where(function($subq) use ($today, $now) {
+                            $subq->whereDate('next_schedule_date', '<', $today)
+                                 ->orWhere(function($subq2) use ($today, $now) {
+                                     $subq2->whereDate('next_schedule_date', $today)
+                                           ->whereTime('next_schedule_date', '!=', '00:00:00')
+                                           ->where('next_schedule_date', '<', $now);
+                                 });
+                        });
+                    })->count();
+                
+                $futureFollowupCount = (clone $baseSaleLeadQuery)
+                    ->whereHas('followups', function ($q) use ($today) {
+                        $q->whereIn('id', function($sub) {
+                            $sub->selectRaw('max(id)')->from('followups')
+                                ->whereColumn('followable_id', 'leads.id')
+                                ->where('followable_type', \App\Models\Lead::class);
+                        })->whereDate('next_schedule_date', '>', $today);
+                    })->count();
+
             } elseif (auth()->guard('developer')->check()) {
                 $devId = auth()->guard('developer')->id();
                 $devProjectQuery = \App\Models\Project::whereHas('developers', function($q) use ($devId) {
@@ -262,6 +345,9 @@ class AppServiceProvider extends ServiceProvider
                 'myInquiryCount' => $myInquiryCount ?? 0,
                 'invoiceCount' => $invoiceCount ?? 0,
                 'upcomingRenewals' => $upcomingRenewals,
+                'todayFollowupCount' => $todayFollowupCount,
+                'pendingFollowupCount' => $pendingFollowupCount,
+                'futureFollowupCount' => $futureFollowupCount,
             ]);
         });
     }

@@ -112,14 +112,17 @@
             <a class="nav-item nav-sub-item {{ ($isFollowupsActive && request('type') === 'followup_today') ? 'active' : '' }}"
               href="{{ route('sale.leads.index', ['type' => 'followup_today']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
               <i class="bi bi-calendar-event" style="font-size: 13px;"></i><span>Today Followup</span>
+              <span class="nav-count">{{ $todayFollowupCount ?? 0 }}</span>
             </a>
             <a class="nav-item nav-sub-item {{ ($isFollowupsActive && request('type') === 'followup_pending') ? 'active' : '' }}"
               href="{{ route('sale.leads.index', ['type' => 'followup_pending']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
               <i class="bi bi-clock-history" style="font-size: 13px;"></i><span>Pending Followup</span>
+              <span class="nav-count">{{ $pendingFollowupCount ?? 0 }}</span>
             </a>
             <a class="nav-item nav-sub-item {{ ($isFollowupsActive && request('type') === 'followup_future') ? 'active' : '' }}"
               href="{{ route('sale.leads.index', ['type' => 'followup_future']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
               <i class="bi bi-calendar-plus" style="font-size: 13px;"></i><span>Future Followup</span>
+              <span class="nav-count">{{ $futureFollowupCount ?? 0 }}</span>
             </a>
           </div>
         </div>
@@ -154,14 +157,17 @@
             <a class="nav-item nav-sub-item {{ ($isFollowupsActive && request('type') === 'followup_today') ? 'active' : '' }}"
               href="{{ route('admin.leads.index', ['type' => 'followup_today']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
               <i class="bi bi-calendar-event" style="font-size: 13px;"></i><span>Today Followup</span>
+              <span class="nav-count">{{ $todayFollowupCount ?? 0 }}</span>
             </a>
             <a class="nav-item nav-sub-item {{ ($isFollowupsActive && request('type') === 'followup_pending') ? 'active' : '' }}"
               href="{{ route('admin.leads.index', ['type' => 'followup_pending']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
               <i class="bi bi-clock-history" style="font-size: 13px;"></i><span>Pending Followup</span>
+              <span class="nav-count">{{ $pendingFollowupCount ?? 0 }}</span>
             </a>
             <a class="nav-item nav-sub-item {{ ($isFollowupsActive && request('type') === 'followup_future') ? 'active' : '' }}"
               href="{{ route('admin.leads.index', ['type' => 'followup_future']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
               <i class="bi bi-calendar-plus" style="font-size: 13px;"></i><span>Future Followup</span>
+              <span class="nav-count">{{ $futureFollowupCount ?? 0 }}</span>
             </a>
           </div>
         </div>
