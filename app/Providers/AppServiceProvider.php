@@ -124,19 +124,12 @@ class AppServiceProvider extends ServiceProvider
                     })->count();
                 
                 $pendingFollowupCount = \App\Models\Lead::where('is_losted', 0)
-                    ->whereHas('followups', function ($q) use ($today, $now) {
+                    ->whereHas('followups', function ($q) use ($today) {
                         $q->whereIn('id', function($sub) {
                             $sub->selectRaw('max(id)')->from('followups')
                                 ->whereColumn('followable_id', 'leads.id')
                                 ->where('followable_type', \App\Models\Lead::class);
-                        })->where(function($subq) use ($today, $now) {
-                            $subq->whereDate('next_schedule_date', '<', $today)
-                                 ->orWhere(function($subq2) use ($today, $now) {
-                                     $subq2->whereDate('next_schedule_date', $today)
-                                           ->whereTime('next_schedule_date', '!=', '00:00:00')
-                                           ->where('next_schedule_date', '<', $now);
-                                 });
-                        });
+                        })->whereDate('next_schedule_date', '<', $today);
                     })->count();
                 
                 $futureFollowupCount = \App\Models\Lead::where('is_losted', 0)
@@ -274,19 +267,12 @@ class AppServiceProvider extends ServiceProvider
                     })->count();
                 
                 $pendingFollowupCount = (clone $baseSaleLeadQuery)
-                    ->whereHas('followups', function ($q) use ($today, $now) {
+                    ->whereHas('followups', function ($q) use ($today) {
                         $q->whereIn('id', function($sub) {
                             $sub->selectRaw('max(id)')->from('followups')
                                 ->whereColumn('followable_id', 'leads.id')
                                 ->where('followable_type', \App\Models\Lead::class);
-                        })->where(function($subq) use ($today, $now) {
-                            $subq->whereDate('next_schedule_date', '<', $today)
-                                 ->orWhere(function($subq2) use ($today, $now) {
-                                     $subq2->whereDate('next_schedule_date', $today)
-                                           ->whereTime('next_schedule_date', '!=', '00:00:00')
-                                           ->where('next_schedule_date', '<', $now);
-                                 });
-                        });
+                        })->whereDate('next_schedule_date', '<', $today);
                     })->count();
                 
                 $futureFollowupCount = (clone $baseSaleLeadQuery)
