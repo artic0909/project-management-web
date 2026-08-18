@@ -1,12 +1,16 @@
 @extends('admin.layout.app')
 
-@section('title', 'Admin Notes')
+@php
+    $pageTitle = isset($routePrefix) ? ($routePrefix == 'sale' ? 'Sales Notes' : ($routePrefix == 'developer' ? 'Developer Notes' : 'Management Notes')) : 'Management Notes';
+@endphp
+
+@section('title', $pageTitle)
 
 @section('content')
 <main class="page-area">
     <div class="page-header">
         <div>
-            <h1 class="page-title">{{ isset($routePrefix) ? ($routePrefix == 'sale' ? 'Sales Notes' : ($routePrefix == 'developer' ? 'Developer Notes' : 'Management Notes')) : 'Management Notes' }}</h1>
+            <h1 class="page-title">{{ $pageTitle }}</h1>
             <p class="page-desc">Internal documentation and shared notes.</p>
         </div>
     </div>
