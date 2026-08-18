@@ -91,6 +91,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::post('/assign-leads', [LeadController::class, 'bulkAssign'])->name('leads.bulk-assign');
     Route::get('/lead-followup/{id}', [FollowupController::class, 'index'])->name('leads.followup');
     Route::post('/lead-followup/{id}', [FollowupController::class, 'store'])->name('leads.followup.store');
+    Route::get('/followup/{id}/read-notification', [FollowupController::class, 'readNotification'])->name('followup.read_notif');
 
     // Lead Notes
     Route::post('/lead-notes/{lead}', [\App\Http\Controllers\LeadNoteController::class, 'store'])->name('lead-notes.store');

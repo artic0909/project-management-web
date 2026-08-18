@@ -13,6 +13,19 @@ use Illuminate\Support\Facades\Route;
 
 class FollowupController extends Controller
 {
+    public function readNotification($id)
+    {
+        $followup = Followup::findOrFail($id);
+        $followup->is_notif_read = 1;
+        $followup->save();
+
+        if ($followup->followable_type === \App\Models\Lead::class) {
+            return redirect()->route('admin.leads.index', ['type' => 'followup_today'])->with('highlight_lead_id', $followup->followable_id);
+        }
+        
+        return redirect()->back();
+    }
+
     public function index(Request $request, $id)
     {
         $routePrefix = 'admin';

@@ -3106,7 +3106,7 @@
                                     @php
                                         $latestFollowup = $lead->followups->first();
                                     @endphp
-                                    <a href="{{ route($guard . '.leads.index', ['type' => 'followup_today']) }}#lead-{{ $lead->id }}" class="notif-item unread" onclick="this.style.display='none'; let b = document.querySelector('.notif-badge'); if(b){let c=parseInt(b.innerText)-1; if(c<=0)b.remove(); else b.innerText=c;}">
+                                    <a href="{{ route($guard . '.followup.read_notif', $latestFollowup->id) }}" class="notif-item unread" onclick="this.style.display='none'; let b = document.querySelector('.notif-badge'); if(b){let c=parseInt(b.innerText)-1; if(c<=0)b.remove(); else b.innerText=c;}">
                                         <div class="notif-icon" style="color: #3b82f6; background: rgba(59, 130, 246, 0.1);"><i class="bi bi-calendar-check"></i></div>
                                         <div class="notif-body">
                                             <strong>{{ $lead->company }}</strong>

@@ -155,7 +155,8 @@ class AppServiceProvider extends ServiceProvider
                                 ->whereColumn('followable_id', 'leads.id')
                                 ->where('followable_type', \App\Models\Lead::class);
                         })->whereDate('next_schedule_date', $today)
-                          ->whereTime('next_schedule_date', '!=', '00:00:00');
+                          ->whereTime('next_schedule_date', '!=', '00:00:00')
+                          ->where('is_notif_read', 0);
                     })->with(['followups' => function($q) {
                         $q->orderBy('id', 'desc');
                     }])->get();
@@ -304,7 +305,8 @@ class AppServiceProvider extends ServiceProvider
                                 ->whereColumn('followable_id', 'leads.id')
                                 ->where('followable_type', \App\Models\Lead::class);
                         })->whereDate('next_schedule_date', $today)
-                          ->whereTime('next_schedule_date', '!=', '00:00:00');
+                          ->whereTime('next_schedule_date', '!=', '00:00:00')
+                          ->where('is_notif_read', 0);
                     })->with(['followups' => function($q) {
                         $q->orderBy('id', 'desc');
                     }])->get();

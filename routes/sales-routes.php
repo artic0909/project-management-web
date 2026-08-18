@@ -43,6 +43,7 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     Route::delete('/delete-leads', [LeadController::class, 'bulkDestroy'])->name('leads.bulk-destroy');
     Route::get('/lead-followup/{id}', [FollowupController::class, 'index'])->name('leads.followup');
     Route::post('/lead-followup/{id}', [FollowupController::class, 'store'])->name('leads.followup.store');
+    Route::get('/followup/{id}/read-notification', [FollowupController::class, 'readNotification'])->name('followup.read_notif');
     
     // Lead Notes
     Route::post('/lead-notes/{lead}', [\App\Http\Controllers\LeadNoteController::class, 'store'])->name('lead-notes.store');
