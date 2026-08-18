@@ -272,7 +272,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $routePrefix = 'admin';
-        $request->validate([
+        $rules = [
             'company_name' => 'required|string|max:255',
             'client_name' => 'required|string|max:255',
             'email' => 'required|array|min:1',
@@ -301,8 +301,15 @@ class OrderController extends Controller
             'amount' => 'required|numeric',
             'payment_method' => 'required|string',
             'transaction_id' => 'nullable|string|max:255',
-            'screenshot' => 'nullable|image|max:5120',
-        ]);
+        ];
+
+        if ($request->input('amount') > 0) {
+            $rules['screenshot'] = 'required|file|mimes:jpeg,png,jpg,pdf|max:5120';
+        } else {
+            $rules['screenshot'] = 'nullable|file|mimes:jpeg,png,jpg,pdf|max:5120';
+        }
+
+        $request->validate($rules);
 
         // Process Emails
         $emails = array_filter($request->input('email', []));

@@ -288,7 +288,7 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $rules = [
             'company_name' => 'required|string|max:255',
             'client_name' => 'required|string|max:255',
             'order_value' => 'required|numeric',
@@ -307,7 +307,19 @@ class OrderController extends Controller
             'state' => 'required|string|max:100',
             'zip_code' => 'required|numeric|digits:6',
             'full_address' => 'required|string',
-        ]);
+            'transaction_date' => 'required|date',
+            'amount' => 'required|numeric',
+            'payment_method' => 'required|string',
+            'transaction_id' => 'nullable|string|max:255',
+        ];
+
+        if ($request->input('amount') > 0) {
+            $rules['screenshot'] = 'required|file|mimes:jpeg,png,jpg,pdf|max:5120';
+        } else {
+            $rules['screenshot'] = 'nullable|file|mimes:jpeg,png,jpg,pdf|max:5120';
+        }
+
+        $request->validate($rules);
 
         $phones = [];
         if ($request->has('phone')) {
@@ -376,16 +388,34 @@ class OrderController extends Controller
         }
         $order->plans()->sync($request->plan_ids);
 
-        // Automatic Payment record for Advance Payment
-        if ($order->advance_payment > 0) {
+        // Detailed Payment record for Order Creation
+        if ($request->input('amount') > 0) {
             $paymentStatus = \App\Models\Status::where('type', 'payment')->where('name', 'Advance')->first();
-            \App\Models\Payment::create([
+            $paymentData = [
                 'order_id' => $order->id,
-                'transaction_date' => now(),
-                'amount' => $order->advance_payment,
-                'payment_method' => 'Advance',
-                'notes' => 'Automated Advance Payment',
+                'transaction_date' => $request->input('transaction_date') ?? now(),
+                'amount' => $request->input('amount'),
+                'payment_method' => $request->input('payment_method', 'Advance'),
+                'transaction_id' => $request->input('transaction_id'),
+                'notes' => $request->input('notes') ?? 'Initial Payment at Order Creation',
                 'status_id' => $paymentStatus ? $paymentStatus->id : null,
+                'created_by' => auth()->guard('sale')->id(),
+                'created_by_type' => \App\Models\Sale::class,
+            ];
+
+            if ($request->hasFile('screenshot')) {
+                $path = $request->file('screenshot')->store('payments', 'public');
+                $paymentData['screenshot'] = $path;
+            }
+
+            \App\Models\Payment::create($paymentData);
+        }
+
+        // Add initial note to history if present
+        if (!empty($request->notes)) {
+            \App\Models\OrderNote::create([
+                'order_id' => $order->id,
+                'notes' => $request->notes,
                 'created_by' => auth()->guard('sale')->id(),
                 'created_by_type' => \App\Models\Sale::class,
             ]);
