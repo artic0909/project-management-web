@@ -740,7 +740,7 @@
                                                                 <option value="None">None (Update Status/Priority Only)</option>
                                                                 <option value="Calling">Calling</option>
                                                                 <option value="Message">Message</option>
-                                                                <option value="Both" selected>Both (Call & Message)</option>
+                                                                <option value="Both" selected>Both</option>
                                                             </select>
                                                         </div>
                                                         <div class="form-row" style="display:block;">
