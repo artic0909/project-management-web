@@ -77,6 +77,11 @@
         <i class="bi bi-clock-history"></i><span>MY Attendance</span>
         <div class="nav-dot green"></div>
       </a>
+      
+      <a class="nav-item {{ request()->routeIs('developer.notes*') ? 'active' : '' }}" href="{{ route('developer.notes.index') }}">
+        <i class="bi bi-sticky-fill"></i><span>Notes</span>
+        <span class="nav-count">{{ $noteCount ?? 0 }}</span>
+      </a>
 
 
       <div class="nav-section-label">System</div>

@@ -5,6 +5,7 @@ use App\Http\Controllers\Developer\DashboardController;
 use App\Http\Controllers\Developer\ProjectController;
 use App\Http\Controllers\Developer\TaskController;
 use App\Http\Controllers\Developer\MeetingController;
+use App\Http\Controllers\Developer\NoteController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:developer'])->prefix('developer')->name('developer.')->group(function () {
@@ -32,6 +33,11 @@ Route::middleware(['auth:developer'])->prefix('developer')->name('developer.')->
     Route::resource('meetings', MeetingController::class)->except(['edit', 'update' => 'patch']); // Actually I added edit/update manually before? No, resource defines them.
     // Wait, I should use ->only to be specific.
     Route::resource('meetings', MeetingController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
+    
+    // Developer Notes
+    Route::get('/notes', [NoteController::class, 'index'])->name('notes.index');
+    Route::post('/notes', [NoteController::class, 'store'])->name('notes.store');
+    Route::delete('/notes/{id}', [NoteController::class, 'destroy'])->name('notes.destroy');
     // Attendance
     Route::get('/attendance', [\App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance/give', [\App\Http\Controllers\Admin\AttendanceController::class, 'giveAttendance'])->name('attendance.give');

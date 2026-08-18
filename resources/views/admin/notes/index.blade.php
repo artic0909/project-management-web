@@ -6,8 +6,8 @@
 <main class="page-area">
     <div class="page-header">
         <div>
-            <h1 class="page-title">{{ isset($routePrefix) && $routePrefix == 'sale' ? 'Sales Notes' : 'Management Notes' }}</h1>
-            <p class="page-desc">Internal documentation and shared notes for administrative staff.</p>
+            <h1 class="page-title">{{ isset($routePrefix) ? ($routePrefix == 'sale' ? 'Sales Notes' : ($routePrefix == 'developer' ? 'Developer Notes' : 'Management Notes')) : 'Management Notes' }}</h1>
+            <p class="page-desc">Internal documentation and shared notes.</p>
         </div>
     </div>
 
@@ -18,7 +18,7 @@
                     <div class="card-title">Create New Note</div>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route(($routePrefix ?? 'admin') . '.notes.store') }}" method="POST" enctype="multipart/form-data">
+                    <form id="noteForm" action="{{ route(($routePrefix ?? 'admin') . '.notes.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="form-row">
                             <label class="form-lbl">Title (Optional)</label>
@@ -178,5 +178,30 @@
             closeModal(event.target.id);
         }
     }
+
+    // Client-side file size validation to prevent 413 Request Entity Too Large
+    document.getElementById('noteForm').addEventListener('submit', function(e) {
+        const fileInput = document.querySelector('input[name="attachments[]"]');
+        if (fileInput && fileInput.files.length > 0) {
+            let totalSize = 0;
+            const maxPerFile = 10 * 1024 * 1024; // 10MB
+            const maxTotal = 10 * 1024 * 1024; // 10MB total (matching common Nginx client_max_body_size)
+            
+            for (let i = 0; i < fileInput.files.length; i++) {
+                if (fileInput.files[i].size > maxPerFile) {
+                    alert('File "' + fileInput.files[i].name + '" is too large. Maximum size is 10MB per file.');
+                    e.preventDefault();
+                    return;
+                }
+                totalSize += fileInput.files[i].size;
+            }
+            
+            if (totalSize > maxTotal) {
+                alert('Total upload size exceeds the server limit (10MB). Please upload smaller or fewer files to prevent errors.');
+                e.preventDefault();
+                return;
+            }
+        }
+    });
 </script>
 @endsection
