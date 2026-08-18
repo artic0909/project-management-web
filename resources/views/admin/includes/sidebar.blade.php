@@ -218,6 +218,38 @@
         @endif
       </a>
 
+      @php
+        $isProjectsActive = request()->routeIs($routePrefix . 'projects*');
+        $isCompleteProjects = request('status') === 'complete';
+        $isActiveProjects = !$isCompleteProjects;
+      @endphp
+      <div class="nav-dropdown {{ $isProjectsActive ? 'open' : '' }}">
+        <a class="nav-item nav-dropdown-toggle {{ $isProjectsActive ? 'active' : '' }}" href="javascript:void(0)" onclick="toggleNavDropdown(this)">
+          <i class="bi bi-kanban-fill"></i>
+          <span>{{ $guard === 'sale' ? 'My Projects' : 'Projects' }}</span>
+          <i class="bi bi-chevron-down nav-dropdown-chevron" style="margin-left: auto; font-size: 11px; transition: transform 0.2s ease; {{ $isProjectsActive ? 'transform: rotate(180deg);' : '' }}"></i>
+        </a>
+        <div class="nav-dropdown-menu" style="padding-left: 14px; {{ $isProjectsActive ? 'display: block;' : 'display: none;' }}">
+
+          <a class="nav-item nav-sub-item {{ ($isProjectsActive && request('status') === 'active') ? 'active' : '' }}"
+            href="{{ route($routePrefix . 'projects.index', ['status' => 'active']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+            <i class="bi bi-kanban" style="font-size: 13px;"></i><span>Active Projects</span>
+            <span class="nav-count">{{ $activeProjectCount ?? 0 }}</span>
+          </a>
+          <a class="nav-item nav-sub-item {{ ($isProjectsActive && $isCompleteProjects) ? 'active' : '' }}"
+            href="{{ route($routePrefix . 'projects.index', ['status' => 'complete']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+            <i class="bi bi-check2-circle" style="font-size: 13px;"></i><span>Complete Projects</span>
+            <span class="nav-count">{{ $completeProjectCount ?? 0 }}</span>
+          </a>
+
+                    <a class="nav-item nav-sub-item {{ ($isProjectsActive && !request('status')) ? 'active' : '' }}"
+            href="{{ route($routePrefix . 'projects.index') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+            <i class="bi bi-collection" style="font-size: 13px;"></i><span>All Projects</span>
+            <span class="nav-count">{{ $projectCount ?? 0 }}</span>
+          </a>
+        </div>
+      </div>
+
 
       @php
         $isPaymentsActive = request()->routeIs($routePrefix . 'payments*') || request()->routeIs($routePrefix . 'invoices*');
@@ -251,37 +283,7 @@
       </div>
 
 
-      @php
-        $isProjectsActive = request()->routeIs($routePrefix . 'projects*');
-        $isCompleteProjects = request('status') === 'complete';
-        $isActiveProjects = !$isCompleteProjects;
-      @endphp
-      <div class="nav-dropdown {{ $isProjectsActive ? 'open' : '' }}">
-        <a class="nav-item nav-dropdown-toggle {{ $isProjectsActive ? 'active' : '' }}" href="javascript:void(0)" onclick="toggleNavDropdown(this)">
-          <i class="bi bi-kanban-fill"></i>
-          <span>{{ $guard === 'sale' ? 'My Projects' : 'Projects' }}</span>
-          <i class="bi bi-chevron-down nav-dropdown-chevron" style="margin-left: auto; font-size: 11px; transition: transform 0.2s ease; {{ $isProjectsActive ? 'transform: rotate(180deg);' : '' }}"></i>
-        </a>
-        <div class="nav-dropdown-menu" style="padding-left: 14px; {{ $isProjectsActive ? 'display: block;' : 'display: none;' }}">
 
-          <a class="nav-item nav-sub-item {{ ($isProjectsActive && request('status') === 'active') ? 'active' : '' }}"
-            href="{{ route($routePrefix . 'projects.index', ['status' => 'active']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
-            <i class="bi bi-kanban" style="font-size: 13px;"></i><span>Active Projects</span>
-            <span class="nav-count">{{ $activeProjectCount ?? 0 }}</span>
-          </a>
-          <a class="nav-item nav-sub-item {{ ($isProjectsActive && $isCompleteProjects) ? 'active' : '' }}"
-            href="{{ route($routePrefix . 'projects.index', ['status' => 'complete']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
-            <i class="bi bi-check2-circle" style="font-size: 13px;"></i><span>Complete Projects</span>
-            <span class="nav-count">{{ $completeProjectCount ?? 0 }}</span>
-          </a>
-
-                    <a class="nav-item nav-sub-item {{ ($isProjectsActive && !request('status')) ? 'active' : '' }}"
-            href="{{ route($routePrefix . 'projects.index') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
-            <i class="bi bi-collection" style="font-size: 13px;"></i><span>All Projects</span>
-            <span class="nav-count">{{ $projectCount ?? 0 }}</span>
-          </a>
-        </div>
-      </div>
 
       <a class="nav-item {{ request()->routeIs($routePrefix . 'meetings*') ? 'active' : '' }}"
         href="{{ route($routePrefix . 'meetings.index') }}">
@@ -289,31 +291,53 @@
         <span class="nav-count">{{ $meetingCount }}</span>
       </a>
 
+      @if($guard === 'admin')
       <div class="nav-section-label">Team Members</div>
-      @if($guard === 'admin')
-        <a class="nav-item {{ request()->routeIs('admin.sales-person*') ? 'active' : '' }}"
-          href="{{ route('admin.sales-person') }}">
-          <i class="bi bi-people-fill"></i><span>Sales Person</span>
-          <span class="nav-count">{{ $salesPersonCount }}</span>
+      @php
+        $isTeamMembersActive = request()->routeIs('admin.sales-person*') || request()->routeIs('admin.developer*');
+      @endphp
+      <div class="nav-dropdown {{ $isTeamMembersActive ? 'open' : '' }}">
+        <a class="nav-item nav-dropdown-toggle {{ $isTeamMembersActive ? 'active' : '' }}" href="javascript:void(0)" onclick="toggleNavDropdown(this)">
+          <i class="bi bi-people-fill"></i>
+          <span>Team Members</span>
+          <i class="bi bi-chevron-down nav-dropdown-chevron" style="margin-left: auto; font-size: 11px; transition: transform 0.2s ease; {{ $isTeamMembersActive ? 'transform: rotate(180deg);' : '' }}"></i>
         </a>
-      @endif
-      @if($guard === 'admin')
-      <a class="nav-item {{ request()->routeIs($routePrefix . 'developer*') ? 'active' : '' }}"
-        href="{{ route($routePrefix . 'developer') }}">
-        <i class="bi bi-person-workspace"></i><span>Developers</span>
-        <span class="nav-count">{{ $developerCount }}</span>
-      </a>
+        <div class="nav-dropdown-menu" style="padding-left: 14px; {{ $isTeamMembersActive ? 'display: block;' : 'display: none;' }}">
+          <a class="nav-item nav-sub-item {{ request()->routeIs('admin.sales-person*') ? 'active' : '' }}"
+            href="{{ route('admin.sales-person') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+            <i class="bi bi-people" style="font-size: 13px;"></i><span>Sales Person</span>
+            <span class="nav-count">{{ $salesPersonCount }}</span>
+          </a>
+          <a class="nav-item nav-sub-item {{ request()->routeIs('admin.developer*') ? 'active' : '' }}"
+            href="{{ route('admin.developer') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+            <i class="bi bi-person-workspace" style="font-size: 13px;"></i><span>Developers</span>
+            <span class="nav-count">{{ $developerCount }}</span>
+          </a>
+        </div>
+      </div>
       @endif
       @if ($guard === 'admin')
         <div class="nav-section-label">Attendance</div>
-        <a class="nav-item {{ request()->routeIs('admin.attendance.sale-index') ? 'active' : '' }}"
-          href="{{ route('admin.attendance.sale-index') }}">
-          <i class="bi bi-person-badge-fill"></i><span>Sale Attendance</span>
-        </a>
-        <a class="nav-item {{ request()->routeIs('admin.attendance.dev-index') ? 'active' : '' }}"
-          href="{{ route('admin.attendance.dev-index') }}">
-          <i class="bi bi-calendar-check-fill"></i><span>Dev Attendance</span>
-        </a>
+        @php
+          $isAttendanceActive = request()->routeIs('admin.attendance.sale-index') || request()->routeIs('admin.attendance.dev-index');
+        @endphp
+        <div class="nav-dropdown {{ $isAttendanceActive ? 'open' : '' }}">
+          <a class="nav-item nav-dropdown-toggle {{ $isAttendanceActive ? 'active' : '' }}" href="javascript:void(0)" onclick="toggleNavDropdown(this)">
+            <i class="bi bi-person-badge-fill"></i>
+            <span>Attendance</span>
+            <i class="bi bi-chevron-down nav-dropdown-chevron" style="margin-left: auto; font-size: 11px; transition: transform 0.2s ease; {{ $isAttendanceActive ? 'transform: rotate(180deg);' : '' }}"></i>
+          </a>
+          <div class="nav-dropdown-menu" style="padding-left: 14px; {{ $isAttendanceActive ? 'display: block;' : 'display: none;' }}">
+            <a class="nav-item nav-sub-item {{ request()->routeIs('admin.attendance.sale-index') ? 'active' : '' }}"
+              href="{{ route('admin.attendance.sale-index') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-person-badge" style="font-size: 13px;"></i><span>Sale Attendance</span>
+            </a>
+            <a class="nav-item nav-sub-item {{ request()->routeIs('admin.attendance.dev-index') ? 'active' : '' }}"
+              href="{{ route('admin.attendance.dev-index') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-calendar-check" style="font-size: 13px;"></i><span>Dev Attendance</span>
+            </a>
+          </div>
+        </div>
       @else
         <a class="nav-item {{ request()->routeIs($routePrefix . 'attendance*') ? 'active' : '' }}"
           href="{{ route($routePrefix . 'attendance.index') }}">
