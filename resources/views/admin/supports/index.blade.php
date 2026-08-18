@@ -49,7 +49,7 @@
                     </div>
                     
                     <div class="card-actions mb-2">
-                        <form action="{{ route('admin.supports.index') }}" method="GET" class="card-actions mb-0">
+                        <form action="{{ route(($routePrefix ?? 'admin') . '.supports.index') }}" method="GET" class="card-actions mb-0">
                             <div class="global-search">
                                 <i class="bi bi-search"></i>
                                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Search company, name, subject..." id="searchInput">
@@ -82,7 +82,8 @@
                     </div>
                 </div>
 
-                <form action="{{ route('admin.supports.bulk-destroy') }}" method="POST" id="bulkDeleteForm">
+                @if(($routePrefix ?? 'admin') !== 'developer')
+                <form action="{{ route(($routePrefix ?? 'admin') . '.supports.bulk-destroy') }}" method="POST" id="bulkDeleteForm">
                     @csrf
                     <!-- Bulk Action Toolbar -->
                     <div id="bulkActions" style="display:none; padding:12px 20px; background:#fee2e2; border-bottom:1px solid #fecaca; align-items:center; justify-content:space-between;">
@@ -91,11 +92,16 @@
                             <i class="bi bi-trash-fill"></i> Delete Selected
                         </button>
                     </div>
+                    @endif
                 <div class="table-wrap">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th><input type="checkbox" id="selectAll"></th>
+                                @if(($routePrefix ?? 'admin') !== 'developer')
+                                <th style="width: 40px; padding-left: 20px;">
+                                    <input type="checkbox" id="selectAll" class="custom-checkbox">
+                                </th>
+                                @endif
                                 <th>SL.</th>
                                 <th>TKT No.</th>
                                 <th>Date</th>
@@ -115,7 +121,11 @@
                                 elseif($ticket->status == 'closed') $rowBg = 'background: rgba(75, 85, 99, 0.15);';
                             @endphp
                             <tr style="{{ $rowBg }}">
-                                <td><input type="checkbox" name="ids[]" class="row-checkbox" value="{{ $ticket->id }}"></td>
+                                @if(($routePrefix ?? 'admin') !== 'developer')
+                                <td style="padding-left: 20px;">
+                                    <input type="checkbox" name="ids[]" value="{{ $ticket->id }}" class="row-checkbox custom-checkbox">
+                                </td>
+                                @endif
                                 <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration + ($tickets->currentPage() - 1) * $tickets->perPage() }}</td>
                                 <td><div style="font-weight:700; color:var(--t1); font-size:13px; font-family:var(--fd);">{{ $ticket->ticket_no }}</div></td>
                                 <td>
@@ -158,8 +168,10 @@
                                 </td>
                                 <td>
                                     <div style="display:flex;gap:5px;">
-                                        <a href="{{ route('admin.supports.show', $ticket->id) }}" class="tb-btn sm" title="View & Reply"><i class="bi bi-eye-fill"></i></a>
-                                        <button type="button" class="tb-btn sm danger" onclick="confirmDelete('{{ route('admin.supports.destroy', $ticket->id) }}')" title="Delete"><i class="bi bi-trash-fill"></i></button>
+                                        <a href="{{ route(($routePrefix ?? 'admin') . '.supports.show', $ticket->id) }}" class="tb-btn sm" title="View & Reply"><i class="bi bi-eye-fill"></i></a>
+                                        @if(($routePrefix ?? 'admin') !== 'developer')
+                                        <button type="button" class="tb-btn sm danger" onclick="confirmDelete('{{ route(($routePrefix ?? 'admin') . '.supports.destroy', $ticket->id) }}')" title="Delete"><i class="bi bi-trash-fill"></i></button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

@@ -323,6 +323,10 @@ class AppServiceProvider extends ServiceProvider
 
                 $meetingCount = \App\Models\Meeting::whereJsonContains('assigndev_ids', (int)$devId)
                     ->where('status', 'pending')->count();
+                    
+                $supportActiveCount = \App\Models\Support::where('status', '!=', 'closed')->count();
+                $supportClosedCount = \App\Models\Support::where('status', 'closed')->count();
+                
                 $taskCount = \App\Models\ProjectTask::whereHas('assignments', function($q) use ($devId) {
                     $q->where('developer_id', (int)$devId);
                 })->where('status', '!=', 'Completed')->count();

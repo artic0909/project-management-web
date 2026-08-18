@@ -100,8 +100,9 @@ class SupportController extends Controller
         $active = Support::where('status', '!=', 'closed')->count();
         $closed = Support::where('status', 'closed')->count();
         $pending = Support::where('status', 'pending')->count();
+        $routePrefix = 'admin';
 
-        return view('admin.supports.index', compact('tickets', 'total', 'active', 'closed', 'pending'));
+        return view('admin.supports.index', compact('tickets', 'total', 'active', 'closed', 'pending', 'routePrefix'));
     }
 
     /**
@@ -110,7 +111,8 @@ class SupportController extends Controller
     public function adminShow($id)
     {
         $ticket = Support::with('replies')->findOrFail($id);
-        return view('admin.supports.show', compact('ticket'));
+        $routePrefix = 'admin';
+        return view('admin.supports.show', compact('ticket', 'routePrefix'));
     }
 
     /**

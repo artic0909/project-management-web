@@ -6,6 +6,7 @@ use App\Http\Controllers\Developer\ProjectController;
 use App\Http\Controllers\Developer\TaskController;
 use App\Http\Controllers\Developer\MeetingController;
 use App\Http\Controllers\Developer\NoteController;
+use App\Http\Controllers\Developer\SupportController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:developer'])->prefix('developer')->name('developer.')->group(function () {
@@ -43,4 +44,10 @@ Route::middleware(['auth:developer'])->prefix('developer')->name('developer.')->
     Route::post('/attendance/give', [\App\Http\Controllers\Admin\AttendanceController::class, 'giveAttendance'])->name('attendance.give');
     Route::post('/attendance/start-lunch', [\App\Http\Controllers\Admin\AttendanceController::class, 'startLunch'])->name('attendance.start-lunch');
     Route::post('/attendance/end-lunch', [\App\Http\Controllers\Admin\AttendanceController::class, 'endLunch'])->name('attendance.end-lunch');
+    
+    // Developer Support
+    Route::get('/supports', [SupportController::class, 'index'])->name('supports.index');
+    Route::get('/supports/{id}', [SupportController::class, 'show'])->name('supports.show');
+    Route::post('/supports/{id}/reply', [SupportController::class, 'reply'])->name('supports.reply');
+    Route::patch('/supports/{id}/status', [SupportController::class, 'statusUpdate'])->name('supports.statusUpdate');
 });

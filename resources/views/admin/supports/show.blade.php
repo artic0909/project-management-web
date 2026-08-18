@@ -39,7 +39,7 @@
         <div class="page-header">
             <div>
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                    <a href="{{ route('admin.supports.index') }}"
+                    <a href="{{ route(($routePrefix ?? 'admin') . '.supports.index') }}"
                         style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--t3);text-decoration:none;transition:var(--transition);"
                         onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--t3)'">
                         <i class="bi bi-arrow-left"></i> All Tickets
@@ -49,9 +49,11 @@
                 <p class="page-desc">Viewing request from <strong>{{ $ticket->company_name ?? $ticket->your_name }}</strong></p>
             </div>
             <div style="display:flex;gap:10px;">
-                <button class="btn-primary-solid danger sm" onclick="confirmDelete('{{ route('admin.supports.destroy', $ticket->id) }}')">
+                @if(($routePrefix ?? 'admin') !== 'developer')
+                <button class="btn-primary-solid danger sm" onclick="confirmDelete('{{ route(($routePrefix ?? 'admin') . '.supports.destroy', $ticket->id) }}')">
                     <i class="bi bi-trash-fill"></i> Delete Ticket
                 </button>
+                @endif
             </div>
         </div>
 
@@ -185,7 +187,7 @@
                         <div class="card-title">Post a Reply</div>
                     </div>
                     <div class="card-body" style="padding:20px;">
-                        <form action="{{ route('admin.supports.reply', $ticket->id) }}" method="POST">
+                        <form action="{{ route(($routePrefix ?? 'admin') . '.supports.reply', $ticket->id) }}" method="POST">
                             @csrf
                             <div class="form-row mb-4">
                                 <label class="form-lbl">Administrative Message</label>
