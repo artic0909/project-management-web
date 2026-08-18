@@ -89,7 +89,17 @@ class LeadController extends Controller
 
         // Date range filter
         if ($request->has('start_date') && $request->has('end_date') && !empty($request->start_date)) {
-            $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+            if (in_array($type, ['followup_pending', 'followup_future', 'followup_today'])) {
+                $query->whereHas('followups', function ($q) use ($request) {
+                    $q->whereIn('id', function($sub) {
+                        $sub->selectRaw('max(id)')->from('followups')
+                            ->whereColumn('followable_id', 'leads.id')
+                            ->where('followable_type', \App\Models\Lead::class);
+                    })->whereBetween('next_schedule_date', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+                });
+            } else {
+                $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+            }
         }
 
         // Dropdown filters
