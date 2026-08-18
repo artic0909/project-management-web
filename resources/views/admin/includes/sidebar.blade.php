@@ -49,30 +49,43 @@
 
       @if($guard === 'admin')
         <div class="nav-section-label">Utilities</div>
-        <a class="nav-item {{ request()->routeIs('admin.sources*') ? 'active' : '' }}"
-          href="{{ route('admin.sources.index') }}">
-          <i class="bi bi-broadcast"></i><span>Sources</span>
-          <span class="nav-count">{{ $sourceCount }}</span>
-        </a>
-        <a class="nav-item {{ request()->routeIs('admin.services*') ? 'active' : '' }}"
-          href="{{ route('admin.services.index') }}">
-          <i class="bi bi-briefcase-fill"></i><span>Services</span>
-          <span class="nav-count">{{ $serviceCount }}</span>
-        </a>
-        <a class="nav-item {{ request()->routeIs('admin.plans*') ? 'active' : '' }}"
-          href="{{ route('admin.plans.index') }}">
-          <i class="bi bi-layers-half"></i><span>Plans</span>
-          <span class="nav-count">{{ $planCount }}</span>
-        </a>
-        <a class="nav-item {{ request()->routeIs('admin.campaign*') ? 'active' : '' }}"
-          href="{{ route('admin.campaign.index') }}">
-          <i class="bi bi-megaphone-fill"></i><span>Campaign</span>
-          <span class="nav-count">{{ $campaignCount }}</span>
-        </a>
-        <a class="nav-item {{ request()->routeIs('admin.status') ? 'active' : '' }}" href="{{ route('admin.status') }}">
-          <i class="bi bi-flag-fill"></i><span>All Status</span>
-          <span class="nav-count">{{ $statusCount }}</span>
-        </a>
+        @php
+          $isUtilitiesActive = request()->routeIs('admin.sources*') || request()->routeIs('admin.services*') || request()->routeIs('admin.plans*') || request()->routeIs('admin.campaign*') || request()->routeIs('admin.status*');
+        @endphp
+        <div class="nav-dropdown {{ $isUtilitiesActive ? 'open' : '' }}">
+          <a class="nav-item nav-dropdown-toggle {{ $isUtilitiesActive ? 'active' : '' }}" href="javascript:void(0)" onclick="toggleNavDropdown(this)">
+            <i class="bi bi-flag-fill"></i>
+            <span>Utilities</span>
+            <i class="bi bi-chevron-down nav-dropdown-chevron" style="margin-left: auto; font-size: 11px; transition: transform 0.2s ease; {{ $isUtilitiesActive ? 'transform: rotate(180deg);' : '' }}"></i>
+          </a>
+          <div class="nav-dropdown-menu" style="padding-left: 14px; {{ $isUtilitiesActive ? 'display: block;' : 'display: none;' }}">
+            <a class="nav-item nav-sub-item {{ request()->routeIs('admin.sources*') ? 'active' : '' }}"
+              href="{{ route('admin.sources.index') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-broadcast" style="font-size: 13px;"></i><span>Sources</span>
+              <span class="nav-count">{{ $sourceCount }}</span>
+            </a>
+            <a class="nav-item nav-sub-item {{ request()->routeIs('admin.services*') ? 'active' : '' }}"
+              href="{{ route('admin.services.index') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-briefcase-fill" style="font-size: 13px;"></i><span>Services</span>
+              <span class="nav-count">{{ $serviceCount }}</span>
+            </a>
+            <a class="nav-item nav-sub-item {{ request()->routeIs('admin.plans*') ? 'active' : '' }}"
+              href="{{ route('admin.plans.index') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-layers-half" style="font-size: 13px;"></i><span>Plans</span>
+              <span class="nav-count">{{ $planCount }}</span>
+            </a>
+            <a class="nav-item nav-sub-item {{ request()->routeIs('admin.campaign*') ? 'active' : '' }}"
+              href="{{ route('admin.campaign.index') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-megaphone-fill" style="font-size: 13px;"></i><span>Campaign</span>
+              <span class="nav-count">{{ $campaignCount }}</span>
+            </a>
+            <a class="nav-item nav-sub-item {{ request()->routeIs('admin.status*') ? 'active' : '' }}"
+              href="{{ route('admin.status') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-flag-fill" style="font-size: 13px;"></i><span>All Status</span>
+              <span class="nav-count">{{ $statusCount }}</span>
+            </a>
+          </div>
+        </div>
       @endif
 
       <div class="nav-section-label">Business</div>
