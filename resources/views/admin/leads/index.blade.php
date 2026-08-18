@@ -843,6 +843,12 @@
                                                                     <p style="font-size:13.5px;color:var(--t2);margin:0;line-height:1.6;font-weight:500;">{{ $followup->message_note }}</p>
                                                                 </div>
                                                             @endif
+                                                            @if($followup->next_schedule_date)
+                                                                <div style="border-left:3px solid #6366f1;padding-left:10px;">
+                                                                    <p style="font-size:10.5px;font-weight:800;color:var(--t4);margin:0 0 2px;text-transform:uppercase;">Next Schedule</p>
+                                                                    <p style="font-size:13.5px;color:var(--accent);margin:0;line-height:1.6;font-weight:700;"><i class="bi bi-clock-history"></i> {{ $followup->next_schedule_date->format('d M Y, h:i A') }}</p>
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 </div>

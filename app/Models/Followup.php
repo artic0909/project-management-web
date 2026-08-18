@@ -14,6 +14,7 @@ class Followup extends Model
 
     protected $casts = [
         'followup_date' => 'datetime',
+        'next_schedule_date' => 'datetime',
     ];
 
     public function followable()
