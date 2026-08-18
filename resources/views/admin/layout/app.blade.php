@@ -3082,8 +3082,13 @@
 
                 <div class="tb-btn notif-btn" data-tooltip="Notifications" onclick="toggleNotifPanel()">
                     <i class="bi bi-bell-fill"></i>
-                    @if(isset($upcomingRenewals) && $upcomingRenewals->count() > 0)
-                        <span class="notif-badge">{{ $upcomingRenewals->count() }}</span>
+                    @php
+                        $renewalCount = isset($upcomingRenewals) ? $upcomingRenewals->count() : 0;
+                        $followupCount = isset($todayTimedFollowups) ? $todayTimedFollowups->count() : 0;
+                        $totalNotifs = $renewalCount + $followupCount;
+                    @endphp
+                    @if($totalNotifs > 0)
+                        <span class="notif-badge">{{ $totalNotifs }}</span>
                     @endif
                 </div>
 
@@ -3091,29 +3096,48 @@
                 <!-- Notification dropdown -->
                 <div class="notif-panel" id="notifPanel">
                     <div class="notif-header">
-                        <span>Upcoming Renewals (3 Days)</span>
+                        <span>Notifications</span>
                     </div>
                     <div class="notif-list">
-                        @if(isset($upcomingRenewals) && $upcomingRenewals->count() > 0)
-                            @foreach($upcomingRenewals as $order)
-                                @php
-                                    $email = is_array($order->emails) ? ($order->emails[0] ?? 'N/A') : $order->emails;
-                                    $diff = now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($order->renewal_date)->startOfDay(), false);
-                                    $timeText = $diff == 0 ? 'Today' : ($diff == 1 ? 'Tomorrow' : "in $diff days");
-                                @endphp
-                                <a href="{{ route($guard . '.orders.show', $order->id) }}" class="notif-item unread">
-                                    <div class="notif-icon orange"><i class="bi bi-arrow-repeat"></i></div>
-                                    <div class="notif-body">
-                                        <strong>{{ $order->company_name }}</strong> ({{ $order->order_number }})
-                                        <div>Domain: {{ $order->domain_name ?? 'N/A' }}</div>
-                                        <div class="notif-time">Renewal {{ $timeText }} ({{ \Carbon\Carbon::parse($order->renewal_date)->format('d M, Y') }})</div>
-                                    </div>
-                                </a>
-                            @endforeach
+                        @if($totalNotifs > 0)
+                            @if($followupCount > 0)
+                                <div style="padding: 8px 12px; font-size: 11px; font-weight: 700; color: var(--t3); background: var(--bg2); border-bottom: 1px solid var(--border);">TODAY'S SCHEDULED FOLLOWUPS</div>
+                                @foreach($todayTimedFollowups as $lead)
+                                    @php
+                                        $latestFollowup = $lead->followups->first();
+                                    @endphp
+                                    <a href="{{ route($guard . '.leads.index', ['type' => 'followup_today']) }}#lead-{{ $lead->id }}" class="notif-item unread" onclick="this.style.display='none'; let b = document.querySelector('.notif-badge'); if(b){let c=parseInt(b.innerText)-1; if(c<=0)b.remove(); else b.innerText=c;}">
+                                        <div class="notif-icon" style="color: #3b82f6; background: rgba(59, 130, 246, 0.1);"><i class="bi bi-calendar-check"></i></div>
+                                        <div class="notif-body">
+                                            <strong>{{ $lead->company }}</strong>
+                                            <div class="notif-time" style="color:var(--accent);">Scheduled at {{ \Carbon\Carbon::parse($latestFollowup->next_schedule_date)->format('h:i A') }}</div>
+                                        </div>
+                                    </a>
+                                @endforeach
+                            @endif
+
+                            @if($renewalCount > 0)
+                                <div style="padding: 8px 12px; font-size: 11px; font-weight: 700; color: var(--t3); background: var(--bg2); border-bottom: 1px solid var(--border); border-top: {{ $followupCount > 0 ? '1px solid var(--border)' : 'none' }};">UPCOMING RENEWALS</div>
+                                @foreach($upcomingRenewals as $order)
+                                    @php
+                                        $email = is_array($order->emails) ? ($order->emails[0] ?? 'N/A') : $order->emails;
+                                        $diff = now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($order->renewal_date)->startOfDay(), false);
+                                        $timeText = $diff == 0 ? 'Today' : ($diff == 1 ? 'Tomorrow' : "in $diff days");
+                                    @endphp
+                                    <a href="{{ route($guard . '.orders.show', $order->id) }}" class="notif-item unread" onclick="this.classList.remove('unread');">
+                                        <div class="notif-icon orange"><i class="bi bi-arrow-repeat"></i></div>
+                                        <div class="notif-body">
+                                            <strong>{{ $order->company_name }}</strong> ({{ $order->order_number }})
+                                            <div>Domain: {{ $order->domain_name ?? 'N/A' }}</div>
+                                            <div class="notif-time">Renewal {{ $timeText }} ({{ \Carbon\Carbon::parse($order->renewal_date)->format('d M, Y') }})</div>
+                                        </div>
+                                    </a>
+                                @endforeach
+                            @endif
                         @else
                             <div class="p-4 text-center text-muted">
                                 <i class="bi bi-bell-slash mb-2" style="font-size: 24px;"></i>
-                                <p class="mb-0">No upcoming renewals</p>
+                                <p class="mb-0">No new notifications</p>
                             </div>
                         @endif
                     </div>

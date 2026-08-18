@@ -148,6 +148,18 @@ class AppServiceProvider extends ServiceProvider
                         })->whereDate('next_schedule_date', '>', $today);
                     })->count();
 
+                $todayTimedFollowups = \App\Models\Lead::where('is_losted', 0)
+                    ->whereHas('followups', function ($q) use ($today) {
+                        $q->whereIn('id', function($sub) {
+                            $sub->selectRaw('max(id)')->from('followups')
+                                ->whereColumn('followable_id', 'leads.id')
+                                ->where('followable_type', \App\Models\Lead::class);
+                        })->whereDate('next_schedule_date', $today)
+                          ->whereTime('next_schedule_date', '!=', '00:00:00');
+                    })->with(['followups' => function($q) {
+                        $q->orderBy('id', 'desc');
+                    }])->get();
+
             } elseif (auth()->guard('sale')->check()) {
                 $saleId = auth()->guard('sale')->id();
                 $saleType = \App\Models\Sale::class;
@@ -285,6 +297,18 @@ class AppServiceProvider extends ServiceProvider
                         })->whereDate('next_schedule_date', '>', $today);
                     })->count();
 
+                $todayTimedFollowups = (clone $baseSaleLeadQuery)
+                    ->whereHas('followups', function ($q) use ($today) {
+                        $q->whereIn('id', function($sub) {
+                            $sub->selectRaw('max(id)')->from('followups')
+                                ->whereColumn('followable_id', 'leads.id')
+                                ->where('followable_type', \App\Models\Lead::class);
+                        })->whereDate('next_schedule_date', $today)
+                          ->whereTime('next_schedule_date', '!=', '00:00:00');
+                    })->with(['followups' => function($q) {
+                        $q->orderBy('id', 'desc');
+                    }])->get();
+
             } elseif (auth()->guard('developer')->check()) {
                 $devId = auth()->guard('developer')->id();
                 $devProjectQuery = \App\Models\Project::whereHas('developers', function($q) use ($devId) {
@@ -345,9 +369,10 @@ class AppServiceProvider extends ServiceProvider
                 'myInquiryCount' => $myInquiryCount ?? 0,
                 'invoiceCount' => $invoiceCount ?? 0,
                 'upcomingRenewals' => $upcomingRenewals,
-                'todayFollowupCount' => $todayFollowupCount,
-                'pendingFollowupCount' => $pendingFollowupCount,
-                'futureFollowupCount' => $futureFollowupCount,
+                'todayTimedFollowups' => $todayTimedFollowups ?? collect(),
+                'todayFollowupCount' => $todayFollowupCount ?? 0,
+                'pendingFollowupCount' => $pendingFollowupCount ?? 0,
+                'futureFollowupCount' => $futureFollowupCount ?? 0,
             ]);
         });
     }
