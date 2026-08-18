@@ -91,7 +91,8 @@ $(document).ready(function() {
             { name: 'primary_domain_name', label: 'Primary Domain Name' },
             @endif
             { name: 'project_status_id', label: 'Project Status' },
-            { name: 'order_date_create', label: 'Order Creation Date' }
+            { name: 'order_date_create', label: 'Order Creation Date' },
+            { name: 'no_of_pages', label: 'Number of Pages' }
         ];
 
         requiredFields.forEach(f => {

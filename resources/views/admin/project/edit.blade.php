@@ -426,8 +426,9 @@
                                 <input type="text" name="mail_password" class="form-inp" value="{{ old('mail_password', $project->mail_password) }}">
                             </div>
                             <div class="form-row">
-                                <label class="form-lbl">Number of Pages</label>
-                                <input type="number" name="no_of_pages" class="form-inp" min="1" value="{{ old('no_of_pages', $project->no_of_pages) }}">
+                                <label class="form-lbl">Number of Pages <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
+                                <input type="number" name="no_of_pages" class="form-inp" min="1" value="{{ old('no_of_pages', $project->no_of_pages) }}" required>
+                                @error('no_of_pages')<span class="field-error">{{ $message }}</span>@enderror
                             </div>
                             <div class="form-row">
                                 <label class="form-lbl">Extra Features</label>

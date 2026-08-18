@@ -233,6 +233,7 @@ class ProjectController extends Controller
             'expected_delivery_date' => 'nullable|date',
             'project_price' => 'nullable|numeric',
             'project_status_id' => 'required|exists:statuses,id',
+            'no_of_pages' => 'required|integer|min:1',
         ]);
 
         $data = $request->all();
@@ -423,6 +424,7 @@ class ProjectController extends Controller
             'expected_delivery_date' => 'nullable|date',
             'project_price' => 'nullable|numeric',
             'project_status_id' => 'required|exists:statuses,id',
+            'no_of_pages' => 'required|integer|min:1',
         ]);
 
         $data = $request->all();
