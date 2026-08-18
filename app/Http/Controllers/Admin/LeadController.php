@@ -20,16 +20,37 @@ class LeadController extends Controller
     {
         $type = $request->get('type', 'total'); // Default to total leads for admin
 
+        $query = Lead::with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])
+            ->withCount('followups')
+            ->where('is_losted', 0);
+
         if ($type === 'new') {
-            $query = Lead::with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])
-                ->withCount('followups')
-                ->where('is_losted', 0)
-                ->doesntHave('assignments')
-                ->doesntHave('followups');
-        } else {
-            $query = Lead::with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])
-                ->withCount('followups')
-                ->where('is_losted', 0);
+            $query->doesntHave('assignments')->doesntHave('followups');
+        } elseif (in_array($type, ['followup_today', 'followup_pending', 'followup_future'])) {
+            $today = \Carbon\Carbon::today();
+            $query->whereHas('followups', function ($q) use ($type, $today) {
+                $q->whereIn('id', function($sub) {
+                    $sub->selectRaw('max(id)')->from('followups')
+                        ->whereColumn('followable_id', 'leads.id')
+                        ->where('followable_type', \App\Models\Lead::class);
+                });
+                
+                if ($type === 'followup_today') {
+                    $q->whereDate('next_schedule_date', $today);
+                } elseif ($type === 'followup_pending') {
+                    $q->whereDate('next_schedule_date', '<', $today);
+                } elseif ($type === 'followup_future') {
+                    $q->whereDate('next_schedule_date', '>', $today);
+                }
+            });
+
+            $query->addSelect([
+                'latest_schedule_date' => \App\Models\Followup::select('next_schedule_date')
+                    ->whereColumn('followable_id', 'leads.id')
+                    ->where('followable_type', \App\Models\Lead::class)
+                    ->orderBy('id', 'desc')
+                    ->take(1)
+            ]);
         }
 
         // Search filter
@@ -97,7 +118,11 @@ class LeadController extends Controller
         if ($perPage === 'all') {
             $perPage = $totalLeads ?: 20;
         }
-        $leads = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
+        if (in_array($type, ['followup_today', 'followup_pending', 'followup_future'])) {
+            $leads = $query->orderBy('latest_schedule_date', 'desc')->paginate($perPage)->withQueryString();
+        } else {
+            $leads = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
+        }
         
         $totalCallingFollowupsFiltered = 0;
         $totalMessageFollowupsFiltered = 0;

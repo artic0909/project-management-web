@@ -52,6 +52,36 @@ class LeadController extends Controller
                 });
         } elseif ($type === 'total') {
             $query = Lead::where('is_losted', 0);
+        } elseif (in_array($type, ['followup_today', 'followup_pending', 'followup_future'])) {
+            $query = Lead::where('is_losted', 0)
+                ->whereHas('assignments', function($q) use ($saleId) {
+                    $q->where('assigned_to', $saleId);
+                });
+            
+            $today = \Carbon\Carbon::today();
+            $query->whereHas('followups', function ($q) use ($type, $today) {
+                $q->whereIn('id', function($sub) {
+                    $sub->selectRaw('max(id)')->from('followups')
+                        ->whereColumn('followable_id', 'leads.id')
+                        ->where('followable_type', \App\Models\Lead::class);
+                });
+                
+                if ($type === 'followup_today') {
+                    $q->whereDate('next_schedule_date', $today);
+                } elseif ($type === 'followup_pending') {
+                    $q->whereDate('next_schedule_date', '<', $today);
+                } elseif ($type === 'followup_future') {
+                    $q->whereDate('next_schedule_date', '>', $today);
+                }
+            });
+
+            $query->addSelect([
+                'latest_schedule_date' => \App\Models\Followup::select('next_schedule_date')
+                    ->whereColumn('followable_id', 'leads.id')
+                    ->where('followable_type', \App\Models\Lead::class)
+                    ->orderBy('id', 'desc')
+                    ->take(1)
+            ]);
         } else {
             $query = $this->getFilteredLeads()->where('is_losted', 0);
         }
@@ -123,7 +153,11 @@ class LeadController extends Controller
         if ($perPage === 'all') {
             $perPage = $totalLeads ?: 20;
         }
-        $leads = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
+        if (in_array($type, ['followup_today', 'followup_pending', 'followup_future'])) {
+            $leads = $query->orderBy('latest_schedule_date', 'desc')->paginate($perPage)->withQueryString();
+        } else {
+            $leads = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
+        }
 
         // Total Followups for filtered salesperson
         $totalCallingFollowupsFiltered = 0;

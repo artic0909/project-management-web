@@ -548,6 +548,9 @@
                                 </th>
                                 @endif
                                 <th>SL</th>
+                                @if(in_array(request('type'), ['followup_today', 'followup_pending', 'followup_future']))
+                                <th>Schedule Date</th>
+                                @endif
                                 <th>Date</th>
                                 @if(!($routePrefix == 'sale'))
                                 <th>Lead</th>
@@ -588,6 +591,25 @@
                                 </td>
                                 @endif
                                 <td>{{ $leads->firstItem() + $index }}</td>
+                                @if(in_array(request('type'), ['followup_today', 'followup_pending', 'followup_future']))
+                                <td>
+                                    @if($lead->latest_schedule_date)
+                                        @php
+                                            $parsedDate = \Carbon\Carbon::parse($lead->latest_schedule_date);
+                                        @endphp
+                                        <div class="ls" style="font-size:12px; font-weight:700; color:var(--accent);">
+                                            <i class="bi bi-clock-history"></i> 
+                                            @if($parsedDate->format('H:i') === '00:00')
+                                                {{ $parsedDate->format('d M Y') }}
+                                            @else
+                                                {{ $parsedDate->format('d M Y, h:i A') }}
+                                            @endif
+                                        </div>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                @endif
                                 <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $lead->created_at->format('d M Y') }}</div></td>
                                 @if(!($routePrefix == 'sale'))
                                 <td>

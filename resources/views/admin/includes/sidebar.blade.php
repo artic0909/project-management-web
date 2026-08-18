@@ -23,11 +23,17 @@
     $routePrefix = $guard === 'admin' ? 'admin.' : ($guard === 'sale' ? 'sale.' : '');
 
     $isLeadsActive = request()->routeIs($routePrefix . 'leads*');
+    $isLeadsActive = request()->routeIs($routePrefix . 'leads*') && !request()->routeIs($routePrefix . 'leads.followup');
     $isLostedLeadsActive = request()->routeIs($routePrefix . 'losted-leads') || request()->routeIs($routePrefix . 'losted-leads.show');
 
     if (request()->routeIs($routePrefix . 'leads.followup') && isset($model) && $model->is_losted) {
         $isLeadsActive = false;
         $isLostedLeadsActive = true;
+    }
+
+    $isFollowupsActive = request()->routeIs($routePrefix . 'leads.index') && in_array(request('type'), ['followup_today', 'followup_pending', 'followup_future']);
+    if ($isFollowupsActive) {
+        $isLeadsActive = false;
     }
   @endphp
 
@@ -95,6 +101,28 @@
             </a>
           </div>
         </div>
+
+        <div class="nav-dropdown {{ $isFollowupsActive ? 'open' : '' }}">
+          <a class="nav-item nav-dropdown-toggle {{ $isFollowupsActive ? 'active' : '' }}" href="javascript:void(0)" onclick="toggleNavDropdown(this)">
+            <i class="bi bi-calendar2-check"></i>
+            <span>Lead Followups</span>
+            <i class="bi bi-chevron-down nav-dropdown-chevron" style="margin-left: auto; font-size: 11px; transition: transform 0.2s ease; {{ $isFollowupsActive ? 'transform: rotate(180deg);' : '' }}"></i>
+          </a>
+          <div class="nav-dropdown-menu" style="padding-left: 14px; {{ $isFollowupsActive ? 'display: block;' : 'display: none;' }}">
+            <a class="nav-item nav-sub-item {{ ($isFollowupsActive && request('type') === 'followup_today') ? 'active' : '' }}"
+              href="{{ route('sale.leads.index', ['type' => 'followup_today']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-calendar-event" style="font-size: 13px;"></i><span>Today Followup</span>
+            </a>
+            <a class="nav-item nav-sub-item {{ ($isFollowupsActive && request('type') === 'followup_pending') ? 'active' : '' }}"
+              href="{{ route('sale.leads.index', ['type' => 'followup_pending']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-clock-history" style="font-size: 13px;"></i><span>Pending Followup</span>
+            </a>
+            <a class="nav-item nav-sub-item {{ ($isFollowupsActive && request('type') === 'followup_future') ? 'active' : '' }}"
+              href="{{ route('sale.leads.index', ['type' => 'followup_future']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-calendar-plus" style="font-size: 13px;"></i><span>Future Followup</span>
+            </a>
+          </div>
+        </div>
       @elseif($guard === 'admin')
         <div class="nav-dropdown {{ $isLeadsActive ? 'open' : '' }}">
           <a class="nav-item nav-dropdown-toggle {{ $isLeadsActive ? 'active' : '' }}" href="javascript:void(0)" onclick="toggleNavDropdown(this)">
@@ -112,6 +140,28 @@
               href="{{ route('admin.leads.index', ['type' => 'total']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
               <i class="bi bi-collection" style="font-size: 13px;"></i><span>Total Leads</span>
               <span class="nav-count">{{ $totalLeadCount ?? 0 }}</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-dropdown {{ $isFollowupsActive ? 'open' : '' }}">
+          <a class="nav-item nav-dropdown-toggle {{ $isFollowupsActive ? 'active' : '' }}" href="javascript:void(0)" onclick="toggleNavDropdown(this)">
+            <i class="bi bi-calendar2-check"></i>
+            <span>Lead Followups</span>
+            <i class="bi bi-chevron-down nav-dropdown-chevron" style="margin-left: auto; font-size: 11px; transition: transform 0.2s ease; {{ $isFollowupsActive ? 'transform: rotate(180deg);' : '' }}"></i>
+          </a>
+          <div class="nav-dropdown-menu" style="padding-left: 14px; {{ $isFollowupsActive ? 'display: block;' : 'display: none;' }}">
+            <a class="nav-item nav-sub-item {{ ($isFollowupsActive && request('type') === 'followup_today') ? 'active' : '' }}"
+              href="{{ route('admin.leads.index', ['type' => 'followup_today']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-calendar-event" style="font-size: 13px;"></i><span>Today Followup</span>
+            </a>
+            <a class="nav-item nav-sub-item {{ ($isFollowupsActive && request('type') === 'followup_pending') ? 'active' : '' }}"
+              href="{{ route('admin.leads.index', ['type' => 'followup_pending']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-clock-history" style="font-size: 13px;"></i><span>Pending Followup</span>
+            </a>
+            <a class="nav-item nav-sub-item {{ ($isFollowupsActive && request('type') === 'followup_future') ? 'active' : '' }}"
+              href="{{ route('admin.leads.index', ['type' => 'followup_future']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-calendar-plus" style="font-size: 13px;"></i><span>Future Followup</span>
             </a>
           </div>
         </div>
