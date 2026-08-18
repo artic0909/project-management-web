@@ -27,8 +27,11 @@
     $isLostedLeadsActive = request()->routeIs($routePrefix . 'losted-leads') || request()->routeIs($routePrefix . 'losted-leads.show');
 
     if (request()->routeIs($routePrefix . 'leads.followup') && isset($model) && $model->is_losted) {
-        $isLeadsActive = false;
         $isLostedLeadsActive = true;
+    }
+
+    if ($isLostedLeadsActive) {
+        $isLeadsActive = true;
     }
 
     $isFollowupsActive = request()->routeIs($routePrefix . 'leads.index') && in_array(request('type'), ['followup_today', 'followup_pending', 'followup_future']);
@@ -112,6 +115,11 @@
               <i class="bi bi-collection" style="font-size: 13px;"></i><span>Total Leads</span>
               <span class="nav-count">{{ $totalLeadCount ?? 0 }}</span>
             </a>
+            <a class="nav-item nav-sub-item {{ $isLostedLeadsActive ? 'active' : '' }}"
+              href="{{ route('sale.losted-leads') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-ban" style="font-size: 13px;"></i><span>Losted Leads</span>
+              <span class="nav-count">{{ $lostLeadCount ?? 0 }}</span>
+            </a>
           </div>
         </div>
 
@@ -152,10 +160,15 @@
               <i class="bi bi-plus-circle" style="font-size: 13px;"></i><span>New Leads</span>
               <span class="nav-count">{{ $newLeadCount ?? 0 }}</span>
             </a>
-            <a class="nav-item nav-sub-item {{ ($isLeadsActive && (request('type') === 'total' || !request('type'))) ? 'active' : '' }}"
+            <a class="nav-item nav-sub-item {{ ($isLeadsActive && (request('type') === 'total' || (!request('type') && !$isLostedLeadsActive))) ? 'active' : '' }}"
               href="{{ route('admin.leads.index', ['type' => 'total']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
               <i class="bi bi-collection" style="font-size: 13px;"></i><span>Total Leads</span>
               <span class="nav-count">{{ $totalLeadCount ?? 0 }}</span>
+            </a>
+            <a class="nav-item nav-sub-item {{ $isLostedLeadsActive ? 'active' : '' }}"
+              href="{{ route('admin.losted-leads') }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-ban" style="font-size: 13px;"></i><span>Losted Leads</span>
+              <span class="nav-count">{{ $lostLeadCount ?? 0 }}</span>
             </a>
           </div>
         </div>
@@ -256,12 +269,6 @@
           </a>
         </div>
       </div>
-
-      <a class="nav-item {{ $isLostedLeadsActive ? 'active' : '' }}"
-        href="{{ route($routePrefix . 'losted-leads') }}">
-        <i class="bi bi-ban"></i><span>Losted Leads</span>
-        <span class="nav-count">{{ $lostLeadCount }}</span>
-      </a>
 
       <a class="nav-item {{ request()->routeIs($routePrefix . 'meetings*') ? 'active' : '' }}"
         href="{{ route($routePrefix . 'meetings.index') }}">
