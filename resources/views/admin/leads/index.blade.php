@@ -737,7 +737,7 @@
                                                         <div class="form-row">
                                                             <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Schedule Next <span style="color:#ef4444">*</span></label>
                                                             <select name="schedule_type" class="form-inp" required onchange="const c = this.nextElementSibling; if(this.value==='Custom') c.style.display='block'; else c.style.display='none';" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
-                                                                <option value="None">No Schedule</option>
+                                                                <option value="Today">Today</option>
                                                                 <option value="Tomorrow">Tomorrow</option>
                                                                 <option value="After 2 Days">After 2 days</option>
                                                                 <option value="After 3 Days">After 3 days</option>
@@ -846,7 +846,13 @@
                                                             @if($followup->next_schedule_date)
                                                                 <div style="border-left:3px solid #6366f1;padding-left:10px;">
                                                                     <p style="font-size:10.5px;font-weight:800;color:var(--t4);margin:0 0 2px;text-transform:uppercase;">Next Schedule</p>
-                                                                    <p style="font-size:13.5px;color:var(--accent);margin:0;line-height:1.6;font-weight:700;"><i class="bi bi-clock-history"></i> {{ $followup->next_schedule_date->format('d M Y, h:i A') }}</p>
+                                                                    <p style="font-size:13.5px;color:var(--accent);margin:0;line-height:1.6;font-weight:700;"><i class="bi bi-clock-history"></i>
+                                                                        @if($followup->next_schedule_date->format('H:i') === '00:00')
+                                                                            {{ $followup->next_schedule_date->format('d M Y') }}
+                                                                        @else
+                                                                            {{ $followup->next_schedule_date->format('d M Y, h:i A') }}
+                                                                        @endif
+                                                                    </p>
                                                                 </div>
                                                             @endif
                                                         </div>

@@ -73,8 +73,10 @@ class FollowupController extends Controller
         }
 
         $nextScheduleDate = null;
-        if ($request->schedule_type && $request->schedule_type !== 'None') {
-            if ($request->schedule_type === 'Tomorrow') {
+        if ($request->schedule_type) {
+            if ($request->schedule_type === 'Today') {
+                $nextScheduleDate = \Carbon\Carbon::today();
+            } elseif ($request->schedule_type === 'Tomorrow') {
                 $nextScheduleDate = \Carbon\Carbon::tomorrow();
             } elseif ($request->schedule_type === 'After 2 Days') {
                 $nextScheduleDate = \Carbon\Carbon::today()->addDays(2);
