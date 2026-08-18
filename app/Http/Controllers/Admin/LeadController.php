@@ -242,6 +242,9 @@ class LeadController extends Controller
             $nums = $request->input('phone', []);
             foreach ($nums as $idx => $num) {
                 if (!empty($num)) {
+                    if (Lead::where('phones', 'like', '%"number":"' . $num . '"%')->exists()) {
+                        return redirect()->back()->withInput()->with('error', "The phone number {$num} already exists in another lead.");
+                    }
                     $phones[] = [
                         'code_idx' => $codes[$idx] ?? null,
                         'number' => $num
@@ -384,6 +387,9 @@ class LeadController extends Controller
             $nums = $request->input('phone', []);
             foreach ($nums as $idx => $num) {
                 if (!empty($num)) {
+                    if (Lead::where('id', '!=', $id)->where('phones', 'like', '%"number":"' . $num . '"%')->exists()) {
+                        return redirect()->back()->withInput()->with('error', "The phone number {$num} already exists in another lead.");
+                    }
                     $phones[] = [
                         'code_idx' => $codes[$idx] ?? null,
                         'number' => $num
