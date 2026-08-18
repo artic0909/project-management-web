@@ -179,11 +179,8 @@ class LeadController extends Controller
         $followupQuery = \App\Models\Followup::whereHasMorph(
             'followable',
             [\App\Models\Lead::class],
-            function ($q) use ($currentSaleId, $currentSaleType) {
-                $q->where(function($sq) use ($currentSaleId, $currentSaleType) {
-                    $sq->where('created_by', $currentSaleId)
-                       ->where('created_by_type', $currentSaleType);
-                })->orWhereHas('assignments', function($sq) use ($currentSaleId) {
+            function ($q) use ($currentSaleId) {
+                $q->whereHas('assignments', function($sq) use ($currentSaleId) {
                     $sq->where('assigned_to', $currentSaleId);
                 });
             }
@@ -520,11 +517,8 @@ class LeadController extends Controller
         $followupQuery = \App\Models\Followup::whereHasMorph(
             'followable',
             [\App\Models\Lead::class],
-            function ($q) use ($currentSaleId, $currentSaleType) {
-                $q->where(function($sq) use ($currentSaleId, $currentSaleType) {
-                    $sq->where('created_by', $currentSaleId)
-                       ->where('created_by_type', $currentSaleType);
-                })->orWhereHas('assignments', function($sq) use ($currentSaleId) {
+            function ($q) use ($currentSaleId) {
+                $q->whereHas('assignments', function($sq) use ($currentSaleId) {
                     $sq->where('assigned_to', $currentSaleId);
                 });
             }
