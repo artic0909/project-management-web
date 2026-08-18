@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Followup extends Model
 {
     protected $fillable = [
-        'followable_id', 'followable_type', 'followup_date', 
+        'followable_id', 'followable_type', 'followup_date', 'next_schedule_date',
         'followup_type', 'calling_note', 'message_note', 
         'status', 'created_by_id', 'created_by_type'
     ];

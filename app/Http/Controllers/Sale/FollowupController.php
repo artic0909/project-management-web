@@ -101,9 +101,32 @@ class FollowupController extends Controller
             ]);
         }
 
+        $nextScheduleDate = null;
+        if ($request->schedule_type && $request->schedule_type !== 'None') {
+            if ($request->schedule_type === 'Tomorrow') {
+                $nextScheduleDate = \Carbon\Carbon::tomorrow();
+            } elseif ($request->schedule_type === 'After 2 Days') {
+                $nextScheduleDate = \Carbon\Carbon::today()->addDays(2);
+            } elseif ($request->schedule_type === 'After 3 Days') {
+                $nextScheduleDate = \Carbon\Carbon::today()->addDays(3);
+            } elseif ($request->schedule_type === 'After 5 Days') {
+                $nextScheduleDate = \Carbon\Carbon::today()->addDays(5);
+            } elseif ($request->schedule_type === 'After 7 Days') {
+                $nextScheduleDate = \Carbon\Carbon::today()->addDays(7);
+            } elseif ($request->schedule_type === 'Custom' && $request->custom_schedule_date) {
+                $nextScheduleDate = \Carbon\Carbon::parse($request->custom_schedule_date);
+            }
+
+            if ($nextScheduleDate && $request->schedule_time) {
+                $time = \Carbon\Carbon::parse($request->schedule_time);
+                $nextScheduleDate->setTime($time->hour, $time->minute, 0);
+            }
+        }
+
         if ($request->followup_type !== 'None') {
             $model->followups()->create([
                 'followup_date' => $request->followup_date,
+                'next_schedule_date' => $nextScheduleDate,
                 'followup_type' => $request->followup_type,
                 'calling_note' => $request->calling_note,
                 'message_note' => $request->message_note,

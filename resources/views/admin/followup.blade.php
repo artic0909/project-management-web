@@ -249,10 +249,25 @@
                                 </div>
                             </div>
                             <div class="card-body" style="padding:14px 18px 20px;">
-                                <div class="form-grid">
+                                <div class="form-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-bottom:16px;">
                                     <div class="form-row">
                                         <label class="form-lbl">Followup Date <span style="color:#ef4444">*</span></label>
                                         <input type="datetime-local" name="followup_date" class="form-inp" value="{{ date('Y-m-d\TH:i') }}" max="{{ date('Y-m-d\TH:i') }}" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <label class="form-lbl">Schedule Next <span style="color:#ef4444">*</span></label>
+                                        <select name="schedule_type" class="form-inp" required onchange="const c = this.nextElementSibling; if(this.value==='Custom') c.style.display='block'; else c.style.display='none';">
+                                            <option value="None">No Schedule</option>
+                                            <option value="Tomorrow">Tomorrow</option>
+                                            <option value="After 2 Days">After 2 days</option>
+                                            <option value="After 3 Days">After 3 days</option>
+                                            <option value="After 5 Days">After 5 days</option>
+                                            <option value="After 7 Days">After 7 days</option>
+                                            <option value="Custom">Custom Date</option>
+                                        </select>
+                                        <div style="display:none; margin-top:8px;">
+                                            <input type="date" name="custom_schedule_date" class="form-inp">
+                                        </div>
                                     </div>
                                     <div class="form-row">
                                         <label class="form-lbl">Interaction Vector <span style="color:#ef4444">*</span></label>
@@ -263,13 +278,21 @@
                                             <option value="Both" selected>Both</option>
                                         </select>
                                     </div>
-                                    <div class="form-row" style="grid-column:1/-1;">
+                                </div>
+                                <div class="form-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px; margin-bottom:16px;">
+                                    <div class="form-row" style="margin-bottom:0;">
                                         <label class="form-lbl" id="callingLabel">Voice Communication Intelligence (Calling Note)</label>
                                         <textarea name="calling_note" class="form-inp" rows="2" placeholder="What was discussed during the call?"></textarea>
                                     </div>
-                                    <div class="form-row" style="grid-column:1/-1;margin-bottom:0;">
+                                    <div class="form-row" style="margin-bottom:0;">
                                         <label class="form-lbl" id="messageLabel">Text Communication Records (Message Note)</label>
                                         <textarea name="message_note" class="form-inp" rows="2" placeholder="Summary of messages, emails, or drafts sent…"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-grid" style="display:grid; grid-template-columns: 1fr; gap:16px;">
+                                    <div class="form-row" style="width: 32%; margin-bottom:0;">
+                                        <label class="form-lbl">Set Schedule Time <span style="font-size:10px;color:var(--t4);">(Optional)</span></label>
+                                        <input type="time" name="schedule_time" class="form-inp">
                                     </div>
                                 </div>
                                 <div style="display:flex;justify-content:flex-end;margin-top:16px;">
@@ -345,10 +368,25 @@
                                 @if(!empty($returnUrl))
                                     <input type="hidden" name="return_url" value="{{ $returnUrl }}">
                                 @endif
-                                <div class="form-grid">
+                                <div class="form-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-bottom:16px;">
                                     <div class="form-row">
                                         <label class="form-lbl">Transaction Date <span style="color:#ef4444">*</span></label>
                                         <input type="datetime-local" name="followup_date" class="form-inp" value="{{ date('Y-m-d\TH:i') }}" max="{{ date('Y-m-d\TH:i') }}" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <label class="form-lbl">Schedule Next <span style="color:#ef4444">*</span></label>
+                                        <select name="schedule_type" class="form-inp" required onchange="const c = this.nextElementSibling; if(this.value==='Custom') c.style.display='block'; else c.style.display='none';">
+                                            <option value="None">No Schedule</option>
+                                            <option value="Tomorrow">Tomorrow</option>
+                                            <option value="After 2 Days">After 2 days</option>
+                                            <option value="After 3 Days">After 3 days</option>
+                                            <option value="After 5 Days">After 5 days</option>
+                                            <option value="After 7 Days">After 7 days</option>
+                                            <option value="Custom">Custom Date</option>
+                                        </select>
+                                        <div style="display:none; margin-top:8px;">
+                                            <input type="date" name="custom_schedule_date" class="form-inp">
+                                        </div>
                                     </div>
                                     <div class="form-row">
                                         <label class="form-lbl">Interaction Vector</label>
@@ -358,13 +396,21 @@
                                             <option value="Both" selected>Both (Call & Message)</option>
                                         </select>
                                     </div>
-                                    <div class="form-row" style="grid-column:1/-1;">
-                                        <label class="form-lbl" id="callingLabel">Voice Communication Intelligence (Calling Note)</label>
+                                </div>
+                                <div class="form-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px; margin-bottom:16px;">
+                                    <div class="form-row" style="margin-bottom:0;">
+                                        <label class="form-lbl" id="callingLabelOrder">Voice Communication Intelligence (Calling Note)</label>
                                         <textarea name="calling_note" class="form-inp" rows="2" placeholder="What was discussed during the call?"></textarea>
                                     </div>
-                                    <div class="form-row" style="grid-column:1/-1;margin-bottom:0;">
-                                        <label class="form-lbl" id="messageLabel">Text Communication Records (Message Note)</label>
+                                    <div class="form-row" style="margin-bottom:0;">
+                                        <label class="form-lbl" id="messageLabelOrder">Text Communication Records (Message Note)</label>
                                         <textarea name="message_note" class="form-inp" rows="2" placeholder="Summary of messages, emails, or drafts sent…"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-grid" style="display:grid; grid-template-columns: 1fr; gap:16px;">
+                                    <div class="form-row" style="width: 32%; margin-bottom:0;">
+                                        <label class="form-lbl">Set Schedule Time <span style="font-size:10px;color:var(--t4);">(Optional)</span></label>
+                                        <input type="time" name="schedule_time" class="form-inp">
                                     </div>
                                 </div>
                                 <div style="display:flex;justify-content:flex-end;margin-top:16px;">
@@ -506,16 +552,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (val === 'Calling') {
             callingArea.style.display = 'block';
             messageArea.style.display = 'none';
+            callingArea.style.gridColumn = '1 / -1';
             callingInp.required = true;
             callingLbl.innerHTML = callingOrig + star;
         } else if (val === 'Message') {
             callingArea.style.display = 'none';
             messageArea.style.display = 'block';
+            messageArea.style.gridColumn = '1 / -1';
             messageInp.required = true;
             messageLbl.innerHTML = messageOrig + star;
         } else if (val === 'Both') {
             callingArea.style.display = 'block';
             messageArea.style.display = 'block';
+            callingArea.style.gridColumn = 'auto';
+            messageArea.style.gridColumn = 'auto';
             callingInp.required = true;
             messageInp.required = true;
             callingLbl.innerHTML = callingOrig + star;
