@@ -3124,12 +3124,11 @@
                     }
                     
                     $totalNotifs = $renewalCount + $followupCount;
-                    $activeNotifs = $renewalCount + $activeFollowupsCount;
                 @endphp
-                <div class="tb-btn notif-btn {{ $activeNotifs > 0 ? 'has-notifs' : '' }}" data-tooltip="Notifications" onclick="toggleNotifPanel()">
-                    <i class="bi bi-bell-fill {{ $activeNotifs > 0 ? 'bell-ringing' : '' }}"></i>
-                    @if($activeNotifs > 0)
-                        <span class="notif-badge">{{ $activeNotifs }}</span>
+                <div class="tb-btn notif-btn {{ $activeFollowupsCount > 0 ? 'has-notifs' : '' }}" data-tooltip="Notifications" onclick="toggleNotifPanel()">
+                    <i class="bi bi-bell-fill {{ $activeFollowupsCount > 0 ? 'bell-ringing' : '' }}"></i>
+                    @if($totalNotifs > 0)
+                        <span class="notif-badge">{{ $totalNotifs }}</span>
                     @endif
                 </div>
 
