@@ -738,6 +738,25 @@
         .notif-btn {
             position: relative;
         }
+        
+        @keyframes bell-ring {
+            0% { transform: rotate(0); }
+            10% { transform: rotate(15deg); }
+            20% { transform: rotate(-10deg); }
+            30% { transform: rotate(5deg); }
+            40% { transform: rotate(-5deg); }
+            50%, 100% { transform: rotate(0); }
+        }
+        .bell-ringing {
+            animation: bell-ring 2s ease-in-out infinite;
+            color: var(--accent) !important;
+            transform-origin: top center;
+            display: inline-block;
+        }
+        .notif-btn.has-notifs {
+            border-color: rgba(99, 102, 241, 0.4);
+            background: rgba(99, 102, 241, 0.1);
+        }
 
         .notif-badge {
             position: absolute;
@@ -3080,13 +3099,13 @@
 
             <div class="topbar-right">
 
-                <div class="tb-btn notif-btn" data-tooltip="Notifications" onclick="toggleNotifPanel()">
-                    <i class="bi bi-bell-fill"></i>
-                    @php
-                        $renewalCount = isset($upcomingRenewals) ? $upcomingRenewals->count() : 0;
-                        $followupCount = isset($todayTimedFollowups) ? $todayTimedFollowups->count() : 0;
-                        $totalNotifs = $renewalCount + $followupCount;
-                    @endphp
+                @php
+                    $renewalCount = isset($upcomingRenewals) ? $upcomingRenewals->count() : 0;
+                    $followupCount = isset($todayTimedFollowups) ? $todayTimedFollowups->count() : 0;
+                    $totalNotifs = $renewalCount + $followupCount;
+                @endphp
+                <div class="tb-btn notif-btn {{ $totalNotifs > 0 ? 'has-notifs' : '' }}" data-tooltip="Notifications" onclick="toggleNotifPanel()">
+                    <i class="bi bi-bell-fill {{ $totalNotifs > 0 ? 'bell-ringing' : '' }}"></i>
                     @if($totalNotifs > 0)
                         <span class="notif-badge">{{ $totalNotifs }}</span>
                     @endif
