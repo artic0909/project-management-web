@@ -107,8 +107,8 @@
             <!-- LEFT: Profile & Identity (Lead/Order Info Card) -->
             <div class="span-4" style="display:flex; flex-direction:column; gap:16px;">
                 <div class="dash-card" style="height:fit-content;">
-                    <div class="card-head" style="padding:16px 18px;">
-                        <div class="card-title">Identity & Profile</div>
+                    <div class="card-head" style="padding:16px 18px; justify-content:center;">
+                        <div class="card-title" style="text-align:center; width:100%;">Identity & Profile</div>
                     </div>
                     <div class="card-body" style="padding:0 18px 24px;">
 
