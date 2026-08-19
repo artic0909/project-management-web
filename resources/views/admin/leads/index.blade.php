@@ -292,6 +292,18 @@
         <!-- SUMMARY STAT BOXES -->
         <div class="stat-grid-wrap" style="margin-bottom:20px;">
 
+
+            {{-- Row 1: Overview (2) + Priority (4) = 6 --}}
+
+            <div class="stat-box" style="--sb-color:#6366f1;">
+                <div class="sb-icon"><i class="bi bi-people-fill"></i></div>
+                <div class="sb-content">
+                    <div class="sb-cat" style="--cat-color:#6366f1;">Overview</div>
+                    <div class="sb-val">{{ $totalLeads }}</div>
+                    <div class="sb-lbl">Total Leads</div>
+                </div>
+            </div>
+
             @if(request('assigned_to'))
                 @php
                     $selectedSalesPerson = $sales->where('id', request('assigned_to'))->first();
@@ -343,16 +355,7 @@
             </div>
             @endif
 
-            {{-- Row 1: Overview (2) + Priority (4) = 6 --}}
 
-            <div class="stat-box" style="--sb-color:#6366f1;">
-                <div class="sb-icon"><i class="bi bi-people-fill"></i></div>
-                <div class="sb-content">
-                    <div class="sb-cat" style="--cat-color:#6366f1;">Overview</div>
-                    <div class="sb-val">{{ $totalLeads }}</div>
-                    <div class="sb-lbl">Total Leads</div>
-                </div>
-            </div>
 
             @if(($priorityCounts['Hot 🔥'] ?? 0) > 0)
             <div class="stat-box" style="--sb-color:#ef4444;">
