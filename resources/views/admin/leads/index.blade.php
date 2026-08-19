@@ -814,7 +814,7 @@
                                                                 cInp.required = (val === 'Calling' || val === 'Both');
                                                                 mInp.required = (val === 'Message' || val === 'Both');
                                                             ">
-                                                                <option value="None">None (Update Status/Priority Only)</option>
+                                                                <!-- <option value="None">None (Update Status/Priority Only)</option> -->
                                                                 <option value="Calling">Calling</option>
                                                                 <option value="Message">Message</option>
                                                                 <option value="Both" selected>Both</option>
