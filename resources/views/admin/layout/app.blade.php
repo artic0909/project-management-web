@@ -758,6 +758,12 @@
             background: rgba(99, 102, 241, 0.1);
         }
 
+        @keyframes red-wave {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
         .notif-badge {
             position: absolute;
             top: -3px;
@@ -773,6 +779,7 @@
             align-items: center;
             justify-content: center;
             border: 2px solid var(--bg2);
+            animation: red-wave 1.5s infinite;
         }
 
         .tb-divider {
@@ -3102,12 +3109,27 @@
                 @php
                     $renewalCount = isset($upcomingRenewals) ? $upcomingRenewals->count() : 0;
                     $followupCount = isset($todayTimedFollowups) ? $todayTimedFollowups->count() : 0;
+                    
+                    $activeFollowupsCount = 0;
+                    if (isset($todayTimedFollowups)) {
+                        $nowPlus15 = \Carbon\Carbon::now()->addMinutes(15);
+                        foreach($todayTimedFollowups as $lead) {
+                            $latestFollowup = $lead->followups->first();
+                            if ($latestFollowup && $latestFollowup->next_schedule_date) {
+                                if (\Carbon\Carbon::parse($latestFollowup->next_schedule_date)->lte($nowPlus15)) {
+                                    $activeFollowupsCount++;
+                                }
+                            }
+                        }
+                    }
+                    
                     $totalNotifs = $renewalCount + $followupCount;
+                    $activeNotifs = $renewalCount + $activeFollowupsCount;
                 @endphp
-                <div class="tb-btn notif-btn {{ $totalNotifs > 0 ? 'has-notifs' : '' }}" data-tooltip="Notifications" onclick="toggleNotifPanel()">
-                    <i class="bi bi-bell-fill {{ $totalNotifs > 0 ? 'bell-ringing' : '' }}"></i>
-                    @if($totalNotifs > 0)
-                        <span class="notif-badge">{{ $totalNotifs }}</span>
+                <div class="tb-btn notif-btn {{ $activeNotifs > 0 ? 'has-notifs' : '' }}" data-tooltip="Notifications" onclick="toggleNotifPanel()">
+                    <i class="bi bi-bell-fill {{ $activeNotifs > 0 ? 'bell-ringing' : '' }}"></i>
+                    @if($activeNotifs > 0)
+                        <span class="notif-badge">{{ $activeNotifs }}</span>
                     @endif
                 </div>
 

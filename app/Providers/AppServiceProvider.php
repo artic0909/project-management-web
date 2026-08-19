@@ -149,7 +149,6 @@ class AppServiceProvider extends ServiceProvider
                                 ->where('followable_type', \App\Models\Lead::class);
                         })->whereDate('next_schedule_date', $today)
                           ->whereTime('next_schedule_date', '!=', '00:00:00')
-                          ->where('next_schedule_date', '<=', \Carbon\Carbon::now()->addMinutes(15))
                           ->where('is_notif_read', 0);
                     })->with(['followups' => function($q) {
                         $q->orderBy('id', 'desc');
@@ -293,7 +292,6 @@ class AppServiceProvider extends ServiceProvider
                                 ->where('followable_type', \App\Models\Lead::class);
                         })->whereDate('next_schedule_date', $today)
                           ->whereTime('next_schedule_date', '!=', '00:00:00')
-                          ->where('next_schedule_date', '<=', \Carbon\Carbon::now()->addMinutes(15))
                           ->where('is_notif_read', 0);
                     })->with(['followups' => function($q) {
                         $q->orderBy('id', 'desc');
