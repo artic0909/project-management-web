@@ -308,6 +308,22 @@
                 @endif
             @endif
 
+@php
+    $showCallingMessageStats = false;
+    if (isset($routePrefix) && $routePrefix === 'sale') {
+        // Sales Side: Show only in "My Leads" tab (where type is neither 'new' nor 'total')
+        if (request('type') !== 'new' && request('type') !== 'total') {
+            $showCallingMessageStats = true;
+        }
+    } else {
+        // Admin Side: Show only in "Total Leads" tab (where type is not 'new')
+        if (request('type') !== 'new') {
+            $showCallingMessageStats = true;
+        }
+    }
+@endphp
+
+            @if($showCallingMessageStats)
             <div class="stat-box" style="--sb-color:#0ea5e9; border: 2px solid #0ea5e9;">
                 <div class="sb-icon"><i class="bi bi-telephone-fill"></i></div>
                 <div class="sb-content">
@@ -325,6 +341,7 @@
                     <div class="sb-lbl">Total Message</div>
                 </div>
             </div>
+            @endif
 
             {{-- Row 1: Overview (2) + Priority (4) = 6 --}}
 
