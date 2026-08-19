@@ -258,12 +258,12 @@
                                         <label class="form-lbl">Schedule Next <span style="color:#ef4444">*</span></label>
                                         <select name="schedule_type" class="form-inp" required onchange="const c = this.nextElementSibling; if(this.value==='Custom') c.style.display='block'; else c.style.display='none';">
                                             <option value="Today">Today</option>
-                                            <option value="No Schedule">No Schedule</option>
                                             <option value="Tomorrow">Tomorrow</option>
                                             <option value="After 2 Days">After 2 days</option>
                                             <option value="After 3 Days">After 3 days</option>
                                             <option value="After 5 Days">After 5 days</option>
                                             <option value="After 7 Days">After 7 days</option>
+                                            <option value="No Schedule">Closed Schedule</option>
                                             <option value="Custom">Custom Date</option>
                                         </select>
                                         <div style="display:none; margin-top:8px;">
@@ -383,8 +383,8 @@
                                             <option value="After 3 Days">After 3 days</option>
                                             <option value="After 5 Days">After 5 days</option>
                                             <option value="After 7 Days">After 7 days</option>
+                                            <option value="No Schedule">Closed Schedule</option>
                                             <option value="Custom">Custom Date</option>
-                                            <option value="No Schedule">No Schedule</option>
                                         </select>
                                         <div style="display:none; margin-top:8px;">
                                             <input type="date" name="custom_schedule_date" class="form-inp">

@@ -765,12 +765,12 @@
                                                             <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Schedule Next <span style="color:#ef4444">*</span></label>
                                                             <select name="schedule_type" class="form-inp" required onchange="const c = this.nextElementSibling; if(this.value==='Custom') c.style.display='block'; else c.style.display='none';" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
                                                                 <option value="Today">Today</option>
-                                                                <option value="No Schedule">No Schedule</option>
                                                                 <option value="Tomorrow">Tomorrow</option>
                                                                 <option value="After 2 Days">After 2 days</option>
                                                                 <option value="After 3 Days">After 3 days</option>
                                                                 <option value="After 5 Days">After 5 days</option>
                                                                 <option value="After 7 Days">After 7 days</option>
+                                                                <option value="No Schedule">Closed Schedule</option>
                                                                 <option value="Custom">Custom Date</option>
                                                             </select>
                                                             <div style="display:none; margin-top:8px;">
