@@ -725,7 +725,7 @@
                                                     </div>
                                                 </div> -->
                                                 <div class="card-body" style="padding:14px 18px 20px;">
-                                                    <div class="form-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                                                    <div class="form-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:16px;">
                                                         <div class="form-row">
                                                             <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Change Status <span style="color:#ef4444">*</span></label>
                                                             <select name="status_id" class="form-inp" required style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
@@ -744,6 +744,10 @@
                                                                 <option value="Cold" {{ $lead->priority == 'Cold' ? 'selected' : '' }}>Cold</option>
                                                             </select>
                                                         </div>
+                                                        <div class="form-row">
+                                                            <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Followup Date <span style="color:#ef4444">*</span></label>
+                                                            <input type="datetime-local" name="followup_date" class="form-inp" value="{{ date('Y-m-d\TH:i') }}" max="{{ date('Y-m-d\TH:i') }}" required style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
+                                                        </div>
                                                     </div>
                                                 </div>
 
@@ -757,10 +761,6 @@
                                                 </div> -->
                                                 <div class="card-body" style="padding:14px 18px 20px;">
                                                     <div class="form-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:16px;">
-                                                        <div class="form-row">
-                                                            <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Followup Date <span style="color:#ef4444">*</span></label>
-                                                            <input type="datetime-local" name="followup_date" class="form-inp" value="{{ date('Y-m-d\TH:i') }}" max="{{ date('Y-m-d\TH:i') }}" required style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
-                                                        </div>
                                                         <div class="form-row">
                                                             <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Schedule Next <span style="color:#ef4444">*</span></label>
                                                             <select name="schedule_type" class="form-inp" required onchange="const c = this.nextElementSibling; if(this.value==='Custom') c.style.display='block'; else c.style.display='none';" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
@@ -776,6 +776,10 @@
                                                             <div style="display:none; margin-top:8px;">
                                                                 <input type="date" name="custom_schedule_date" class="form-inp" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
                                                             </div>
+                                                        </div>
+                                                        <div class="form-row">
+                                                            <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Set Schedule Time <span style="font-size:10px;color:var(--t4);">(Optional)</span></label>
+                                                            <input type="time" name="schedule_time" class="form-inp" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
                                                         </div>
                                                         <div class="form-row">
                                                             <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Interaction Vector <span style="color:#ef4444">*</span></label>
@@ -808,12 +812,6 @@
                                                         <div class="form-row message-note-row" style="margin-bottom:0; display:block;">
                                                             <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Message Note <span style="color:#ef4444">*</span></label>
                                                             <textarea name="message_note" class="form-inp" rows="2" placeholder="Summary of messages, emails, or drafts sent…" required style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none; resize:vertical;"></textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-grid" style="display:grid; grid-template-columns:1fr; gap:16px;">
-                                                        <div class="form-row" style="width: 32%; margin-bottom:0;">
-                                                            <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Set Schedule Time <span style="font-size:10px;color:var(--t4);">(Optional)</span></label>
-                                                            <input type="time" name="schedule_time" class="form-inp" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
                                                         </div>
                                                     </div>
                                                     <div style="display:flex;justify-content:flex-end;margin-top:16px;">
