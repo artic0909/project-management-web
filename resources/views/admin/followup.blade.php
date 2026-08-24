@@ -277,7 +277,7 @@
                                     <div class="form-row">
                                         <label class="form-lbl">Interaction Vector <span style="color:#ef4444">*</span></label>
                                         <select name="followup_type" class="form-inp" required>
-                                            <!-- <option value="None">None (Update Status/Priority Only)</option> -->
+                                            <option value="None">None</option>
                                             <option value="Calling">Calling</option>
                                             <option value="Message">Message</option>
                                             <option value="Both" selected>Both</option>
@@ -391,9 +391,10 @@
                                     <div class="form-row">
                                         <label class="form-lbl">Interaction Vector</label>
                                         <select name="followup_type" class="form-inp">
+                                            <option value="None">None</option>
                                             <option value="Calling">Calling</option>
                                             <option value="Message">Message</option>
-                                            <!-- <option value="Both" selected>Both (Call & Message)</option> -->
+                                            <option value="Both" selected>Both</option>
                                         </select>
                                     </div>
                                 </div>
