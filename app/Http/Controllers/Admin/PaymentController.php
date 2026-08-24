@@ -94,10 +94,10 @@ class PaymentController extends Controller
         $request->validate([
             'order_id' => 'required|exists:orders,id',
             'transaction_date' => 'required|date',
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric|min:0',
             'payment_method' => 'nullable|string',
             'transaction_id' => 'nullable|string',
-            'screenshot' => 'nullable|file|mimes:png,jpg,jpeg,pdf|max:5120',
+            'screenshot' => 'required|file|mimes:png,jpg,jpeg,pdf|max:5120',
             'notes' => 'nullable|string',
         ]);
 

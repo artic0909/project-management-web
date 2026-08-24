@@ -101,17 +101,17 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route($routePrefix . '.payments.store') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route($routePrefix . '.payments.store') }}" method="POST" enctype="multipart/form-data" id="paymentForm">
                             @csrf
                             <input type="hidden" name="order_id" value="{{ $order->id }}">
                             <div class="form-grid">
                                 <div class="form-row">
                                     <label class="form-lbl">Payment Date <span style="color:#ef4444">*</span></label>
-                                    <input type="date" name="transaction_date" class="form-inp" value="{{ date('Y-m-d') }}" required>
+                                    <input type="date" name="transaction_date" class="form-inp" value="{{ date('Y-m-d') }}">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Amount Received (₹) <span style="color:#ef4444">*</span></label>
-                                    <input type="number" name="amount" class="form-inp" placeholder="e.g. 50000" step="0.01" required>
+                                    <input type="number" name="amount" class="form-inp" placeholder="e.g. 50000" step="0.01">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Payment Mode</label>
@@ -129,7 +129,7 @@
                                 </div>
                                 <div class="form-row" style="grid-column:1/-1">
                                     <label class="form-lbl">Payment Proof / Screenshot <span style="color:#ef4444">*</span></label>
-                                    <input type="file" name="screenshot" class="form-inp" accept="image/*,application/pdf" required>
+                                    <input type="file" name="screenshot" class="form-inp" accept="image/*,application/pdf">
                                     <p style="font-size:11px; color:var(--t3); margin-top:4px;">Upload PNG, JPG, or PDF (Max 5MB)</p>
                                     @error('screenshot')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
@@ -237,6 +237,81 @@
     .money-cell { font-family: var(--mono); font-weight: 700; }
     
     .ra-btn.sm { width: 28px; height: 28px; font-size: 12px; }
+    
+    .is-invalid {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1) !important;
+    }
+    .field-error {
+        color: #ef4444;
+        font-size: 11px;
+        font-weight: 600;
+        margin-top: 4px;
+        display: block;
+        animation: fadeInError 0.2s ease;
+    }
+    @keyframes fadeInError {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('paymentForm');
+    if (!form) return;
+
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        form.querySelectorAll('.field-error').forEach(el => el.remove());
+        form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+        function markError(input, msg) {
+            isValid = false;
+            input.classList.add('is-invalid');
+            
+            const err = document.createElement('span');
+            err.className = 'field-error';
+            err.textContent = msg;
+            input.parentNode.appendChild(err);
+
+            input.addEventListener('input', function() {
+                input.classList.remove('is-invalid');
+                if (err.parentNode) err.remove();
+            }, { once: true });
+        }
+
+        const requiredFields = [
+            { name: 'transaction_date', label: 'Payment Date' },
+            { name: 'amount', label: 'Amount Received' },
+            { name: 'screenshot', label: 'Payment Proof / Screenshot' }
+        ];
+
+        requiredFields.forEach(f => {
+            const input = form.querySelector(`[name="${f.name}"]`);
+            if (input) {
+                if (input.type === 'file') {
+                    if (!input.files || input.files.length === 0) {
+                        markError(input, `${f.label} is required.`);
+                    }
+                } else if (!input.value || input.value.trim() === '') {
+                    markError(input, `${f.label} is required.`);
+                }
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+        } else {
+            const btn = form.querySelector('button[type="submit"]');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Recording...';
+            }
+        }
+    });
+});
+</script>
 
 @endsection
