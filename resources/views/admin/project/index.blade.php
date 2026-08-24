@@ -114,81 +114,80 @@
                 <div class="card-head">
                     <div>
                         <div class="card-title">Project Pipeline</div>
-                        <div class="card-sub" id="projectTableSub">{{ $projects->total() }} total projects</div>
+                        <div class="card-sub" id="drpActiveSub">{{ $projects->total() }} total projects</div>
                     </div>
-                    <div class="card-actions mb-2">
-                        <form action="{{ route($routePrefix . '.projects.index') }}" method="GET" class="card-actions mb-0">
-                            <div class="global-search">
-                                <i class="bi bi-search"></i>
-                                <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search projects...">
-                                <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
-                            </div>
-
-                            <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
-                            <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
-                                <i class="bi bi-calendar3"></i>
-                                <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'All Time' }}</span>
-                                <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
-                            </button>
-
-                            <!-- Hidden inputs for date range -->
-                            <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
-                            <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
-
-                            <select name="project_status_id" class="filter-select" onchange="updateFilters()">
-                                <option value="">All Statuses</option>
-                                @foreach($statuses['project_statuses'] as $s)
-                                    <option value="{{ $s->id }}" {{ request('project_status_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
-                                @endforeach
-                            </select>
-
-                            <!-- <select name="payment_status_id" class="filter-select" onchange="updateFilters()">
-                                <option value="">All Payments</option>
-                                @foreach($statuses['payment_statuses'] as $s)
-                                    <option value="{{ $s->id }}" {{ request('payment_status_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
-                                @endforeach
-                            </select> -->
-
-                            <select name="service_id" class="filter-select" onchange="updateFilters()">
-                                <option value="">Services</option>
-                                @foreach($allServices as $service)
-                                    <option value="{{ $service->id }}" {{ request('service_id') == $service->id ? 'selected' : '' }}>{{ $service->name }}</option>
-                                @endforeach
-                            </select>
-
-                            <select name="source_id" class="filter-select" onchange="updateFilters()">
-                                <option value="">Sources</option>
-                                @foreach($allSources as $source)
-                                    <option value="{{ $source->id }}" {{ request('source_id') == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
-                                @endforeach
-                            </select>
-@if($routePrefix == 'admin' || $routePrefix == 'sale')
-                            <select name="assigned_to" class="filter-select" onchange="updateFilters()">
-                                <option value="">Developers</option>
-                                @foreach($allDevelopers as $dev)
-                                    <option value="{{ $dev->id }}" {{ request('assigned_to') == $dev->id ? 'selected' : '' }}>{{ $dev->name }}</option>
-                                @endforeach
-                            </select>
-
-                            <select name="sales_person_id" class="filter-select" onchange="updateFilters()">
-                                <option value="">Sales Person</option>
-                                @foreach($allSales as $sale)
-                                    <option value="{{ $sale->id }}" {{ request('sales_person_id') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
-                                @endforeach
-                            </select>
-                            @endif
-                            <select name="per_page" class="filter-select" onchange="updateFilters()">
-                                <option value="10" {{ (request('per_page') == 10 || !request('per_page')) ? 'selected' : '' }}>10 Rows</option>
-                                <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20 Rows</option>
-                                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Rows</option>
-                                <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 Rows</option>
-                                <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>All Rows</option>
-                            </select>
-                        </form>
-
-                        <div style="position:relative;">
-                            @include('admin.includes.date-range-picker')
+                    
+                    <form action="{{ route($routePrefix . '.projects.index') }}" method="GET" class="card-actions mb-2">
+                        <div class="global-search">
+                            <i class="bi bi-search"></i>
+                            <input type="text" name="q" id="searchQuery" value="{{ request('q') }}" placeholder="Search projects...">
+                            <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
                         </div>
+
+                        <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
+                        <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
+                            <i class="bi bi-calendar3"></i>
+                            <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'All Time' }}</span>
+                            <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
+                        </button>
+
+                        <!-- Hidden inputs for date range -->
+                        <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
+                        <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
+
+                        <select name="project_status_id" class="filter-select" onchange="updateFilters()">
+                            <option value="">All Statuses</option>
+                            @foreach($statuses['project_statuses'] as $s)
+                                <option value="{{ $s->id }}" {{ request('project_status_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
+                            @endforeach
+                        </select>
+
+                        <!-- <select name="payment_status_id" class="filter-select" onchange="updateFilters()">
+                            <option value="">All Payments</option>
+                            @foreach($statuses['payment_statuses'] as $s)
+                                <option value="{{ $s->id }}" {{ request('payment_status_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
+                            @endforeach
+                        </select> -->
+
+                        <select name="service_id" class="filter-select" onchange="updateFilters()">
+                            <option value="">Services</option>
+                            @foreach($allServices as $service)
+                                <option value="{{ $service->id }}" {{ request('service_id') == $service->id ? 'selected' : '' }}>{{ $service->name }}</option>
+                            @endforeach
+                        </select>
+
+                        <select name="source_id" class="filter-select" onchange="updateFilters()">
+                            <option value="">Sources</option>
+                            @foreach($allSources as $source)
+                                <option value="{{ $source->id }}" {{ request('source_id') == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
+                            @endforeach
+                        </select>
+                        @if($routePrefix == 'admin' || $routePrefix == 'sale')
+                        <select name="assigned_to" class="filter-select" onchange="updateFilters()">
+                            <option value="">Developers</option>
+                            @foreach($allDevelopers as $dev)
+                                <option value="{{ $dev->id }}" {{ request('assigned_to') == $dev->id ? 'selected' : '' }}>{{ $dev->name }}</option>
+                            @endforeach
+                        </select>
+
+                        <select name="sales_person_id" class="filter-select" onchange="updateFilters()">
+                            <option value="">Sales Person</option>
+                            @foreach($allSales as $sale)
+                                <option value="{{ $sale->id }}" {{ request('sales_person_id') == $sale->id ? 'selected' : '' }}>{{ $sale->name }}</option>
+                            @endforeach
+                        </select>
+                        @endif
+                        <select name="per_page" class="filter-select" onchange="updateFilters()">
+                            <option value="10" {{ (request('per_page') == 10 || !request('per_page')) ? 'selected' : '' }}>10 Rows</option>
+                            <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20 Rows</option>
+                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Rows</option>
+                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 Rows</option>
+                            <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>All Rows</option>
+                        </select>
+                    </form>
+
+                    <div style="position:relative;">
+                        @include('admin.includes.date-range-picker')
                     </div>
                 </div>
 
