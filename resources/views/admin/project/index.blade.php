@@ -204,6 +204,7 @@
                                 </th>
                                 @endif -->
                                 <th>SL.</th>
+                                <th>Project Date</th>
                                 <th>Project ID</th>
                                 @if($routePrefix == 'admin')
                                 <th>Primary Domain</th>
@@ -212,7 +213,6 @@
                                 <th>Client</th>
                                 <th>CMS</th>
                                 <th>Order Date</th>
-                                <th>Start Date</th>
                                 <th>Delivery</th>
                                 <!-- <th>Sources</th> -->
                                 @if($routePrefix == 'admin')
@@ -238,6 +238,9 @@
                                 </td>
                                 @endif -->
                                 <td style="color:var(--t4);font-size:12px;font-weight:600;">{{ $loop->iteration + ($projects->currentPage() - 1) * $projects->perPage() }}</td>
+                                <td>
+                                    <div class="ls" style="color:var(--t4);font-size:12px;font-weight:600;">{{ $project->project_start_date ? $project->project_start_date->format('d M Y') : 'N/A' }}</div>
+                                </td>
                                 <td><span class="mono">#PRJ-{{ str_pad($project->id, 4, '0', STR_PAD_LEFT) }}</span></td>
                                 @if($routePrefix == 'admin')
                                 <td>
@@ -287,9 +290,7 @@
                                 <td>
                                     <div class="ls">{{ $project->order_date_create ? $project->order_date_create->format('d M Y') : 'N/A' }}</div>
                                 </td>
-                                <td>
-                                    <div class="ls">{{ $project->project_start_date ? $project->project_start_date->format('d M Y') : 'N/A' }}</div>
-                                </td>
+
                                 <td>
                                     @if($project->expected_delivery_date)
                                         <span class="date-cell {{ $project->expected_delivery_date->isPast() ? 'danger' : 'warn' }}">
@@ -395,11 +396,13 @@
                                             @endif
                                             
                                             <a href="{{ route($routePrefix . '.projects.edit', $project->id) }}" class="ra-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
-                                            
-                                            <button type="button" class="ra-btn danger" title="Delete" 
+                                        @endif
+
+                                        @if($routePrefix == 'admin')
+                                        <button type="button" class="ra-btn danger" title="Delete" 
                                                     onclick="openDeleteModal('{{ route($routePrefix . '.projects.destroy', $project->id) }}')">
                                                 <i class="bi bi-trash-fill"></i>
-                                            </button>
+                                        </button>
                                         @endif
                                     </div>
                                 </td>
