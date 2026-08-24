@@ -139,4 +139,57 @@ class FollowupController extends Controller
 
         return redirect()->back()->with('success', 'Followup added successfully!');
     }
+
+    public function update(Request $request, $id)
+    {
+        $rules = [
+            'followup_date' => 'required_unless:followup_type,None|date',
+            'followup_type' => 'required|string|in:Calling,Message,Both,None',
+            'calling_note' => 'required_if:followup_type,Calling,Both|nullable|string',
+            'message_note' => 'required_if:followup_type,Message,Both|nullable|string',
+        ];
+
+        $request->validate($rules, [
+            'calling_note.required_if' => 'The calling note is required when interaction involves calling.',
+            'message_note.required_if' => 'The message note is required when interaction involves messaging.',
+        ]);
+
+        $followup = Followup::findOrFail($id);
+
+        $nextScheduleDate = null;
+        if ($request->schedule_type) {
+            if ($request->schedule_type === 'Today') {
+                $nextScheduleDate = \Carbon\Carbon::today();
+            } elseif ($request->schedule_type === 'Tomorrow') {
+                $nextScheduleDate = \Carbon\Carbon::tomorrow();
+            } elseif ($request->schedule_type === 'After 2 Days') {
+                $nextScheduleDate = \Carbon\Carbon::today()->addDays(2);
+            } elseif ($request->schedule_type === 'After 3 Days') {
+                $nextScheduleDate = \Carbon\Carbon::today()->addDays(3);
+            } elseif ($request->schedule_type === 'After 5 Days') {
+                $nextScheduleDate = \Carbon\Carbon::today()->addDays(5);
+            } elseif ($request->schedule_type === 'After 7 Days') {
+                $nextScheduleDate = \Carbon\Carbon::today()->addDays(7);
+            } elseif ($request->schedule_type === 'Custom' && $request->custom_schedule_date) {
+                $nextScheduleDate = \Carbon\Carbon::parse($request->custom_schedule_date);
+            }
+
+            if ($nextScheduleDate && $request->schedule_time) {
+                $time = \Carbon\Carbon::parse($request->schedule_time);
+                $nextScheduleDate->setTime($time->hour, $time->minute, 0);
+            }
+        }
+
+        if ($request->followup_type !== 'None') {
+            $followup->update([
+                'followup_date' => $request->followup_date,
+                'next_schedule_date' => $nextScheduleDate,
+                'followup_type' => $request->followup_type,
+                'calling_note' => $request->calling_note,
+                'message_note' => $request->message_note,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Followup updated successfully!');
+    }
 }

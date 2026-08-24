@@ -461,13 +461,29 @@
                                                     @endif
                                                 </span>
                                             </div>
-                                            <div style="font-size:10px;color:var(--t4);">
-                                                Logged by: 
-                                                @if($followup->creator)
-                                                    {{ $followup->creator->name }} - {{ $followup->creator->email }}
-                                                @else
-                                                    System
-                                                @endif
+                                            <div style="display:flex;align-items:center;gap:12px;">
+                                                <div style="font-size:10px;color:var(--t4);">
+                                                    Logged by: 
+                                                    @if($followup->creator)
+                                                        {{ $followup->creator->name }} - {{ $followup->creator->email }}
+                                                    @else
+                                                        System
+                                                    @endif
+                                                </div>
+                                                @php
+                                                    $fData = [
+                                                        'id' => $followup->id,
+                                                        'date' => $followup->followup_date->format('Y-m-d\TH:i'),
+                                                        'type' => $followup->followup_type,
+                                                        'cNote' => $followup->calling_note,
+                                                        'mNote' => $followup->message_note,
+                                                        'sDate' => $followup->next_schedule_date ? $followup->next_schedule_date->format('Y-m-d') : '',
+                                                        'sTime' => $followup->next_schedule_date ? $followup->next_schedule_date->format('H:i') : ''
+                                                    ];
+                                                @endphp
+                                                <button type="button" class="btn-ghost sm" style="padding:4px; font-size:12px; color:var(--t3);" data-followup="{{ json_encode($fData) }}" onclick="openEditFollowupModal(this)">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
                                             </div>
                                         </div>
                                         
@@ -594,6 +610,45 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleAreas();
     }
 });
+
+function openEditFollowupModal(btn) {
+    const data = JSON.parse(btn.getAttribute('data-followup'));
+    const form = document.getElementById('editFollowupForm');
+    const prefix = window.location.pathname.startsWith('/admin') ? 'admin' : 'sale';
+    form.action = `/${prefix}/followup/${data.id}`;
+    
+    document.getElementById('edit_f_date').value = data.date;
+    document.getElementById('edit_f_type').value = data.type;
+    document.getElementById('edit_c_note').value = data.cNote || '';
+    document.getElementById('edit_m_note').value = data.mNote || '';
+    document.getElementById('edit_custom_date').value = data.sDate || '';
+    document.getElementById('edit_s_time').value = data.sTime || '';
+    
+    const sTypeSelect = document.getElementById('edit_s_type');
+    if (data.sDate) {
+        sTypeSelect.value = 'Custom';
+        sTypeSelect.nextElementSibling.style.display = 'block';
+    } else {
+        sTypeSelect.value = '';
+        sTypeSelect.nextElementSibling.style.display = 'none';
+    }
+
+    toggleEditFollowupType();
+    openModal('editFollowupModal');
+}
+
+function toggleEditFollowupType() {
+    const val = document.getElementById('edit_f_type').value;
+    const cArea = document.getElementById('edit_calling_area');
+    const mArea = document.getElementById('edit_message_area');
+    const cInp = document.getElementById('edit_c_note');
+    const mInp = document.getElementById('edit_m_note');
+    
+    cArea.style.display = (val === 'Calling' || val === 'Both') ? 'block' : 'none';
+    mArea.style.display = (val === 'Message' || val === 'Both') ? 'block' : 'none';
+    cInp.required = (val === 'Calling' || val === 'Both');
+    mInp.required = (val === 'Message' || val === 'Both');
+}
 </script>
 
 @if(!$isOrder)
@@ -640,6 +695,72 @@ document.addEventListener('DOMContentLoaded', function() {
                 <i class="bi bi-check2"></i> Yes, Move to Leads
             </button>
         </div>
+    </div>
+</div>
+
+<!-- EDIT FOLLOWUP MODAL -->
+<div class="modal-backdrop" id="editFollowupModal">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-hd" style="border-bottom:1px solid var(--b1);">
+            <span style="color:var(--t1);">Edit Followup</span>
+            <button class="modal-close" onclick="closeModal('editFollowupModal')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <form id="editFollowupForm" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="modal-bd" style="padding:20px 24px;">
+                <div class="form-grid" style="display:grid; grid-template-columns: 1fr; gap:16px;">
+                    <div class="form-row">
+                        <label class="form-lbl">Followup Date <span style="color:#ef4444">*</span></label>
+                        <input type="datetime-local" name="followup_date" id="edit_f_date" class="form-inp" required>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-lbl">Interaction Vector <span style="color:#ef4444">*</span></label>
+                        <select name="followup_type" id="edit_f_type" class="form-inp" required onchange="toggleEditFollowupType()">
+                            <option value="None">None</option>
+                            <option value="Calling">Calling</option>
+                            <option value="Message">Message</option>
+                            <option value="Both">Both</option>
+                        </select>
+                    </div>
+                    <div class="form-row" id="edit_calling_area">
+                        <label class="form-lbl">Calling Note</label>
+                        <textarea name="calling_note" id="edit_c_note" class="form-inp" rows="2"></textarea>
+                    </div>
+                    <div class="form-row" id="edit_message_area">
+                        <label class="form-lbl">Message Note</label>
+                        <textarea name="message_note" id="edit_m_note" class="form-inp" rows="2"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-lbl">Schedule Next</label>
+                        <select name="schedule_type" id="edit_s_type" class="form-inp" onchange="const c = this.nextElementSibling; if(this.value==='Custom') c.style.display='block'; else c.style.display='none';">
+                            <option value="">Keep Existing</option>
+                            <option value="Today">Today</option>
+                            <option value="Tomorrow">Tomorrow</option>
+                            <option value="After 2 Days">After 2 days</option>
+                            <option value="After 3 Days">After 3 days</option>
+                            <option value="After 5 Days">After 5 days</option>
+                            <option value="After 7 Days">After 7 days</option>
+                            <option value="No Schedule">Closed Schedule</option>
+                            <option value="Custom">Custom Date</option>
+                        </select>
+                        <div style="display:none; margin-top:8px;">
+                            <input type="date" name="custom_schedule_date" id="edit_custom_date" class="form-inp">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-lbl">Set Schedule Time <span style="font-size:10px;color:var(--t4);">(Optional)</span></label>
+                        <input type="time" name="schedule_time" id="edit_s_time" class="form-inp">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-ft" style="border-top:1px solid var(--b1); display:flex; justify-content:flex-end; gap:10px; padding:16px 24px;">
+                <button type="button" class="btn-ghost" onclick="closeModal('editFollowupModal')">Cancel</button>
+                <button type="submit" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;">
+                    <i class="bi bi-save"></i> Save Changes
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
