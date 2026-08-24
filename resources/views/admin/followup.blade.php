@@ -237,7 +237,7 @@
                                             <option value="Cold" {{ $model->priority == 'Cold' ? 'selected' : '' }}>Cold</option>
                                         </select>
                                     </div>
-                                    <div class="form-row">
+                                    <div class="form-row followup-date-row">
                                         <label class="form-lbl">Followup Date <span style="color:#ef4444">*</span></label>
                                         <input type="datetime-local" name="followup_date" class="form-inp" value="{{ date('Y-m-d\TH:i') }}" max="{{ date('Y-m-d\TH:i') }}" required>
                                     </div>
@@ -254,7 +254,7 @@
                             </div>
                             <div class="card-body" style="padding:14px 18px 20px;">
                                 <div class="form-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-bottom:16px;">
-                                    <div class="form-row">
+                                    <div class="form-row schedule-next-row">
                                         <label class="form-lbl">Schedule Next <span style="color:#ef4444">*</span></label>
                                         <select name="schedule_type" class="form-inp" required onchange="const c = this.nextElementSibling; if(this.value==='Custom') c.style.display='block'; else c.style.display='none';">
                                             <option value="Today">Today</option>
@@ -270,7 +270,7 @@
                                             <input type="date" name="custom_schedule_date" class="form-inp">
                                         </div>
                                     </div>
-                                    <div class="form-row">
+                                    <div class="form-row schedule-time-row">
                                         <label class="form-lbl">Set Schedule Time <span style="font-size:10px;color:var(--t4);">(Optional)</span></label>
                                         <input type="time" name="schedule_time" class="form-inp">
                                     </div>
@@ -368,11 +368,11 @@
                                     <input type="hidden" name="return_url" value="{{ $returnUrl }}">
                                 @endif
                                 <div class="form-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-bottom:16px;">
-                                    <div class="form-row">
+                                    <div class="form-row followup-date-row">
                                         <label class="form-lbl">Transaction Date <span style="color:#ef4444">*</span></label>
                                         <input type="datetime-local" name="followup_date" class="form-inp" value="{{ date('Y-m-d\TH:i') }}" max="{{ date('Y-m-d\TH:i') }}" required>
                                     </div>
-                                    <div class="form-row">
+                                    <div class="form-row schedule-next-row">
                                         <label class="form-lbl">Schedule Next <span style="color:#ef4444">*</span></label>
                                         <select name="schedule_type" class="form-inp" required onchange="const c = this.nextElementSibling; if(this.value==='Custom') c.style.display='block'; else c.style.display='none';">
                                             <option value="Today">Today</option>
@@ -409,7 +409,7 @@
                                     </div>
                                 </div>
                                 <div class="form-grid" style="display:grid; grid-template-columns: 1fr; gap:16px;">
-                                    <div class="form-row" style="width: 32%; margin-bottom:0;">
+                                    <div class="form-row schedule-time-row" style="width: 32%; margin-bottom:0;">
                                         <label class="form-lbl">Set Schedule Time <span style="font-size:10px;color:var(--t4);">(Optional)</span></label>
                                         <input type="time" name="schedule_time" class="form-inp">
                                     </div>
@@ -577,6 +577,27 @@ document.addEventListener('DOMContentLoaded', function() {
         messageInp.required = false;
         callingLbl.innerHTML = callingOrig;
         messageLbl.innerHTML = messageOrig;
+
+        const form = typeSelect.closest('form');
+        const fDateRow = form ? form.querySelector('.followup-date-row') : null;
+        const sNextRow = form ? form.querySelector('.schedule-next-row') : null;
+        const sTimeRow = form ? form.querySelector('.schedule-time-row') : null;
+
+        if (fDateRow) {
+            if (val === 'None') {
+                fDateRow.style.display = 'none';
+                sNextRow.style.display = 'none';
+                sTimeRow.style.display = 'none';
+                fDateRow.querySelector('input').required = false;
+                sNextRow.querySelector('select').required = false;
+            } else {
+                fDateRow.style.display = 'block';
+                sNextRow.style.display = 'block';
+                sTimeRow.style.display = 'block';
+                fDateRow.querySelector('input').required = true;
+                sNextRow.querySelector('select').required = true;
+            }
+        }
 
         if (val === 'Calling') {
             callingArea.style.display = 'block';

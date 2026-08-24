@@ -764,7 +764,7 @@
                                                                 <option value="Cold" {{ $lead->priority == 'Cold' ? 'selected' : '' }}>Cold</option>
                                                             </select>
                                                         </div>
-                                                        <div class="form-row">
+                                                        <div class="form-row followup-date-row">
                                                             <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Followup Date <span style="color:#ef4444">*</span></label>
                                                             <input type="datetime-local" name="followup_date" class="form-inp" value="{{ date('Y-m-d\TH:i') }}" max="{{ date('Y-m-d\TH:i') }}" required style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
                                                         </div>
@@ -781,7 +781,7 @@
                                                 </div> -->
                                                 <div class="card-body" style="padding:14px 18px 20px;">
                                                     <div class="form-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:16px;">
-                                                        <div class="form-row">
+                                                        <div class="form-row schedule-next-row">
                                                             <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Schedule Next <span style="color:#ef4444">*</span></label>
                                                             <select name="schedule_type" class="form-inp" required onchange="const c = this.nextElementSibling; if(this.value==='Custom') c.style.display='block'; else c.style.display='none';" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
                                                                 <option value="Today">Today</option>
@@ -797,7 +797,7 @@
                                                                 <input type="date" name="custom_schedule_date" class="form-inp" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
                                                             </div>
                                                         </div>
-                                                        <div class="form-row">
+                                                        <div class="form-row schedule-time-row">
                                                             <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Set Schedule Time <span style="font-size:10px;color:var(--t4);">(Optional)</span></label>
                                                             <input type="time" name="schedule_time" class="form-inp" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
                                                         </div>
@@ -805,17 +805,31 @@
                                                             <label class="form-lbl" style="display:block; font-size:12px; font-weight:600; color:var(--t2); margin-bottom:6px;">Interaction Vector <span style="color:#ef4444">*</span></label>
                                                             <select name="followup_type" class="form-inp" required style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;" onchange="
                                                                 const val = this.value; 
-                                                                const cWrap = this.closest('.card-body');
-                                                                const cArea = cWrap.querySelector('.calling-note-row');
-                                                                const mArea = cWrap.querySelector('.message-note-row');
+                                                                const form = this.closest('form');
+                                                                const cArea = form.querySelector('.calling-note-row');
+                                                                const mArea = form.querySelector('.message-note-row');
+                                                                const fDateRow = form.querySelector('.followup-date-row');
+                                                                const sNextRow = form.querySelector('.schedule-next-row');
+                                                                const sTimeRow = form.querySelector('.schedule-time-row');
                                                                 const cInp = cArea.querySelector('textarea');
                                                                 const mInp = mArea.querySelector('textarea');
+                                                                
                                                                 cArea.style.display = (val === 'Calling' || val === 'Both') ? 'block' : 'none';
                                                                 mArea.style.display = (val === 'Message' || val === 'Both') ? 'block' : 'none';
                                                                 cArea.style.gridColumn = (val === 'Calling') ? '1 / -1' : 'auto';
                                                                 mArea.style.gridColumn = (val === 'Message') ? '1 / -1' : 'auto';
                                                                 cInp.required = (val === 'Calling' || val === 'Both');
                                                                 mInp.required = (val === 'Message' || val === 'Both');
+
+                                                                if (val === 'None') {
+                                                                    if (fDateRow) { fDateRow.style.display = 'none'; fDateRow.querySelector('input').required = false; }
+                                                                    if (sNextRow) { sNextRow.style.display = 'none'; sNextRow.querySelector('select').required = false; }
+                                                                    if (sTimeRow) { sTimeRow.style.display = 'none'; }
+                                                                } else {
+                                                                    if (fDateRow) { fDateRow.style.display = 'block'; fDateRow.querySelector('input').required = true; }
+                                                                    if (sNextRow) { sNextRow.style.display = 'block'; sNextRow.querySelector('select').required = true; }
+                                                                    if (sTimeRow) { sTimeRow.style.display = 'block'; }
+                                                                }
                                                             ">
                                                                 <option value="None">None</option>
                                                                 <option value="Calling">Calling</option>
@@ -1051,7 +1065,7 @@
                 @method('PUT')
                 <div class="modal-bd" style="padding:20px 24px;">
                     <div class="form-grid" style="display:grid; grid-template-columns: 1fr; gap:16px;">
-                        <div class="form-row">
+                        <div class="form-row edit-followup-date-row">
                             <label class="form-lbl">Followup Date <span style="color:#ef4444">*</span></label>
                             <input type="datetime-local" name="followup_date" id="edit_f_date" class="form-inp" required>
                         </div>
@@ -1072,7 +1086,7 @@
                             <label class="form-lbl">Message Note</label>
                             <textarea name="message_note" id="edit_m_note" class="form-inp" rows="2"></textarea>
                         </div>
-                        <div class="form-row">
+                        <div class="form-row edit-schedule-next-row">
                             <label class="form-lbl">Schedule Next</label>
                             <select name="schedule_type" id="edit_s_type" class="form-inp" onchange="const c = this.nextElementSibling; if(this.value==='Custom') c.style.display='block'; else c.style.display='none';">
                                 <option value="">Keep Existing</option>
@@ -1089,7 +1103,7 @@
                                 <input type="date" name="custom_schedule_date" id="edit_custom_date" class="form-inp">
                             </div>
                         </div>
-                        <div class="form-row">
+                        <div class="form-row edit-schedule-time-row">
                             <label class="form-lbl">Set Schedule Time <span style="font-size:10px;color:var(--t4);">(Optional)</span></label>
                             <input type="time" name="schedule_time" id="edit_s_time" class="form-inp">
                         </div>
@@ -1168,6 +1182,20 @@
         mArea.style.display = (val === 'Message' || val === 'Both') ? 'block' : 'none';
         cInp.required = (val === 'Calling' || val === 'Both');
         mInp.required = (val === 'Message' || val === 'Both');
+
+        const fDateRow = document.querySelector('.edit-followup-date-row');
+        const sNextRow = document.querySelector('.edit-schedule-next-row');
+        const sTimeRow = document.querySelector('.edit-schedule-time-row');
+
+        if (val === 'None') {
+            if (fDateRow) { fDateRow.style.display = 'none'; fDateRow.querySelector('input').required = false; }
+            if (sNextRow) { sNextRow.style.display = 'none'; sNextRow.querySelector('select').required = false; }
+            if (sTimeRow) { sTimeRow.style.display = 'none'; }
+        } else {
+            if (fDateRow) { fDateRow.style.display = 'block'; fDateRow.querySelector('input').required = true; }
+            if (sNextRow) { sNextRow.style.display = 'block'; sNextRow.querySelector('select').required = true; }
+            if (sTimeRow) { sTimeRow.style.display = 'block'; }
+        }
     }
 
     (function() {
