@@ -154,11 +154,11 @@
                                     <input type="number" name="order_value" class="form-inp @error('order_value') is-invalid @enderror" value="{{ old('order_value', $inquiry?->order_value ?? '') }}" placeholder="₹ Amount">
                                     @error('order_value')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
-                                <div class="form-row">
+                                <!-- <div class="form-row">
                                     <label class="form-lbl">Discount (Optional)</label>
                                     <input type="number" step="0.01" name="discount" class="form-inp @error('discount') is-invalid @enderror" value="{{ old('discount') }}" placeholder="₹ Discount Amount">
                                     @error('discount')<span class="field-error">{{ $message }}</span>@enderror
-                                </div>
+                                </div> -->
                                 <div class="form-row">
                                     <label class="form-lbl">Payment Terms <span style="color:#ef4444"> <span style="color:#ef4444">*</span></span></label>
                                     <select name="payment_terms_id" class="form-inp @error('payment_terms_id') is-invalid @enderror">
@@ -175,7 +175,7 @@
                                     @error('delivery_date')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Renewal Date</label>
+                                    <label class="form-lbl">Renewal Date <span style="color:#ef4444"> *</span></label>
                                     <input type="date" name="renewal_date" class="form-inp @error('renewal_date') is-invalid @enderror" value="{{ old('renewal_date') }}">
                                     @error('renewal_date')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>

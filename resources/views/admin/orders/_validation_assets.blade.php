@@ -78,6 +78,7 @@ $(document).ready(function() {
             { name: 'order_value', label: 'Order Value' },
             { name: 'payment_terms_id', label: 'Payment Terms' },
             { name: 'delivery_date', label: 'Delivery Date' },
+            { name: 'renewal_date', label: 'Renewal Date' },
             { name: 'city', label: 'City' },
             { name: 'state', label: 'Region / State' },
             { name: 'zip_code', label: 'Zip Code' },

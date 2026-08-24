@@ -149,14 +149,14 @@
                                     <input type="number" name="order_value" class="form-inp @error('order_value') is-invalid @enderror" value="{{ old('order_value', $order->order_value) }}" placeholder="₹ Amount">
                                     @error('order_value')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
-                                <div class="form-row">
+                                <!-- <div class="form-row">
                                     <label class="form-lbl">Discount (Optional)</label>
                                     <input type="number" step="0.01" name="discount" class="form-inp @error('discount') is-invalid @enderror" value="{{ old('discount', $order->discount) }}" placeholder="₹ Discount Amount">
                                     @error('discount')<span class="field-error">{{ $message }}</span>@enderror
-                                </div>
+                                </div> -->
                                 <div class="form-row">
                                     <label class="form-lbl">Advance Payment</label>
-                                    <input type="number" name="advance_payment" class="form-inp @error('advance_payment') is-invalid @enderror" value="{{ old('advance_payment', $order->advance_payment) }}" placeholder="₹ Advance Received">
+                                    <input type="number" name="advance_payment" class="form-inp @error('advance_payment') is-invalid @enderror" value="{{ old('advance_payment', $order->advance_payment) }}" placeholder="₹ Advance Received" disabled>
                                     @error('advance_payment')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
@@ -175,7 +175,7 @@
                                     @error('delivery_date')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-lbl">Renewal Date</label>
+                                    <label class="form-lbl">Renewal Date <span style="color:#ef4444"> *</span></label>
                                     <input type="date" name="renewal_date" class="form-inp @error('renewal_date') is-invalid @enderror" value="{{ old('renewal_date', $order->renewal_date ? $order->renewal_date->format('Y-m-d') : '') }}">
                                     @error('renewal_date')<span class="field-error">{{ $message }}</span>@enderror
                                 </div>
