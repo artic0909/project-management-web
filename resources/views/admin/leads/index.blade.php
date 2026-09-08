@@ -566,9 +566,8 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                    @if($routePrefix == 'admin')
+                                @if($routePrefix == 'admin')
                                 <th style="width: 40px; text-align: center;">
-                                
                                     <input type="checkbox" id="selectAllLeads" onclick="toggleAllLeads(this)" style="cursor: pointer;">
                                 </th>
                                 @endif
@@ -577,7 +576,7 @@
                                 <th>Schedule Date</th>
                                 @endif
                                 <th>Date</th>
-                                @if(!($routePrefix == 'sale'))
+                                @if($routePrefix == 'admin')
                                 <th>Lead</th>
                                 @endif
                                 
@@ -587,17 +586,10 @@
                                 <th>Contact Person</th>
                                 @endif
 
-
                                 <th>Phone</th>
-                                @php
-                                    $isAdminNewOrTotal = $routePrefix === 'admin' && in_array(request('type', 'total'), ['new', 'total']);
-                                @endphp
-                                @if(!($routePrefix == 'sale' || $isAdminNewOrTotal))
-                                <th>Services</th>
-                                @endif
                                 <th>Priority</th>
                                 <th>Status</th>
-                                @if(!$isAdminNewOrTotal)
+                                @if($routePrefix == 'sale')
                                 <th>Created By</th>
                                 @endif
                                 @if(!($routePrefix == 'sale' && in_array(request('type', 'new'), ['my', 'new'])))
@@ -609,14 +601,13 @@
                         </thead>
                         <tbody>
                             @php
-                                $codes = [0=>'+93',1=>'+355',2=>'+213',3=>'+376',4=>'+244',5=>'+54',6=>'+61',7=>'+43',8=>'+880',9=>'+32',10=>'+55',11=>'+1',12=>'+86',13=>'+57',14=>'+45',15=>'+20',16=>'+33',17=>'+49',18=>'+233',19=>'+30',20=>'+91',21=>'+62',22=>'+98',23=>'+964',24=>'+353',25=>'+972',26=>'+39',27=>'+81',28=>'+962',29=>'+254',30=>'+965',31=>'+961',32=>'+60',33=>'+52',34=>'+212',35=>'+977',36=>'+31',37=>'+64',38=>'+234',39=>'+47',40=>'+968',41=>'+92',42=>'+63',43=>'+48',44=>'+351',45=>'+974',46=>'+7',47=>'+966',48=>'+65',49=>'+27',50=>'+34',51=>'+94',52=>'+46',53=>'+41',54=>'+886',55=>'+66',56=>'+90',57=>'+971',58=>'+44',59=>'+1',60=>'+84',61=>'+260',62=>'+263'];
+                                $codes = [0=>'+93',1=>'+355',2=>'+213',3=>'+376',4=>'+244',5=>'+54',6=>'+61',7=>'+43',8=>'+880',9=>'+32',10=>'+55',11=>'+1',12=>'+86',13=>'+57',14=>'+45',15=>'+20',16=>'+33',17=>'+49',18=>'+233',19=>'+30',20=>'+91',21=>'+62',22=>'+98',23=>'+964',24=>'+353',25=>'+972',26=>'+39',27=>'+81',28=>'+962',29=>'+254',30=>'+965',31=>'+961',32=>'+64',33=>'+52',34=>'+212',35=>'+977',36=>'+31',37=>'+64',38=>'+234',39=>'+47',40=>'+968',41=>'+92',42=>'+63',43=>'+48',44=>'+351',45=>'+974',46=>'+7',47=>'+966',48=>'+65',49=>'+27',50=>'+34',51=>'+94',52=>'+46',53=>'+41',54=>'+886',55=>'+66',56=>'+90',57=>'+971',58=>'+44',59=>'+1',60=>'+84',61=>'+260',62=>'+263'];
                             @endphp
                             @forelse($leads as $index => $lead)
                             <tr id="lead-{{ $lead->id }}" @if(session('highlight_lead_id') == $lead->id) style="background-color: rgba(16, 185, 129, 0.15);" @endif>
                                 @if($routePrefix == 'admin')
                                 <td style="text-align: center;">
                                     <input type="checkbox" class="lead-checkbox" name="lead_ids[]" value="{{ $lead->id }}" onclick="updateBulkDeleteButton()" style="cursor: pointer;">
-                               
                                 </td>
                                 @endif
                                 <td>{{ $leads->firstItem() + $index }}</td>
@@ -640,7 +631,7 @@
                                 </td>
                                 @endif
                                 <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $lead->created_at->format('d M Y') }}</div></td>
-                                @if($routePrefix == 'sale')
+                                @if($routePrefix == 'admin')
                                 <td>
                                     <div class="lead-cell">
                                         @php
@@ -665,7 +656,7 @@
                                         @endforeach
                                     </div>
                                 </td>
-                                @if(!($routePrefix == 'sale'))
+                                @if($routePrefix == 'sale')
                                 <td><strong style="color:var(--t2)">{{ $lead->contact_person }}</strong></td>
                                 @endif
                                 <td>
@@ -675,18 +666,6 @@
                                         </strong><br>
                                     @endforeach
                                 </td>
-                                @if(!($routePrefix == 'sale' || $isAdminNewOrTotal))
-                                <td>
-                                    <div style="display:flex; flex-wrap:wrap; gap:4px;">
-                                        @foreach($lead->services as $srv)
-                                            <strong style="color:var(--t2); font-size:12px; background:rgba(99, 102, 241, 0.05); padding:2px 6px; border-radius:4px;">{{ $srv->name }}</strong>
-                                        @endforeach
-                                        @if($lead->services->isEmpty())
-                                            <span style="color:var(--t4)">N/A</span>
-                                        @endif
-                                    </div>
-                                </td>
-                                @endif
                                 <td>
                                     @php
                                         $pCls = strtolower(str_replace([' ', '🔥'], '', $lead->priority));
@@ -694,13 +673,10 @@
                                     <span class="lead-stage {{ $pCls }}">{{ $lead->priority }}</span>
                                 </td>
                                 <td><strong style="color:var(--accent)">{{ $lead->status->name ?? 'N/A' }}</strong></td>
-                                @if(!$isAdminNewOrTotal)
+                                @if($routePrefix == 'sale')
                                 <td>
                                     @if($lead->createdBy)
                                         <div class="ln">{{ $lead->createdBy->name }}</div>
-                                        @if(!($routePrefix == 'sale'))
-                                        <div class="ls" style="font-size:10px">{{ $lead->createdBy->email }}</div>
-                                        @endif
                                     @else
                                         <div class="ln">System</div>
                                     @endif
@@ -711,9 +687,6 @@
                                     @foreach($lead->assignments as $assign)
                                         <div class="ln">
                                             {{ $assign->sale->name ?? 'N/A' }}
-                                            @if(!($routePrefix == 'sale' || $isAdminNewOrTotal))
-                                             - {{ $assign->sale->email ?? 'N/A' }}
-                                            @endif
                                         </div>
                                     @endforeach
                                     @if($lead->assignments->isEmpty())
