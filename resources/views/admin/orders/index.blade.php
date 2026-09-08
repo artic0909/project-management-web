@@ -12,7 +12,7 @@
                 <h1 class="page-title">Your All Orders</h1>
             </div>
 
-            <div class="d-flex gap-2">
+            <div class="header-actions">
                 @if($routePrefix == 'admin')
                 <button type="button" class="btn-primary-solid sm" id="bulkDeleteOrdersBtn" style="display: none; background: #dc2626; border-color: #dc2626; color: white;" onclick="bulkDeleteSelectedOrders()">
                     <i class="bi bi-trash-fill"></i> Bulk Delete
@@ -21,7 +21,6 @@
                 <button type="button" class="btn-primary-solid sm" onclick="openImportOrdersModal()">
                     <i class="bi bi-file-earmark-plus-fill"></i> Import
                 </button>
-                
                 
                 <button class="btn-primary-solid sm" onclick="exportOrders()">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export
@@ -38,7 +37,7 @@
         <!-- {{-- ═══════════════════════════════════════════════════
              6 KPI SUMMARY CARDS
         ════════════════════════════════════════════════════ --}} -->
-        <div id="statsWrap" style="display:grid;grid-template-columns:repeat({{ request('assigned_to') ? 9 : 6 }},1fr);gap:14px;margin-bottom:24px;">
+        <div id="statsWrap" class="stats-grid-wrap stats-cols-{{ request('assigned_to') ? 9 : 6 }}" style="display:grid;grid-template-columns:repeat({{ request('assigned_to') ? 9 : 6 }},1fr);gap:14px;margin-bottom:24px;">
 
             @if(request('assigned_to'))
                 @php
