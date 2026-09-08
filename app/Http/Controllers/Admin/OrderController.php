@@ -100,25 +100,16 @@ class OrderController extends Controller
         $query->with(['status', 'services', 'sources', 'plans', 'assignments.sale', 'createdBy'])->withCount('followups');
         $orders = $query->latest()->paginate($perPage)->withQueryString();
         
-        // Total Followups for filtered salesperson
-        $totalCallingFollowupsFiltered = 0;
-        $totalMessageFollowupsFiltered = 0;
-        if ($request->filled('assigned_to')) {
-            $followupCounts = \App\Models\Followup::whereHasMorph(
-                'followable',
-                [\App\Models\Order::class],
-                function ($q) use ($request) {
-                    $q->whereHas('assignments', function($sq) use ($request) {
-                        $sq->where('assigned_to', $request->assigned_to);
-                    });
-                }
-            )->select('followup_type', DB::raw('count(*) as count'))
+        // Total Calling & Message Followups for filtered orders
+        $orderIds = (clone $aggQuery)->pluck('orders.id');
+        $followupCounts = \App\Models\Followup::whereIn('followable_id', $orderIds)
+            ->where('followable_type', \App\Models\Order::class)
+            ->select('followup_type', DB::raw('count(*) as count'))
             ->groupBy('followup_type')
             ->pluck('count', 'followup_type');
 
-            $totalCallingFollowupsFiltered = ($followupCounts['Calling'] ?? 0) + ($followupCounts['Both'] ?? 0);
-            $totalMessageFollowupsFiltered = ($followupCounts['Message'] ?? 0) + ($followupCounts['Both'] ?? 0);
-        }
+        $totalCallingFollowupsFiltered = ($followupCounts['Calling'] ?? 0) + ($followupCounts['Both'] ?? 0);
+        $totalMessageFollowupsFiltered = ($followupCounts['Message'] ?? 0) + ($followupCounts['Both'] ?? 0);
         
         // Counts
         $totalOrders = (clone $aggQuery)->count();
@@ -205,25 +196,16 @@ class OrderController extends Controller
         $perPage = $request->per_page === 'all' ? 10000 : ($request->per_page ?? 20);
         $orders = $query->with(['status', 'services', 'sources', 'plans', 'assignments.sale', 'createdBy'])->withCount('followups')->latest()->paginate($perPage)->withQueryString();
         
-        // Total Followups for filtered salesperson
-        $totalCallingFollowupsFiltered = 0;
-        $totalMessageFollowupsFiltered = 0;
-        if ($request->filled('assigned_to')) {
-            $followupCounts = \App\Models\Followup::whereHasMorph(
-                'followable',
-                [\App\Models\Order::class],
-                function ($q) use ($request) {
-                    $q->whereHas('assignments', function($sq) use ($request) {
-                        $sq->where('assigned_to', $request->assigned_to);
-                    });
-                }
-            )->select('followup_type', DB::raw('count(*) as count'))
+        // Total Calling & Message Followups for filtered orders
+        $orderIds = (clone $aggQuery)->pluck('orders.id');
+        $followupCounts = \App\Models\Followup::whereIn('followable_id', $orderIds)
+            ->where('followable_type', \App\Models\Order::class)
+            ->select('followup_type', DB::raw('count(*) as count'))
             ->groupBy('followup_type')
             ->pluck('count', 'followup_type');
 
-            $totalCallingFollowupsFiltered = ($followupCounts['Calling'] ?? 0) + ($followupCounts['Both'] ?? 0);
-            $totalMessageFollowupsFiltered = ($followupCounts['Message'] ?? 0) + ($followupCounts['Both'] ?? 0);
-        }
+        $totalCallingFollowupsFiltered = ($followupCounts['Calling'] ?? 0) + ($followupCounts['Both'] ?? 0);
+        $totalMessageFollowupsFiltered = ($followupCounts['Message'] ?? 0) + ($followupCounts['Both'] ?? 0);
 
         // Counts based on the renewals query
         $totalOrders = (clone $aggQuery)->count();

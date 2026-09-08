@@ -137,28 +137,11 @@ class LeadController extends Controller
             $leads = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
         }
         
-        $followupQuery = \App\Models\Followup::whereHasMorph(
-            'followable',
-            [\App\Models\Lead::class]
-        );
-
-        if ($request->filled('assigned_to')) {
-            $followupQuery->whereHasMorph(
-                'followable',
-                [\App\Models\Lead::class],
-                function ($q) use ($request) {
-                    $q->whereHas('assignments', function($sq) use ($request) {
-                        $sq->where('assigned_to', $request->assigned_to);
-                    });
-                }
-            );
-        }
-
-        if ($request->has('start_date') && $request->has('end_date') && !empty($request->start_date)) {
-            $followupQuery->whereBetween('followup_date', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
-        }
-
-        $followupCounts = $followupQuery->select('followup_type', DB::raw('count(*) as count'))
+        // Total Followups for filtered leads
+        $leadIds = (clone $statsQuery)->pluck('leads.id');
+        $followupCounts = \App\Models\Followup::whereIn('followable_id', $leadIds)
+            ->where('followable_type', \App\Models\Lead::class)
+            ->select('followup_type', DB::raw('count(*) as count'))
             ->groupBy('followup_type')
             ->pluck('count', 'followup_type');
 
@@ -513,33 +496,11 @@ class LeadController extends Controller
         $statsQuery = clone $query;
         $totalLostLeads = $statsQuery->count();
 
-        // Total Followups for filtered salesperson
-        $followupQuery = \App\Models\Followup::whereHasMorph(
-            'followable',
-            [\App\Models\Lead::class],
-            function ($q) {
-                $q->where('is_losted', 1);
-            }
-        );
-
-        if ($request->filled('assigned_to')) {
-            $followupQuery->whereHasMorph(
-                'followable',
-                [\App\Models\Lead::class],
-                function ($q) use ($request) {
-                    $q->where('is_losted', 1)
-                      ->whereHas('assignments', function($sq) use ($request) {
-                          $sq->where('assigned_to', $request->assigned_to);
-                      });
-                }
-            );
-        }
-
-        if ($request->has('start_date') && $request->has('end_date') && !empty($request->start_date)) {
-            $followupQuery->whereBetween('followup_date', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
-        }
-
-        $followupCounts = $followupQuery->select('followup_type', DB::raw('count(*) as count'))
+        // Total Followups for filtered lost leads
+        $leadIds = (clone $statsQuery)->pluck('leads.id');
+        $followupCounts = \App\Models\Followup::whereIn('followable_id', $leadIds)
+            ->where('followable_type', \App\Models\Lead::class)
+            ->select('followup_type', DB::raw('count(*) as count'))
             ->groupBy('followup_type')
             ->pluck('count', 'followup_type');
 
