@@ -448,6 +448,7 @@ class LeadController extends Controller
     public function lostedLeads(Request $request)
     {
         $query = Lead::with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])
+            ->withCount('followups')
             ->where('is_losted', 1);
 
         // Search filter
@@ -466,6 +467,7 @@ class LeadController extends Controller
                    ->orWhereHas('campaign', function($cq) use ($q) { $cq->where('name', 'like', "%$q%"); })
                    ->orWhereHas('sources', function($sq) use ($q) { $sq->where('name', 'like', "%$q%"); })
                    ->orWhereHas('services', function($sq) use ($q) { $sq->where('name', 'like', "%$q%"); })
+                   ->orWhereHas('status', function($sq) use ($q) { $sq->where('name', 'like', "%$q%"); })
                    ->orWhereHas('createdBy', function($sq) use ($q) { 
                        $sq->where('name', 'like', "%$q%")
                           ->orWhere('email', 'like', "%$q%"); 
@@ -488,6 +490,9 @@ class LeadController extends Controller
                 $q->where('sources.id', $request->source_id);
             });
         }
+        if ($request->has('campaign_id') && !empty($request->campaign_id)) {
+            $query->where('campaign_id', $request->campaign_id);
+        }
         if ($request->has('service_id') && !empty($request->service_id)) {
             $query->whereHas('services', function($q) use ($request) {
                 $q->where('services.id', $request->service_id);
@@ -495,6 +500,9 @@ class LeadController extends Controller
         }
         if ($request->has('priority') && !empty($request->priority)) {
             $query->where('priority', $request->priority);
+        }
+        if ($request->has('status_id') && !empty($request->status_id)) {
+            $query->where('status_id', $request->status_id);
         }
         if ($request->filled('assigned_to')) {
             $query->whereHas('assignments', function($q) use ($request) {
@@ -508,7 +516,10 @@ class LeadController extends Controller
         // Total Followups for filtered salesperson
         $followupQuery = \App\Models\Followup::whereHasMorph(
             'followable',
-            [\App\Models\Lead::class]
+            [\App\Models\Lead::class],
+            function ($q) {
+                $q->where('is_losted', 1);
+            }
         );
 
         if ($request->filled('assigned_to')) {
@@ -516,9 +527,10 @@ class LeadController extends Controller
                 'followable',
                 [\App\Models\Lead::class],
                 function ($q) use ($request) {
-                    $q->whereHas('assignments', function($sq) use ($request) {
-                        $sq->where('assigned_to', $request->assigned_to);
-                    });
+                    $q->where('is_losted', 1)
+                      ->whereHas('assignments', function($sq) use ($request) {
+                          $sq->where('assigned_to', $request->assigned_to);
+                      });
                 }
             );
         }
@@ -539,7 +551,7 @@ class LeadController extends Controller
             ->pluck('total', 'priority')
             ->toArray();
 
-        $statuses = \App\Models\Status::where('type', 'lead')->where('name', '!=', 'lost')->get();
+        $statuses = \App\Models\Status::where('type', 'lead')->get();
         foreach($statuses as $status) {
             $status->leads_count = (clone $statsQuery)->where('status_id', $status->id)->count();
         }
@@ -837,6 +849,9 @@ class LeadController extends Controller
                 $q->where('sources.id', $request->source_id);
             });
         }
+        if ($request->has('campaign_id') && !empty($request->campaign_id)) {
+            $query->where('campaign_id', $request->campaign_id);
+        }
         if ($request->has('service_id') && !empty($request->service_id)) {
             $query->whereHas('services', function($q) use ($request) {
                 $q->where('services.id', $request->service_id);
@@ -844,6 +859,9 @@ class LeadController extends Controller
         }
         if ($request->has('priority') && !empty($request->priority)) {
             $query->where('priority', $request->priority);
+        }
+        if ($request->has('status_id') && !empty($request->status_id)) {
+            $query->where('status_id', $request->status_id);
         }
         if ($request->filled('assigned_to')) {
             $query->whereHas('assignments', function($q) use ($request) {

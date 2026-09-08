@@ -458,6 +458,7 @@ class LeadController extends Controller
         $query = Lead::whereHas('assignments', function($q) use ($saleId) {
             $q->where('assigned_to', $saleId);
         })->with(['status', 'services', 'sources', 'campaign', 'assignments', 'createdBy'])
+            ->withCount('followups')
             ->where('is_losted', 1);
 
         // Search filter
@@ -476,6 +477,7 @@ class LeadController extends Controller
                    ->orWhereHas('campaign', function($cq) use ($q) { $cq->where('name', 'like', "%$q%"); })
                    ->orWhereHas('sources', function($sq) use ($q) { $sq->where('name', 'like', "%$q%"); })
                    ->orWhereHas('services', function($sq) use ($q) { $sq->where('name', 'like', "%$q%"); })
+                   ->orWhereHas('status', function($sq) use ($q) { $sq->where('name', 'like', "%$q%"); })
                    ->orWhereHas('createdBy', function($sq) use ($q) { 
                        $sq->where('name', 'like', "%$q%")
                           ->orWhere('email', 'like', "%$q%"); 
@@ -498,6 +500,9 @@ class LeadController extends Controller
                 $q->where('sources.id', $request->source_id);
             });
         }
+        if ($request->has('campaign_id') && !empty($request->campaign_id)) {
+            $query->where('campaign_id', $request->campaign_id);
+        }
         if ($request->has('service_id') && !empty($request->service_id)) {
             $query->whereHas('services', function($q) use ($request) {
                 $q->where('services.id', $request->service_id);
@@ -506,35 +511,26 @@ class LeadController extends Controller
         if ($request->has('priority') && !empty($request->priority)) {
             $query->where('priority', $request->priority);
         }
+        if ($request->has('status_id') && !empty($request->status_id)) {
+            $query->where('status_id', $request->status_id);
+        }
 
         $statsQuery = clone $query;
         $totalLostLeads = $statsQuery->count();
 
         // Total Followups for filtered salesperson
         $currentSaleId = auth()->guard('sale')->id();
-        $currentSaleType = get_class(auth()->guard('sale')->user());
 
         $followupQuery = \App\Models\Followup::whereHasMorph(
             'followable',
             [\App\Models\Lead::class],
             function ($q) use ($currentSaleId) {
-                $q->whereHas('assignments', function($sq) use ($currentSaleId) {
-                    $sq->where('assigned_to', $currentSaleId);
-                });
+                $q->where('is_losted', 1)
+                  ->whereHas('assignments', function($sq) use ($currentSaleId) {
+                      $sq->where('assigned_to', $currentSaleId);
+                  });
             }
         );
-
-        if ($request->filled('assigned_to')) {
-            $followupQuery->whereHasMorph(
-                'followable',
-                [\App\Models\Lead::class],
-                function ($q) use ($request) {
-                    $q->whereHas('assignments', function($sq) use ($request) {
-                        $sq->where('assigned_to', $request->assigned_to);
-                    });
-                }
-            );
-        }
 
         if ($request->has('start_date') && $request->has('end_date') && !empty($request->start_date)) {
             $followupQuery->whereBetween('followup_date', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
@@ -552,7 +548,7 @@ class LeadController extends Controller
             ->pluck('total', 'priority')
             ->toArray();
 
-        $statuses = \App\Models\Status::where('type', 'lead')->where('name', '!=', 'lost')->get();
+        $statuses = \App\Models\Status::where('type', 'lead')->get();
         foreach($statuses as $status) {
             $status->leads_count = (clone $statsQuery)->where('status_id', $status->id)->count();
         }
@@ -872,6 +868,9 @@ class LeadController extends Controller
                 $q->where('sources.id', $request->source_id);
             });
         }
+        if ($request->has('campaign_id') && !empty($request->campaign_id)) {
+            $query->where('campaign_id', $request->campaign_id);
+        }
         if ($request->has('service_id') && !empty($request->service_id)) {
             $query->whereHas('services', function($q) use ($request) {
                 $q->where('services.id', $request->service_id);
@@ -879,6 +878,9 @@ class LeadController extends Controller
         }
         if ($request->has('priority') && !empty($request->priority)) {
             $query->where('priority', $request->priority);
+        }
+        if ($request->has('status_id') && !empty($request->status_id)) {
+            $query->where('status_id', $request->status_id);
         }
 
         $leads = $query->orderBy('created_at', 'desc')->get();
