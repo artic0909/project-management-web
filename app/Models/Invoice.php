@@ -24,9 +24,9 @@ class Invoice extends Model
     protected static function booted()
     {
         static::creating(function ($invoice) {
-            if (empty($invoice->invoice_no) || strlen($invoice->invoice_no) !== 10 || !preg_match('/^[0-9]{10}$/', $invoice->invoice_no)) {
+            if (empty($invoice->invoice_no) || strlen($invoice->invoice_no) !== 6 || !preg_match('/^[0-9]{6}$/', $invoice->invoice_no)) {
                 do {
-                    $code = (string)random_int(1000000000, 9999999999);
+                    $code = (string)random_int(100000, 999999);
                 } while (static::where('invoice_no', $code)->exists());
                 $invoice->invoice_no = $code;
             }

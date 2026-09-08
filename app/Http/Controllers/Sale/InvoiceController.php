@@ -85,7 +85,7 @@ class InvoiceController extends Controller
 
         // Generate Invoice No
         do {
-            $invoice_no = random_int(1000000000, 9999999999);
+            $invoice_no = random_int(100000, 999999);
         } while (Invoice::where('invoice_no', $invoice_no)->exists());
 
         return view('admin.invoice.create', compact('orders', 'selectedOrder', 'invoice_no', 'routePrefix'));
@@ -94,7 +94,7 @@ class InvoiceController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'invoice_no' => 'required|numeric|digits:10|unique:invoices,invoice_no',
+            'invoice_no' => 'required|numeric|digits:6|unique:invoices,invoice_no',
             'invoice_date' => 'required|date',
             'client_name' => 'required|string',
             'items' => 'required|array|min:1',
@@ -130,7 +130,7 @@ class InvoiceController extends Controller
         
         // Generate new invoice number
         do {
-            $newInvoice->invoice_no = random_int(1000000000, 9999999999);
+            $newInvoice->invoice_no = random_int(100000, 999999);
         } while (Invoice::where('invoice_no', $newInvoice->invoice_no)->exists());
         $newInvoice->invoice_date = now();
         
@@ -168,7 +168,7 @@ class InvoiceController extends Controller
         $invoice = $this->getFilteredInvoices()->findOrFail($id);
         
         $request->validate([
-            'invoice_no' => 'required|numeric|digits:10|unique:invoices,invoice_no,' . $id,
+            'invoice_no' => 'required|numeric|digits:6|unique:invoices,invoice_no,' . $id,
             'invoice_date' => 'required|date',
             'client_name' => 'required|string',
             'items' => 'required|array|min:1',

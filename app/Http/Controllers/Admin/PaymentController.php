@@ -120,7 +120,7 @@ class PaymentController extends Controller
 
         // Generate Unique Invoice No for Payment
         do {
-            $data['invoice_no'] = random_int(1000000000, 9999999999);
+            $data['invoice_no'] = random_int(100000, 999999);
         } while (Payment::where('invoice_no', $data['invoice_no'])->exists());
 
         Payment::create($data);

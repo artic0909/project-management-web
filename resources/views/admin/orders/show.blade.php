@@ -336,7 +336,7 @@
                                     @forelse($order->payments as $pay)
                                     <tr>
                                         <td>{{ $pay->transaction_date ? $pay->transaction_date->format('d M Y') : 'N/A' }}</td>
-                                        <td><strong>{{ $pay->invoice_no ?? 'N/A' }}</strong></td>
+                                        <td><strong>{{ $pay->invoice_no ? 'STW'.$pay->invoice_no : 'N/A' }}</strong></td>
                                         <td><span class="src-tag google-type" style="padding: 2px 7px; font-size: 10px;">{{ $pay->payment_method ?? 'N/A' }}</span></td>
                                         <td><span class="mono" style="font-size: 11px;">{{ $pay->transaction_id ?? 'N/A' }}</span></td>
                                         <td><span class="money-cell" style="color:#10b981; font-weight: 700;">₹{{ number_format($pay->amount, 2) }}</span></td>
