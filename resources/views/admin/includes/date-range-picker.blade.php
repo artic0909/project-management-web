@@ -654,11 +654,12 @@
     <!-- Left: Presets -->
     <div class="drp-presets">
         <div class="drp-preset-group-label">Quick select</div>
+        <label class="drp-preset active" data-preset="default"><span class="drp-radio"></span> Default</label>
         <label class="drp-preset" data-preset="today"><span class="drp-radio"></span> Today</label>
         <label class="drp-preset" data-preset="yesterday"><span class="drp-radio"></span> Yesterday</label>
         <label class="drp-preset" data-preset="today_yesterday"><span class="drp-radio"></span> Today & Yesterday</label>
         <div class="drp-preset-group-label" style="margin-top:10px;">Ranges</div>
-        <label class="drp-preset active" data-preset="last7"><span class="drp-radio"></span> 7 Days</label>
+        <label class="drp-preset" data-preset="last7"><span class="drp-radio"></span> 7 Days</label>
         <label class="drp-preset" data-preset="last1month"><span class="drp-radio"></span> 1 Month</label>
         <label class="drp-preset" data-preset="last6month"><span class="drp-radio"></span> 6 Month</label>
         <label class="drp-preset" data-preset="last1year"><span class="drp-radio"></span> 1 Year</label>
@@ -758,7 +759,7 @@
             rangeEnd = null,
             hoverDate = null;
         let selecting = false,
-            activePreset = 'last7';
+            activePreset = 'default';
 
         function fmt(d) {
             return d ? d.getDate() + ' ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear() : '—';
@@ -785,6 +786,7 @@
         }
 
         const presetMap = {
+            default: () => [null, null],
             today: () => {
                 const d = clone(today);
                 return [d, d];
@@ -823,6 +825,7 @@
         };
 
         const presetLabels = {
+            default: 'Default',
             today: 'Today',
             yesterday: 'Yesterday',
             today_yesterday: 'Today & Yesterday',
@@ -1053,6 +1056,9 @@
                 if (s) {
                     view1 = new Date(s.getFullYear(), s.getMonth(), 1);
                     view2 = new Date(s.getFullYear(), s.getMonth() + 1, 1);
+                } else {
+                    view1 = new Date(today.getFullYear(), today.getMonth(), 1);
+                    view2 = new Date(today.getFullYear(), today.getMonth() + 1, 1);
                 }
                 render();
             });
@@ -1097,8 +1103,8 @@
             // Update hidden inputs if they exist (for the search form)
             const startInp = document.getElementById('drpStartInput');
             const endInp = document.getElementById('drpEndInput');
-            if (startInp && rangeStart) startInp.value = fmtBackend(rangeStart);
-            if (endInp && rangeEnd) endInp.value = fmtBackend(rangeEnd);
+            if (startInp) startInp.value = rangeStart ? fmtBackend(rangeStart) : '';
+            if (endInp) endInp.value = rangeEnd ? fmtBackend(rangeEnd) : '';
 
             // Update card subtitle
             const sub = document.getElementById('drpActiveSub');
@@ -1188,14 +1194,19 @@
                 if (activePreset === 'custom' && rangeStart && rangeEnd) {
                     display = fmt(rangeStart) + ' — ' + fmt(rangeEnd);
                 }
-                document.getElementById('drpLabel').textContent = display;
+                const lbl = document.getElementById('drpLabel');
+                if (lbl) lbl.textContent = display;
 
             } else {
-                // Default to last 7 days
-                const [s, e] = presetMap['last7']();
-                rangeStart = s;
-                rangeEnd = e;
-                document.getElementById('drpLabel').textContent = presetLabels['last7'] || 'Last 7 Days';
+                // Default to 'default' (Total / All Time)
+                activePreset = 'default';
+                rangeStart = null;
+                rangeEnd = null;
+                document.querySelectorAll('.drp-preset').forEach(p => p.classList.remove('active'));
+                const pEl = document.querySelector('.drp-preset[data-preset="default"]');
+                if (pEl) pEl.classList.add('active');
+                const lbl = document.getElementById('drpLabel');
+                if (lbl) lbl.textContent = presetLabels['default'] || 'Default';
             }
             // we don't necessarily want to call render() if it's hidden, but it's safe.
         });

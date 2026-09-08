@@ -201,7 +201,7 @@
                             <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
                             <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
                                 <i class="bi bi-calendar3"></i>
-                                <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'All Time' }}</span>
+                                <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'Default' }}</span>
                                 <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
                             </button>
 

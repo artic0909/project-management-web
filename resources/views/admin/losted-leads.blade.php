@@ -447,7 +447,7 @@
                         <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
                             <i class="bi bi-calendar3"></i>
                             <span style="opacity: 0.7; margin-right: 2px;">Created:</span>
-                            <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'Last 7 Days' }}</span>
+                            <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'Default' }}</span>
                             <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
                         </button>
 
