@@ -18,7 +18,7 @@
                 <h1 class="page-title">{{ $meeting->meeting_title }}</h1>
                 <p class="page-desc">Detailed meeting briefing and participants.</p>
             </div>
-            <div>
+            <div class="header-actions">
                 <a href="{{ route($routePrefix . '.meetings.edit', $meeting->id) }}" class="btn-primary-ghost">
                     <i class="bi bi-pencil"></i> Edit Details
                 </a>
@@ -33,7 +33,7 @@
                         <span class="m-status-pill {{ strtolower($meeting->status) }}">{{ $meeting->status }}</span>
                     </div>
                     <div class="card-body" style="padding:24px;">
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px; margin-bottom:30px;">
+                        <div class="show-two-col-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:20px; margin-bottom:30px;">
                             <div class="info-block">
                                 <span class="lbl"><i class="bi bi-calendar3"></i> Scheduled Date</span>
                                 <span class="val">{{ $meeting->meeting_date->format('l, d M Y') }}</span>

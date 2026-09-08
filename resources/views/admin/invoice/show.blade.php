@@ -215,8 +215,19 @@
             z-index: 100;
             transition: all 0.3s ease;
         }
-        .back-btn:hover {
-            background: var(--grey);
+        @media screen and (max-width: 768px) {
+            body { padding: 10px 0 80px; }
+            .invoice-card { margin: 0 10px; width: auto; min-height: auto; }
+            .content { padding: 15px 15px 40px; margin-top: -40px; }
+            .meta-grid { grid-template-columns: 1fr; gap: 15px; }
+            .back-btn, .print-btn {
+                padding: 10px 16px;
+                font-size: 12px;
+                bottom: 15px;
+            }
+            .back-btn { left: 15px; }
+            .print-btn { right: 15px; }
+            .invoice-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         }
     </style>
 </head>

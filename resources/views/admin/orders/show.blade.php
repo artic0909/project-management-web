@@ -19,8 +19,7 @@
                 <h1 class="page-title">Order #{{ $order->order_number ?? $order->id }}</h1>
                 <p class="page-desc">Viewing details for <strong>{{ $order->company_name }}</strong></p>
             </div>
-            <div style="display:flex;gap:10px;">
-                
+            <div class="header-actions">
                 @if(!$order->project()->exists())
                 <a href="{{ route($routePrefix . '.projects.create', $order->id) }}" class="btn-primary-solid sm" style="background:#8b5cf6;border-color:#8b5cf6;">
                     <i class="bi bi-plus-square-fill"></i> Convert to Project
@@ -175,7 +174,7 @@
                 </div>
 
                 {{-- Row for quick Communication & Assigned Team --}}
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                <div class="show-two-col-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
                     <div class="dash-card" style="padding:20px;">
                         <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--t4);margin-bottom:12px;letter-spacing:1px;">Communication</div>
                         <div style="display:flex; flex-direction:column; gap:10px;">
@@ -229,7 +228,7 @@
                         <form action="{{ route($routePrefix . '.orders.updateStatus', $order->id) }}" method="POST">
                             @csrf
                             @method('PATCH')
-                            <div class="form-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
+                            <div class="form-grid">
                                 <div class="form-row">
                                     <label class="form-lbl">Order Status</label>
                                     <select name="status_id" class="form-inp">
@@ -274,7 +273,7 @@
                         <div class="card-title"><i class="bi bi-megaphone-fill" style="color:#8b5cf6;margin-right:6px;"></i>Marketing Details</div>
                     </div>
                     <div class="card-body">
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div class="show-two-col-grid" style="display:grid;grid-template-columns:repeat(2, 1fr);gap:12px;">
                             <div class="od-row" style="grid-column:1/-1;">
                                 <span class="od-lbl">Plans</span>
                                 <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
@@ -374,7 +373,7 @@
                 @endif
 
                 {{-- ALL CONTACT POINTS --}}
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                <div class="show-two-col-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
                     <div class="dash-card" style="padding:18px;">
                         <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--t4);margin-bottom:12px;">Email Directory</div>
                         @foreach($emails as $email)

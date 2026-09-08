@@ -91,7 +91,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;">
+                            <div class="show-two-col-grid" style="display:grid;grid-template-columns:repeat(2, 1fr);gap:20px;">
                                 <div>
                                     <div class="kv-item">
                                         <label>Full Name</label>
@@ -150,7 +150,7 @@
                         </div>
                         
                         <div class="card-body">
-                            <div style="display:grid;grid-template-columns: @if($routePrefix == 'admin') 1fr 1fr @else 1fr @endif;gap:30px;">
+                            <div class="show-two-col-grid" style="display:grid;grid-template-columns: @if($routePrefix == 'admin') repeat(2, 1fr) @else 1fr @endif;gap:20px;">
                                 @if($routePrefix == 'admin')
                                 <div>
                                     {{-- Hosting Card --}}
@@ -250,7 +250,7 @@
                                     style="margin-right:8px;"></i>Login Credentials</div>
                         </div>
                         <div class="card-body" style="background:rgba(245,158,11,0.02)">
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                            <div class="show-two-col-grid" style="display:grid;grid-template-columns:repeat(2, 1fr);gap:20px;">
                                 <div
                                     style="background:var(--bg1);padding:15px;border-radius:10px;border:1px solid var(--b1);">
                                     <label
@@ -336,7 +336,7 @@
                         <div class="card-body" style="padding:15px;">
                             <form action="{{ route($routePrefix . '.projects.quickUpdate', $project->id) }}" method="POST">
                                 @csrf
-                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                                <div class="show-two-col-grid" style="display:grid;grid-template-columns:repeat(2, 1fr);gap:10px;margin-bottom:12px;">
                                     <div class="form-row" style="margin-bottom:0;">
                                         <label class="form-lbl" style="font-size:9px;">Project Status</label>
                                         <select name="project_status_id" class="form-inp" style="padding:6px 8px;font-size:12px;">

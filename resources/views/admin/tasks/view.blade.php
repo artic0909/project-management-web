@@ -13,21 +13,23 @@
                 <span class="h-badge gray">Created at: {{ $task->created_at->format('Y-m-d') }}</span>
             </div>
             
-            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div class="header-actions-wrap" style="display:flex; justify-content:space-between; align-items:flex-start; gap: 16px; flex-wrap: wrap;">
                 <div>
-                    <h1 style="font-size:32px; font-weight:800; color:var(--t1); margin:0;">{{ $task->title }}</h1>
-                    <div style="display:flex; gap:15px; margin-top:10px;">
+                    <h1 style="font-size: clamp(22px, 4vw, 32px); font-weight:800; color:var(--t1); margin:0;">{{ $task->title }}</h1>
+                    <div style="display:flex; gap:10px; margin-top:10px; flex-wrap: wrap;">
                         <span class="h-pill">Status: {{ $task->status }}</span>
                         <span class="h-pill green">Priority: High</span>
                     </div>
                 </div>
-                <a href="{{ route($routePrefix . '.tasks.completed') }}" class="btn-primary-ghost sm" style="height:40px; padding:0 20px;">
-                    <i class="bi bi-arrow-left"></i> <span>Back to List</span>
-                </a>
+                <div class="header-actions">
+                    <a href="{{ route($routePrefix . '.tasks.completed') }}" class="btn-primary-ghost sm" style="height:40px; padding:0 20px;">
+                        <i class="bi bi-arrow-left"></i> <span>Back to List</span>
+                    </a>
+                </div>
             </div>
         </div>
 
-        <div class="dash-grid" style="display:grid; grid-template-columns: 1fr 400px; gap:30px; align-items: flex-start;">
+        <div class="task-view-grid">
             
             {{-- Left Column: Details --}}
             <div style="display:flex; flex-direction:column; gap:30px;">
@@ -162,9 +164,6 @@
             </div>
 
         </div>
-    </div>
-</main>
-
         </div>
     </div>
 </main>
@@ -185,9 +184,17 @@
     .h-pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
     .h-pill.green::before { background: #10b981; }
 
+    /* Layout Grid */
+    .task-view-grid {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 30px;
+        align-items: flex-start;
+    }
+
     /* Premium Cards */
     .premium-card { border-radius: 20px; border: 1px solid var(--b1); background: var(--bg2); box-shadow: 0 10px 30px -15px rgba(0,0,0,0.05); }
-    .card-hd-premium { padding: 24px 30px; border-bottom: 1px solid var(--b1); display: flex; justify-content: space-between; align-items: center; }
+    .card-hd-premium { padding: 24px 30px; border-bottom: 1px solid var(--b1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
     .p-title { font-size: 15px; font-weight: 800; color: var(--t1); display: flex; align-items: center; gap: 12px; }
     .p-title i { font-size: 18px; color: var(--accent); }
     .p-link { font-size: 12px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 6px; transition: 0.2s; }
@@ -197,10 +204,10 @@
     .info-grid-2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; }
     .info-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
     .info-label { font-size: 10px; font-weight: 700; color: var(--t4); letter-spacing: 0.8px; margin-bottom: 10px; display: block; }
-    .info-value-lg { font-size: 20px; font-weight: 800; color: var(--t1); }
-    .info-value { font-size: 14px; font-weight: 700; color: var(--t2); }
+    .info-value-lg { font-size: 20px; font-weight: 800; color: var(--t1); word-break: break-word; }
+    .info-value { font-size: 14px; font-weight: 700; color: var(--t2); word-break: break-word; }
     .info-value.accent { color: var(--accent); }
-    .desc-box { background: var(--bg3); padding: 24px; border-radius: 14px; border: 1px solid var(--b1); line-height: 1.8; color: var(--t2); font-size: 14.5px; white-space: pre-wrap; }
+    .desc-box { background: var(--bg3); padding: 24px; border-radius: 14px; border: 1px solid var(--b1); line-height: 1.8; color: var(--t2); font-size: 14.5px; white-space: pre-wrap; word-break: break-word; }
 
     /* Action Buttons */
     .call-btn, .email-btn { height: 38px; padding: 0 16px; border-radius: 10px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; border: none; cursor: pointer; transition: 0.2s; }
@@ -238,5 +245,22 @@
     /* Shared User Style */
     .v-user { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--t1); font-size: 14px; }
     .v-ava { width: 34px; height: 34px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+
+    @media (max-width: 992px) {
+        .task-view-grid {
+            grid-template-columns: 1fr;
+        }
+        .info-grid-2, .info-grid-3 {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-area { padding: 14px; }
+        .p-30, .card-hd-premium, .update-panel-premium .p-hd, .card-body.p-24 {
+            padding: 16px !important;
+        }
+    }
 </style>
 @endsection

@@ -48,7 +48,7 @@
                 <h1 class="page-title">Ticket {{ $ticket->ticket_no }}</h1>
                 <p class="page-desc">Viewing request from <strong>{{ $ticket->company_name ?? $ticket->your_name }}</strong></p>
             </div>
-            <div style="display:flex;gap:10px;">
+            <div class="header-actions">
                 @if(($routePrefix ?? 'admin') !== 'developer')
                 <button class="btn-primary-solid danger sm" onclick="confirmDelete('{{ route(($routePrefix ?? 'admin') . '.supports.destroy', $ticket->id) }}')">
                     <i class="bi bi-trash-fill"></i> Delete Ticket
@@ -194,7 +194,7 @@
                                 <textarea name="message_reply" class="form-inp" rows="5" placeholder="Address the client's concern..." required style="resize:none; padding:15px;"></textarea>
                             </div>
                             
-                            <div style="display:grid; grid-template-columns: 1fr 200px; gap:15px; align-items:end;">
+                            <div class="show-two-col-grid" style="display:grid; grid-template-columns: 1fr 200px; gap:15px; align-items:end;">
                                 <div class="form-row mb-0">
                                     <label class="form-lbl">Set New Ticket Status</label>
                                     <select name="status" class="form-inp">

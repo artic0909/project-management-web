@@ -171,11 +171,11 @@
     }
 
     .row-actions {
-        display: inline-flex !important;
+        display: flex !important;
         align-items: center !important;
         gap: 5px !important;
-        flex-wrap: nowrap !important;
-        white-space: nowrap !important;
+        flex-wrap: wrap !important;
+        max-width: 140px;
     }
 
     .ra-btn.phone:hover {

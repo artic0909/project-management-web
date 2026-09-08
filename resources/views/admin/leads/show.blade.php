@@ -31,32 +31,30 @@
                 <p class="page-desc">Comprehensive profile and lead intelligence</p>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:flex-end;">
-                    <div style="display:flex; gap:10px; margin-bottom:5px;">
-                        @if($lead->is_losted)
-                            <form id="markAsLeadForm" action="{{ route($routePrefix . '.losted-leads.markAsLead', $lead->id) }}" method="POST" style="display:none;">
-                                @csrf
-                            </form>
-                            <button type="button" class="btn-primary-solid" style="background:#10b981; border-color:#10b981; display:flex; align-items:center; gap:6px;" onclick="openModal('markLeadModal')">
-                                <i class="bi bi-arrow-return-left"></i> Move to Leads
-                            </button>
-                        @else
-                            <form id="markAsLostedForm" action="{{ route($routePrefix . '.leads.markAsLosted', $lead->id) }}" method="POST" style="display:none;">
-                                @csrf
-                            </form>
-                            <button type="button" class="btn-primary-solid" style="background:#ef4444; border-color:#ef4444; display:flex; align-items:center; gap:6px;" onclick="openModal('markLostedModal')">
-                                <i class="bi bi-x-circle"></i> Mark as Losted
-                            </button>
-                            <a href="{{ route($routePrefix . '.orders.create', ['lead_id' => $lead->id]) }}" class="btn-primary-solid">
-                                <i class="bi bi-box-arrow-in-right"></i> Convert To Order
-                            </a>
-                        @endif
-                    </div>
-                </div>
+            <div class="header-actions">
+                @if($lead->is_losted)
+                    <form id="markAsLeadForm" action="{{ route($routePrefix . '.losted-leads.markAsLead', $lead->id) }}" method="POST" style="display:none;">
+                        @csrf
+                    </form>
+                    <button type="button" class="btn-primary-solid" style="background:#10b981; border-color:#10b981;" onclick="openModal('markLeadModal')">
+                        <i class="bi bi-arrow-return-left"></i> Move to Leads
+                    </button>
+                @else
+                    <form id="markAsLostedForm" action="{{ route($routePrefix . '.leads.markAsLosted', $lead->id) }}" method="POST" style="display:none;">
+                        @csrf
+                    </form>
+                    <button type="button" class="btn-primary-solid" style="background:#ef4444; border-color:#ef4444;" onclick="openModal('markLostedModal')">
+                        <i class="bi bi-x-circle"></i> Mark as Losted
+                    </button>
+                    <a href="{{ route($routePrefix . '.orders.create', ['lead_id' => $lead->id]) }}" class="btn-primary-solid">
+                        <i class="bi bi-box-arrow-in-right"></i> Convert To Order
+                    </a>
+                @endif
+            </div>
         </div>
 
         <!-- ── TOP QUICK STATS ── -->
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">
+        <div class="kpi-grid show-stats-grid" style="margin-bottom:20px;">
             @php 
                 $pColor = $lead->priority == 'Hot 🔥' ? '#ef4444' : ($lead->priority == 'Warm' ? '#f59e0b' : '#06b6d4');
                 $pBg = $lead->priority == 'Hot 🔥' ? 'rgba(239,68,68,.12)' : ($lead->priority == 'Warm' ? 'rgba(245,158,11,.12)' : 'rgba(6,182,212,.12)');
@@ -164,7 +162,7 @@
                 @endif
 
                 <!-- Row 1: Quick Actions & Primary Communication -->
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                <div class="show-two-col-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
                     <div class="dash-card" style="padding:20px;">
                         <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--t4);margin-bottom:12px;letter-spacing:1px;">Communication</div>
                         <div style="display:flex; flex-direction:column; gap:10px;">
@@ -255,7 +253,7 @@
                 </div>
 
                 <!-- ALL CONTACT POINTS -->
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                <div class="show-two-col-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
                     <div class="dash-card" style="padding:18px;">
                         <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--t4);margin-bottom:12px;">Email Directory</div>
                         @foreach($emails as $email)

@@ -19,7 +19,7 @@
                 <h1 class="page-title">Inquiry Details</h1>
                 <p class="page-desc">Viewing request from <strong>{{ $inquiry->company_name }}</strong></p>
             </div>
-            <div style="display:flex; gap:10px; align-items:center;">
+            <div class="header-actions">
                 @if(auth('admin')->check() || auth('sale')->check())
                     <div class="conv-btn-wrap">
                         <a href="{{ route($routePrefix . '.orders.create', ['inquiry_id' => $inquiry->id]) }}" class="conv-btn order">
@@ -148,7 +148,7 @@
                     </div>
                 </div>
 
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                <div class="show-two-col-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
                     <div class="dash-card" style="padding:18px;">
                         <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--t4);margin-bottom:12px;letter-spacing:1px; display:flex; align-items:center; gap:6px;">
                             <i class="bi bi-envelope-fill"></i> Email Directory

@@ -1892,7 +1892,10 @@
 
         .row-actions {
             display: flex;
+            align-items: center;
             gap: 4px;
+            flex-wrap: wrap;
+            max-width: 130px;
         }
 
         .ra-btn {
@@ -3040,21 +3043,44 @@
                 display: none;
             }
 
+            .dash-grid {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 16px !important;
+                width: 100% !important;
+            }
+
             .span-4,
             .span-6,
             .span-8,
             .span-12 {
-                grid-column: span 12;
+                grid-column: span 12 !important;
+                width: 100% !important;
+                max-width: 100% !important;
             }
 
-            .kpi-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
+            .kpi-grid,
+            .show-stats-grid,
+            [style*="grid-template-columns:repeat(4,1fr)"],
+            [style*="grid-template-columns: repeat(4, 1fr)"] {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
             }
 
             .detail-grid,
-            .settings-grid {
-                grid-template-columns: 1fr;
+            .settings-grid,
+            .show-two-col-grid,
+            .grid-2-col,
+            [style*="grid-template-columns: 1fr 1fr"],
+            [style*="grid-template-columns:1fr 1fr"],
+            [style*="grid-template-columns: repeat(2, 1fr)"] {
+                grid-template-columns: 1fr !important;
+                gap: 16px !important;
+            }
+
+            .detail-kpis {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
             }
 
             .card-head {
@@ -3089,6 +3115,8 @@
 
             .page-area {
                 padding: 14px 12px 28px;
+                max-width: 100vw;
+                overflow-x: hidden;
             }
 
             .page-header {
@@ -3107,14 +3135,15 @@
             }
 
             .header-actions {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 8px;
-                width: 100%;
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 8px !important;
+                width: 100% !important;
             }
 
             .header-actions .btn-primary-solid,
-            .header-actions .btn-ghost {
+            .header-actions .btn-ghost,
+            .header-actions .btn-primary-ghost {
                 flex: 1 1 auto;
                 justify-content: center;
                 text-align: center;
@@ -3168,15 +3197,16 @@
             }
 
             .data-table td:last-child {
-                white-space: nowrap !important;
+                white-space: normal !important;
+                min-width: 125px !important;
             }
 
             .row-actions {
-                display: inline-flex !important;
+                display: flex !important;
                 align-items: center !important;
                 gap: 4px !important;
-                flex-wrap: nowrap !important;
-                white-space: nowrap !important;
+                flex-wrap: wrap !important;
+                max-width: 125px !important;
             }
 
             .ra-btn {
@@ -3249,7 +3279,10 @@
         }
 
         @media (max-width: 576px) {
-            .kpi-grid {
+            .kpi-grid,
+            .show-stats-grid,
+            [style*="grid-template-columns:repeat(4,1fr)"],
+            [style*="grid-template-columns: repeat(4, 1fr)"] {
                 grid-template-columns: repeat(2, 1fr) !important;
                 gap: 8px !important;
             }
@@ -3271,12 +3304,21 @@
             }
 
             .detail-kpis {
-                grid-template-columns: repeat(2, 1fr) !important;
+                grid-template-columns: 1fr !important;
             }
 
             .filter-select {
                 flex: 1 1 100%;
                 width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid,
+            .show-stats-grid,
+            [style*="grid-template-columns:repeat(4,1fr)"],
+            [style*="grid-template-columns: repeat(4, 1fr)"] {
+                grid-template-columns: 1fr !important;
             }
         }
 
