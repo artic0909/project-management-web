@@ -377,6 +377,7 @@
             @endif
 
             {{-- Additional Dynamics --}}
+            @if($routePrefix == 'sale')
             @foreach($sources as $src)
                 @if($src->leads_count > 0)
                 <div class="stat-box" style="--sb-color:#8b5cf6;">
@@ -402,6 +403,7 @@
                 </div>
                 @endif
             @endforeach
+            @endif
 
             @foreach($campaigns as $cmp)
                 @if($cmp->leads_count > 0)
@@ -455,12 +457,14 @@
                         <input type="hidden" name="start_date" id="drpStartInput" value="{{ request('start_date') }}">
                         <input type="hidden" name="end_date" id="drpEndInput" value="{{ request('end_date') }}">
 
+                        @if($routePrefix == 'sale')
                         <select name="source_id" class="filter-select" onchange="updateFilters()">
                             <option value="">Lead Source</option>
                             @foreach($sources as $source)
                                 <option value="{{ $source->id }}" {{ request('source_id') == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
                             @endforeach
                         </select>
+                        @endif
                         
                         <select name="campaign_id" class="filter-select" onchange="updateFilters()">
                             <option value="">All Campaigns</option>
@@ -469,12 +473,14 @@
                             @endforeach
                         </select>
 
+                        @if($routePrefix == 'sale')
                         <select name="service_id" class="filter-select" onchange="updateFilters()">
                             <option value="">All Services</option>
                             @foreach($services as $service)
                                 <option value="{{ $service->id }}" {{ request('service_id') == $service->id ? 'selected' : '' }}>{{ $service->name }}</option>
                             @endforeach
                         </select>
+                        @endif
 
                         <select name="priority" class="filter-select" onchange="updateFilters()">
                             <option value="">Priority</option>
@@ -527,9 +533,11 @@
                                 @if(!($routePrefix == 'sale'))
                                 <th>Lead</th>
                                 @endif
-                                <th>Campaign / Source</th>
                                 @if($routePrefix == 'sale')
+                                <th>Campaign / Source</th>
                                 <th>Contact Person</th>
+                                @else
+                                <th>Campaign</th>
                                 @endif
                                 <th>Phone</th>
                                 <th>Priority</th>
@@ -557,7 +565,7 @@
                                 @endif
                                 <td>{{ $leads->firstItem() + $index }}</td>
                                 <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $lead->created_at->format('d M Y') }}</div></td>
-                                @if($routePrefix == 'sale')
+                                @if($routePrefix == 'admin')
                                 <td>
                                     <div class="lead-cell">
                                         @php
@@ -573,7 +581,10 @@
                                         </div>
                                     </div>
                                 </td>
-                                @endif
+                                <td>
+                                    <span class="src-tag">{{ $lead->campaign->name ?? 'N/A' }}</span>
+                                </td>
+                                @else
                                 <td>
                                     <span class="src-tag">{{ $lead->campaign->name ?? 'N/A' }}</span>
                                     <div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:4px;">
@@ -582,7 +593,6 @@
                                         @endforeach
                                     </div>
                                 </td>
-                                @if(!($routePrefix == 'sale'))
                                 <td><strong style="color:var(--t2)">{{ $lead->contact_person }}</strong></td>
                                 @endif
                                 <td>
