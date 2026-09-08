@@ -580,10 +580,14 @@
                                 @if(!($routePrefix == 'sale'))
                                 <th>Lead</th>
                                 @endif
+                                
                                 <th>Campaign / Source</th>
-                                @if(!($routePrefix == 'sale'))
+
+                                @if($routePrefix == 'sale')
                                 <th>Contact Person</th>
                                 @endif
+
+
                                 <th>Phone</th>
                                 @php
                                     $isAdminNewOrTotal = $routePrefix === 'admin' && in_array(request('type', 'total'), ['new', 'total']);
