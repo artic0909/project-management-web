@@ -2989,11 +2989,22 @@
             .sidebar {
                 transform: translateX(-100%);
                 width: 240px !important;
+                z-index: 1000;
+                transition: transform .25s cubic-bezier(.4, 0, .2, 1);
             }
 
             .sidebar.mobile-open {
                 transform: translateX(0);
                 box-shadow: var(--shadow-lg);
+            }
+
+            .sidebar-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, .6);
+                backdrop-filter: blur(3px);
+                z-index: 999;
+                display: none;
             }
 
             .sidebar-overlay.show {
@@ -3002,16 +3013,29 @@
 
             .main-wrap {
                 margin-left: 0 !important;
+                width: 100% !important;
+                max-width: 100vw;
+            }
+
+            .topbar {
+                padding: 0 14px;
+                height: 54px;
             }
 
             .mob-menu-btn {
-                display: flex;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 36px;
+                height: 36px;
+                font-size: 20px;
+                border-radius: var(--r-sm);
+                background: var(--bg4);
+                border: 1px solid var(--b1);
+                color: var(--t2);
             }
 
-            .topbar-center {
-                display: none;
-            }
-
+            .topbar-center,
             .tb-user-name {
                 display: none;
             }
@@ -3025,41 +3049,240 @@
 
             .kpi-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
             }
 
-            .detail-grid {
-                grid-template-columns: 1fr;
-            }
-
+            .detail-grid,
             .settings-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .card-head {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                padding: 14px 16px 0;
+            }
+
+            .card-actions {
+                width: 100%;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .table-wrap {
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Hide Date Range Picker completely on Mobile */
+            .drp-trigger,
+            #dateRangeTrigger,
+            .drp-panel,
+            #dateRangePanel,
+            .date-range-picker {
+                display: none !important;
+            }
+
+            .page-area {
+                padding: 14px 12px 28px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .page-title {
+                font-size: 18px;
+            }
+
+            .page-desc {
+                font-size: 12px;
+            }
+
+            .header-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                width: 100%;
+            }
+
+            .header-actions .btn-primary-solid,
+            .header-actions .btn-ghost {
+                flex: 1 1 auto;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .card-head {
+                padding: 12px 14px 0;
+            }
+
+            .card-body {
+                padding: 12px 14px 16px;
+            }
+
+            .card-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                width: 100%;
+                align-items: stretch;
+            }
+
+            .global-search {
+                flex: 1 1 100% !important;
+                width: 100% !important;
+                min-width: 100% !important;
+            }
+
+            .filter-select {
+                flex: 1 1 calc(50% - 6px);
+                min-width: 120px;
+                font-size: 12px;
+                padding: 6px 8px;
+            }
+
+            .table-wrap {
+                width: 100%;
+                max-width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                display: block;
+            }
+
+            .data-table {
+                min-width: 600px;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 9px 10px;
+                font-size: 12.5px;
+            }
+
+            .data-table td:last-child {
+                white-space: nowrap !important;
+            }
+
+            .row-actions {
+                display: inline-flex !important;
+                align-items: center !important;
+                gap: 4px !important;
+                flex-wrap: nowrap !important;
+                white-space: nowrap !important;
+            }
+
+            .ra-btn {
+                flex-shrink: 0 !important;
+                min-width: 28px !important;
+                width: 28px !important;
+                height: 28px !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                font-size: 12.5px !important;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr !important;
+                gap: 12px;
+            }
+
+            .modal-backdrop {
+                padding: 10px !important;
+            }
+
+            .modal-box {
+                max-width: 100% !important;
+                max-height: 94vh !important;
+                border-radius: var(--r) !important;
+            }
+
+            .modal-hd {
+                padding: 12px 14px !important;
+                font-size: 14px !important;
+            }
+
+            .modal-bd {
+                padding: 14px !important;
+            }
+
+            .modal-ft {
+                padding: 10px 14px !important;
+                flex-wrap: wrap !important;
+            }
+
+            .modal-ft button {
+                flex: 1 1 calc(50% - 6px) !important;
+                justify-content: center !important;
+            }
+
+            .table-footer {
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 10px !important;
+                text-align: center !important;
+            }
+
+            .tf-pagination {
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+            }
+
+            .bulk-assign-wrap {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                width: 100% !important;
+                gap: 8px !important;
+            }
+
+            .bulk-assign-wrap > * {
+                width: 100% !important;
             }
         }
 
         @media (max-width: 576px) {
             .kpi-grid {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
             }
 
-            .page-area {
-                padding: 16px 14px 32px;
+            .kpi-card {
+                padding: 12px 10px !important;
             }
 
-            .header-actions {
-                flex-direction: column;
-                align-items: flex-start;
+            .kpi-val {
+                font-size: 18px !important;
+            }
+
+            .kpi-lbl {
+                font-size: 11px !important;
             }
 
             .quick-add-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(2, 1fr) !important;
             }
 
             .detail-kpis {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(2, 1fr) !important;
             }
 
-            .form-grid {
-                grid-template-columns: 1fr;
+            .filter-select {
+                flex: 1 1 100%;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .kpi-grid {
+                grid-template-columns: 1fr !important;
             }
         }
     </style>

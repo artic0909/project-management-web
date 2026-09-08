@@ -646,6 +646,15 @@
         padding-top: 16px;
         border-top: 1px solid var(--b1);
     }
+
+    @media (max-width: 768px) {
+        .drp-trigger,
+        #dateRangeTrigger,
+        .drp-panel,
+        #dateRangePanel {
+            display: none !important;
+        }
+    }
 </style>
 
 <!-- ══ DATE RANGE PICKER PANEL (fixed positioned) ══ -->

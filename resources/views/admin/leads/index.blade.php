@@ -172,11 +172,12 @@
         border-color: #10b981;
     }
 
-    @media (max-width: 768px) {
-        .row-actions {
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
+    .row-actions {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 5px !important;
+        flex-wrap: nowrap !important;
+        white-space: nowrap !important;
     }
 
     .ra-btn.phone:hover {
