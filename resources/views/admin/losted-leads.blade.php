@@ -528,7 +528,7 @@
                                 <th>Lead</th>
                                 @endif
                                 <th>Campaign / Source</th>
-                                @if(!($routePrefix == 'sale'))
+                                @if($routePrefix == 'sale')
                                 <th>Contact Person</th>
                                 @endif
                                 <th>Phone</th>
@@ -557,7 +557,7 @@
                                 @endif
                                 <td>{{ $leads->firstItem() + $index }}</td>
                                 <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $lead->created_at->format('d M Y') }}</div></td>
-                                @if(!($routePrefix == 'sale'))
+                                @if($routePrefix == 'sale')
                                 <td>
                                     <div class="lead-cell">
                                         @php

@@ -640,7 +640,7 @@
                                 </td>
                                 @endif
                                 <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $lead->created_at->format('d M Y') }}</div></td>
-                                @if(!($routePrefix == 'sale'))
+                                @if($routePrefix == 'sale')
                                 <td>
                                     <div class="lead-cell">
                                         @php
