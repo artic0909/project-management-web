@@ -2126,6 +2126,34 @@
             }
         }
 
+        /* ─── KYC / VIEW MODAL STYLES ─── */
+        .kyc-modal-grid {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .kyc-two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .kyc-docs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .kyc-bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            border-top: 1px solid var(--b1);
+            padding-top: 16px;
+        }
+
         /* ─── ATTENDANCE ─── */
         .att-summary {
             display: flex;
@@ -3308,6 +3336,35 @@
                 grid-template-columns: repeat(2, 1fr) !important;
                 gap: 10px !important;
             }
+
+            .kyc-modal-grid {
+                grid-template-columns: 1fr !important;
+                gap: 16px !important;
+            }
+
+            .kyc-two-col {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+
+            .kyc-docs-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+
+            .kyc-bottom-grid {
+                grid-template-columns: 1fr !important;
+                gap: 14px !important;
+            }
+
+            .modal-dialog.modal-lg {
+                margin: 10px !important;
+                max-width: calc(100% - 20px) !important;
+            }
+
+            .modal-body {
+                padding: 16px !important;
+            }
         }
 
         @media (max-width: 576px) {
@@ -3366,6 +3423,11 @@
             [style*="grid-template-columns: repeat(9, 1fr)"] {
                 grid-template-columns: 1fr !important;
                 gap: 8px !important;
+            }
+
+            .kyc-docs-grid {
+                grid-template-columns: 1fr !important;
+                gap: 10px !important;
             }
         }
 

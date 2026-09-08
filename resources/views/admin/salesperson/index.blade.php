@@ -948,9 +948,9 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background: none; border: none; color: var(--t3); font-size: 20px; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center;"><i class="bi bi-x-lg"></i></button>
                 </div>
                 <div class="modal-body" style="padding: 24px;">
-                    <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; align-items: start;">
+                    <div class="kyc-modal-grid">
                         <!-- Left: Profile pic and status -->
-                        <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; background: var(--bg3); padding: 20px; border-radius: 12px; border: 1px solid var(--b1);">
+                        <div class="kyc-profile-sidebar" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; background: var(--bg3); padding: 20px; border-radius: 12px; border: 1px solid var(--b1);">
                             <img id="kycProfileImage" src="" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--b2); background: var(--bg2);" alt="Profile Image">
                             <div>
                                 <h4 id="kycName" style="font-size: 16px; font-weight: 700; margin: 0 0 4px 0;"></h4>
@@ -960,7 +960,7 @@
                         
                         <!-- Right: Info columns -->
                         <div style="display: flex; flex-direction: column; gap: 16px;">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div class="kyc-two-col">
                                 <div>
                                     <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--t4); display: block; margin-bottom: 4px;">Phone Number</label>
                                     <span id="kycPhone" style="font-size: 14px; font-weight: 600;"></span>
@@ -973,7 +973,7 @@
                             
                             <div style="border-top: 1px solid var(--b1); padding-top: 16px;">
                                 <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--t4); display: block; margin-bottom: 12px;">KYC Document Proofs</label>
-                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                                <div class="kyc-docs-grid">
                                     <!-- Aadhar -->
                                     <div id="kycAadharBox" style="text-align: center; background: var(--bg3); padding: 12px; border-radius: 8px; border: 1px solid var(--b1); display: flex; flex-direction: column; gap: 8px; align-items: center; justify-content: center;">
                                         <span style="font-size: 11px; font-weight: 700;">Aadhar Card</span>
@@ -1006,7 +1006,7 @@
                                 </div>
                             </div>
 
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; border-top: 1px solid var(--b1); padding-top: 16px;">
+                            <div class="kyc-bottom-grid">
                                 <!-- Bank Account -->
                                 <div style="background: var(--bg3); padding: 16px; border-radius: 10px; border: 1px solid var(--b1); display: flex; flex-direction: column; gap: 8px; align-items: center; text-align: center; justify-content: center;">
                                     <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--t4); margin: 0;">Bank Account Proof</label>
