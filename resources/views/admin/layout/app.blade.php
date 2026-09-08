@@ -3227,6 +3227,14 @@
                 font-size: 12.5px !important;
             }
 
+            .pagination svg,
+            .tf-pagination svg,
+            nav[role="navigation"] svg {
+                max-width: 18px !important;
+                max-height: 18px !important;
+                display: inline-block !important;
+            }
+
             .form-grid {
                 grid-template-columns: 1fr !important;
                 gap: 12px;

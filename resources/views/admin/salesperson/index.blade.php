@@ -798,7 +798,7 @@
                 <div class="table-footer">
                     <span class="tf-info">Showing {{ $salesPeople->firstItem() ?? 0 }} to {{ $salesPeople->lastItem() ?? 0 }} of {{ $salesPeople->total() }} Sales Persons</span>
                     <div class="tf-pagination">
-                        {{ $salesPeople->links() }}
+                        {{ $salesPeople->links('admin.includes.pagination') }}
                     </div>
                 </div>
             </div>

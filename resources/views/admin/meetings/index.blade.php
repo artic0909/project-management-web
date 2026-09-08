@@ -13,7 +13,7 @@
                     <h1 class="page-title">Meeting Schedule</h1>
                     <p class="page-desc">Track and manage upcoming discussions with clients and teams.</p>
                 </div>
-                <div class="d-flex gap-2">
+                <div class="header-actions">
                @if(auth()->guard('admin')->check())
                     <button type="button" class="btn-primary-solid" onclick="exportMeetings()">
                         <i class="bi bi-file-earmark-spreadsheet"></i> Export
@@ -298,7 +298,7 @@
                     </div>
 
                     <div style="padding:20px;">
-                        {{ $meetings->appends(request()->query())->links() }}
+                        {{ $meetings->appends(request()->query())->links('admin.includes.pagination') }}
                     </div>
                 </div>
             </div>
@@ -336,10 +336,10 @@
     </form>
 
     <style>
-        /* ── 6-COLUMN RESPONSIVE GRID ── */
+        /* ── 5-COLUMN RESPONSIVE GRID ── */
         .stat-grid-wrap {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 10px;
         }
 
@@ -431,13 +431,13 @@
         }
 
         @media (max-width: 1200px) {
-            .stat-grid-wrap { grid-template-columns: repeat(4, 1fr); }
-        }
-        @media (max-width: 860px) {
             .stat-grid-wrap { grid-template-columns: repeat(3, 1fr); }
         }
-        @media (max-width: 560px) {
+        @media (max-width: 768px) {
             .stat-grid-wrap { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+            .stat-grid-wrap { grid-template-columns: 1fr; }
         }
 
         /* ── ORION TABLE SYSTEM ── */
@@ -697,6 +697,8 @@
         .m-actions {
             display: flex;
             gap: 6px;
+            flex-wrap: wrap;
+            max-width: 130px;
         }
 
         .act-btn {
