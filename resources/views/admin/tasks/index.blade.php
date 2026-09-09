@@ -104,7 +104,7 @@
                                         <div style="font-size:10px;color:var(--t4);font-weight:500;">{{ $task->created_at->format('h:i A') }}</div>
                                     </td>
                                     <td>
-                                        <div style="display:flex;gap:6px;justify-content:flex-end;">
+                                        <div class="row-actions" style="justify-content:flex-end;">
                                             <a href="{{ route($routePrefix . '.tasks.show', $task->id) }}" class="ra-btn" title="View Details" style="background:rgba(236,72,153,0.08);color:#ec4899;"><i class="bi bi-eye"></i></a>
                                         </div>
                                     </td>

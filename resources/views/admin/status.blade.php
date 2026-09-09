@@ -80,7 +80,7 @@
                                 <th style="width:52px;">SL</th>
                                 <th>Status Name</th>
                                 <th>Type</th>
-                                <th style="width:110px;">Actions</th>
+                                <th style="white-space:nowrap;">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="statusTbody">

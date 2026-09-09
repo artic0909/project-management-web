@@ -173,11 +173,22 @@
     }
 
     .row-actions {
-        display: flex !important;
+        display: inline-flex !important;
         align-items: center !important;
-        gap: 5px !important;
-        flex-wrap: wrap !important;
-        max-width: 140px;
+        gap: 4px !important;
+        flex-wrap: nowrap !important;
+        white-space: nowrap !important;
+        max-width: none !important;
+        width: max-content !important;
+    }
+
+    @media (max-width: 768px) {
+        .row-actions {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            max-width: 125px !important;
+            width: auto !important;
+        }
     }
 
     .ra-btn.phone:hover {

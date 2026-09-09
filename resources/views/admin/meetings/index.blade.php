@@ -147,7 +147,7 @@
                                     <th style="width:180px;">Developers</th>
                                     <th style="width:180px;">Sales Team</th>
                                     <th style="width:150px;">Created By</th>
-                                    <th style="width:120px; text-align:right;">Actions</th>
+                                    <th style="white-space:nowrap; text-align:right;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -695,10 +695,12 @@
         }
 
         .m-actions {
-            display: flex;
+            display: inline-flex;
+            align-items: center;
             gap: 6px;
-            flex-wrap: wrap;
-            max-width: 130px;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+            width: max-content;
         }
 
         .act-btn {
@@ -708,13 +710,23 @@
             border: none;
             background: var(--bg4);
             color: var(--t3);
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
             font-size: 14px;
             text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 768px) {
+            .m-actions {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                max-width: 125px !important;
+                width: auto !important;
+            }
         }
 
         .act-btn:hover {

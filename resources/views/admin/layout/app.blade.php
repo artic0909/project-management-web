@@ -1891,11 +1891,30 @@
         }
 
         .row-actions {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 4px;
-            flex-wrap: wrap;
-            max-width: 130px;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+            width: max-content;
+        }
+
+        .m-actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+            width: max-content;
+        }
+
+        .data-table th:last-child,
+        .data-table td:last-child,
+        .orion-table th:last-child,
+        .orion-table td:last-child,
+        .table th:last-child,
+        .table td:last-child {
+            white-space: nowrap;
         }
 
         .ra-btn {
@@ -1905,11 +1924,13 @@
             background: var(--bg4);
             border: 1px solid var(--b1);
             color: var(--t3);
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             font-size: 12px;
             transition: var(--transition);
+            flex-shrink: 0;
+            text-decoration: none;
         }
 
         .ra-btn:hover {
@@ -3231,17 +3252,21 @@
                 font-size: 12.5px;
             }
 
-            .data-table td:last-child {
+            .data-table td:last-child,
+            .orion-table td:last-child,
+            .table td:last-child {
                 white-space: normal !important;
                 min-width: 125px !important;
             }
 
-            .row-actions {
+            .row-actions,
+            .m-actions {
                 display: flex !important;
                 align-items: center !important;
                 gap: 4px !important;
                 flex-wrap: wrap !important;
                 max-width: 125px !important;
+                width: auto !important;
             }
 
             .ra-btn {

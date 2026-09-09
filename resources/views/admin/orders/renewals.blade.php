@@ -579,6 +579,34 @@
     .type-badge { padding: 3px 9px; border-radius: 99px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
     .marketing-type { background: rgba(139, 92, 246, .12); color: #8b5cf6; }
     .website-type { background: rgba(6, 182, 212, .12); color: #06b6d4; }
+
+    .row-actions {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        flex-wrap: nowrap !important;
+        white-space: nowrap !important;
+        max-width: none !important;
+        width: max-content !important;
+    }
+
+    .data-table th:last-child,
+    .data-table td:last-child {
+        white-space: nowrap;
+    }
+
+    @media (max-width: 768px) {
+        .data-table td:last-child {
+            white-space: normal !important;
+            min-width: 125px !important;
+        }
+        .row-actions {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            max-width: 125px !important;
+            width: auto !important;
+        }
+    }
 </style>
 
 @endsection

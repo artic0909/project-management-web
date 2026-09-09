@@ -342,13 +342,6 @@
                                                 $fullPhones[] = ($codes[$p['code_idx'] ?? ''] ?? '') . ($p['number'] ?? '');
                                             }
                                         @endphp
-                                        <style>
-                                            .ra-btn.phone:hover {
-                                                background: rgba(16, 185, 129, 0.1) !important;
-                                                color: #10b981 !important;
-                                                border-color: #10b981 !important;
-                                            }
-                                        </style>
                                         <a href="javascript:void(0)" class="ra-btn phone" 
                                            onclick="handleContactClick(event, 'tel', {{ json_encode($fullPhones) }})" title="Call Client">
                                             <i class="bi bi-telephone-fill"></i>
@@ -642,6 +635,40 @@
 <style>
     .modal-header .btn-close { filter: none; }
     [data-theme="dark"] .modal-header .btn-close { filter: invert(1); }
+
+    .ra-btn.phone:hover {
+        background: rgba(16, 185, 129, 0.1) !important;
+        color: #10b981 !important;
+        border-color: #10b981 !important;
+    }
+
+    .row-actions {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        flex-wrap: nowrap !important;
+        white-space: nowrap !important;
+        max-width: none !important;
+        width: max-content !important;
+    }
+
+    .data-table th:last-child,
+    .data-table td:last-child {
+        white-space: nowrap;
+    }
+
+    @media (max-width: 768px) {
+        .data-table td:last-child {
+            white-space: normal !important;
+            min-width: 125px !important;
+        }
+        .row-actions {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            max-width: 125px !important;
+            width: auto !important;
+        }
+    }
 
     /* ── Stat scroll row (same as leads page) ── */
     .stat-scroll-row {

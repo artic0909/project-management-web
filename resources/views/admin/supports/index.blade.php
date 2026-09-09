@@ -167,7 +167,7 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <div style="display:flex;gap:5px;">
+                                    <div class="row-actions">
                                         <a href="{{ route(($routePrefix ?? 'admin') . '.supports.show', $ticket->id) }}" class="tb-btn sm" title="View & Reply"><i class="bi bi-eye-fill"></i></a>
                                         @if(($routePrefix ?? 'admin') !== 'developer')
                                         <button type="button" class="tb-btn sm danger" onclick="confirmDelete('{{ route(($routePrefix ?? 'admin') . '.supports.destroy', $ticket->id) }}')" title="Delete"><i class="bi bi-trash-fill"></i></button>

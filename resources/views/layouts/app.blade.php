@@ -545,12 +545,14 @@ input, select, textarea { font-family: var(--font); }
 .money-cell { font-weight: 700; color: var(--t1); font-family: var(--mono); font-size: 13px; }
 .mono { font-family: var(--mono); font-size: 12px; color: var(--t3); }
 
-.row-actions { display: flex; gap: 4px; }
+.row-actions { display: inline-flex; align-items: center; gap: 4px; flex-wrap: nowrap; white-space: nowrap; width: max-content; }
+.data-table th:last-child,
+.data-table td:last-child { white-space: nowrap; }
 .ra-btn {
   width: 28px; height: 28px; border-radius: 7px; background: var(--bg4);
-  border: 1px solid var(--b1); color: var(--t3); display: flex;
+  border: 1px solid var(--b1); color: var(--t3); display: inline-flex;
   align-items: center; justify-content: center; font-size: 12px;
-  transition: var(--transition);
+  transition: var(--transition); flex-shrink: 0; text-decoration: none;
 }
 .ra-btn:hover { background: var(--accent-bg); color: var(--accent); border-color: var(--accent); }
 .ra-btn.danger:hover { background: rgba(239,68,68,.1); color: #ef4444; border-color: #ef4444; }
@@ -830,6 +832,10 @@ textarea.form-inp { resize: vertical; }
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .detail-grid { grid-template-columns: 1fr; }
   .settings-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .data-table td:last-child { white-space: normal !important; min-width: 125px !important; }
+  .row-actions { display: flex !important; align-items: center !important; gap: 4px !important; flex-wrap: wrap !important; max-width: 125px !important; width: auto !important; }
 }
 @media (max-width: 576px) {
   .kpi-grid { grid-template-columns: 1fr 1fr; }
