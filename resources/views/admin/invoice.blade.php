@@ -233,10 +233,11 @@
             <!-- Sender -->
             <div class="sender-info">
                 <h2>Standsweb</h2>
-                <p> <strong>
+                <p>
                     PS Qube, Action Area IID, Newtown, Kolkata, 700156<br>
-                    Contact: +91 89270-43805 | Email: info@standsweb.com
-                    </strong>
+                    <strong>GSTIN:</strong> 29JTKPS5068C1Z1<br>
+                    <strong>Contact:</strong> +91 89270-43805<br>
+                    <strong>Email:</strong> info@standsweb.com
                 </p>
             </div>
 
