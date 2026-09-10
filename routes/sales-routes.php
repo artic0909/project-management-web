@@ -96,6 +96,7 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     Route::post('/project/{project}/tasks', [ProjectTaskController::class, 'store'])->name('projects.tasks.store');
     Route::get('/tasks/{task}/view', [ProjectTaskController::class, 'show'])->name('tasks.show');
     Route::post('/tasks/{task}/update', [ProjectTaskController::class, 'update'])->name('tasks.update');
+    Route::get('/tasks/reply/{id}/read-notification', [ProjectTaskController::class, 'readReplyNotification'])->name('tasks.read_reply_notif');
     
     // Payments
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');

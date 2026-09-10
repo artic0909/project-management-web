@@ -3512,6 +3512,7 @@
                 @php
                     $renewalCount = isset($upcomingRenewals) ? $upcomingRenewals->count() : 0;
                     $followupCount = isset($todayTimedFollowups) ? $todayTimedFollowups->count() : 0;
+                    $taskReplyCount = isset($unreadTaskReplies) ? $unreadTaskReplies->count() : 0;
                     
                     $activeFollowupsCount = 0;
                     if (isset($todayTimedFollowups)) {
@@ -3526,10 +3527,10 @@
                         }
                     }
                     
-                    $totalNotifs = $renewalCount + $followupCount;
+                    $totalNotifs = $renewalCount + $followupCount + $taskReplyCount;
                 @endphp
-                <div class="tb-btn notif-btn {{ $activeFollowupsCount > 0 ? 'has-notifs' : '' }}" data-tooltip="Notifications" onclick="toggleNotifPanel()">
-                    <i class="bi bi-bell-fill {{ $activeFollowupsCount > 0 ? 'bell-ringing' : '' }}"></i>
+                <div class="tb-btn notif-btn {{ ($activeFollowupsCount > 0 || $taskReplyCount > 0) ? 'has-notifs' : '' }}" data-tooltip="Notifications" onclick="toggleNotifPanel()">
+                    <i class="bi bi-bell-fill {{ ($activeFollowupsCount > 0 || $taskReplyCount > 0) ? 'bell-ringing' : '' }}"></i>
                     @if($totalNotifs > 0)
                         <span class="notif-badge">{{ $totalNotifs }}</span>
                     @endif
@@ -3543,8 +3544,31 @@
                     </div>
                     <div class="notif-list">
                         @if($totalNotifs > 0)
+                            @if($taskReplyCount > 0)
+                                <div style="padding: 8px 12px; font-size: 11px; font-weight: 700; color: var(--accent); background: var(--bg2); border-bottom: 1px solid var(--border);">DEVELOPER TASK REPLIES</div>
+                                @foreach($unreadTaskReplies as $assign)
+                                    <a href="{{ route($guard . '.tasks.read_reply_notif', $assign->id) }}" class="notif-item unread" onclick="this.style.display='none'; let b = document.querySelector('.notif-badge'); if(b){let c=parseInt(b.innerText)-1; if(c<=0)b.remove(); else b.innerText=c;}">
+                                        <div class="notif-icon" style="color: #6366f1; background: rgba(99, 102, 241, 0.12);"><i class="bi bi-chat-left-text-fill"></i></div>
+                                        <div class="notif-body">
+                                            <strong>#TSK-{{ $assign->task_id }} {{ $assign->task->title ?? 'Task' }}</strong>
+                                            <div style="font-size: 11.5px; color: var(--t2); margin-top: 2px;">
+                                                <span style="font-weight: 600; color: var(--accent);">{{ $assign->developer->name ?? 'Developer' }}</span> replied on <em>{{ $assign->task->project->project_name ?? 'Project' }}</em>
+                                            </div>
+                                            @if(!empty(trim($assign->remarks)))
+                                                <div style="font-size: 11px; color: var(--t3); margin-top: 3px; max-width: 270px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                    "{{ Str::limit(trim($assign->remarks), 48) }}"
+                                                </div>
+                                            @endif
+                                            <div class="notif-time" style="color: var(--accent); margin-top: 3px;">
+                                                <i class="bi bi-clock"></i> {{ $assign->updated_at ? $assign->updated_at->diffForHumans() : 'Just now' }}
+                                            </div>
+                                        </div>
+                                    </a>
+                                @endforeach
+                            @endif
+
                             @if($followupCount > 0)
-                                <div style="padding: 8px 12px; font-size: 11px; font-weight: 700; color: var(--t3); background: var(--bg2); border-bottom: 1px solid var(--border);">TODAY'S SCHEDULED FOLLOWUPS</div>
+                                <div style="padding: 8px 12px; font-size: 11px; font-weight: 700; color: var(--t3); background: var(--bg2); border-bottom: 1px solid var(--border); border-top: {{ $taskReplyCount > 0 ? '1px solid var(--border)' : 'none' }};">TODAY'S SCHEDULED FOLLOWUPS</div>
                                 @foreach($todayTimedFollowups as $lead)
                                     @php
                                         $latestFollowup = $lead->followups->first();
@@ -3576,7 +3600,7 @@
                             @endif
 
                             @if($renewalCount > 0)
-                                <div style="padding: 8px 12px; font-size: 11px; font-weight: 700; color: var(--t3); background: var(--bg2); border-bottom: 1px solid var(--border); border-top: {{ $followupCount > 0 ? '1px solid var(--border)' : 'none' }};">UPCOMING RENEWALS</div>
+                                <div style="padding: 8px 12px; font-size: 11px; font-weight: 700; color: var(--t3); background: var(--bg2); border-bottom: 1px solid var(--border); border-top: {{ ($followupCount > 0 || $taskReplyCount > 0) ? '1px solid var(--border)' : 'none' }};">UPCOMING RENEWALS</div>
                                 @foreach($upcomingRenewals as $order)
                                     @php
                                         $email = is_array($order->emails) ? ($order->emails[0] ?? 'N/A') : $order->emails;

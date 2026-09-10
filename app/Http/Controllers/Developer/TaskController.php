@@ -27,7 +27,17 @@ class TaskController extends Controller
             ->first();
 
         if ($assignment) {
-            $assignment->update(['remarks' => $request->remarks]);
+            $assignment->update([
+                'remarks' => $request->remarks,
+                'updated_at' => now(),
+            ]);
+
+            if ($request->filled('remarks') && trim($request->remarks) !== '') {
+                // Clear any previous read status so new response triggers notifications for admin & creator
+                \App\Models\NotificationRead::where('item_type', 'task_assign')
+                    ->where('item_id', $assignment->id)
+                    ->delete();
+            }
         }
         
         $task = ProjectTask::findOrFail($taskId);

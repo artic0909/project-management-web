@@ -16,8 +16,13 @@ class FollowupController extends Controller
     public function readNotification($id)
     {
         $followup = Followup::findOrFail($id);
-        $followup->is_notif_read = 1;
-        $followup->save();
+        
+        \App\Models\NotificationRead::firstOrCreate([
+            'user_type' => get_class(auth()->guard('admin')->user()),
+            'user_id' => auth()->guard('admin')->id(),
+            'item_type' => 'followup',
+            'item_id' => $id,
+        ]);
 
         if ($followup->followable_type === \App\Models\Lead::class) {
             return redirect()->route('admin.leads.index', ['type' => 'followup_today'])->with('highlight_lead_id', $followup->followable_id);

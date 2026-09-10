@@ -92,7 +92,7 @@
                         <div class="card-body">
                             <div class="task-timeline">
                                 @forelse($project->tasks()->with(['assignments.developer', 'creator'])->latest()->get() as $task)
-                                    <div class="task-item">
+                                    <div class="task-item" id="task-{{ $task->id }}">
                                         <div class="task-header">
                                             <div class="task-main">
                                                 <div class="task-title-row">
@@ -124,7 +124,7 @@
                                                     <div class="section-label"><i class="bi bi-people-fill"></i> Assigned Developer(s) & Progress</div>
                                                     <div class="dev-assign-list">
                                                         @foreach($task->assignments as $assign)
-                                                            <div class="dev-assign-card">
+                                                            <div class="dev-assign-card" id="assign-{{ $assign->id }}">
                                                                 <div class="dev-assign-hd">
                                                                     <div class="dev-profile">
                                                                         <div class="dev-avatar">
@@ -393,11 +393,34 @@
         .status-pill.pending { background: rgba(245, 158, 11, .12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.25); }
         .status-pill.in-progress { background: rgba(99, 102, 241, .12); color: #6366f1; border: 1px solid rgba(99,102,241,0.25); }
         .status-pill.completed { background: rgba(16, 185, 129, .12); color: #10b981; border: 1px solid rgba(16,185,129,0.25); }
+
+        @keyframes notifPulse {
+            0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.6); border-color: var(--accent); }
+            50% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); border-color: var(--accent); }
+            100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); border-color: var(--accent); }
+        }
+        .highlight-reply-target {
+            animation: notifPulse 1.8s ease-in-out infinite;
+            border-color: var(--accent) !important;
+        }
     </style>
     @include('admin.project._multiselect_assets')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             updateMs('taskAssignWrap');
+
+            if (window.location.hash) {
+                const targetEl = document.querySelector(window.location.hash);
+                if (targetEl) {
+                    setTimeout(() => {
+                        targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        targetEl.classList.add('highlight-reply-target');
+                        setTimeout(() => {
+                            targetEl.classList.remove('highlight-reply-target');
+                        }, 4000);
+                    }, 250);
+                }
+            }
         });
     </script>
 @endsection

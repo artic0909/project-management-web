@@ -34,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
         Relation::morphMap([
             'Developer' => \App\Models\Developer::class,
             'Sale'      => \App\Models\Sale::class,
+            'Admin'     => \App\Models\Admin::class,
         ]);
     }
 
@@ -71,8 +72,12 @@ class AppServiceProvider extends ServiceProvider
             $futureFollowupCount = 0;
             $totalFollowupCount = 0;
             $upcomingRenewals = collect();
+            $unreadTaskReplies = collect();
 
             if (auth()->guard('admin')->check()) {
+                $adminId = auth()->guard('admin')->id();
+                $adminType = \App\Models\Admin::class;
+
                 $leadCount = \App\Models\Lead::where('is_losted', 0)->count();
                 $totalLeadCount = $leadCount;
                 $newLeadCount = \App\Models\Lead::where('is_losted', 0)
@@ -91,7 +96,7 @@ class AppServiceProvider extends ServiceProvider
                 $completeProjectCount = \App\Models\Project::whereHas('projectStatus', function ($q) {
                     $q->whereIn('name', ['complete', 'completed']);
                 })->count();
-                $noteCount = \App\Models\AdminNote::where('created_by', auth()->guard('admin')->id())
+                $noteCount = \App\Models\AdminNote::where('created_by', $adminId)
                     ->where('created_by_type', get_class(auth()->guard('admin')->user()))
                     ->count();
                 $meetingCount = \App\Models\Meeting::where('status', 'pending')->count();
@@ -147,8 +152,14 @@ class AppServiceProvider extends ServiceProvider
                         $q->where('followable_type', \App\Models\Lead::class);
                     })->count();
 
+                // Read notifications specific to this Admin
+                $readFollowupIds = \App\Models\NotificationRead::where('user_type', $adminType)
+                    ->where('user_id', $adminId)
+                    ->where('item_type', 'followup')
+                    ->pluck('item_id');
+
                 $todayTimedFollowups = \App\Models\Lead::where('is_losted', 0)
-                    ->whereHas('followups', function ($q) use ($today) {
+                    ->whereHas('followups', function ($q) use ($today, $readFollowupIds) {
                         $q->whereIn('id', function($sub) {
                             $sub->selectRaw('max(id)')->from('followups')
                                 ->whereColumn('followable_id', 'leads.id')
@@ -156,10 +167,25 @@ class AppServiceProvider extends ServiceProvider
                         })->whereDate('next_schedule_date', $today)
                           ->whereTime('next_schedule_date', '!=', '00:00:00')
                           ->where('next_schedule_date', '<=', \Carbon\Carbon::now()->addMinutes(15))
-                          ->where('is_notif_read', 0);
+                          ->whereNotIn('id', $readFollowupIds);
                     })->with(['followups' => function($q) {
                         $q->orderBy('id', 'desc');
                     }])->get();
+
+                // Developer Task Replies for Admin (Admin sees all task replies from developers)
+                $readTaskAssignIds = \App\Models\NotificationRead::where('user_type', $adminType)
+                    ->where('user_id', $adminId)
+                    ->where('item_type', 'task_assign')
+                    ->pluck('item_id');
+
+                $unreadTaskReplies = \App\Models\ProjectTaskAssign::whereNotNull('remarks')
+                    ->where('remarks', '!=', '')
+                    ->whereNotIn('id', $readTaskAssignIds)
+                    ->whereHas('task')
+                    ->with(['task.project', 'task.creator', 'developer'])
+                    ->latest('updated_at')
+                    ->take(15)
+                    ->get();
 
             } elseif (auth()->guard('sale')->check()) {
                 $saleId = auth()->guard('sale')->id();
@@ -296,8 +322,14 @@ class AppServiceProvider extends ServiceProvider
                         $q->where('followable_type', \App\Models\Lead::class);
                     })->count();
 
+                // Read notifications specific to this Sales person
+                $readFollowupIds = \App\Models\NotificationRead::where('user_type', $saleType)
+                    ->where('user_id', $saleId)
+                    ->where('item_type', 'followup')
+                    ->pluck('item_id');
+
                 $todayTimedFollowups = (clone $baseSaleLeadQuery)
-                    ->whereHas('followups', function ($q) use ($today) {
+                    ->whereHas('followups', function ($q) use ($today, $readFollowupIds) {
                         $q->whereIn('id', function($sub) {
                             $sub->selectRaw('max(id)')->from('followups')
                                 ->whereColumn('followable_id', 'leads.id')
@@ -305,10 +337,31 @@ class AppServiceProvider extends ServiceProvider
                         })->whereDate('next_schedule_date', $today)
                           ->whereTime('next_schedule_date', '!=', '00:00:00')
                           ->where('next_schedule_date', '<=', \Carbon\Carbon::now()->addMinutes(15))
-                          ->where('is_notif_read', 0);
+                          ->whereNotIn('id', $readFollowupIds);
                     })->with(['followups' => function($q) {
                         $q->orderBy('id', 'desc');
                     }])->get();
+
+                // Developer Task Replies for Sales person (Only for tasks created by this Sales person)
+                $readTaskAssignIds = \App\Models\NotificationRead::where('user_type', $saleType)
+                    ->where('user_id', $saleId)
+                    ->where('item_type', 'task_assign')
+                    ->pluck('item_id');
+
+                $unreadTaskReplies = \App\Models\ProjectTaskAssign::whereNotNull('remarks')
+                    ->where('remarks', '!=', '')
+                    ->whereNotIn('id', $readTaskAssignIds)
+                    ->whereHas('task', function($q) use ($saleId, $saleType) {
+                        $q->where('created_by', $saleId)
+                          ->where(function($sq) use ($saleType) {
+                              $sq->where('created_by_type', $saleType)
+                                 ->orWhere('created_by_type', 'Sale');
+                          });
+                    })
+                    ->with(['task.project', 'task.creator', 'developer'])
+                    ->latest('updated_at')
+                    ->take(15)
+                    ->get();
 
             } elseif (auth()->guard('developer')->check()) {
                 $devId = auth()->guard('developer')->id();
@@ -375,6 +428,7 @@ class AppServiceProvider extends ServiceProvider
                 'invoiceCount' => $invoiceCount ?? 0,
                 'upcomingRenewals' => $upcomingRenewals,
                 'todayTimedFollowups' => $todayTimedFollowups ?? collect(),
+                'unreadTaskReplies' => $unreadTaskReplies ?? collect(),
                 'todayFollowupCount' => $todayFollowupCount ?? 0,
                 'pendingFollowupCount' => $pendingFollowupCount ?? 0,
                 'futureFollowupCount' => $futureFollowupCount ?? 0,

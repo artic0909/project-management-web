@@ -103,4 +103,18 @@ class ProjectTaskController extends Controller
 
         return redirect()->back()->with('success', 'Task updated successfully.');
     }
+
+    public function readReplyNotification($id)
+    {
+        $assignment = ProjectTaskAssign::with('task')->findOrFail($id);
+        
+        \App\Models\NotificationRead::firstOrCreate([
+            'user_type' => get_class(auth()->guard('sale')->user()),
+            'user_id' => auth()->guard('sale')->id(),
+            'item_type' => 'task_assign',
+            'item_id' => $id,
+        ]);
+
+        return redirect(route('sale.projects.tasks', $assignment->task->project_id) . '#task-' . $assignment->task_id);
+    }
 }

@@ -143,6 +143,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::post('/project/{project}/tasks', [ProjectTaskController::class, 'store'])->name('projects.tasks.store');
     Route::get('/tasks/{task}/view', [ProjectTaskController::class, 'show'])->name('tasks.show');
     Route::post('/tasks/{task}/update', [ProjectTaskController::class, 'update'])->name('tasks.update');
+    Route::get('/tasks/reply/{id}/read-notification', [ProjectTaskController::class, 'readReplyNotification'])->name('tasks.read_reply_notif');
 
     // Marketing Orders
     Route::get('/add-marketing-orders', [MarketingOrderController::class, 'index'])->name('marketing-orders');
