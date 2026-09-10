@@ -75,4 +75,32 @@ class ProjectTaskController extends Controller
             return redirect()->back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
+
+    public function show($taskId)
+    {
+        $task = ProjectTask::with(['project', 'creator', 'assignments.developer'])->findOrFail($taskId);
+        $this->getScopedProject($task->project_id);
+        $routePrefix = 'sale';
+        return view('admin.tasks.view', compact('task', 'routePrefix'));
+    }
+
+    public function update(Request $request, $taskId)
+    {
+        $request->validate([
+            'remarks' => 'nullable|string',
+            'status' => 'required|in:Pending,In Progress,Completed',
+        ]);
+
+        $task = ProjectTask::findOrFail($taskId);
+        $this->getScopedProject($task->project_id);
+        $task->update(['status' => $request->status]);
+
+        if ($request->filled('remarks')) {
+            foreach ($task->assignments as $assign) {
+                $assign->update(['remarks' => $request->remarks]);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Task updated successfully.');
+    }
 }

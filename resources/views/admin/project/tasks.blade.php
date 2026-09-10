@@ -95,28 +95,51 @@
                                     <div class="task-item">
                                         <div class="task-header">
                                             <div class="task-main">
-                                                <h3 class="task-title">{{ $task->title }}</h3>
+                                                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap;">
+                                                    <span style="font-size:11px; font-weight:700; color:var(--accent); background:rgba(99,102,241,0.1); padding:2px 8px; border-radius:6px;">#TSK-{{ $task->id }}</span>
+                                                    <h3 class="task-title" style="margin:0;">{{ $task->title }}</h3>
+                                                </div>
                                                 <div class="task-meta">
-                                                    <span class="meta-item"><i class="bi bi-person-circle"></i> {{ $task->creator->name }}</span>
+                                                    <span class="meta-item"><i class="bi bi-person-circle"></i> Created by: {{ $task->creator->name ?? 'Admin' }}</span>
                                                     <span class="meta-item"><i class="bi bi-clock"></i> {{ $task->created_at->format('d M, Y h:i A') }}</span>
                                                 </div>
                                             </div>
-                                            <div class="task-status">
+                                            <div style="display:flex; align-items:center; gap:8px;">
                                                 @php $sClass = strtolower(str_replace(' ', '-', $task->status)); @endphp
                                                 <span class="status-pill {{ $sClass }}">{{ $task->status }}</span>
+                                                <a href="{{ route($routePrefix . '.tasks.show', $task->id) }}" class="btn-primary-ghost sm" style="padding:4px 10px; font-size:12px; height:28px; display:inline-flex; align-items:center; gap:5px;" title="View Task Details">
+                                                    <i class="bi bi-eye"></i> Details
+                                                </a>
                                             </div>
                                         </div>
                                         <div class="task-body">
-                                            <p class="task-desc" style="white-space: pre-wrap;">{{ $task->task }}</p>
+                                            <p class="task-desc" style="white-space: pre-wrap; margin-bottom:14px;">{{ $task->task }}</p>
                                             
                                             @if($task->assignments->count() > 0)
-                                                <div class="task-assignments">
+                                                <div class="task-assignments" style="display:flex; flex-direction:column; gap:10px;">
                                                     @foreach($task->assignments as $assign)
-                                                        <div class="assignment-pill">
-                                                            <i class="bi bi-person-workspace"></i>
-                                                            Assigned to: <strong>{{ $assign->developer->name }}</strong>
-                                                            @if($assign->remarks)
-                                                                <span class="assign-remarks"> - {{ $assign->remarks }}</span>
+                                                        <div style="background:var(--bg2); border:1px solid var(--b1); border-radius:10px; padding:12px 14px;">
+                                                            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                                                                <div style="display:flex; align-items:center; gap:8px;">
+                                                                    <div style="width:26px; height:26px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;">
+                                                                        {{ strtoupper(substr($assign->developer->name ?? 'D',0,1)) }}
+                                                                    </div>
+                                                                    <div>
+                                                                        <strong style="color:var(--t1); font-size:13px;">{{ $assign->developer->name ?? 'Developer' }}</strong>
+                                                                        <span style="font-size:11px; color:var(--t4); margin-left:4px;">({{ $assign->developer->designation ?? 'Developer' }})</span>
+                                                                    </div>
+                                                                </div>
+                                                                <span style="font-size:11px; color:var(--t4);"><i class="bi bi-clock"></i> {{ $assign->updated_at ? $assign->updated_at->format('d M, Y h:i A') : '' }}</span>
+                                                            </div>
+                                                            @if(!empty(trim($assign->remarks)))
+                                                                <div style="margin-top:8px; font-size:13px; color:var(--t1); background:var(--bg3); padding:10px 14px; border-radius:8px; border-left:3px solid var(--accent); line-height:1.5; white-space:pre-wrap;">
+                                                                    <span style="font-size:10.5px; font-weight:700; color:var(--accent); display:block; margin-bottom:4px; text-transform:uppercase;">Developer Progress / Response:</span>
+                                                                    {{ $assign->remarks }}
+                                                                </div>
+                                                            @else
+                                                                <div style="margin-top:6px; font-size:12px; color:var(--t4); font-style:italic;">
+                                                                    No notes logged by developer yet.
+                                                                </div>
                                                             @endif
                                                         </div>
                                                     @endforeach

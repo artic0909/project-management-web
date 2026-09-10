@@ -94,6 +94,8 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     Route::delete('/project/bulk-delete', [ProjectController::class, 'bulkDestroy'])->name('projects.bulk-destroy');
     Route::get('/project/{project}/tasks', [ProjectTaskController::class, 'index'])->name('projects.tasks');
     Route::post('/project/{project}/tasks', [ProjectTaskController::class, 'store'])->name('projects.tasks.store');
+    Route::get('/tasks/{task}/view', [ProjectTaskController::class, 'show'])->name('tasks.show');
+    Route::post('/tasks/{task}/update', [ProjectTaskController::class, 'update'])->name('tasks.update');
     
     // Payments
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');

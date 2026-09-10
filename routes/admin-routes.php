@@ -141,6 +141,8 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::delete('/project/bulk-delete', [ProjectController::class, 'bulkDestroy'])->name('projects.bulk-destroy');
     Route::get('/project/{project}/tasks', [ProjectTaskController::class, 'index'])->name('projects.tasks');
     Route::post('/project/{project}/tasks', [ProjectTaskController::class, 'store'])->name('projects.tasks.store');
+    Route::get('/tasks/{task}/view', [ProjectTaskController::class, 'show'])->name('tasks.show');
+    Route::post('/tasks/{task}/update', [ProjectTaskController::class, 'update'])->name('tasks.update');
 
     // Marketing Orders
     Route::get('/add-marketing-orders', [MarketingOrderController::class, 'index'])->name('marketing-orders');

@@ -24,9 +24,11 @@ class TaskController extends Controller
 
         $assignment = ProjectTaskAssign::where('task_id', $taskId)
             ->where('developer_id', auth()->guard('developer')->id())
-            ->firstOrFail();
+            ->first();
 
-        $assignment->update(['remarks' => $request->remarks]);
+        if ($assignment) {
+            $assignment->update(['remarks' => $request->remarks]);
+        }
         
         $task = ProjectTask::findOrFail($taskId);
         $task->update(['status' => $request->status]);
