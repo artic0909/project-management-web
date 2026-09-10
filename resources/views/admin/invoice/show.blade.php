@@ -265,9 +265,15 @@
                 <h2>{{ $invoice->sender_name ?? 'Standsweb' }}</h2>
                 <p>
                     {!! nl2br(e($invoice->sender_address ?? "PS Qube, Action Area IID, Newtown, Kolkata, 700156")) !!}<br>
-                    @if($invoice->sender_gstin) GSTIN: {{ $invoice->sender_gstin }} @else GSTIN: 29JTKPS5068C1Z1 @endif<br>
-                    Contact: {{ $invoice->sender_contact ?? '+91 89270-43805' }}<br>
-                    Email: {{ $invoice->sender_email ?? 'info@standsweb.com' }}
+
+
+                    @if($invoice->sender_gstin) <strong>GSTIN:</strong> {{ $invoice->sender_gstin }} @else <strong>GSTIN:</strong> 29JTKPS5068C1Z1 @endif<br>
+
+
+                    <strong>Contact:</strong> {{ $invoice->sender_contact ?? '+91 89270-43805' }}<br>
+
+
+                    <strong>Email:</strong> {{ $invoice->sender_email ?? 'info@standsweb.com' }}
                 </p>
             </div>
 
