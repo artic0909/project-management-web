@@ -34,7 +34,7 @@
         $isLeadsActive = true;
     }
 
-    $isFollowupsActive = request()->routeIs($routePrefix . 'leads.index') && in_array(request('type'), ['followup_today', 'followup_pending', 'followup_future']);
+    $isFollowupsActive = request()->routeIs($routePrefix . 'leads.index') && in_array(request('type'), ['followup_today', 'followup_pending', 'followup_future', 'followup_total']);
     if ($isFollowupsActive) {
         $isLeadsActive = false;
     }
@@ -145,6 +145,11 @@
               <i class="bi bi-calendar-plus" style="font-size: 13px;"></i><span>Future Followup</span>
               <span class="nav-count">{{ $futureFollowupCount ?? 0 }}</span>
             </a>
+            <a class="nav-item nav-sub-item {{ ($isFollowupsActive && request('type') === 'followup_total') ? 'active' : '' }}"
+              href="{{ route('sale.leads.index', ['type' => 'followup_total']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-collection" style="font-size: 13px;"></i><span>Total Followup</span>
+              <span class="nav-count">{{ $totalFollowupCount ?? 0 }}</span>
+            </a>
           </div>
         </div>
       @elseif($guard === 'admin')
@@ -194,6 +199,11 @@
               href="{{ route('admin.leads.index', ['type' => 'followup_future']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
               <i class="bi bi-calendar-plus" style="font-size: 13px;"></i><span>Future Followup</span>
               <span class="nav-count">{{ $futureFollowupCount ?? 0 }}</span>
+            </a>
+            <a class="nav-item nav-sub-item {{ ($isFollowupsActive && request('type') === 'followup_total') ? 'active' : '' }}"
+              href="{{ route('admin.leads.index', ['type' => 'followup_total']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
+              <i class="bi bi-collection" style="font-size: 13px;"></i><span>Total Followup</span>
+              <span class="nav-count">{{ $totalFollowupCount ?? 0 }}</span>
             </a>
           </div>
         </div>

@@ -85,6 +85,27 @@ class LeadController extends Controller
                     ->orderBy('id', 'desc')
                     ->take(1)
             ]);
+        } elseif ($type === 'followup_total') {
+            $query = Lead::where('is_losted', 0)
+                ->whereHas('assignments', function($q) use ($saleId) {
+                    $q->where('assigned_to', $saleId);
+                })
+                ->whereHas('followups', function ($q) {
+                    $q->where('followable_type', \App\Models\Lead::class);
+                });
+
+            $query->addSelect([
+                'latest_followup_created_at' => \App\Models\Followup::select('created_at')
+                    ->whereColumn('followable_id', 'leads.id')
+                    ->where('followable_type', \App\Models\Lead::class)
+                    ->orderBy('id', 'desc')
+                    ->take(1),
+                'latest_schedule_date' => \App\Models\Followup::select('next_schedule_date')
+                    ->whereColumn('followable_id', 'leads.id')
+                    ->where('followable_type', \App\Models\Lead::class)
+                    ->orderBy('id', 'desc')
+                    ->take(1)
+            ]);
         } else {
             $query = $this->getFilteredLeads()->where('is_losted', 0);
         }
@@ -124,6 +145,10 @@ class LeadController extends Controller
                             ->whereColumn('followable_id', 'leads.id')
                             ->where('followable_type', \App\Models\Lead::class);
                     })->whereBetween('next_schedule_date', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+                });
+            } elseif ($type === 'followup_total') {
+                $query->whereHas('followups', function ($q) use ($request) {
+                    $q->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
                 });
             } else {
                 $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
@@ -166,7 +191,9 @@ class LeadController extends Controller
         if ($perPage === 'all') {
             $perPage = $totalLeads ?: 20;
         }
-        if (in_array($type, ['followup_today', 'followup_pending', 'followup_future'])) {
+        if ($type === 'followup_total') {
+            $leads = $query->orderBy('latest_followup_created_at', 'desc')->paginate($perPage)->withQueryString();
+        } elseif (in_array($type, ['followup_today', 'followup_pending', 'followup_future'])) {
             $leads = $query->orderBy('latest_schedule_date', 'desc')->paginate($perPage)->withQueryString();
         } else {
             $leads = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
@@ -624,6 +651,34 @@ class LeadController extends Controller
                 });
         } elseif ($type === 'total') {
             $query = Lead::where('is_losted', 0);
+        } elseif (in_array($type, ['followup_today', 'followup_pending', 'followup_future'])) {
+            $today = \Carbon\Carbon::today();
+            $query = Lead::where('is_losted', 0)
+                ->whereHas('assignments', function($q) use ($saleId) {
+                    $q->where('assigned_to', $saleId);
+                })
+                ->whereHas('followups', function ($q) use ($type, $today) {
+                    $q->whereIn('id', function($sub) {
+                        $sub->selectRaw('max(id)')->from('followups')
+                            ->whereColumn('followable_id', 'leads.id')
+                            ->where('followable_type', \App\Models\Lead::class);
+                    });
+                    if ($type === 'followup_today') {
+                        $q->whereDate('next_schedule_date', $today);
+                    } elseif ($type === 'followup_pending') {
+                        $q->whereDate('next_schedule_date', '<', $today);
+                    } elseif ($type === 'followup_future') {
+                        $q->whereDate('next_schedule_date', '>', $today);
+                    }
+                });
+        } elseif ($type === 'followup_total') {
+            $query = Lead::where('is_losted', 0)
+                ->whereHas('assignments', function($q) use ($saleId) {
+                    $q->where('assigned_to', $saleId);
+                })
+                ->whereHas('followups', function ($q) {
+                    $q->where('followable_type', \App\Models\Lead::class);
+                });
         } else {
             $query = $this->getFilteredLeads()->where('is_losted', 0);
         }
@@ -656,7 +711,21 @@ class LeadController extends Controller
 
         // Date range filter
         if ($request->has('start_date') && $request->has('end_date') && !empty($request->start_date)) {
-            $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+            if (in_array($type, ['followup_pending', 'followup_future', 'followup_today'])) {
+                $query->whereHas('followups', function ($q) use ($request) {
+                    $q->whereIn('id', function($sub) {
+                        $sub->selectRaw('max(id)')->from('followups')
+                            ->whereColumn('followable_id', 'leads.id')
+                            ->where('followable_type', \App\Models\Lead::class);
+                    })->whereBetween('next_schedule_date', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+                });
+            } elseif ($type === 'followup_total') {
+                $query->whereHas('followups', function ($q) use ($request) {
+                    $q->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+                });
+            } else {
+                $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+            }
         }
 
         // Dropdown filters

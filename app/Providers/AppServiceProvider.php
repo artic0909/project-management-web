@@ -69,6 +69,7 @@ class AppServiceProvider extends ServiceProvider
             $todayFollowupCount = 0;
             $pendingFollowupCount = 0;
             $futureFollowupCount = 0;
+            $totalFollowupCount = 0;
             $upcomingRenewals = collect();
 
             if (auth()->guard('admin')->check()) {
@@ -139,6 +140,11 @@ class AppServiceProvider extends ServiceProvider
                                 ->whereColumn('followable_id', 'leads.id')
                                 ->where('followable_type', \App\Models\Lead::class);
                         })->whereDate('next_schedule_date', '>', $today);
+                    })->count();
+
+                $totalFollowupCount = \App\Models\Lead::where('is_losted', 0)
+                    ->whereHas('followups', function ($q) {
+                        $q->where('followable_type', \App\Models\Lead::class);
                     })->count();
 
                 $todayTimedFollowups = \App\Models\Lead::where('is_losted', 0)
@@ -285,6 +291,11 @@ class AppServiceProvider extends ServiceProvider
                         })->whereDate('next_schedule_date', '>', $today);
                     })->count();
 
+                $totalFollowupCount = (clone $baseSaleLeadQuery)
+                    ->whereHas('followups', function ($q) {
+                        $q->where('followable_type', \App\Models\Lead::class);
+                    })->count();
+
                 $todayTimedFollowups = (clone $baseSaleLeadQuery)
                     ->whereHas('followups', function ($q) use ($today) {
                         $q->whereIn('id', function($sub) {
@@ -367,6 +378,7 @@ class AppServiceProvider extends ServiceProvider
                 'todayFollowupCount' => $todayFollowupCount ?? 0,
                 'pendingFollowupCount' => $pendingFollowupCount ?? 0,
                 'futureFollowupCount' => $futureFollowupCount ?? 0,
+                'totalFollowupCount' => $totalFollowupCount ?? 0,
             ]);
         });
     }

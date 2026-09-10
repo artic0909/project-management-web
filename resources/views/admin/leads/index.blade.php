@@ -469,6 +469,14 @@
                                 New Leads
                             @elseif(request('type') === 'total')
                                 Total Leads
+                            @elseif(request('type') === 'followup_today')
+                                Today Followups
+                            @elseif(request('type') === 'followup_pending')
+                                Pending Followups
+                            @elseif(request('type') === 'followup_future')
+                                Future Followups
+                            @elseif(request('type') === 'followup_total')
+                                Total Followups
                             @else
                                 @if(isset($routePrefix) && $routePrefix === 'sale')
                                     My Leads
@@ -505,6 +513,8 @@
                             <span style="opacity: 0.7; margin-right: 2px;">
                                 @if(in_array(request('type'), ['followup_today', 'followup_pending', 'followup_future']))
                                     Schedule:
+                                @elseif(request('type') === 'followup_total')
+                                    Followup:
                                 @else
                                     Created:
                                 @endif
@@ -584,7 +594,7 @@
                                 </th>
                                 @endif
                                 <th>SL</th>
-                                @if(in_array(request('type'), ['followup_today', 'followup_pending', 'followup_future']))
+                                @if(in_array(request('type'), ['followup_today', 'followup_pending', 'followup_future', 'followup_total']))
                                 <th>Schedule Date</th>
                                 @endif
                                 <th>Date</th>
@@ -623,7 +633,7 @@
                                 </td>
                                 @endif
                                 <td>{{ $leads->firstItem() + $index }}</td>
-                                @if(in_array(request('type'), ['followup_today', 'followup_pending', 'followup_future']))
+                                @if(in_array(request('type'), ['followup_today', 'followup_pending', 'followup_future', 'followup_total']))
                                 <td>
                                     @if($lead->latest_schedule_date)
                                         @php
