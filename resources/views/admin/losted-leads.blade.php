@@ -554,9 +554,9 @@
                                 <th>Phone</th>
                                 <th>Priority</th>
                                 <th>Status</th>
-                                @if($routePrefix == 'sale')
+                               
                                 <th>Created By</th>
-                                @endif
+                                
                                 @if(!($routePrefix == 'sale'))
                                 <th>Sales Person</th>
                                 @endif
@@ -621,7 +621,7 @@
                                     <span class="lead-stage {{ $pCls }}">{{ $lead->priority }}</span>
                                 </td>
                                 <td><strong style="color:var(--accent)">{{ $lead->status->name ?? 'N/A' }}</strong></td>
-                                @if($routePrefix == 'sale')
+                              
                                 <td>
                                     @if($lead->createdBy)
                                         <div class="ln">{{ $lead->createdBy->name }}</div>
@@ -629,7 +629,7 @@
                                         <div class="ln">System</div>
                                     @endif
                                 </td>
-                                @endif
+                               
                                 @if(!($routePrefix == 'sale'))
                                 <td>
                                     @foreach($lead->assignments as $assign)
