@@ -257,6 +257,7 @@
                                     <div class="form-row schedule-next-row">
                                         <label class="form-lbl">Schedule Next <span style="color:#ef4444">*</span></label>
                                         <select name="schedule_type" class="form-inp" required onchange="const c = this.nextElementSibling; if(this.value==='Custom') c.style.display='block'; else c.style.display='none';">
+                                            <option value="" selected disabled hidden>Choose</option>
                                             <option value="Today">Today</option>
                                             <option value="Tomorrow">Tomorrow</option>
                                             <option value="After 2 Days">After 2 days</option>
@@ -375,6 +376,7 @@
                                     <div class="form-row schedule-next-row">
                                         <label class="form-lbl">Schedule Next <span style="color:#ef4444">*</span></label>
                                         <select name="schedule_type" class="form-inp" required onchange="const c = this.nextElementSibling; if(this.value==='Custom') c.style.display='block'; else c.style.display='none';">
+                                            <option value="" selected disabled hidden>Choose</option>
                                             <option value="Today">Today</option>
                                             <option value="Tomorrow">Tomorrow</option>
                                             <option value="After 2 Days">After 2 days</option>
@@ -755,7 +757,7 @@ function toggleEditFollowupType() {
                     <div class="form-row">
                         <label class="form-lbl">Schedule Next</label>
                         <select name="schedule_type" id="edit_s_type" class="form-inp" onchange="const c = this.nextElementSibling; if(this.value==='Custom') c.style.display='block'; else c.style.display='none';">
-                            <option value="">Keep Existing</option>
+                            <option value="">Choose</option>
                             <option value="Today">Today</option>
                             <option value="Tomorrow">Tomorrow</option>
                             <option value="After 2 Days">After 2 days</option>
