@@ -90,7 +90,7 @@
 
                         <div class="info-group mt-24">
                             <label class="info-label">INSTRUCTIONS / REQUIREMENTS</label>
-                            <div class="desc-box">{{ $task->task }}</div>
+                            <div class="desc-box">{{ trim($task->task) }}</div>
                         </div>
                     </div>
                 </div>
@@ -121,7 +121,7 @@
                                         <div class="info-group" style="margin-top: 10px;">
                                             <label class="info-label">WRITTEN PROGRESS / REMARKS AGAINST TASK</label>
                                             @if(!empty(trim($assign->remarks)))
-                                                <div class="dev-remarks-content">{{ $assign->remarks }}</div>
+                                                <div class="dev-remarks-content">{{ trim($assign->remarks) }}</div>
                                             @else
                                                 <div class="dev-remarks-empty">
                                                     <i class="bi bi-pencil-square"></i> Developer has not logged any notes or remarks against this task yet.

@@ -95,54 +95,63 @@
                                     <div class="task-item">
                                         <div class="task-header">
                                             <div class="task-main">
-                                                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap;">
-                                                    <span style="font-size:11px; font-weight:700; color:var(--accent); background:rgba(99,102,241,0.1); padding:2px 8px; border-radius:6px;">#TSK-{{ $task->id }}</span>
-                                                    <h3 class="task-title" style="margin:0;">{{ $task->title }}</h3>
+                                                <div class="task-title-row">
+                                                    <span class="task-badge">#TSK-{{ $task->id }}</span>
+                                                    <h3 class="task-title">{{ $task->title }}</h3>
                                                 </div>
                                                 <div class="task-meta">
-                                                    <span class="meta-item"><i class="bi bi-person-circle"></i> Created by: {{ $task->creator->name ?? 'Admin' }}</span>
+                                                    <span class="meta-item"><i class="bi bi-person-circle"></i> Created by: <strong>{{ $task->creator->name ?? 'Admin' }}</strong></span>
                                                     <span class="meta-item"><i class="bi bi-clock"></i> {{ $task->created_at->format('d M, Y h:i A') }}</span>
                                                 </div>
                                             </div>
-                                            <div style="display:flex; align-items:center; gap:8px;">
+                                            <div class="task-actions-wrap">
                                                 @php $sClass = strtolower(str_replace(' ', '-', $task->status)); @endphp
                                                 <span class="status-pill {{ $sClass }}">{{ $task->status }}</span>
-                                                <a href="{{ route($routePrefix . '.tasks.show', $task->id) }}" class="btn-primary-ghost sm" style="padding:4px 10px; font-size:12px; height:28px; display:inline-flex; align-items:center; gap:5px;" title="View Task Details">
+                                                <a href="{{ route($routePrefix . '.tasks.show', $task->id) }}" class="btn-primary-ghost sm btn-task-view" title="View Task Details">
                                                     <i class="bi bi-eye"></i> Details
                                                 </a>
                                             </div>
                                         </div>
-                                        <div class="task-body">
-                                            <p class="task-desc" style="white-space: pre-wrap; margin-bottom:14px;">{{ $task->task }}</p>
+                                        
+                                        <div class="task-body-section">
+                                            <div class="task-desc-container">
+                                                <div class="section-label"><i class="bi bi-card-text"></i> Task Description / Requirements</div>
+                                                <div class="task-desc-body">{{ trim($task->task) }}</div>
+                                            </div>
                                             
                                             @if($task->assignments->count() > 0)
-                                                <div class="task-assignments" style="display:flex; flex-direction:column; gap:10px;">
-                                                    @foreach($task->assignments as $assign)
-                                                        <div style="background:var(--bg2); border:1px solid var(--b1); border-radius:10px; padding:12px 14px;">
-                                                            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-                                                                <div style="display:flex; align-items:center; gap:8px;">
-                                                                    <div style="width:26px; height:26px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;">
-                                                                        {{ strtoupper(substr($assign->developer->name ?? 'D',0,1)) }}
+                                                <div class="task-assignments-container">
+                                                    <div class="section-label"><i class="bi bi-people-fill"></i> Assigned Developer(s) & Progress</div>
+                                                    <div class="dev-assign-list">
+                                                        @foreach($task->assignments as $assign)
+                                                            <div class="dev-assign-card">
+                                                                <div class="dev-assign-hd">
+                                                                    <div class="dev-profile">
+                                                                        <div class="dev-avatar">
+                                                                            {{ strtoupper(substr($assign->developer->name ?? 'D', 0, 1)) }}
+                                                                        </div>
+                                                                        <div>
+                                                                            <span class="dev-name">{{ $assign->developer->name ?? 'Developer' }}</span>
+                                                                            <span class="dev-designation">({{ $assign->developer->designation ?? 'Developer' }})</span>
+                                                                        </div>
                                                                     </div>
-                                                                    <div>
-                                                                        <strong style="color:var(--t1); font-size:13px;">{{ $assign->developer->name ?? 'Developer' }}</strong>
-                                                                        <span style="font-size:11px; color:var(--t4); margin-left:4px;">({{ $assign->developer->designation ?? 'Developer' }})</span>
+                                                                    <div class="dev-timestamp">
+                                                                        <i class="bi bi-clock-history"></i> {{ $assign->updated_at ? $assign->updated_at->format('d M, Y h:i A') : 'No update yet' }}
                                                                     </div>
                                                                 </div>
-                                                                <span style="font-size:11px; color:var(--t4);"><i class="bi bi-clock"></i> {{ $assign->updated_at ? $assign->updated_at->format('d M, Y h:i A') : '' }}</span>
+                                                                @if(!empty(trim($assign->remarks)))
+                                                                    <div class="dev-remarks-box">
+                                                                        <div class="dev-remarks-label"><i class="bi bi-chat-left-dots-fill"></i> Developer Progress / Response:</div>
+                                                                        <div class="dev-remarks-text">{{ trim($assign->remarks) }}</div>
+                                                                    </div>
+                                                                @else
+                                                                    <div class="dev-remarks-empty">
+                                                                        <i class="bi bi-pencil-square"></i> No notes logged by developer yet.
+                                                                    </div>
+                                                                @endif
                                                             </div>
-                                                            @if(!empty(trim($assign->remarks)))
-                                                                <div style="margin-top:8px; font-size:13px; color:var(--t1); background:var(--bg3); padding:10px 14px; border-radius:8px; border-left:3px solid var(--accent); line-height:1.5; white-space:pre-wrap;">
-                                                                    <span style="font-size:10.5px; font-weight:700; color:var(--accent); display:block; margin-bottom:4px; text-transform:uppercase;">Developer Progress / Response:</span>
-                                                                    {{ $assign->remarks }}
-                                                                </div>
-                                                            @else
-                                                                <div style="margin-top:6px; font-size:12px; color:var(--t4); font-style:italic;">
-                                                                    No notes logged by developer yet.
-                                                                </div>
-                                                            @endif
-                                                        </div>
-                                                    @endforeach
+                                                        @endforeach
+                                                    </div>
                                                 </div>
                                             @endif
                                         </div>
@@ -168,74 +177,222 @@
             gap: 20px;
         }
         .task-item {
-            background: var(--bg1);
+            background: var(--bg2);
             border: 1px solid var(--b1);
-            border-radius: 12px;
-            padding: 16px;
-            transition: all 0.2s;
+            border-radius: 14px;
+            padding: 20px 22px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
         }
         .task-item:hover {
             border-color: var(--accent);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
         }
         .task-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--bg3);
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--b1);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .task-title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+        .task-badge {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--accent);
+            background: rgba(99, 102, 241, 0.12);
+            padding: 3px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
         }
         .task-title {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 700;
             color: var(--t1);
-            margin: 0 0 4px 0;
+            margin: 0;
+            line-height: 1.3;
         }
         .task-meta {
             display: flex;
-            gap: 12px;
-            font-size: 11px;
+            align-items: center;
+            gap: 16px;
+            font-size: 11.5px;
             color: var(--t4);
+            flex-wrap: wrap;
+        }
+        .task-meta strong {
+            color: var(--t2);
         }
         .meta-item {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
         }
-        .task-desc {
-            font-size: 13px;
-            color: var(--t2);
-            line-height: 1.5;
-            margin-bottom: 12px;
-        }
-        .task-assignments {
+        .task-actions-wrap {
             display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-task-view {
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 8px;
+        }
+
+        .section-label {
+            font-size: 10.5px;
+            font-weight: 800;
+            color: var(--t4);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .task-desc-container {
+            background: var(--bg3);
+            border: 1px solid var(--b1);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+        }
+        .task-desc-body {
+            font-size: 13.5px;
+            color: var(--t1);
+            line-height: 1.65;
+            white-space: pre-wrap;
+            word-break: break-word;
+            text-align: left;
+        }
+
+        .task-assignments-container {
+            margin-top: 10px;
+        }
+        .dev-assign-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .dev-assign-card {
+            background: var(--bg3);
+            border: 1px solid var(--b1);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .dev-assign-hd {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             flex-wrap: wrap;
             gap: 8px;
         }
-        .assignment-pill {
-            background: var(--bg3);
-            border: 1px solid var(--b1);
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 12px;
+        .dev-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .dev-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #06b6d4);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11.5px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .dev-name {
+            font-size: 13px;
+            font-weight: 700;
             color: var(--t1);
         }
-        .assign-remarks {
-            color: var(--t3);
+        .dev-designation {
+            font-size: 11.5px;
+            color: var(--t4);
+            margin-left: 4px;
+        }
+        .dev-timestamp {
+            font-size: 11px;
+            color: var(--t4);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .dev-remarks-box {
+            margin-top: 10px;
+            background: var(--bg2);
+            border: 1px solid var(--b1);
+            border-left: 3.5px solid var(--accent);
+            border-radius: 8px;
+            padding: 12px 14px;
+            text-align: left;
+        }
+        .dev-remarks-label {
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 6px;
+        }
+        .dev-remarks-text {
+            font-size: 13px;
+            color: var(--t1);
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            text-align: left;
+            margin: 0;
+            padding: 0;
+        }
+        .dev-remarks-empty {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--t4);
             font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: var(--bg2);
+            border-radius: 8px;
+            border: 1px dashed var(--b1);
         }
 
         .status-pill {
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 700;
-            padding: 3px 12px;
+            padding: 4px 12px;
             border-radius: 20px;
+            letter-spacing: 0.3px;
         }
-        .status-pill.pending { background: rgba(245, 158, 11, .1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
-        .status-pill.in-progress { background: rgba(99, 102, 241, .1); color: #6366f1; border: 1px solid rgba(99,102,241,0.2); }
-        .status-pill.completed { background: rgba(16, 185, 129, .1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
+        .status-pill.pending { background: rgba(245, 158, 11, .12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.25); }
+        .status-pill.in-progress { background: rgba(99, 102, 241, .12); color: #6366f1; border: 1px solid rgba(99,102,241,0.25); }
+        .status-pill.completed { background: rgba(16, 185, 129, .12); color: #10b981; border: 1px solid rgba(16,185,129,0.25); }
     </style>
     @include('admin.project._multiselect_assets')
     <script>
