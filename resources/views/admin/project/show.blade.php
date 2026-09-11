@@ -47,7 +47,7 @@
                     </div>
                 </div>
                 <div class="header-actions">
-                    @if($routePrefix == 'admin')
+                    @if($routePrefix == 'admin' || $routePrefix == 'sale')
                     <a href="{{ route($routePrefix . '.projects.edit', $project->id) }}" class="btn-primary-solid sm">
                         <i class="bi bi-pencil-square"></i> Edit Project
                     </a>
@@ -890,6 +890,91 @@
 
         .bullet-danger {
             background: #ef4444;
+        }
+
+        /* ─── Responsive Styles ─── */
+        @media (max-width: 992px) {
+            .dash-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .span-8, .span-4, .span-12 {
+                grid-column: span 12 / span 12 !important;
+                width: 100% !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .show-two-col-grid {
+                grid-template-columns: 1fr !important;
+                gap: 14px !important;
+            }
+
+            .feedback-timeline {
+                margin-left: 0 !important;
+                padding-left: 0 !important;
+            }
+
+            .feedback-timeline::after {
+                left: 14px !important;
+            }
+
+            .timeline-item {
+                flex-direction: column !important;
+                gap: 6px !important;
+                padding-left: 32px !important;
+                position: relative !important;
+            }
+
+            .timeline-meta {
+                width: 100% !important;
+                text-align: left !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+            }
+
+            .timeline-content {
+                padding-bottom: 6px !important;
+            }
+
+            .timeline-content::after {
+                left: -23px !important;
+                top: -16px !important;
+            }
+
+            .card-actions {
+                flex-wrap: wrap !important;
+                width: 100% !important;
+                gap: 8px !important;
+            }
+
+            .card-actions button,
+            .card-actions a {
+                flex: 1 1 auto !important;
+                justify-content: center !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 12px !important;
+            }
+
+            .header-actions {
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100% !important;
+                gap: 8px !important;
+            }
+
+            .header-actions .btn-primary-solid,
+            .header-actions .btn-ghost {
+                width: 100% !important;
+                justify-content: center !important;
+                text-align: center !important;
+            }
         }
     </style>
 

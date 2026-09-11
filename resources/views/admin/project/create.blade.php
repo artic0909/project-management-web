@@ -8,6 +8,47 @@
 @include('admin.project._order_select_assets')
 @include('admin.project._phone_email_assets')
 
+<style>
+    @media (max-width: 992px) {
+        .dash-grid {
+            grid-template-columns: 1fr !important;
+        }
+        .span-8, .span-4, .span-12 {
+            grid-column: span 12 / span 12 !important;
+            width: 100% !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 12px !important;
+        }
+
+        .header-actions {
+            display: flex !important;
+            flex-direction: column !important;
+            width: 100% !important;
+            gap: 8px !important;
+        }
+
+        .header-actions .btn-primary-solid,
+        .header-actions .btn-ghost {
+            width: 100% !important;
+            justify-content: center !important;
+            text-align: center !important;
+        }
+    }
+</style>
+
 <main class="page-area" id="pageArea">
     <div class="page" id="page-add-project">
 

@@ -449,6 +449,16 @@ class ProjectController extends Controller
             $project->sources()->sync($validSourceIds);
         }
 
+        // Historical Logging
+        if ($request->anyFilled(['last_update_date', 'client_feedback_summary', 'internal_notes'])) {
+            $project->feedbacks()->create([
+                'status' => $project->project_status,
+                'last_update_date' => $request->last_update_date ?? now(),
+                'feedback_summary' => $request->client_feedback_summary ?? 'Project updated by Sales',
+                'internal_notes' => $request->internal_notes,
+            ]);
+        }
+
         if ($request->has('assign_to')) {
             $project->developers()->sync($request->assign_to);
         }
@@ -465,10 +475,12 @@ class ProjectController extends Controller
     {
         $project = $this->getFilteredProjects()->findOrFail($id);
 
-        $updateData = [
-            'project_status_id' => $request->project_status_id,
-            'project_status' => Status::find($request->project_status_id)?->name,
-        ];
+        $updateData = [];
+
+        if ($request->filled('project_status_id')) {
+            $updateData['project_status_id'] = $request->project_status_id;
+            $updateData['project_status'] = Status::find($request->project_status_id)?->name;
+        }
 
         if ($request->filled('payment_status_id')) {
             $updateData['payment_status_id'] = $request->payment_status_id;
@@ -479,17 +491,20 @@ class ProjectController extends Controller
             $updateData['expected_delivery_date'] = $request->expected_delivery_date;
         }
 
-        $project->update($updateData);
+        if (!empty($updateData)) {
+            $project->update($updateData);
+        }
 
-        if ($request->filled('feedback')) {
-            ClientFeedback::create([
-                'project_id' => $project->id,
-                'feedback' => $request->feedback,
-                'date' => now(),
+        if ($request->filled('internal_notes') || $request->filled('feedback_summary') || $request->filled('feedback')) {
+            $project->feedbacks()->create([
+                'status' => $project->project_status,
+                'last_update_date' => now(),
+                'feedback_summary' => $request->feedback_summary ?? 'Quick status update by Sales',
+                'internal_notes' => $request->internal_notes ?? $request->feedback,
             ]);
         }
 
-        return redirect()->back()->with('success', 'Project status updated!');
+        return redirect()->back()->with('success', 'Project status and notes updated successfully!');
     }
 
     public function destroy($id)

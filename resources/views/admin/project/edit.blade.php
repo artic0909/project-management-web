@@ -105,6 +105,79 @@
             margin-bottom: 10px;
             opacity: 0.3;
         }
+
+        /* ─── Responsive Styles ─── */
+        @media (max-width: 992px) {
+            .dash-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .span-8, .span-4, .span-12 {
+                grid-column: span 12 / span 12 !important;
+                width: 100% !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+
+            .feedback-timeline {
+                margin-left: 0 !important;
+                padding-left: 0 !important;
+            }
+
+            .feedback-timeline::after {
+                left: 14px !important;
+            }
+
+            .timeline-item {
+                flex-direction: column !important;
+                gap: 6px !important;
+                padding-left: 32px !important;
+                position: relative !important;
+            }
+
+            .timeline-meta {
+                width: 100% !important;
+                text-align: left !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+            }
+
+            .timeline-content {
+                padding-bottom: 6px !important;
+            }
+
+            .timeline-content::after {
+                left: -23px !important;
+                top: -16px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 12px !important;
+            }
+
+            .header-actions {
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100% !important;
+                gap: 8px !important;
+            }
+
+            .header-actions .btn-primary-solid,
+            .header-actions .btn-ghost {
+                width: 100% !important;
+                justify-content: center !important;
+                text-align: center !important;
+            }
+        }
 </style>
 
 <main class="page-area" id="pageArea">
@@ -553,12 +626,12 @@
 
 <div class="dash-grid mt-4">
 
-                <div class="span-8" style="display:flex;flex-direction:column;gap:20px;">
+                <div class="span-12" style="display:flex;flex-direction:column;gap:20px;">
 
                     {{-- Quick Update Form --}}
                     <div class="dash-card" style="border: 2px solid var(--accent);box-shadow: 0 10px 30px rgba(99,102,241,0.1);">
                         <div class="card-head" style="background:rgba(99,102,241,0.05);border-bottom:1px solid var(--b1);">
-                            <div class="card-title"><i class="bi bi-lightning-charge-fill" style="color:var(--accent);margin-right:6px;"></i>Notes/Client Feedbacks</div>
+                            <div class="card-title"><i class="bi bi-lightning-charge-fill" style="color:var(--accent);margin-right:6px;"></i>Notes / Client Feedbacks</div>
                         </div>
                         <div class="card-body" style="padding:15px;">
                             <form action="{{ route($routePrefix . '.projects.quickUpdate', $project->id) }}" method="POST">
@@ -575,8 +648,8 @@
                     </div>
                 </div>
 
-                                    {{-- Communication History & Tracking --}}
-                    <div class="dash-card span-8">
+                {{-- Communication History & Tracking --}}
+                <div class="dash-card span-12">
                         <div class="card-head">
                             <div class="card-title"><i class="bi bi-chat-quote-fill"
                                     style="color:#ec4899;margin-right:8px;"></i>Communication History</div>
