@@ -3,69 +3,393 @@
 @section('title', 'Create Invoice')
 
 @section('content')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <style>
-        /* Force Dark Mode for Line Items Table */
-        #itemsTable {
-            border-color: var(--b3) !important;
-        }
-        #itemsTable thead {
-            background: var(--b1) !important;
-        }
-        #itemsTable thead th {
-            color: var(--t1) !important;
-            border-bottom: 1px solid var(--b3) !important;
-            background: var(--b1) !important;
-            font-weight: 700 !important;
-        }
-        #itemsTable tbody td {
-            border-color: var(--b3) !important;
-            background: transparent !important;
-            color: var(--t1) !important;
-        }
-        .item-row:hover {
-            background: var(--bg2) !important;
-        }
-        .form-inp.sm {
-            background: var(--bg3) !important;
-            border-color: var(--b3) !important;
-            color: var(--t1) !important;
-        }
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
-        /* Select2 Dark Mode Fix */
-        .select2-container--default .select2-selection--single {
-            background-color: var(--bg3) !important;
-            border: 1px solid var(--b3) !important;
-            border-radius: 8px !important;
-            height: 42px !important;
-            display: flex;
-            align-items: center;
+<style>
+    /* ─── INVOICE RESPONSIVE & COMPONENT STYLING ─── */
+    .invoice-form-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.75fr) minmax(0, 1.25fr);
+        gap: 24px;
+        align-items: start;
+    }
+
+    @media (max-width: 1100px) {
+        .invoice-form-layout {
+            grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.2fr);
+            gap: 18px;
         }
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: var(--t1) !important;
-            padding-left: 12px !important;
+    }
+
+    @media (max-width: 992px) {
+        .invoice-form-layout {
+            grid-template-columns: 1fr;
+            gap: 20px;
         }
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 40px !important;
+    }
+
+    .left-col, .right-col {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        min-width: 0;
+    }
+
+    @media (min-width: 993px) {
+        .sticky-summary {
+            position: sticky;
+            top: calc(var(--topbar-h, 58px) + 20px);
+            z-index: 10;
         }
-        .select2-dropdown {
-            background-color: var(--bg2) !important;
-            border: 1px solid var(--b3) !important;
-            color: var(--t1) !important;
+    }
+
+    /* Page Header */
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+
+    /* Dash Cards */
+    .dash-card {
+        background: var(--bg2);
+        border: 1px solid var(--b3);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .card-head {
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--b3);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--bg3);
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .card-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--t1);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+    }
+
+    .card-body {
+        padding: 18px;
+    }
+
+    @media (max-width: 576px) {
+        .card-head {
+            padding: 12px 14px;
         }
-        .select2-search__field {
-            background-color: var(--bg3) !important;
-            border: 1px solid var(--b3) !important;
-            color: var(--t1) !important;
+        .card-body {
+            padding: 14px;
         }
-        .select2-container--default .select2-results__option--highlighted[aria-selected] {
-            background-color: var(--accent) !important;
+    }
+
+    /* Responsive Form Grids */
+    .invoice-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+
+    @media (max-width: 640px) {
+        .invoice-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
         }
-        .select2-container--default .select2-results__option[aria-selected=true] {
-            background-color: var(--b2) !important;
+    }
+
+    .invoice-grid .full-span {
+        grid-column: 1 / -1;
+    }
+
+    .bank-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    @media (max-width: 480px) {
+        .bank-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
         }
-    </style>
-    <main class="page-area" id="pageArea">
+    }
+
+    .form-row {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .form-lbl {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--t2);
+        margin: 0;
+    }
+
+    .sm-lbl {
+        font-size: 12px;
+    }
+
+    .form-inp {
+        width: 100%;
+        height: 42px;
+        padding: 8px 12px;
+        font-size: 13.5px;
+        background: var(--bg3);
+        border: 1px solid var(--b3);
+        border-radius: 8px;
+        color: var(--t1);
+        transition: var(--transition);
+        outline: none;
+    }
+
+    .form-inp:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-bg);
+    }
+
+    textarea.form-inp {
+        height: auto;
+        min-height: 72px;
+        resize: vertical;
+    }
+
+    .form-inp.sm {
+        height: 36px;
+        padding: 5px 8px;
+        font-size: 13px;
+        border-radius: 6px;
+    }
+
+    /* Input Prefix Group */
+    .input-prefix-group {
+        display: flex;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .prefix-badge {
+        background: var(--bg4, var(--b1));
+        border: 1px solid var(--b3);
+        border-right: none;
+        padding: 0 14px;
+        display: inline-flex;
+        align-items: center;
+        font-weight: 700;
+        font-size: 13.5px;
+        color: var(--t1);
+        border-radius: 8px 0 0 8px;
+        white-space: nowrap;
+        user-select: none;
+    }
+
+    .prefix-input {
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        flex: 1;
+    }
+
+    /* Line Items Table Responsive Container */
+    .table-responsive-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #itemsTable {
+        width: 100%;
+        min-width: 620px;
+        margin-bottom: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    #itemsTable th {
+        padding: 10px 12px;
+        font-size: 11.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--t2);
+        background: var(--bg3);
+        border-bottom: 1px solid var(--b3);
+        white-space: nowrap;
+    }
+
+    #itemsTable td {
+        padding: 8px 10px;
+        vertical-align: middle;
+        border-bottom: 1px solid var(--b3);
+        background: transparent;
+    }
+
+    #itemsTable tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .item-row:hover td {
+        background: var(--bg3);
+    }
+
+    .btn-remove-row {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        border: none;
+        background: transparent;
+        color: #ef4444;
+        cursor: pointer;
+        transition: var(--transition);
+        padding: 0;
+        font-size: 15px;
+    }
+
+    .btn-remove-row:hover {
+        background: rgba(239, 68, 68, 0.15);
+        color: #dc2626;
+    }
+
+    /* Summary Calculation List */
+    .summary-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13.5px;
+        color: var(--t1);
+        gap: 10px;
+    }
+
+    .summary-label {
+        font-weight: 500;
+        color: var(--t2);
+        margin: 0;
+    }
+
+    .tax-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .tax-input-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .tax-inp {
+        width: 65px;
+        text-align: right;
+    }
+
+    .adj-inp {
+        width: 110px;
+        text-align: right;
+    }
+
+    .tax-val, .summary-val {
+        min-width: 75px;
+        text-align: right;
+        font-weight: 600;
+        color: var(--t1);
+    }
+
+    .summary-divider {
+        height: 1px;
+        background: var(--b3);
+        margin: 4px 0;
+    }
+
+    .total-row {
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--t1);
+        padding-top: 4px;
+    }
+
+    .total-val {
+        color: var(--accent);
+        font-size: 19px;
+        font-weight: 800;
+    }
+
+    .font-mono {
+        font-family: var(--mono, monospace);
+    }
+
+    /* Select2 Customization */
+    .select2-container--default .select2-selection--single {
+        background-color: var(--bg3) !important;
+        border: 1px solid var(--b3) !important;
+        border-radius: 8px !important;
+        height: 42px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: var(--t1) !important;
+        padding-left: 12px !important;
+        font-size: 13.5px !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 40px !important;
+        right: 8px !important;
+    }
+    .select2-dropdown {
+        background-color: var(--bg2) !important;
+        border: 1px solid var(--b3) !important;
+        color: var(--t1) !important;
+        border-radius: 8px !important;
+        box-shadow: var(--shadow-md) !important;
+        z-index: 1050;
+    }
+    .select2-search--dropdown {
+        padding: 8px !important;
+    }
+    .select2-search__field {
+        background-color: var(--bg3) !important;
+        border: 1px solid var(--b3) !important;
+        color: var(--t1) !important;
+        border-radius: 6px !important;
+        padding: 6px 10px !important;
+    }
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: var(--accent) !important;
+        color: #fff !important;
+    }
+    .select2-container--default .select2-results__option[aria-selected=true] {
+        background-color: var(--b2) !important;
+    }
+    .select2-results__option {
+        padding: 8px 12px !important;
+        font-size: 13px !important;
+    }
+</style>
+
+<main class="page-area" id="pageArea">
     <div class="page" id="page-invoice-create">
         <div class="page-header">
             <div>
@@ -81,15 +405,18 @@
 
         <form action="{{ route($routePrefix . '.invoices.store') }}" method="POST" id="invoiceForm">
             @csrf
-            <div class="form-grid-2-1">
-                <div class="left-col" style="display: flex; flex-direction: column; gap: 20px;">
-                    <!-- Client & Meta -->
+            <div class="invoice-form-layout">
+                <!-- Left Column: Details, Items, Sender -->
+                <div class="left-col">
+                    <!-- Client & Invoice Meta -->
                     <div class="dash-card">
                         <div class="card-head">
-                            <div class="card-title"><i class="bi bi-person-fill"></i> Client & Invoice Details</div>
+                            <div class="card-title">
+                                <i class="bi bi-person-fill"></i> Client & Invoice Details
+                            </div>
                         </div>
                         <div class="card-body">
-                            <div class="form-grid">
+                            <div class="invoice-grid">
                                 <div class="form-row">
                                     <label class="form-lbl">Select Order (Optional)</label>
                                     <select name="order_id" id="order_id" class="form-inp select2" onchange="loadOrderDetails(this.value)">
@@ -107,9 +434,9 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Invoice No <span class="text-danger">*</span></label>
-                                    <div style="display: flex; align-items: stretch;">
-                                        <span style="background: var(--bg3, #f8f9fa); border: 1px solid var(--b3, #dee2e6); border-right: none; padding: 0 12px; display: flex; align-items: center; font-weight: 700; color: var(--t1); border-radius: 8px 0 0 8px; font-size: 14px;">STW</span>
-                                        <input type="text" name="invoice_no" value="{{ old('invoice_no', $invoice_no) }}" class="form-inp" style="border-top-left-radius: 0; border-bottom-left-radius: 0; flex: 1; height: 42px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="6" inputmode="numeric" required>
+                                    <div class="input-prefix-group">
+                                        <span class="prefix-badge">STW</span>
+                                        <input type="text" name="invoice_no" value="{{ old('invoice_no', $invoice_no) }}" class="form-inp prefix-input font-mono" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="6" inputmode="numeric" required>
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -120,23 +447,23 @@
                                     <label class="form-lbl">Due Date</label>
                                     <input type="date" name="due_date" value="{{ old('due_date') }}" class="form-inp">
                                 </div>
-                                <div class="form-row" style="grid-column: 1/-1;">
+                                <div class="form-row full-span">
                                     <label class="form-lbl">Client Name <span class="text-danger">*</span></label>
-                                    <input type="text" name="client_name" id="client_name" value="{{ old('client_name', $selectedOrder->client_name ?? '') }}" class="form-inp" required>
+                                    <input type="text" name="client_name" id="client_name" value="{{ old('client_name', $selectedOrder->client_name ?? '') }}" class="form-inp" placeholder="Client or Company Name" required>
                                 </div>
-                                <div class="form-row" style="grid-column: 1/-1;">
+                                <div class="form-row full-span">
                                     <label class="form-lbl">Client Address</label>
-                                    <textarea name="client_address" id="client_address" class="form-inp" rows="2">{{ old('client_address', $selectedOrder->full_address ?? '') }}</textarea>
+                                    <textarea name="client_address" id="client_address" class="form-inp" rows="2" placeholder="Full client address...">{{ old('client_address', $selectedOrder->full_address ?? '') }}</textarea>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Client GSTIN</label>
-                                    <input type="text" name="client_gstin" value="{{ old('client_gstin') }}" class="form-inp" placeholder="Optional">
+                                    <input type="text" name="client_gstin" value="{{ old('client_gstin') }}" class="form-inp" placeholder="e.g. 29AAAAA0000A1Z5">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Place of Supply</label>
-                                    <input type="text" name="place_of_supply" id="place_of_supply" value="{{ old('place_of_supply', $selectedOrder->state ?? '') }}" class="form-inp">
+                                    <input type="text" name="place_of_supply" id="place_of_supply" value="{{ old('place_of_supply', $selectedOrder->state ?? '') }}" class="form-inp" placeholder="State/Location">
                                 </div>
-                                <div class="form-row">
+                                <div class="form-row full-span">
                                     <label class="form-lbl">Invoice Status <span class="text-danger">*</span></label>
                                     <select name="status" class="form-inp" required>
                                         <option value="UNPAID" {{ old('status') == 'UNPAID' ? 'selected' : '' }}>UNPAID</option>
@@ -148,48 +475,54 @@
                         </div>
                     </div>
 
-                    <!-- Items Table -->
+                    <!-- Line Items -->
                     <div class="dash-card">
-                        <div class="card-head" style="display: flex; justify-content: space-between; align-items: center;">
-                            <div class="card-title"><i class="bi bi-list-ul"></i> Line Items</div>
+                        <div class="card-head">
+                            <div class="card-title">
+                                <i class="bi bi-list-ul"></i> Line Items
+                            </div>
                             <button type="button" class="btn-ghost sm" onclick="addItemRow()">
                                 <i class="bi bi-plus-lg"></i> Add Item
                             </button>
                         </div>
                         <div class="card-body" style="padding: 0;">
-                            <table class="table" id="itemsTable">
-                                <thead style="background: var(--b2); color: var(--t1);">
-                                    <tr>
-                                        <th width="40%">Description</th>
-                                        <th width="15%">HSN/SAC</th>
-                                        <th width="10%">Qty</th>
-                                        <th width="15%">Rate</th>
-                                        <th width="15%">Amount</th>
-                                        <th width="5%"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{-- First Row --}}
-                                    <tr class="item-row">
-                                        <td><input type="text" name="items[0][desc]" class="form-inp sm" value="Project Payment" required></td>
-                                        <td><input type="text" name="items[0][hsn]" class="form-inp sm"></td>
-                                        <td><input type="number" name="items[0][qty]" class="form-inp sm qty" value="1" min="1" step="any" oninput="calcRow(this)"></td>
-                                        <td><input type="number" name="items[0][rate]" class="form-inp sm rate" value="0.00" min="0" step="any" oninput="calcRow(this)"></td>
-                                        <td><input type="number" name="items[0][amount]" class="form-inp sm amount" value="0.00" readonly></td>
-                                        <td></td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="table-responsive-wrapper">
+                                <table class="table" id="itemsTable">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 38%;">Description</th>
+                                            <th style="width: 16%;">HSN/SAC</th>
+                                            <th style="width: 12%;">Qty</th>
+                                            <th style="width: 16%;">Rate</th>
+                                            <th style="width: 14%;">Amount</th>
+                                            <th style="width: 4%;"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="item-row">
+                                            <td><input type="text" name="items[0][desc]" class="form-inp sm" value="Project Payment" placeholder="Item description" required></td>
+                                            <td><input type="text" name="items[0][hsn]" class="form-inp sm" placeholder="HSN/SAC"></td>
+                                            <td><input type="number" name="items[0][qty]" class="form-inp sm qty font-mono" value="1" min="0.01" step="any" oninput="calcRow(this)"></td>
+                                            <td><input type="number" name="items[0][rate]" class="form-inp sm rate font-mono" value="0.00" min="0" step="any" oninput="calcRow(this)"></td>
+                                            <td><input type="number" name="items[0][amount]" class="form-inp sm amount font-mono" value="0.00" readonly></td>
+                                            <td style="text-align: center;"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
+
                     <!-- Sender Details -->
                     <div class="dash-card">
                         <div class="card-head">
-                            <div class="card-title"><i class="bi bi-building"></i> Sender Details (Optional)</div>
-                            <span style="font-size:11px; opacity:0.6;">Leave blank to use default (Standsweb)</span>
+                            <div class="card-title">
+                                <i class="bi bi-building"></i> Sender Details (Optional)
+                            </div>
+                            <span style="font-size: 11.5px; color: var(--t3);">Leave blank to use default</span>
                         </div>
                         <div class="card-body">
-                            <div class="form-grid">
+                            <div class="invoice-grid">
                                 <div class="form-row">
                                     <label class="form-lbl">Company Name</label>
                                     <input type="text" name="sender_name" value="{{ old('sender_name') }}" class="form-inp" placeholder="Standsweb">
@@ -198,7 +531,7 @@
                                     <label class="form-lbl">GSTIN</label>
                                     <input type="text" name="sender_gstin" value="{{ old('sender_gstin') }}" class="form-inp" placeholder="29JTKPS5068C1Z1">
                                 </div>
-                                <div class="form-row" style="grid-column: 1/-1;">
+                                <div class="form-row full-span">
                                     <label class="form-lbl">Address</label>
                                     <textarea name="sender_address" class="form-inp" rows="2" placeholder="KannamangalaPost, Whitefield Main Road, Bengaluru Rural, Karnataka 560067">{{ old('sender_address') }}</textarea>
                                 </div>
@@ -215,57 +548,60 @@
                     </div>
                 </div>
 
-                <div class="right-col" style="display: flex; flex-direction: column; gap: 20px;">
-                    <!-- Totals -->
-                    <div class="dash-card">
+                <!-- Right Column: Summary, Notes, Bank -->
+                <div class="right-col">
+                    <!-- Totals Summary (Sticky on Desktop) -->
+                    <div class="dash-card sticky-summary">
                         <div class="card-head">
-                            <div class="card-title"><i class="bi bi-calculator"></i> Summary</div>
+                            <div class="card-title">
+                                <i class="bi bi-calculator"></i> Invoice Summary
+                            </div>
                         </div>
                         <div class="card-body">
-                            <div style="display: flex; flex-direction: column; gap: 15px;">
-                                <div class="summary-item" style="display: flex; justify-content: space-between; font-weight: 500;">
-                                    <span>Subtotal</span>
-                                    <span>₹<span id="subtotal_text">0.00</span></span>
+                            <div class="summary-container">
+                                <div class="summary-row">
+                                    <span class="summary-label">Subtotal</span>
+                                    <span class="summary-val font-mono">₹<span id="subtotal_text">0.00</span></span>
                                     <input type="hidden" name="subtotal" id="subtotal_val" value="0">
                                 </div>
-                                <div class="summary-item">
-                                    <label class="form-lbl">CGST (%)</label>
-                                    <div style="display: flex; gap: 10px; align-items: center;">
-                                        <input type="number" id="cgst_p" class="form-inp sm" value="9" oninput="calcTotals()">
-                                        <span id="cgst_text" style="min-width: 60px; text-align: right;">0.00</span>
+                                <div class="summary-row tax-row">
+                                    <label class="summary-label" for="cgst_p">CGST (%)</label>
+                                    <div class="tax-input-wrap">
+                                        <input type="number" id="cgst_p" class="form-inp sm tax-inp font-mono" value="9" min="0" step="any" oninput="calcTotals()">
+                                        <span class="tax-val font-mono">₹<span id="cgst_text">0.00</span></span>
                                         <input type="hidden" name="cgst" id="cgst_val" value="0">
                                     </div>
                                 </div>
-                                <div class="summary-item">
-                                    <label class="form-lbl">SGST (%)</label>
-                                    <div style="display: flex; gap: 10px; align-items: center;">
-                                        <input type="number" id="sgst_p" class="form-inp sm" value="9" oninput="calcTotals()">
-                                        <span id="sgst_text" style="min-width: 60px; text-align: right;">0.00</span>
+                                <div class="summary-row tax-row">
+                                    <label class="summary-label" for="sgst_p">SGST (%)</label>
+                                    <div class="tax-input-wrap">
+                                        <input type="number" id="sgst_p" class="form-inp sm tax-inp font-mono" value="9" min="0" step="any" oninput="calcTotals()">
+                                        <span class="tax-val font-mono">₹<span id="sgst_text">0.00</span></span>
                                         <input type="hidden" name="sgst" id="sgst_val" value="0">
                                     </div>
                                 </div>
-                                <div class="summary-item">
-                                    <label class="form-lbl">IGST (%)</label>
-                                    <div style="display: flex; gap: 10px; align-items: center;">
-                                        <input type="number" id="igst_p" class="form-inp sm" value="0" oninput="calcTotals()">
-                                        <span id="igst_text" style="min-width: 60px; text-align: right;">0.00</span>
+                                <div class="summary-row tax-row">
+                                    <label class="summary-label" for="igst_p">IGST (%)</label>
+                                    <div class="tax-input-wrap">
+                                        <input type="number" id="igst_p" class="form-inp sm tax-inp font-mono" value="0" min="0" step="any" oninput="calcTotals()">
+                                        <span class="tax-val font-mono">₹<span id="igst_text">0.00</span></span>
                                         <input type="hidden" name="igst" id="igst_val" value="0">
                                     </div>
                                 </div>
-                                <div class="summary-item">
-                                    <label class="form-lbl">Adjustment</label>
-                                    <input type="number" name="adjustment" id="adjustment" class="form-inp sm" value="0" step="any" oninput="calcTotals()">
+                                <div class="summary-row tax-row">
+                                    <label class="summary-label" for="adjustment">Adjustment (₹)</label>
+                                    <input type="number" name="adjustment" id="adjustment" class="form-inp sm adj-inp font-mono" value="0" step="any" oninput="calcTotals()">
                                 </div>
-                                <hr style="border: none; border-top: 1px solid var(--border);">
-                                <div class="summary-item" style="display: flex; justify-content: space-between; font-weight: 800; font-size: 18px; color: var(--navy);">
-                                    <span>Total</span>
-                                    <span>₹<span id="total_text">0.00</span></span>
+                                <div class="summary-divider"></div>
+                                <div class="summary-row total-row">
+                                    <span>Grand Total</span>
+                                    <span class="total-val font-mono">₹<span id="total_text">0.00</span></span>
                                     <input type="hidden" name="total" id="total_val" value="0">
                                 </div>
                             </div>
                         </div>
-                        <div class="card-foot" style="padding: 20px;">
-                            <button type="submit" class="btn-primary-solid" style="width: 100%; justify-content: center;">
+                        <div style="padding: 0 18px 18px 18px;">
+                            <button type="submit" class="btn-primary-solid" style="width: 100%; height: 44px; font-size: 14.5px; font-weight: 600; justify-content: center;">
                                 <i class="bi bi-check-circle-fill"></i> Create & View Invoice
                             </button>
                         </div>
@@ -274,10 +610,10 @@
                     <!-- Notes -->
                     <div class="dash-card">
                         <div class="card-head">
-                            <div class="card-title">Notes</div>
+                            <div class="card-title"><i class="bi bi-sticky"></i> Notes / Terms</div>
                         </div>
                         <div class="card-body">
-                            <textarea name="notes" class="form-inp" rows="3" placeholder="Additional notes...">Looking forward for your business.
+                            <textarea name="notes" class="form-inp" rows="3" placeholder="Additional notes or payment terms...">Looking forward for your business.
 Rates are subject to change without prior notification.</textarea>
                         </div>
                     </div>
@@ -285,10 +621,10 @@ Rates are subject to change without prior notification.</textarea>
                     <!-- Bank Details -->
                     <div class="dash-card">
                         <div class="card-head">
-                            <div class="card-title">Bank Details</div>
+                            <div class="card-title"><i class="bi bi-bank"></i> Bank Details</div>
                         </div>
                         <div class="card-body">
-                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div class="bank-grid">
                                 <div class="form-row">
                                     <label class="form-lbl sm-lbl">Account Name</label>
                                     <input type="text" name="bank_details[account_name]" class="form-inp sm" value="Standsweb">
@@ -299,11 +635,11 @@ Rates are subject to change without prior notification.</textarea>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl sm-lbl">Account Number</label>
-                                    <input type="text" name="bank_details[account_number]" class="form-inp sm" value="44128332491">
+                                    <input type="text" name="bank_details[account_number]" class="form-inp sm font-mono" value="44128332491">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl sm-lbl">IFSC Code</label>
-                                    <input type="text" name="bank_details[ifsc]" class="form-inp sm" value="SBIN0003242">
+                                    <input type="text" name="bank_details[ifsc]" class="form-inp sm font-mono" value="SBIN0003242">
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl sm-lbl">Branch</label>
@@ -311,7 +647,7 @@ Rates are subject to change without prior notification.</textarea>
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl sm-lbl">SWIFT Code</label>
-                                    <input type="text" name="bank_details[swift]" class="form-inp sm" value="SBININBB812">
+                                    <input type="text" name="bank_details[swift]" class="form-inp sm font-mono" value="SBININBB812">
                                 </div>
                             </div>
                         </div>
@@ -322,12 +658,6 @@ Rates are subject to change without prior notification.</textarea>
     </div>
 </main>
 
-<style>
-    .sm { padding: 4px 8px; font-size: 13px; height: 32px; }
-    .form-grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
-    @media (max-width: 992px) { .form-grid-2-1 { grid-template-columns: 1fr; } }
-</style>
-
 <script>
     let rowIdx = 1;
 
@@ -336,12 +666,16 @@ Rates are subject to change without prior notification.</textarea>
         const tr = document.createElement('tr');
         tr.className = 'item-row';
         tr.innerHTML = `
-            <td><input type="text" name="items[${rowIdx}][desc]" class="form-inp sm" required></td>
-            <td><input type="text" name="items[${rowIdx}][hsn]" class="form-inp sm"></td>
-            <td><input type="number" name="items[${rowIdx}][qty]" class="form-inp sm qty" value="1" min="1" step="any" oninput="calcRow(this)"></td>
-            <td><input type="number" name="items[${rowIdx}][rate]" class="form-inp sm rate" value="0.00" min="0" step="any" oninput="calcRow(this)"></td>
-            <td><input type="number" name="items[${rowIdx}][amount]" class="form-inp sm amount" value="0.00" readonly></td>
-            <td><button type="button" class="text-danger" onclick="this.closest('tr').remove(); calcTotals();" style="border:none; background:none; cursor:pointer;"><i class="bi bi-x-circle"></i></button></td>
+            <td><input type="text" name="items[${rowIdx}][desc]" class="form-inp sm" placeholder="Item description" required></td>
+            <td><input type="text" name="items[${rowIdx}][hsn]" class="form-inp sm" placeholder="HSN/SAC"></td>
+            <td><input type="number" name="items[${rowIdx}][qty]" class="form-inp sm qty font-mono" value="1" min="0.01" step="any" oninput="calcRow(this)"></td>
+            <td><input type="number" name="items[${rowIdx}][rate]" class="form-inp sm rate font-mono" value="0.00" min="0" step="any" oninput="calcRow(this)"></td>
+            <td><input type="number" name="items[${rowIdx}][amount]" class="form-inp sm amount font-mono" value="0.00" readonly></td>
+            <td style="text-align: center;">
+                <button type="button" class="btn-remove-row" title="Remove row" onclick="this.closest('tr').remove(); calcTotals();">
+                    <i class="bi bi-trash3"></i>
+                </button>
+            </td>
         `;
         tbody.appendChild(tr);
         rowIdx++;
@@ -362,30 +696,40 @@ Rates are subject to change without prior notification.</textarea>
             subtotal += parseFloat(inp.value) || 0;
         });
 
-        const cgst_p = parseFloat(document.getElementById('cgst_p').value) || 0;
-        const sgst_p = parseFloat(document.getElementById('sgst_p').value) || 0;
-        const igst_p = parseFloat(document.getElementById('igst_p').value) || 0;
-        const adj = parseFloat(document.getElementById('adjustment').value) || 0;
+        const cgst_p = parseFloat(document.getElementById('cgst_p')?.value) || 0;
+        const sgst_p = parseFloat(document.getElementById('sgst_p')?.value) || 0;
+        const igst_p = parseFloat(document.getElementById('igst_p')?.value) || 0;
+        const adj = parseFloat(document.getElementById('adjustment')?.value) || 0;
 
         const cgst = subtotal * (cgst_p / 100);
         const sgst = subtotal * (sgst_p / 100);
         const igst = subtotal * (igst_p / 100);
         const total = subtotal + cgst + sgst + igst + adj;
 
-        document.getElementById('subtotal_text').innerText = subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2});
-        document.getElementById('subtotal_val').value = subtotal.toFixed(2);
+        const subtotalEl = document.getElementById('subtotal_text');
+        if (subtotalEl) subtotalEl.innerText = subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        const subtotalVal = document.getElementById('subtotal_val');
+        if (subtotalVal) subtotalVal.value = subtotal.toFixed(2);
 
-        document.getElementById('cgst_text').innerText = cgst.toFixed(2);
-        document.getElementById('cgst_val').value = cgst.toFixed(2);
+        const cgstEl = document.getElementById('cgst_text');
+        if (cgstEl) cgstEl.innerText = cgst.toFixed(2);
+        const cgstVal = document.getElementById('cgst_val');
+        if (cgstVal) cgstVal.value = cgst.toFixed(2);
 
-        document.getElementById('sgst_text').innerText = sgst.toFixed(2);
-        document.getElementById('sgst_val').value = sgst.toFixed(2);
+        const sgstEl = document.getElementById('sgst_text');
+        if (sgstEl) sgstEl.innerText = sgst.toFixed(2);
+        const sgstVal = document.getElementById('sgst_val');
+        if (sgstVal) sgstVal.value = sgst.toFixed(2);
 
-        document.getElementById('igst_text').innerText = igst.toFixed(2);
-        document.getElementById('igst_val').value = igst.toFixed(2);
+        const igstEl = document.getElementById('igst_text');
+        if (igstEl) igstEl.innerText = igst.toFixed(2);
+        const igstVal = document.getElementById('igst_val');
+        if (igstVal) igstVal.value = igst.toFixed(2);
 
-        document.getElementById('total_text').innerText = total.toLocaleString('en-IN', {minimumFractionDigits: 2});
-        document.getElementById('total_val').value = total.toFixed(2);
+        const totalEl = document.getElementById('total_text');
+        if (totalEl) totalEl.innerText = total.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        const totalVal = document.getElementById('total_val');
+        if (totalVal) totalVal.value = total.toFixed(2);
     }
 
     function loadOrderDetails(orderId) {
@@ -398,14 +742,14 @@ Rates are subject to change without prior notification.</textarea>
             
             // Set first row amount if empty
             const firstRate = document.querySelector('.rate');
-            if (firstRate && parseFloat(firstRate.value) === 0) {
+            if (firstRate && (parseFloat(firstRate.value) === 0 || !firstRate.value)) {
                 firstRate.value = opt.dataset.amount || 0;
                 calcRow(firstRate);
             }
         }
     }
 
-    // Initial calc
+    // Initial calculation
     calcTotals();
 </script>
 @endsection
