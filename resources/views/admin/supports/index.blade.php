@@ -182,13 +182,26 @@
 
     @media (max-width: 860px) {
         .supports-filter-form {
-            width: 100%;
-            flex-direction: column;
-            align-items: stretch;
-        }
-        .supports-filter-form .global-search,
-        .supports-filter-form .filter-select {
             width: 100% !important;
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 8px !important;
+            align-items: stretch !important;
+        }
+        .supports-filter-form .global-search {
+            width: 100% !important;
+            flex: 1 1 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        .supports-filter-form .filter-select,
+        .supports-filter-form select {
+            flex: 1 1 calc(50% - 4px) !important;
+            width: calc(50% - 4px) !important;
+            max-width: calc(50% - 4px) !important;
+            min-width: 0 !important;
+            box-sizing: border-box !important;
         }
     }
 

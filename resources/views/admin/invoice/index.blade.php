@@ -42,39 +42,22 @@
             </div>
         </div>
 
-        <!-- Filters -->
-        <!-- <div class="dash-card" style="margin-bottom: 24px; border:none; background:transparent;">
-            <div class="card-body" style="padding:0;">
-                <form action="{{ route($routePrefix . '.invoices.index') }}" method="GET" class="filter-grid"
-                    style="display: grid; grid-template-columns: 1fr 0.8fr 0.8fr 180px; gap: 15px; align-items: flex-end;">
-                    <div class="form-row">
-                        <label class="form-lbl" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7;">Search Invoices</label>
-                        <input type="text" name="search" value="{{ request('search') }}" class="form-inp"
-                            placeholder="Invoice No, Client Name..." style="height: 42px;">
+        <div class="dash-card">
+            <div class="card-head">
+                <div>
+                    <div class="card-title">All Invoices</div>
+                    <div class="card-sub">{{ $invoices->total() }} total invoices</div>
+                </div>
+                <form action="{{ route($routePrefix . '.invoices.index') }}" method="GET" class="card-actions mb-0">
+                    <div class="global-search">
+                        <i class="bi bi-search"></i>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search Invoice No, Client, Order #...">
+                        <button type="submit" class="btn-primary-solid sm" style="display:none;">Search</button>
                     </div>
-                    <div class="form-row">
-                        <label class="form-lbl" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7;">From Date</label>
-                        <input type="date" name="from_date" value="{{ request('from_date') }}" class="form-inp" style="height: 42px;">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-lbl" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7;">To Date</label>
-                        <input type="date" name="to_date" value="{{ request('to_date') }}" class="form-inp" style="height: 42px;">
-                    </div>
-                    <div class="form-actions" style="display: flex; gap: 8px;">
-                        <button type="submit" class="btn-primary-solid" style="flex: 1; height: 42px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border-radius: 8px;">
-                            <i class="bi bi-search" style="font-size: 14px;"></i> <span>Search</span>
-                        </button>
-                        <a href="{{ route($routePrefix . '.invoices.index') }}" class="btn-ghost"
-                            style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid var(--b3); background: var(--bg3);" 
-                            title="Clear Filters">
-                            <i class="bi bi-arrow-counterclockwise" style="font-size: 18px;"></i>
-                        </a>
-                    </div>
+                    <input type="date" name="from_date" value="{{ request('from_date') }}" class="filter-select" title="From Date" onchange="this.form.submit()">
+                    <input type="date" name="to_date" value="{{ request('to_date') }}" class="filter-select" title="To Date" onchange="this.form.submit()">
                 </form>
             </div>
-        </div> -->
-
-        <div class="dash-card">
             <div class="card-body" style="padding: 0;">
                 <div class="table-wrap">
                     <table class="data-table">

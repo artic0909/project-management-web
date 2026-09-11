@@ -3213,25 +3213,46 @@
                 padding: 12px 14px 16px;
             }
 
-            .card-actions {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 8px;
-                width: 100%;
-                align-items: stretch;
+            .card-actions,
+            form.card-actions,
+            .inquiry-filter-form,
+            .supports-filter-form {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 8px !important;
+                width: 100% !important;
+                align-items: stretch !important;
             }
 
             .global-search {
                 flex: 1 1 100% !important;
                 width: 100% !important;
                 min-width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
             }
 
-            .filter-select {
-                flex: 1 1 calc(50% - 6px);
-                min-width: 120px;
-                font-size: 12px;
-                padding: 6px 8px;
+            .global-search input {
+                width: 100% !important;
+            }
+
+            .filter-select,
+            select.filter-select,
+            .card-actions select,
+            .card-actions input[type="date"],
+            .inquiry-filter-form select,
+            .supports-filter-form select {
+                flex: 1 1 calc(50% - 4px) !important;
+                width: calc(50% - 4px) !important;
+                min-width: 0 !important;
+                max-width: calc(50% - 4px) !important;
+                box-sizing: border-box !important;
+                font-size: 12px !important;
+                padding: 6px 8px !important;
+                height: 38px !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
             }
 
             .table-wrap {
@@ -3428,9 +3449,17 @@
                 grid-template-columns: 1fr !important;
             }
 
-            .filter-select {
-                flex: 1 1 100%;
-                width: 100%;
+            .filter-select,
+            select.filter-select,
+            .card-actions select,
+            .card-actions input[type="date"],
+            .inquiry-filter-form select,
+            .supports-filter-form select {
+                flex: 1 1 calc(50% - 4px) !important;
+                width: calc(50% - 4px) !important;
+                min-width: 0 !important;
+                max-width: calc(50% - 4px) !important;
+                box-sizing: border-box !important;
             }
         }
 
