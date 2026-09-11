@@ -604,9 +604,9 @@
                                 
                                 <th>Campaign / Source</th>
 
-                                @if($routePrefix == 'sale')
+                                <!-- @if($routePrefix == 'admin')
                                 <th>Contact Person</th>
-                                @endif
+                                @endif -->
 
                                 <th>Phone</th>
                                 <th>Priority</th>
@@ -653,7 +653,7 @@
                                 </td>
                                 @endif
                                 <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $lead->created_at->format('d M Y') }}</div></td>
-                                @if($routePrefix == 'admin')
+                                <!-- @if($routePrefix == 'admin')
                                 <td>
                                     <div class="lead-cell">
                                         @php
@@ -669,7 +669,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                @endif
+                                @endif -->
                                 <td>
                                     <span class="src-tag">{{ $lead->campaign->name ?? 'N/A' }}</span>
                                     <div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:4px;">
