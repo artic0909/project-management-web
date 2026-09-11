@@ -816,8 +816,9 @@
         .notif-panel {
             position: absolute;
             top: calc(var(--topbar-h) + 6px);
-            right: 60px;
-            width: 360px;
+            right: 16px;
+            width: 380px;
+            max-width: calc(100vw - 24px);
             background: var(--bg2);
             border: 1px solid var(--b2);
             border-radius: var(--r-lg);
@@ -3160,6 +3161,26 @@
         }
 
         @media (max-width: 768px) {
+            /* Responsive Notification Panel */
+            .notif-panel {
+                position: fixed !important;
+                top: calc(var(--topbar-h) + 6px) !important;
+                left: 10px !important;
+                right: 10px !important;
+                width: auto !important;
+                max-width: calc(100vw - 20px) !important;
+                max-height: calc(85vh - var(--topbar-h)) !important;
+                border-radius: var(--r) !important;
+                box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5) !important;
+                z-index: 1050 !important;
+            }
+
+            .notif-list {
+                max-height: calc(85vh - var(--topbar-h) - 60px) !important;
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+
             /* Hide Date Range Picker completely on Mobile */
             .drp-trigger,
             #dateRangeTrigger,
