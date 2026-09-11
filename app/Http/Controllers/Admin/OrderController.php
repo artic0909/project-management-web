@@ -102,14 +102,36 @@ class OrderController extends Controller
         
         // Total Calling & Message Followups for filtered orders
         $orderIds = (clone $aggQuery)->pluck('orders.id');
-        $followupCounts = \App\Models\Followup::whereIn('followable_id', $orderIds)
-            ->where('followable_type', \App\Models\Order::class)
+        $followupQuery = \App\Models\Followup::whereIn('followable_id', $orderIds)
+            ->where('followable_type', \App\Models\Order::class);
+
+        if ($request->filled('assigned_to')) {
+            $followupQuery->where('created_by_id', $request->assigned_to)
+                ->where('created_by_type', \App\Models\Sale::class);
+        }
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $followupQuery->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+        }
+
+        $followupCounts = $followupQuery
             ->select('followup_type', DB::raw('count(*) as count'))
             ->groupBy('followup_type')
             ->pluck('count', 'followup_type');
 
-        $totalCallingFollowupsFiltered = ($followupCounts['Calling'] ?? 0) + ($followupCounts['Both'] ?? 0);
-        $totalMessageFollowupsFiltered = ($followupCounts['Message'] ?? 0) + ($followupCounts['Both'] ?? 0);
+        $totalCallingFollowupsFiltered = 0;
+        $totalMessageFollowupsFiltered = 0;
+        foreach ($followupCounts as $typeKey => $count) {
+            $norm = strtolower(trim($typeKey));
+            if ($norm === 'calling') {
+                $totalCallingFollowupsFiltered += $count;
+            } elseif ($norm === 'message') {
+                $totalMessageFollowupsFiltered += $count;
+            } elseif ($norm === 'both') {
+                $totalCallingFollowupsFiltered += $count;
+                $totalMessageFollowupsFiltered += $count;
+            }
+        }
         
         // Counts
         $totalOrders = (clone $aggQuery)->count();
@@ -198,14 +220,36 @@ class OrderController extends Controller
         
         // Total Calling & Message Followups for filtered orders
         $orderIds = (clone $aggQuery)->pluck('orders.id');
-        $followupCounts = \App\Models\Followup::whereIn('followable_id', $orderIds)
-            ->where('followable_type', \App\Models\Order::class)
+        $followupQuery = \App\Models\Followup::whereIn('followable_id', $orderIds)
+            ->where('followable_type', \App\Models\Order::class);
+
+        if ($request->filled('assigned_to')) {
+            $followupQuery->where('created_by_id', $request->assigned_to)
+                ->where('created_by_type', \App\Models\Sale::class);
+        }
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $followupQuery->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+        }
+
+        $followupCounts = $followupQuery
             ->select('followup_type', DB::raw('count(*) as count'))
             ->groupBy('followup_type')
             ->pluck('count', 'followup_type');
 
-        $totalCallingFollowupsFiltered = ($followupCounts['Calling'] ?? 0) + ($followupCounts['Both'] ?? 0);
-        $totalMessageFollowupsFiltered = ($followupCounts['Message'] ?? 0) + ($followupCounts['Both'] ?? 0);
+        $totalCallingFollowupsFiltered = 0;
+        $totalMessageFollowupsFiltered = 0;
+        foreach ($followupCounts as $typeKey => $count) {
+            $norm = strtolower(trim($typeKey));
+            if ($norm === 'calling') {
+                $totalCallingFollowupsFiltered += $count;
+            } elseif ($norm === 'message') {
+                $totalMessageFollowupsFiltered += $count;
+            } elseif ($norm === 'both') {
+                $totalCallingFollowupsFiltered += $count;
+                $totalMessageFollowupsFiltered += $count;
+            }
+        }
 
         // Counts based on the renewals query
         $totalOrders = (clone $aggQuery)->count();

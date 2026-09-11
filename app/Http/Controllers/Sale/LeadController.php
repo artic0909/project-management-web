@@ -201,14 +201,51 @@ class LeadController extends Controller
 
         // Total Followups for filtered leads
         $leadIds = (clone $statsQuery)->pluck('leads.id');
-        $followupCounts = \App\Models\Followup::whereIn('followable_id', $leadIds)
+        $saleType = get_class(auth()->guard('sale')->user());
+        $followupQuery = \App\Models\Followup::whereIn('followable_id', $leadIds)
             ->where('followable_type', \App\Models\Lead::class)
+            ->where('created_by_id', $saleId)
+            ->where('created_by_type', $saleType);
+
+        if (in_array($type, ['followup_pending', 'followup_future', 'followup_today'])) {
+            if ($request->has('start_date') && $request->has('end_date') && !empty($request->start_date)) {
+                $followupQuery->whereBetween('next_schedule_date', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+            } else {
+                $today = \Carbon\Carbon::today();
+                if ($type === 'followup_today') {
+                    $followupQuery->whereDate('next_schedule_date', $today);
+                } elseif ($type === 'followup_pending') {
+                    $followupQuery->whereDate('next_schedule_date', '<', $today);
+                } elseif ($type === 'followup_future') {
+                    $followupQuery->whereDate('next_schedule_date', '>', $today);
+                }
+            }
+        } elseif ($type === 'followup_total') {
+            if ($request->has('start_date') && $request->has('end_date') && !empty($request->start_date)) {
+                $followupQuery->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+            }
+        } elseif ($request->has('start_date') && $request->has('end_date') && !empty($request->start_date)) {
+            $followupQuery->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+        }
+
+        $followupCounts = $followupQuery
             ->select('followup_type', DB::raw('count(*) as count'))
             ->groupBy('followup_type')
             ->pluck('count', 'followup_type');
 
-        $totalCallingFollowupsFiltered = ($followupCounts['Calling'] ?? 0) + ($followupCounts['Both'] ?? 0);
-        $totalMessageFollowupsFiltered = ($followupCounts['Message'] ?? 0) + ($followupCounts['Both'] ?? 0);
+        $totalCallingFollowupsFiltered = 0;
+        $totalMessageFollowupsFiltered = 0;
+        foreach ($followupCounts as $typeKey => $count) {
+            $norm = strtolower(trim($typeKey));
+            if ($norm === 'calling') {
+                $totalCallingFollowupsFiltered += $count;
+            } elseif ($norm === 'message') {
+                $totalMessageFollowupsFiltered += $count;
+            } elseif ($norm === 'both') {
+                $totalCallingFollowupsFiltered += $count;
+                $totalMessageFollowupsFiltered += $count;
+            }
+        }
 
         // Statistics (Only for those they can see and that match current filters)
         $statuses = Status::where('type', 'lead')->where('name', '!=', 'lost')->get();
@@ -521,14 +558,35 @@ class LeadController extends Controller
 
         // Total Followups for filtered lost leads
         $leadIds = (clone $statsQuery)->pluck('leads.id');
-        $followupCounts = \App\Models\Followup::whereIn('followable_id', $leadIds)
+        $saleId = auth()->guard('sale')->id();
+        $saleType = get_class(auth()->guard('sale')->user());
+        $followupQuery = \App\Models\Followup::whereIn('followable_id', $leadIds)
             ->where('followable_type', \App\Models\Lead::class)
+            ->where('created_by_id', $saleId)
+            ->where('created_by_type', $saleType);
+
+        if ($request->has('start_date') && $request->has('end_date') && !empty($request->start_date)) {
+            $followupQuery->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+        }
+
+        $followupCounts = $followupQuery
             ->select('followup_type', DB::raw('count(*) as count'))
             ->groupBy('followup_type')
             ->pluck('count', 'followup_type');
 
-        $totalCallingFollowupsFiltered = ($followupCounts['Calling'] ?? 0) + ($followupCounts['Both'] ?? 0);
-        $totalMessageFollowupsFiltered = ($followupCounts['Message'] ?? 0) + ($followupCounts['Both'] ?? 0);
+        $totalCallingFollowupsFiltered = 0;
+        $totalMessageFollowupsFiltered = 0;
+        foreach ($followupCounts as $typeKey => $count) {
+            $norm = strtolower(trim($typeKey));
+            if ($norm === 'calling') {
+                $totalCallingFollowupsFiltered += $count;
+            } elseif ($norm === 'message') {
+                $totalMessageFollowupsFiltered += $count;
+            } elseif ($norm === 'both') {
+                $totalCallingFollowupsFiltered += $count;
+                $totalMessageFollowupsFiltered += $count;
+            }
+        }
 
         $priorityCounts = (clone $statsQuery)->groupBy('priority')
             ->select('priority', \Illuminate\Support\Facades\DB::raw('count(*) as total'))
