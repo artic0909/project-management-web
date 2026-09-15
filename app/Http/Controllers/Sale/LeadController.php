@@ -529,7 +529,7 @@ class LeadController extends Controller
 
         // Date range filter
         if ($request->has('start_date') && $request->has('end_date') && !empty($request->start_date)) {
-            $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+            $query->whereBetween(DB::raw('COALESCE(losted_date, updated_at, created_at)'), [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
         }
 
         // Dropdown filters
@@ -621,7 +621,7 @@ class LeadController extends Controller
         if ($perPage === 'all') {
             $perPage = $totalLostLeads ?: 20;
         }
-        $leads = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
+        $leads = $query->orderBy(DB::raw('COALESCE(losted_date, updated_at, created_at)'), 'desc')->paginate($perPage)->withQueryString();
 
         $sales = \App\Models\Sale::all();
         $routePrefix = 'sale';
@@ -647,7 +647,10 @@ class LeadController extends Controller
     public function markAsLosted($id)
     {
         $lead = Lead::findOrFail($id);
-        $lead->update(['is_losted' => 1]);
+        $lead->update([
+            'is_losted' => 1,
+            'losted_date' => now(),
+        ]);
         return redirect()->route('sale.leads.index')->with('success', 'Lead marked as losted successfully!');
     }
 
@@ -662,7 +665,10 @@ class LeadController extends Controller
     public function markAsLead($id)
     {
         $lead = Lead::findOrFail($id);
-        $lead->update(['is_losted' => 0]);
+        $lead->update([
+            'is_losted' => 0,
+            'losted_date' => null,
+        ]);
         return redirect()->route('sale.losted-leads')->with('success', 'Lead successfully moved back to active leads!');
     }
 
@@ -946,7 +952,7 @@ class LeadController extends Controller
 
         // Date range filter
         if ($request->has('start_date') && $request->has('end_date') && !empty($request->start_date)) {
-            $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+            $query->whereBetween(DB::raw('COALESCE(losted_date, updated_at, created_at)'), [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
         }
 
         // Dropdown filters
@@ -970,7 +976,7 @@ class LeadController extends Controller
             $query->where('status_id', $request->status_id);
         }
 
-        $leads = $query->orderBy('created_at', 'desc')->get();
+        $leads = $query->orderBy(DB::raw('COALESCE(losted_date, updated_at, created_at)'), 'desc')->get();
 
         $filename = "losted_leads_export_" . date('Y-m-d_H-i-s') . ".csv";
         $headers = [
@@ -988,7 +994,8 @@ class LeadController extends Controller
             
             fputcsv($file, [
                 'ID',
-                'Date',
+                'Lost Date',
+                'Create Date',
                 'Company Name',
                 'Business Type',
                 'Contact Person',
@@ -1050,7 +1057,8 @@ class LeadController extends Controller
 
                 fputcsv($file, [
                     $lead->id,
-                    $lead->created_at->format('Y-m-d H:i:s'),
+                    $lead->losted_date ? \Carbon\Carbon::parse($lead->losted_date)->format('Y-m-d H:i:s') : ($lead->updated_at ? $lead->updated_at->format('Y-m-d H:i:s') : 'N/A'),
+                    $lead->created_at ? $lead->created_at->format('Y-m-d H:i:s') : 'N/A',
                     $lead->company,
                     $lead->business_type,
                     $lead->contact_person,

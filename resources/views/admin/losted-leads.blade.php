@@ -460,7 +460,7 @@
                         <!-- ══ DATE RANGE PICKER TRIGGER ══ -->
                         <button type="button" id="dateRangeTrigger" class="drp-trigger" onclick="toggleDatePicker()">
                             <i class="bi bi-calendar3"></i>
-                            <span style="opacity: 0.7; margin-right: 2px;">Created:</span>
+                            <span style="opacity: 0.7; margin-right: 2px;">Lost Date:</span>
                             <span id="drpLabel">{{ request('start_date') ? request('start_date') . ' - ' . request('end_date') : 'Default' }}</span>
                             <i class="bi bi-chevron-down drp-chevron" id="drpChevron"></i>
                         </button>
@@ -541,13 +541,14 @@
                                 </th>
                                 @endif
                                 <th>SL</th>
-                                <th>Date</th>
+                                <th>Lost Date</th>
+                                <th>Create Date</th>
                                 @if(!($routePrefix == 'sale'))
                                 <th>Lead</th>
                                 @endif
                                 @if($routePrefix == 'sale')
                                 <th>Campaign / Source</th>
-                                <th>Contact Person</th>
+                                {{-- <th>Contact Person</th> --}}
                                 @else
                                 <th>Campaign</th>
                                 @endif
@@ -576,7 +577,8 @@
                                 </td>
                                 @endif
                                 <td>{{ $leads->firstItem() + $index }}</td>
-                                <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $lead->created_at->format('d M Y') }}</div></td>
+                                <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $lead->losted_date ? \Carbon\Carbon::parse($lead->losted_date)->format('d M Y') : ($lead->updated_at ? $lead->updated_at->format('d M Y') : 'N/A') }}</div></td>
+                                <td><div class="ls" style="font-size:12px; font-weight:600;">{{ $lead->created_at ? $lead->created_at->format('d M Y') : 'N/A' }}</div></td>
                                 @if($routePrefix == 'admin')
                                 <td>
                                     <div class="lead-cell">
@@ -605,7 +607,7 @@
                                         @endforeach
                                     </div>
                                 </td>
-                                <td><strong style="color:var(--t2)">{{ $lead->contact_person }}</strong></td>
+                                {{-- <td><strong style="color:var(--t2)">{{ $lead->contact_person }}</strong></td> --}}
                                 @endif
                                 <td>
                                     @foreach($lead->phones as $p)
@@ -888,7 +890,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="12" style="text-align:center;padding:40px;color:var(--t4);">No lost leads found.</td>
+                                <td colspan="{{ $routePrefix == 'admin' ? 13 : 10 }}" style="text-align:center;padding:40px;color:var(--t4);">No lost leads found.</td>
                             </tr>
                             @endforelse
                         </tbody>
