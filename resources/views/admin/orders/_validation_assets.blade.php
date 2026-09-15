@@ -78,7 +78,6 @@ $(document).ready(function() {
             { name: 'order_value', label: 'Order Value' },
             { name: 'payment_terms_id', label: 'Payment Terms' },
             { name: 'delivery_date', label: 'Delivery Date' },
-            { name: 'renewal_date', label: 'Renewal Date' },
             { name: 'city', label: 'City' },
             { name: 'state', label: 'Region / State' },
             { name: 'zip_code', label: 'Zip Code' },
@@ -98,6 +97,25 @@ $(document).ready(function() {
                 }
             }
         });
+
+        // Check Renewal Date based on renewal type
+        const renewalTypeSelect = $('#renewalTypeSelect');
+        if (renewalTypeSelect.length > 0) {
+            const rType = renewalTypeSelect.val();
+            const rInput = $('#renewalDateInput');
+            if (rType === 'custom') {
+                if (!rInput.val() || rInput.val().trim() === '') {
+                    markError(rInput, 'Renewal Date is required for custom renewal.');
+                }
+            } else if (rType === 'one_month' || rType === 'one_year') {
+                if (!rInput.val() || rInput.val().trim() === '') {
+                    const d = rType === 'one_month' ? getCalculatedRenewalDate(1) : getCalculatedRenewalDate(12);
+                    rInput.val(d);
+                }
+            } else if (rType === 'one_time') {
+                rInput.val('');
+            }
+        }
 
         // 2. Email Validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

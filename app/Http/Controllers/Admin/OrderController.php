@@ -314,7 +314,8 @@ class OrderController extends Controller
             'discount' => 'nullable|numeric|min:0',
             'payment_terms_id' => 'required|exists:statuses,id',
             'delivery_date' => 'required|date',
-            'renewal_date' => 'required|date',
+            'renewal_type' => 'nullable|string|in:one_time,one_month,one_year,custom',
+            'renewal_date' => 'nullable|date',
             'city' => 'required|string|max:100',
             'state' => 'required|string|max:100',
             'zip_code' => 'required|numeric|digits:6',
@@ -355,10 +356,20 @@ class OrderController extends Controller
 
         $orderData = $request->only([
             'lead_id', 'inquiry_id', 'company_name', 'client_name', 'username', 'password', 'domain_name',
-            'order_value', 'discount', 'payment_terms_id', 'delivery_date', 'renewal_date', 'city', 'state',
+            'order_value', 'discount', 'payment_terms_id', 'delivery_date', 'city', 'state',
             'zip_code', 'full_address', 'status_id',
             'mkt_payment_status_id', 'mkt_starting_date', 'mkt_username', 'mkt_password'
         ]);
+
+        $renewalDate = $request->input('renewal_date');
+        if ($request->input('renewal_type') === 'one_time') {
+            $renewalDate = null;
+        } elseif ($request->input('renewal_type') === 'one_month') {
+            $renewalDate = $renewalDate ?: now()->addMonth()->format('Y-m-d');
+        } elseif ($request->input('renewal_type') === 'one_year') {
+            $renewalDate = $renewalDate ?: now()->addYear()->format('Y-m-d');
+        }
+        $orderData['renewal_date'] = $renewalDate;
 
         $orderData['advance_payment'] = $request->input('amount', 0);
 
@@ -500,7 +511,8 @@ class OrderController extends Controller
             'order_value' => 'required|numeric',
             'discount' => 'nullable|numeric|min:0',
             'delivery_date' => 'required|date',
-            'renewal_date' => 'required|date',
+            'renewal_type' => 'nullable|string|in:one_time,one_month,one_year,custom',
+            'renewal_date' => 'nullable|date',
             'zip_code' => 'required|numeric|digits:6',
             'status_id' => 'required|exists:statuses,id',
             'service_ids' => 'required|array|min:1',
@@ -532,10 +544,20 @@ class OrderController extends Controller
 
         $orderData = $request->only([
             'company_name', 'client_name', 'username', 'password', 'domain_name',
-            'order_value', 'discount', 'advance_payment', 'payment_terms_id', 'delivery_date', 'renewal_date', 'city', 'state',
+            'order_value', 'discount', 'advance_payment', 'payment_terms_id', 'delivery_date', 'city', 'state',
             'zip_code', 'full_address', 'status_id',
             'mkt_payment_status_id', 'mkt_starting_date', 'mkt_username', 'mkt_password'
         ]);
+
+        $renewalDate = $request->input('renewal_date');
+        if ($request->input('renewal_type') === 'one_time') {
+            $renewalDate = null;
+        } elseif ($request->input('renewal_type') === 'one_month') {
+            $renewalDate = $renewalDate ?: now()->addMonth()->format('Y-m-d');
+        } elseif ($request->input('renewal_type') === 'one_year') {
+            $renewalDate = $renewalDate ?: now()->addYear()->format('Y-m-d');
+        }
+        $orderData['renewal_date'] = $renewalDate;
 
         $orderData['emails'] = array_values($emails);
         $orderData['phones'] = $phones;

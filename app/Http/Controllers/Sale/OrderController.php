@@ -352,7 +352,8 @@ class OrderController extends Controller
             'plan_ids.*' => 'exists:plans,id',
             'domain_name' => 'required|string|max:255',
             'delivery_date' => 'required|date',
-            'renewal_date' => 'required|date',
+            'renewal_type' => 'nullable|string|in:one_time,one_month,one_year,custom',
+            'renewal_date' => 'nullable|date',
             'city' => 'required|string|max:100',
             'state' => 'required|string|max:100',
             'zip_code' => 'required|numeric|digits:6',
@@ -387,6 +388,15 @@ class OrderController extends Controller
 
         $emails = array_filter($request->input('email', []), fn($e) => !empty($e));
 
+        $renewalDate = $request->input('renewal_date');
+        if ($request->input('renewal_type') === 'one_time') {
+            $renewalDate = null;
+        } elseif ($request->input('renewal_type') === 'one_month') {
+            $renewalDate = $renewalDate ?: now()->addMonth()->format('Y-m-d');
+        } elseif ($request->input('renewal_type') === 'one_year') {
+            $renewalDate = $renewalDate ?: now()->addYear()->format('Y-m-d');
+        }
+
         $orderData = [
             'lead_id' => $request->lead_id,
             'company_name' => $request->company_name,
@@ -402,7 +412,7 @@ class OrderController extends Controller
             'domain_name' => $request->domain_name,
             'payment_terms_id' => $request->payment_terms_id,
             'delivery_date' => $request->delivery_date,
-            'renewal_date' => $request->renewal_date,
+            'renewal_date' => $renewalDate,
             'city' => $request->city,
             'state' => $request->state,
             'zip_code' => $request->zip_code,
@@ -554,7 +564,8 @@ class OrderController extends Controller
             'plan_ids.*' => 'exists:plans,id',
             'domain_name' => 'required|string|max:255',
             'delivery_date' => 'required|date',
-            'renewal_date' => 'required|date',
+            'renewal_type' => 'nullable|string|in:one_time,one_month,one_year,custom',
+            'renewal_date' => 'nullable|date',
             'city' => 'required|string|max:100',
             'state' => 'required|string|max:100',
             'zip_code' => 'required|numeric|digits:6',
@@ -579,6 +590,15 @@ class OrderController extends Controller
 
         $emails = array_filter($request->input('email', []), fn($e) => !empty($e));
 
+        $renewalDate = $request->input('renewal_date');
+        if ($request->input('renewal_type') === 'one_time') {
+            $renewalDate = null;
+        } elseif ($request->input('renewal_type') === 'one_month') {
+            $renewalDate = $renewalDate ?: now()->addMonth()->format('Y-m-d');
+        } elseif ($request->input('renewal_type') === 'one_year') {
+            $renewalDate = $renewalDate ?: now()->addYear()->format('Y-m-d');
+        }
+
         $order->update([
             'company_name' => $request->company_name,
             'client_name' => $request->client_name,
@@ -593,7 +613,7 @@ class OrderController extends Controller
             'domain_name' => $request->domain_name,
             'payment_terms_id' => $request->payment_terms_id,
             'delivery_date' => $request->delivery_date,
-            'renewal_date' => $request->renewal_date,
+            'renewal_date' => $renewalDate,
             'city' => $request->city,
             'state' => $request->state,
             'zip_code' => $request->zip_code,
