@@ -189,6 +189,12 @@
         }
     }
 
+    .ra-btn.whatsapp:hover {
+        background: rgba(37, 211, 102, 0.12) !important;
+        color: #25d366 !important;
+        border-color: #25d366 !important;
+    }
+
     .ra-btn.phone:hover {
         background: rgba(16, 185, 129, 0.1) !important;
         color: #10b981 !important;
@@ -859,13 +865,30 @@
                                 <td>
                                     <div class="row-actions">
                                         @php
-                                            $phoneList = is_array($lead->phones) ? $lead->phones : [];
-                                            $emailList = is_array($lead->emails) ? $lead->emails : [];
+                                            $phoneList = is_array($lead->phones) ? $lead->phones : (json_decode($lead->phones, true) ?? []);
+                                            $emailList = is_array($lead->emails) ? $lead->emails : (json_decode($lead->emails, true) ?? []);
                                             $fullPhones = [];
                                             foreach($phoneList as $p) {
-                                                $fullPhones[] = ($codes[$p['code_idx']] ?? '') . $p['number'];
+                                                $fullPhones[] = ($codes[$p['code_idx'] ?? null] ?? '') . ($p['number'] ?? '');
+                                            }
+                                            $firstPhone = reset($phoneList);
+                                            $wpPhone = '';
+                                            if ($firstPhone && !empty($firstPhone['number'])) {
+                                                $codeStr = $codes[$firstPhone['code_idx'] ?? null] ?? '';
+                                                $cleanCode = preg_replace('/[^0-9]/', '', $codeStr);
+                                                $cleanNumber = preg_replace('/[^0-9]/', '', $firstPhone['number']);
+                                                $wpPhone = $cleanCode . $cleanNumber;
                                             }
                                         @endphp
+                                        @if(!empty($wpPhone))
+                                        <a href="https://web.whatsapp.com/send?phone={{ $wpPhone }}" target="_blank" rel="noopener noreferrer" class="ra-btn whatsapp" title="WhatsApp Lead">
+                                            <i class="bi bi-whatsapp"></i>
+                                        </a>
+                                        @else
+                                        <a href="javascript:void(0)" class="ra-btn whatsapp" style="opacity:0.4;cursor:not-allowed;" title="No Phone Available">
+                                            <i class="bi bi-whatsapp"></i>
+                                        </a>
+                                        @endif
                                         <a href="javascript:void(0)" class="ra-btn phone" 
                                            onclick="handleContactClick(event, 'tel', {{ json_encode($fullPhones) }})" title="Call Lead">
                                             <i class="bi bi-telephone-fill"></i>
