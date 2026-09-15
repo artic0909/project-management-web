@@ -1342,8 +1342,12 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 18px 0;
+            padding: 16px 18px 16px;
             gap: 12px;
+        }
+
+        .card-head + .card-body:not([style*="padding: 0"]):not([style*="padding:0"]) {
+            padding-top: 0;
         }
 
         .card-title {
@@ -3144,7 +3148,7 @@
                 flex-direction: column;
                 align-items: stretch;
                 gap: 12px;
-                padding: 14px 16px 0;
+                padding: 14px 16px 14px;
             }
 
             .card-actions {
@@ -3227,7 +3231,7 @@
             }
 
             .card-head {
-                padding: 12px 14px 0;
+                padding: 14px 14px 14px;
             }
 
             .card-body {
