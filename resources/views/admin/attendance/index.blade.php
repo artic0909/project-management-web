@@ -289,6 +289,35 @@
         /* Ensure table data is left aligned and headers don't wrap */
         .data-table th, .data-table td { text-align: left !important; white-space: nowrap; }
         .table-wrap { overflow-x: auto; width: 100%; }
+
+        @media (max-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            .kpi-card {
+                padding: 12px 14px !important;
+            }
+            .kpi-value {
+                font-size: 20px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+            }
+            .kpi-card {
+                padding: 10px 10px !important;
+            }
+            .kpi-value {
+                font-size: 16px !important;
+            }
+            .kpi-label {
+                font-size: 10.5px !important;
+            }
+        }
         
         /* Dark mode overrides for table background */
         [data-theme="dark"] .data-table {

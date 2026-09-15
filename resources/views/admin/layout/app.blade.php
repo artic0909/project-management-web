@@ -3435,17 +3435,19 @@
         }
 
         @media (max-width: 576px) {
-            .kpi-grid,
             .show-stats-grid,
             [style*="grid-template-columns:repeat(4,1fr)"],
             [style*="grid-template-columns: repeat(4, 1fr)"] {
-                grid-template-columns: 1fr !important;
+                grid-template-columns: repeat(2, 1fr) !important;
                 gap: 10px !important;
             }
 
+            .kpi-grid,
             .stats-grid-wrap,
             #statsWrap,
             [id="statsWrap"],
+            [style*="grid-template-columns:repeat(5,1fr)"],
+            [style*="grid-template-columns: repeat(5, 1fr)"],
             [style*="grid-template-columns:repeat(6,1fr)"],
             [style*="grid-template-columns: repeat(6, 1fr)"],
             [style*="grid-template-columns:repeat(9,1fr)"],
@@ -3489,17 +3491,19 @@
         }
 
         @media (max-width: 480px) {
-            .kpi-grid,
             .show-stats-grid,
             [style*="grid-template-columns:repeat(4,1fr)"],
             [style*="grid-template-columns: repeat(4, 1fr)"] {
-                grid-template-columns: 1fr !important;
+                grid-template-columns: repeat(2, 1fr) !important;
                 gap: 8px !important;
             }
 
+            .kpi-grid,
             .stats-grid-wrap,
             #statsWrap,
             [id="statsWrap"],
+            [style*="grid-template-columns:repeat(5,1fr)"],
+            [style*="grid-template-columns: repeat(5, 1fr)"],
             [style*="grid-template-columns:repeat(6,1fr)"],
             [style*="grid-template-columns: repeat(6, 1fr)"],
             [style*="grid-template-columns:repeat(9,1fr)"],
@@ -3515,11 +3519,11 @@
         }
 
         @media (max-width: 380px) {
-            .kpi-grid,
             .show-stats-grid {
                 grid-template-columns: 1fr !important;
             }
 
+            .kpi-grid,
             .stats-grid-wrap,
             #statsWrap,
             [id="statsWrap"] {
