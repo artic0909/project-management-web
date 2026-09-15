@@ -105,7 +105,7 @@
               <i class="bi bi-plus-circle" style="font-size: 13px;"></i><span>New Leads</span>
               <span class="nav-count">{{ $newLeadCount ?? 0 }}</span>
             </a>
-            <a class="nav-item nav-sub-item {{ ($isLeadsActive && (request('type') === 'my' || !request('type'))) ? 'active' : '' }}"
+            <a class="nav-item nav-sub-item {{ ($isLeadsActive && (request('type') === 'my' || (!request('type') && !$isLostedLeadsActive))) ? 'active' : '' }}"
               href="{{ route('sale.leads.index', ['type' => 'my']) }}" style="font-size: 12.5px; padding: 6px 10px; margin-top: 2px;">
               <i class="bi bi-person" style="font-size: 13px;"></i><span>My Leads</span>
               <span class="nav-count">{{ $myLeadCount ?? 0 }}</span>
