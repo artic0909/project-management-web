@@ -3587,6 +3587,7 @@
                 </div>
 
                 @if ($guard === 'admin' || $guard === 'sale')
+                <audio id="notifAudioElement" preload="auto" src="{{ asset('sound.mp3') }}" style="display:none;"></audio>
                 <!-- Notification dropdown -->
                 <div class="notif-panel" id="notifPanel">
                     <div class="notif-header">
@@ -4011,6 +4012,271 @@
             document.addEventListener('DOMContentLoaded', function() {
                 showToast('danger', "{{ session('error') }}", 'bi-exclamation-triangle-fill');
             });
+        @endif
+
+        /* ── REAL-TIME FOLLOWUP & NOTIFICATIONS POLLER ── */
+        @if ($guard === 'admin' || $guard === 'sale')
+        (function() {
+            const soundUrl = "{{ asset('sound.mp3') }}";
+            let audioContext = null;
+            let audioBuffer = null;
+            let audioUnlocked = false;
+
+            // Pre-load audio buffer via Web Audio API
+            function initAudio() {
+                try {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) {
+                        audioContext = new AudioCtx();
+                        fetch(soundUrl)
+                            .then(res => res.arrayBuffer())
+                            .then(buf => audioContext.decodeAudioData(buf))
+                            .then(decoded => {
+                                audioBuffer = decoded;
+                            })
+                            .catch(err => {
+                                console.warn('Could not pre-decode audio:', err);
+                            });
+                    }
+                } catch(e) {}
+            }
+
+            function unlockAudio() {
+                if (!audioUnlocked) {
+                    if (audioContext && audioContext.state === 'suspended') {
+                        audioContext.resume();
+                    }
+                    const audioEl = document.getElementById('notifAudioElement');
+                    if (audioEl) {
+                        audioEl.load();
+                    }
+                    audioUnlocked = true;
+                }
+            }
+            ['click', 'touchstart', 'keydown', 'mousedown'].forEach(evt => {
+                document.addEventListener(evt, unlockAudio, { passive: true });
+            });
+
+            initAudio();
+
+            function playNotificationSound() {
+                let played = false;
+
+                // 1. Try Web Audio API Buffer (Instant & reliable)
+                if (audioContext && audioBuffer) {
+                    try {
+                        if (audioContext.state === 'suspended') {
+                            audioContext.resume();
+                        }
+                        const source = audioContext.createBufferSource();
+                        source.buffer = audioBuffer;
+                        source.connect(audioContext.destination);
+                        source.start(0);
+                        played = true;
+                    } catch(e) {
+                        console.warn('Web Audio buffer playback error:', e);
+                    }
+                }
+
+                // 2. Try HTML5 Audio element
+                if (!played) {
+                    try {
+                        const audio = document.getElementById('notifAudioElement') || new Audio(soundUrl);
+                        audio.currentTime = 0;
+                        const p = audio.play();
+                        if (p !== undefined) {
+                            p.catch(err => {
+                                console.warn('HTML5 audio play blocked:', err);
+                                playSynthesizedChime();
+                            });
+                        }
+                    } catch(e) {
+                        playSynthesizedChime();
+                    }
+                }
+            }
+
+            function playSynthesizedChime() {
+                try {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioCtx) return;
+                    const ctx = audioContext || new AudioCtx();
+                    if (ctx.state === 'suspended') ctx.resume();
+
+                    const osc1 = ctx.createOscillator();
+                    const osc2 = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc1.type = 'sine';
+                    osc1.frequency.setValueAtTime(587.33, ctx.currentTime);
+                    osc1.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
+
+                    osc2.type = 'sine';
+                    osc2.frequency.setValueAtTime(880, ctx.currentTime + 0.15);
+                    osc2.frequency.exponentialRampToValueAtTime(1174.66, ctx.currentTime + 0.35);
+
+                    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+
+                    osc1.connect(gain);
+                    osc2.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc1.start(ctx.currentTime);
+                    osc1.stop(ctx.currentTime + 0.2);
+                    osc2.start(ctx.currentTime + 0.15);
+                    osc2.stop(ctx.currentTime + 0.6);
+                } catch(e) {}
+            }
+
+            const knownFollowupIds = new Set([
+                @if(isset($todayTimedFollowups))
+                    @foreach($todayTimedFollowups as $lead)
+                        @if($lead->followups->first())
+                            {{ $lead->followups->first()->id }},
+                        @endif
+                    @endforeach
+                @endif
+            ]);
+
+            const checkNotifUrl = "{{ route($guard . '.notifications.check') }}";
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+                return String(text).replace(/[&<>"']/g, m => map[m]);
+            }
+
+            function pollNotifications() {
+                fetch(checkNotifUrl, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (!data) return;
+
+                    let hasNewFollowup = false;
+                    if (data.followups && data.followups.length > 0) {
+                        data.followups.forEach(f => {
+                            if (!knownFollowupIds.has(f.followup_id)) {
+                                hasNewFollowup = true;
+                                knownFollowupIds.add(f.followup_id);
+                                showToast('info', `⏰ Followup schedule: <strong>${escapeHtml(f.title)}</strong> (Scheduled at ${escapeHtml(f.time)})`, 'bi-calendar-check');
+                            }
+                        });
+                    }
+
+                    if (hasNewFollowup) {
+                        playNotificationSound();
+                    }
+
+                    // Update Topbar Bell & Badge
+                    const notifBtn = document.querySelector('.notif-btn');
+                    const bellIcon = notifBtn?.querySelector('.bi-bell-fill');
+                    let badge = notifBtn?.querySelector('.notif-badge');
+
+                    if (data.total > 0) {
+                        if (!badge && notifBtn) {
+                            badge = document.createElement('span');
+                            badge.className = 'notif-badge';
+                            notifBtn.appendChild(badge);
+                        }
+                        if (badge) {
+                            badge.innerText = data.total;
+                            badge.style.display = '';
+                        }
+                        if (data.activeFollowupsCount > 0 || (data.taskReplies && data.taskReplies.length > 0)) {
+                            notifBtn?.classList.add('has-notifs');
+                            bellIcon?.classList.add('bell-ringing');
+                        }
+                    } else {
+                        if (badge) badge.remove();
+                        notifBtn?.classList.remove('has-notifs');
+                        bellIcon?.classList.remove('bell-ringing');
+                    }
+
+                    // Rebuild dropdown notification list HTML
+                    const notifList = document.querySelector('#notifPanel .notif-list');
+                    if (notifList) {
+                        if (data.total === 0) {
+                            notifList.innerHTML = `
+                                <div class="p-4 text-center text-muted">
+                                    <i class="bi bi-bell-slash mb-2" style="font-size: 24px;"></i>
+                                    <p class="mb-0">No new notifications</p>
+                                </div>
+                            `;
+                        } else {
+                            let html = '';
+
+                            // Task replies
+                            if (data.taskReplies && data.taskReplies.length > 0) {
+                                html += `<div style="padding: 8px 12px; font-size: 11px; font-weight: 700; color: var(--accent); background: var(--bg2); border-bottom: 1px solid var(--border);">DEVELOPER TASK REPLIES</div>`;
+                                data.taskReplies.forEach(assign => {
+                                    html += `
+                                        <a href="${escapeHtml(assign.read_url)}" class="notif-item unread" onclick="this.style.display='none'; let b = document.querySelector('.notif-badge'); if(b){let c=parseInt(b.innerText)-1; if(c<=0)b.remove(); else b.innerText=c;}">
+                                            <div class="notif-icon" style="color: #6366f1; background: rgba(99, 102, 241, 0.12);"><i class="bi bi-chat-left-text-fill"></i></div>
+                                            <div class="notif-body">
+                                                <strong>${escapeHtml(assign.title)}</strong>
+                                                <div style="font-size: 11.5px; color: var(--t2); margin-top: 2px;">
+                                                    <span style="font-weight: 600; color: var(--accent);">${escapeHtml(assign.dev_name)}</span> replied on <em>${escapeHtml(assign.project_name)}</em>
+                                                </div>
+                                                ${assign.remarks ? `<div style="font-size: 11px; color: var(--t3); margin-top: 3px; max-width: 270px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">"${escapeHtml(assign.remarks)}"</div>` : ''}
+                                                <div class="notif-time" style="color: var(--accent); margin-top: 3px;">
+                                                    <i class="bi bi-clock"></i> ${escapeHtml(assign.time_ago)}
+                                                </div>
+                                            </div>
+                                        </a>
+                                    `;
+                                });
+                            }
+
+                            // Scheduled followups
+                            if (data.followups && data.followups.length > 0) {
+                                html += `<div style="padding: 8px 12px; font-size: 11px; font-weight: 700; color: var(--t3); background: var(--bg2); border-bottom: 1px solid var(--border); border-top: ${data.taskReplies && data.taskReplies.length > 0 ? '1px solid var(--border)' : 'none'};">TODAY'S SCHEDULED FOLLOWUPS</div>`;
+                                data.followups.forEach(f => {
+                                    html += `
+                                        <a href="${escapeHtml(f.read_url)}" class="notif-item unread" onclick="this.style.display='none'; let b = document.querySelector('.notif-badge'); if(b){let c=parseInt(b.innerText)-1; if(c<=0)b.remove(); else b.innerText=c;}">
+                                            <div class="notif-icon" style="color: #3b82f6; background: rgba(59, 130, 246, 0.1);"><i class="bi bi-calendar-check"></i></div>
+                                            <div class="notif-body">
+                                                <strong>${escapeHtml(f.title)}</strong>
+                                                ${f.phone ? `<div style="font-size: 11px; color: var(--t4); margin-top: 2px;"><i class="bi bi-telephone"></i> ${escapeHtml(f.phone)}</div>` : ''}
+                                                <div class="notif-time" style="color:var(--accent); margin-top:2px;">Scheduled at ${escapeHtml(f.time)}</div>
+                                            </div>
+                                        </a>
+                                    `;
+                                });
+                            }
+
+                            // Upcoming renewals
+                            if (data.renewals && data.renewals.length > 0) {
+                                html += `<div style="padding: 8px 12px; font-size: 11px; font-weight: 700; color: var(--t3); background: var(--bg2); border-bottom: 1px solid var(--border); border-top: ${(data.followups && data.followups.length > 0) || (data.taskReplies && data.taskReplies.length > 0) ? '1px solid var(--border)' : 'none'};">UPCOMING RENEWALS</div>`;
+                                data.renewals.forEach(order => {
+                                    html += `
+                                        <a href="${escapeHtml(order.url)}" class="notif-item unread" onclick="this.classList.remove('unread');">
+                                            <div class="notif-icon orange"><i class="bi bi-arrow-repeat"></i></div>
+                                            <div class="notif-body">
+                                                <strong>${escapeHtml(order.company_name)}</strong> (${escapeHtml(order.order_number)})
+                                                <div>Domain: ${escapeHtml(order.domain_name)}</div>
+                                                <div class="notif-time">Renewal ${escapeHtml(order.timeText)} (${escapeHtml(order.date)})</div>
+                                            </div>
+                                        </a>
+                                    `;
+                                });
+                            }
+
+                            notifList.innerHTML = html;
+                        }
+                    }
+                })
+                .catch(err => {});
+            }
+
+            // Poll every 10 seconds
+            setInterval(pollNotifications, 10000);
+        })();
         @endif
 
     </script>

@@ -31,6 +31,134 @@ class FollowupController extends Controller
         return redirect()->back();
     }
 
+    public function checkNotifications()
+    {
+        $saleId = auth()->guard('sale')->id();
+        $saleType = \App\Models\Sale::class;
+        $today = \Carbon\Carbon::today();
+        $nowPlus15 = \Carbon\Carbon::now()->addMinutes(15);
+
+        // Read notifications
+        $readFollowupIds = \App\Models\NotificationRead::where('user_type', $saleType)
+            ->where('user_id', $saleId)
+            ->where('item_type', 'followup')
+            ->pluck('item_id');
+
+        $readTaskAssignIds = \App\Models\NotificationRead::where('user_type', $saleType)
+            ->where('user_id', $saleId)
+            ->where('item_type', 'task_assign')
+            ->pluck('item_id');
+
+        $baseSaleLeadQuery = \App\Models\Lead::where('is_losted', 0)
+            ->whereHas('assignments', function($q) use ($saleId) {
+                $q->where('assigned_to', $saleId);
+            });
+
+        $todayTimedFollowups = (clone $baseSaleLeadQuery)
+            ->whereHas('followups', function ($q) use ($today, $readFollowupIds, $nowPlus15) {
+                $q->whereIn('id', function($sub) {
+                    $sub->selectRaw('max(id)')->from('followups')
+                        ->whereColumn('followable_id', 'leads.id')
+                        ->where('followable_type', \App\Models\Lead::class);
+                })->whereDate('next_schedule_date', $today)
+                  ->whereTime('next_schedule_date', '!=', '00:00:00')
+                  ->where('next_schedule_date', '<=', $nowPlus15)
+                  ->whereNotIn('id', $readFollowupIds);
+            })->with(['followups' => function($q) {
+                $q->orderBy('id', 'desc');
+            }])->get();
+
+        $unreadTaskReplies = \App\Models\ProjectTaskAssign::whereNotNull('remarks')
+            ->where('remarks', '!=', '')
+            ->whereNotIn('id', $readTaskAssignIds)
+            ->whereHas('task', function($q) use ($saleId, $saleType) {
+                $q->where('created_by', $saleId)
+                  ->where(function($sq) use ($saleType) {
+                      $sq->where('created_by_type', $saleType)
+                         ->orWhere('created_by_type', 'Sale');
+                  });
+            })->with(['task.project', 'task.creator', 'developer'])
+            ->latest('updated_at')
+            ->take(15)
+            ->get();
+
+        $upcomingRenewals = \App\Models\Order::where(function($q) use ($saleId, $saleType) {
+            $q->where(function($sq) use ($saleId, $saleType) {
+                $sq->where('created_by', $saleId)->where('created_by_type', $saleType);
+            })->orWhereHas('assignments', function($sq) use ($saleId) {
+                $sq->where('assigned_to', $saleId);
+            });
+        })->whereBetween('renewal_date', [
+            now()->startOfDay(),
+            now()->addDays(3)->endOfDay()
+        ])->get();
+
+        $codes = [0=>'+93',1=>'+355',2=>'+213',3=>'+376',4=>'+244',5=>'+54',6=>'+61',7=>'+43',8=>'+880',9=>'+32',10=>'+55',11=>'+1',12=>'+86',13=>'+57',14=>'+45',15=>'+20',16=>'+33',17=>'+49',18=>'+233',19=>'+30',20=>'+91',21=>'+62',22=>'+98',23=>'+964',24=>'+353',25=>'+972',26=>'+39',27=>'+81',28=>'+962',29=>'+254',30=>'+965',31=>'+961',32=>'+60',33=>'+52',34=>'+212',35=>'+977',36=>'+31',37=>'+64',38=>'+234',39=>'+47',40=>'+968',41=>'+92',42=>'+63',43=>'+48',44=>'+351',45=>'+974',46=>'+7',47=>'+966',48=>'+65',49=>'+27',50=>'+34',51=>'+94',52=>'+46',53=>'+41',54=>'+886',55=>'+66',56=>'+90',57=>'+971',58=>'+44',59=>'+1',60=>'+84',61=>'+260',62=>'+263'];
+
+        $followupList = [];
+        foreach ($todayTimedFollowups as $lead) {
+            $latest = $lead->followups->first();
+            if (!$latest) continue;
+
+            $phoneList = is_array($lead->phones) ? $lead->phones : (json_decode($lead->phones, true) ?? []);
+            $firstPhone = reset($phoneList);
+            $displayPhone = '';
+            if ($firstPhone && is_array($firstPhone)) {
+                $displayPhone = ($codes[$firstPhone['code_idx'] ?? null] ?? '') . ($firstPhone['number'] ?? '');
+            } elseif ($firstPhone) {
+                $displayPhone = (string) $firstPhone;
+            }
+
+            $followupList[] = [
+                'followup_id' => $latest->id,
+                'lead_id' => $lead->id,
+                'title' => $lead->company ?: ($lead->contact_person ?: ('Lead #' . $lead->id)),
+                'phone' => $displayPhone,
+                'time' => \Carbon\Carbon::parse($latest->next_schedule_date)->format('h:i A'),
+                'read_url' => route('sale.followup.read_notif', $latest->id),
+            ];
+        }
+
+        $taskReplyList = [];
+        foreach ($unreadTaskReplies as $assign) {
+            $taskReplyList[] = [
+                'id' => $assign->id,
+                'task_id' => $assign->task_id,
+                'title' => '#TSK-' . $assign->task_id . ' ' . ($assign->task->title ?? 'Task'),
+                'dev_name' => $assign->developer->name ?? 'Developer',
+                'project_name' => $assign->task->project->project_name ?? 'Project',
+                'remarks' => \Illuminate\Support\Str::limit(trim($assign->remarks ?? ''), 48),
+                'time_ago' => $assign->updated_at ? $assign->updated_at->diffForHumans() : 'Just now',
+                'read_url' => route('sale.tasks.read_reply_notif', $assign->id),
+            ];
+        }
+
+        $renewalList = [];
+        foreach ($upcomingRenewals as $order) {
+            $diff = now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($order->renewal_date)->startOfDay(), false);
+            $timeText = $diff == 0 ? 'Today' : ($diff == 1 ? 'Tomorrow' : "in $diff days");
+            $renewalList[] = [
+                'id' => $order->id,
+                'company_name' => $order->company_name,
+                'order_number' => $order->order_number,
+                'domain_name' => $order->domain_name ?? 'N/A',
+                'timeText' => $timeText,
+                'date' => \Carbon\Carbon::parse($order->renewal_date)->format('d M, Y'),
+                'url' => route('sale.orders.show', $order->id),
+            ];
+        }
+
+        $totalNotifs = count($followupList) + count($taskReplyList) + count($renewalList);
+
+        return response()->json([
+            'total' => $totalNotifs,
+            'activeFollowupsCount' => count($followupList),
+            'followups' => $followupList,
+            'taskReplies' => $taskReplyList,
+            'renewals' => $renewalList,
+        ]);
+    }
+
     private function checkAccess($model)
     {
         $saleId = auth()->guard('sale')->id();

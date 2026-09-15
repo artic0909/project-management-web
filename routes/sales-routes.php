@@ -45,6 +45,7 @@ Route::middleware(['auth:sale'])->prefix('sale')->name('sale.')->group(function 
     Route::post('/lead-followup/{id}', [FollowupController::class, 'store'])->name('leads.followup.store');
     Route::put('/followup/{id}', [FollowupController::class, 'update'])->name('followup.update');
     Route::get('/followup/{id}/read-notification', [FollowupController::class, 'readNotification'])->name('followup.read_notif');
+    Route::get('/notifications/check', [FollowupController::class, 'checkNotifications'])->name('notifications.check');
     
     // Lead Notes
     Route::post('/lead-notes/{lead}', [\App\Http\Controllers\LeadNoteController::class, 'store'])->name('lead-notes.store');
