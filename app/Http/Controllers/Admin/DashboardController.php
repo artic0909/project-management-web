@@ -11,6 +11,7 @@ use App\Models\Project;
 use App\Models\Sale;
 use App\Models\Developer;
 use App\Models\Status;
+use App\Models\Followup;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -132,17 +133,139 @@ class DashboardController extends Controller
         }
 
         // Project Pipeline Data
-        $projectPipeline = Status::where('type', 'order')->get()->map(function($status) use ($projectQuery) {
+        $projectStatusColors = [
+            'New' => '#3b82f6',
+            'Design Phase' => '#8b5cf6',
+            'Development' => '#f59e0b',
+            'Testing' => '#06b6d4',
+            'Complete' => '#10b981',
+            'On Hold' => '#ef4444',
+            'Closed' => '#64748b',
+            'Cancel' => '#dc2626',
+        ];
+
+        $projectPipeline = Status::where('type', 'project')->get()->map(function($status) use ($projectQuery, $projectStatusColors) {
+            $count = (clone $projectQuery)->where(function($q) use ($status) {
+                $q->where('project_status_id', $status->id)
+                  ->orWhere('project_status', $status->name);
+            })->count();
             return [
+                'id' => $status->id,
                 'name' => $status->name,
-                'count' => (clone $projectQuery)->where('project_status_id', $status->id)->count(),
-                'color' => $status->color ?? '#6366f1'
+                'count' => $count,
+                'color' => $projectStatusColors[$status->name] ?? '#6366f1'
             ];
-        })->filter(fn($item) => $item['count'] > 0)->values();
+        })->values();
 
         $totalProjects = (clone $projectQuery)->count();
         $marketingOrders = (clone $orderQuery)->where('is_marketing', true)->count();
         $availableYears = range(Carbon::now()->year - 2, Carbon::now()->year + 1);
+
+        // 1. LEAD FUNNEL DATA (Inverted Pyramid)
+        $leadFunnelQuery = clone $leadQuery;
+        $funnelTotal = (clone $leadFunnelQuery)->count();
+        $funnelNew = (clone $leadFunnelQuery)->where('is_losted', 0)->doesntHave('followups')->count();
+        $funnelContacted = (clone $leadFunnelQuery)->where('is_losted', 0)->has('followups')->count();
+        $funnelDiscussion = (clone $leadFunnelQuery)->where('is_losted', 0)->whereHas('status', function($q) {
+            $q->whereIn('name', ['Interested', 'Respond', 'Booked']);
+        })->count();
+        
+        $funnelConverted = (clone $leadFunnelQuery)->where(function($q) {
+            $q->whereHas('status', fn($sq) => $sq->where('name', 'converted'))
+              ->orWhereIn('id', Order::whereNotNull('lead_id')->pluck('lead_id'));
+        })->count();
+        
+        $funnelLost = (clone $leadFunnelQuery)->where(function($q) {
+            $q->where('is_losted', 1)
+              ->orWhereHas('status', fn($sq) => $sq->whereIn('name', ['Lost', 'Not Interested', 'Not Responding']));
+        })->count();
+
+        $conversionRate = $funnelTotal > 0 ? round(($funnelConverted / $funnelTotal) * 100, 1) : 0;
+
+        $leadFunnel = [
+            'total' => $funnelTotal,
+            'new' => $funnelNew,
+            'contacted' => $funnelContacted,
+            'discussion' => $funnelDiscussion,
+            'converted' => $funnelConverted,
+            'lost' => $funnelLost,
+            'conversion_rate' => $conversionRate,
+        ];
+
+        // 2. FOLLOWUPS BREAKDOWN (Pie/Donut Chart)
+        $today = Carbon::today();
+        $leadFollowupQuery = Lead::where('is_losted', 0);
+        if ($routePrefix == 'sale') {
+            $leadFollowupQuery->where(function($master) use ($saleId, $saleType) {
+                $master->where('created_by', $saleId)->where('created_by_type', $saleType)
+                       ->orWhereHas('assignments', function($sq) use ($saleId) {
+                           $sq->where('assigned_to', $saleId);
+                       });
+            });
+        }
+
+        $todayFollowups = (clone $leadFollowupQuery)->whereHas('followups', function($q) use ($today) {
+            $q->whereIn('id', function($sub) {
+                $sub->selectRaw('max(id)')->from('followups')->whereColumn('followable_id', 'leads.id')->where('followable_type', Lead::class);
+            })->whereDate('next_schedule_date', $today);
+        })->count();
+
+        $pendingFollowups = (clone $leadFollowupQuery)->whereHas('followups', function($q) use ($today) {
+            $q->whereIn('id', function($sub) {
+                $sub->selectRaw('max(id)')->from('followups')->whereColumn('followable_id', 'leads.id')->where('followable_type', Lead::class);
+            })->whereDate('next_schedule_date', '<', $today);
+        })->count();
+
+        $futureFollowups = (clone $leadFollowupQuery)->whereHas('followups', function($q) use ($today) {
+            $q->whereIn('id', function($sub) {
+                $sub->selectRaw('max(id)')->from('followups')->whereColumn('followable_id', 'leads.id')->where('followable_type', Lead::class);
+            })->whereDate('next_schedule_date', '>', $today);
+        })->count();
+
+        $totalFollowups = $todayFollowups + $pendingFollowups + $futureFollowups;
+
+        $callingFollowups = Followup::where('followable_type', Lead::class)->where('followup_type', 'Calling')->count();
+        $msgFollowups = Followup::where('followable_type', Lead::class)->where('followup_type', 'Message')->count();
+        $bothFollowups = Followup::where('followable_type', Lead::class)->where('followup_type', 'Both')->count();
+
+        $followupStats = [
+            'today' => $todayFollowups,
+            'pending' => $pendingFollowups,
+            'future' => $futureFollowups,
+            'total' => $totalFollowups,
+            'calling' => $callingFollowups,
+            'message' => $msgFollowups,
+            'both' => $bothFollowups,
+        ];
+
+        // 3. MONTHLY ORDERS DATA (Vertical Bar Chart)
+        $monthlyOrderCounts = [];
+        $monthlyWebOrderCounts = [];
+        $monthlyMktOrderCounts = [];
+
+        for ($i = 7; $i >= 0; $i--) {
+            $date = $startDate->copy()->subMonths($i);
+            $yearMonth = $date->format('Y-m');
+            
+            $mo_orderQuery = Order::query()->where(DB::raw("DATE_FORMAT(created_at, '%Y-%m')"), $yearMonth);
+            if ($routePrefix == 'sale') {
+                $mo_orderQuery->where(function($master) use ($saleId, $saleType) {
+                    $master->where('created_by', $saleId)->where('created_by_type', $saleType)
+                           ->orWhereHas('assignments', function($sq) use ($saleId) {
+                               $sq->where('assigned_to', $saleId);
+                           });
+                });
+            }
+            
+            $webOrders = (clone $mo_orderQuery)->where(function($q) {
+                $q->where('is_marketing', 0)->orWhereNull('is_marketing');
+            })->count();
+            $mktOrders = (clone $mo_orderQuery)->where('is_marketing', 1)->count();
+            
+            $monthlyWebOrderCounts[] = $webOrders;
+            $monthlyMktOrderCounts[] = $mktOrders;
+            $monthlyOrderCounts[] = $webOrders + $mktOrders;
+        }
 
         // Fetch closest pending meeting
         $meetingQuery = \App\Models\Meeting::whereIn('status', ['pending', 'rescheduled'])
@@ -164,7 +287,8 @@ class DashboardController extends Controller
             'totalReceivedAmount', 'totalOrderValue', 'totalPending', 'totalLeads', 'totalOrders',
             'activeProjects', 'completedProjects', 'totalSalesPerson', 'totalDevelopers',
             'months', 'monthlyOrderValues', 'monthlyReceivedAmounts', 'marketingOrders',
-            'projectPipeline', 'totalProjects', 'selectedMonth', 'selectedYear', 'availableYears', 'routePrefix', 'closestMeeting'
+            'projectPipeline', 'totalProjects', 'selectedMonth', 'selectedYear', 'availableYears', 'routePrefix', 'closestMeeting',
+            'leadFunnel', 'followupStats', 'monthlyOrderCounts', 'monthlyWebOrderCounts', 'monthlyMktOrderCounts'
         ));
     }
 
