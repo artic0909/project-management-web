@@ -281,12 +281,14 @@
         color: var(--t1);
         font-size: 13.5px;
         line-height: 1.3;
+        white-space: nowrap !important;
     }
 
     .ls {
         font-size: 12px;
         color: var(--t3);
         margin-top: 2px;
+        white-space: nowrap !important;
     }
 
     .budget-badge {

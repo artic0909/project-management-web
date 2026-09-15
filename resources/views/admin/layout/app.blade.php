@@ -2285,11 +2285,21 @@
             font-weight: 600;
             color: var(--t1);
             font-size: 13px;
+            white-space: nowrap !important;
         }
 
         .ls {
             font-size: 11px;
             color: var(--t3);
+            white-space: nowrap !important;
+        }
+
+        .m-date,
+        .date-cell,
+        .time-stamp,
+        .data-table td .ln,
+        .data-table td .ls {
+            white-space: nowrap !important;
         }
 
         .src-tag {
@@ -3296,6 +3306,20 @@
             .data-table td {
                 padding: 9px 10px;
                 font-size: 12.5px;
+            }
+
+            .ln,
+            .ls,
+            .m-date,
+            .date-cell,
+            .time-stamp,
+            .data-table td .ln,
+            .data-table td .ls,
+            .orion-table td .ln,
+            .orion-table td .ls,
+            .table td .ln,
+            .table td .ls {
+                white-space: nowrap !important;
             }
 
             .data-table td:last-child,
