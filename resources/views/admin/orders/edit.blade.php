@@ -183,12 +183,14 @@
                                 @endphp
                                 <div class="form-row">
                                     <label class="form-lbl">Renewal <span style="color:#ef4444">*</span></label>
-                                    <select name="renewal_type" id="renewalTypeSelect" class="form-inp" onchange="handleRenewalTypeChange()">
+                                    <select name="renewal_type" id="renewalTypeSelect" class="form-inp @error('renewal_type') is-invalid @enderror" onchange="handleRenewalTypeChange()">
+                                        <option value="">— Select Renewal —</option>
                                         <option value="one_time" {{ $defaultRenewalType == 'one_time' ? 'selected' : '' }}>One Time</option>
                                         <option value="one_month" {{ $defaultRenewalType == 'one_month' ? 'selected' : '' }}>One Month</option>
                                         <option value="one_year" {{ $defaultRenewalType == 'one_year' ? 'selected' : '' }}>One Years</option>
                                         <option value="custom" {{ $defaultRenewalType == 'custom' ? 'selected' : '' }}>Set Custom</option>
                                     </select>
+                                    @error('renewal_type')<span class="field-error">{{ $message }}</span>@enderror
                                     <div id="renewalPreviewText" style="display:none; margin-top:6px; font-size:12px; font-weight:600; color:var(--accent); align-items:center; gap:5px;">
                                         <i class="bi bi-calendar-check"></i> <span id="renewalPreviewDate"></span>
                                     </div>

@@ -103,7 +103,9 @@ $(document).ready(function() {
         if (renewalTypeSelect.length > 0) {
             const rType = renewalTypeSelect.val();
             const rInput = $('#renewalDateInput');
-            if (rType === 'custom') {
+            if (!rType || rType.trim() === '') {
+                markError(renewalTypeSelect, 'Renewal is required.');
+            } else if (rType === 'custom') {
                 if (!rInput.val() || rInput.val().trim() === '') {
                     markError(rInput, 'Renewal Date is required for custom renewal.');
                 }

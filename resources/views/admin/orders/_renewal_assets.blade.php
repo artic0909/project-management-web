@@ -27,7 +27,7 @@
         const preview = $('#renewalPreviewText');
         const previewDate = $('#renewalPreviewDate');
 
-        if (type === 'one_time') {
+        if (type === 'one_time' || !type) {
             dateInput.val('');
             dateRow.hide();
             preview.hide();

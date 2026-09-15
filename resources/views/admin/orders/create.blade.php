@@ -176,12 +176,14 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-lbl">Renewal <span style="color:#ef4444">*</span></label>
-                                    <select name="renewal_type" id="renewalTypeSelect" class="form-inp" onchange="handleRenewalTypeChange()">
-                                        <option value="one_time" {{ old('renewal_type', 'one_time') == 'one_time' ? 'selected' : '' }}>One Time</option>
+                                    <select name="renewal_type" id="renewalTypeSelect" class="form-inp @error('renewal_type') is-invalid @enderror" onchange="handleRenewalTypeChange()">
+                                        <option value="">— Select Renewal —</option>
+                                        <option value="one_time" {{ old('renewal_type') == 'one_time' ? 'selected' : '' }}>One Time</option>
                                         <option value="one_month" {{ old('renewal_type') == 'one_month' ? 'selected' : '' }}>One Month</option>
                                         <option value="one_year" {{ old('renewal_type') == 'one_year' ? 'selected' : '' }}>One Years</option>
                                         <option value="custom" {{ old('renewal_type') == 'custom' ? 'selected' : '' }}>Set Custom</option>
                                     </select>
+                                    @error('renewal_type')<span class="field-error">{{ $message }}</span>@enderror
                                     <div id="renewalPreviewText" style="display:none; margin-top:6px; font-size:12px; font-weight:600; color:var(--accent); align-items:center; gap:5px;">
                                         <i class="bi bi-calendar-check"></i> <span id="renewalPreviewDate"></span>
                                     </div>
