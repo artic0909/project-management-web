@@ -87,6 +87,24 @@
     .row-add-btn:hover {
         background: var(--accent-bg);
     }
+
+    @media (max-width: 576px) {
+        .country-sel {
+            width: 76px !important;
+            font-size: 12px !important;
+            padding: 6px 2px 6px 6px !important;
+        }
+        .phone-num-inp {
+            font-size: 13.5px !important;
+            padding: 6px 8px !important;
+        }
+        .row-remove-btn,
+        .row-add-btn {
+            width: 32px !important;
+            height: 32px !important;
+            font-size: 12px !important;
+        }
+    }
 </style>
 
 <script>

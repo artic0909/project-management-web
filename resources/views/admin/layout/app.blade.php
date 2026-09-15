@@ -3114,6 +3114,11 @@
                 width: 100% !important;
             }
 
+            .dash-grid {
+                grid-template-columns: 1fr !important;
+                gap: 16px !important;
+            }
+
             .span-4,
             .span-6,
             .span-8,
@@ -3121,6 +3126,14 @@
                 grid-column: span 12 !important;
                 width: 100% !important;
                 max-width: 100% !important;
+            }
+
+            .span-4 .dash-card[style*="position:sticky"],
+            .span-4 .dash-card[style*="position: sticky"],
+            .dash-card[style*="position:sticky"],
+            .dash-card[style*="position: sticky"] {
+                position: static !important;
+                top: auto !important;
             }
 
             .kpi-grid,
@@ -3360,7 +3373,61 @@
 
             .form-grid {
                 grid-template-columns: 1fr !important;
-                gap: 12px;
+                gap: 14px 0 !important;
+            }
+
+            .form-grid > .form-row {
+                grid-column: 1 / -1 !important;
+                width: 100% !important;
+                margin-bottom: 0 !important;
+            }
+
+            .form-row {
+                width: 100% !important;
+                margin-bottom: 0 !important;
+            }
+
+            .form-inp,
+            .form-select,
+            select.form-inp,
+            input.form-inp,
+            textarea.form-inp {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            .ms-wrap {
+                width: 100% !important;
+            }
+
+            .ms-trigger {
+                min-height: 42px !important;
+                padding: 6px 10px !important;
+                flex-wrap: wrap !important;
+            }
+
+            .ms-dropdown {
+                max-width: 100% !important;
+                left: 0 !important;
+                right: 0 !important;
+            }
+
+            .ms-opts {
+                max-height: 240px !important;
+            }
+
+            .form-actions {
+                flex-direction: column !important;
+                gap: 8px !important;
+                width: 100% !important;
+            }
+
+            .form-actions button,
+            .form-actions a {
+                width: 100% !important;
+                justify-content: center !important;
+                text-align: center !important;
             }
 
             .modal-backdrop {
