@@ -3437,16 +3437,20 @@
         @media (max-width: 576px) {
             .kpi-grid,
             .show-stats-grid,
+            [style*="grid-template-columns:repeat(4,1fr)"],
+            [style*="grid-template-columns: repeat(4, 1fr)"] {
+                grid-template-columns: 1fr !important;
+                gap: 10px !important;
+            }
+
             .stats-grid-wrap,
             #statsWrap,
             [id="statsWrap"],
-            [style*="grid-template-columns:repeat(4,1fr)"],
-            [style*="grid-template-columns: repeat(4, 1fr)"],
             [style*="grid-template-columns:repeat(6,1fr)"],
             [style*="grid-template-columns: repeat(6, 1fr)"],
             [style*="grid-template-columns:repeat(9,1fr)"],
             [style*="grid-template-columns: repeat(9, 1fr)"] {
-                grid-template-columns: 1fr !important;
+                grid-template-columns: repeat(2, 1fr) !important;
                 gap: 10px !important;
             }
 
@@ -3487,16 +3491,20 @@
         @media (max-width: 480px) {
             .kpi-grid,
             .show-stats-grid,
+            [style*="grid-template-columns:repeat(4,1fr)"],
+            [style*="grid-template-columns: repeat(4, 1fr)"] {
+                grid-template-columns: 1fr !important;
+                gap: 8px !important;
+            }
+
             .stats-grid-wrap,
             #statsWrap,
             [id="statsWrap"],
-            [style*="grid-template-columns:repeat(4,1fr)"],
-            [style*="grid-template-columns: repeat(4, 1fr)"],
             [style*="grid-template-columns:repeat(6,1fr)"],
             [style*="grid-template-columns: repeat(6, 1fr)"],
             [style*="grid-template-columns:repeat(9,1fr)"],
             [style*="grid-template-columns: repeat(9, 1fr)"] {
-                grid-template-columns: 1fr !important;
+                grid-template-columns: repeat(2, 1fr) !important;
                 gap: 8px !important;
             }
 
@@ -3508,11 +3516,15 @@
 
         @media (max-width: 380px) {
             .kpi-grid,
-            .show-stats-grid,
+            .show-stats-grid {
+                grid-template-columns: 1fr !important;
+            }
+
             .stats-grid-wrap,
             #statsWrap,
             [id="statsWrap"] {
-                grid-template-columns: 1fr !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 6px !important;
             }
         }
     </style>
