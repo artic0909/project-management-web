@@ -434,10 +434,42 @@
             .stat-grid-wrap { grid-template-columns: repeat(3, 1fr); }
         }
         @media (max-width: 768px) {
-            .stat-grid-wrap { grid-template-columns: repeat(2, 1fr); }
+            .stat-grid-wrap { 
+                grid-template-columns: repeat(2, 1fr) !important; 
+                gap: 10px !important;
+            }
+            .stat-box {
+                padding: 10px 12px !important;
+                gap: 8px !important;
+            }
+            .sb-val {
+                font-size: 17px !important;
+            }
         }
         @media (max-width: 480px) {
-            .stat-grid-wrap { grid-template-columns: 1fr; }
+            .stat-grid-wrap { 
+                grid-template-columns: repeat(2, 1fr) !important; 
+                gap: 8px !important;
+            }
+            .stat-box {
+                padding: 8px 10px !important;
+                gap: 6px !important;
+            }
+            .sb-icon {
+                width: 30px !important;
+                height: 30px !important;
+                font-size: 13px !important;
+            }
+            .sb-val {
+                font-size: 15px !important;
+            }
+            .sb-lbl {
+                font-size: 10px !important;
+            }
+            .sb-cat {
+                font-size: 8.5px !important;
+                padding: 1px 5px !important;
+            }
         }
 
         /* ── ORION TABLE SYSTEM ── */
