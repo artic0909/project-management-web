@@ -870,8 +870,10 @@
 
     </main>
 
+    @if($routePrefix != 'developer')
     <!-- ApexCharts CDN -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    @endif
 
     <style>
         /* ═══════════════════════════════════════════════════════════
@@ -1469,6 +1471,7 @@
         }
     </style>
 
+    @if($routePrefix != 'developer')
     <!-- ═══════════════════════════════════════════════════════════
          APEXCHARTS SCRIPT INITIALIZATION
     ═══════════════════════════════════════════════════════════ -->
@@ -1798,4 +1801,5 @@
             orderChart.render();
         });
     </script>
+    @endif
 @endsection
