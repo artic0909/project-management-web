@@ -532,8 +532,8 @@
                                     <i class="bi bi-funnel-fill"></i>
                                 </div>
                                 <div>
-                                    <div class="card-title-premium">Lead Conversion Funnel</div>
-                                    <div class="card-sub-premium">Inverted stage pipeline · Filtered Period</div>
+                                    <div class="card-title-premium">{{ $routePrefix == 'sale' ? 'Sales Leads Overview' : 'Lead Conversion Funnel' }}</div>
+                                    <div class="card-sub-premium">{{ $routePrefix == 'sale' ? 'Lead distribution & status breakdown' : 'Inverted stage pipeline · Filtered Period' }}</div>
                                 </div>
                             </div>
                             <div class="ch-badges">
@@ -547,121 +547,250 @@
                             <div class="funnel-container">
                                 <!-- Funnel Graphic -->
                                 <div class="funnel-graphic-wrap">
-                                    @php
-                                        $fTotal = max($leadFunnel['total'], 1);
-                                        $pContacted = $leadFunnel['total'] > 0 ? round(($leadFunnel['contacted'] / $leadFunnel['total']) * 100, 1) : 0;
-                                        $pDiscussion = $leadFunnel['total'] > 0 ? round(($leadFunnel['discussion'] / $leadFunnel['total']) * 100, 1) : 0;
-                                        $pConverted = $leadFunnel['total'] > 0 ? round(($leadFunnel['converted'] / $leadFunnel['total']) * 100, 1) : 0;
-                                    @endphp
-
-                                    <!-- Tier 1: Total / New Leads -->
-                                    <div class="funnel-slice tier-1" onclick="window.location.href='{{ route($routePrefix . '.leads.index') }}'">
-                                        <div class="funnel-shape">
-                                            <span class="fs-text">Total Leads Received</span>
+                                    @if($routePrefix == 'sale')
+                                        <!-- Tier 1: Total Leads -->
+                                        <div class="funnel-slice tier-1" onclick="window.location.href='{{ route('sale.leads.index', ['type' => 'total']) }}'">
+                                            <div class="funnel-shape">
+                                                <span class="fs-text">Total Leads</span>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Tier 2: Contacted / In Touch -->
-                                    <div class="funnel-slice tier-2" onclick="window.location.href='{{ route($routePrefix . '.leads.index', ['type' => 'followup_total']) }}'">
-                                        <div class="funnel-shape">
-                                            <span class="fs-text">Followed Up</span>
+                                        <!-- Tier 2: My Leads -->
+                                        <div class="funnel-slice tier-2" onclick="window.location.href='{{ route('sale.leads.index', ['type' => 'my']) }}'">
+                                            <div class="funnel-shape">
+                                                <span class="fs-text">My Leads</span>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Tier 3: In Discussion / Proposals -->
-                                    <div class="funnel-slice tier-3" onclick="window.location.href='{{ route($routePrefix . '.leads.index', ['type' => 'followup_future']) }}'">
-                                        <div class="funnel-shape">
-                                            <span class="fs-text">Interested</span>
+                                        <!-- Tier 3: New Leads -->
+                                        <div class="funnel-slice tier-3" onclick="window.location.href='{{ route('sale.leads.index', ['type' => 'new']) }}'">
+                                            <div class="funnel-shape">
+                                                <span class="fs-text">New Leads</span>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Tier 4: Won / Converted Orders -->
-                                    <div class="funnel-slice tier-4" onclick="window.location.href='{{ route($routePrefix . '.orders.index') }}'">
-                                        <div class="funnel-shape">
-                                            <span class="fs-text">Converted Orders</span>
+                                        <!-- Tier 4: Losted Leads -->
+                                        <div class="funnel-slice tier-4" onclick="window.location.href='{{ route('sale.losted-leads') }}'">
+                                            <div class="funnel-shape">
+                                                <span class="fs-text">Losted Leads</span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    @else
+                                        <!-- Tier 1: Total Leads -->
+                                        <div class="funnel-slice tier-1" onclick="window.location.href='{{ route('admin.leads.index', ['type' => 'total']) }}'">
+                                            <div class="funnel-shape">
+                                                <span class="fs-text">Total Leads</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Tier 2: New Leads -->
+                                        <div class="funnel-slice tier-2" onclick="window.location.href='{{ route('admin.leads.index', ['type' => 'new']) }}'">
+                                            <div class="funnel-shape">
+                                                <span class="fs-text">New Leads</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Tier 3: Converted Orders -->
+                                        <div class="funnel-slice tier-3" onclick="window.location.href='{{ route('admin.orders.index') }}'">
+                                            <div class="funnel-shape">
+                                                <span class="fs-text">Converted Orders</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Tier 4: Losted Leads -->
+                                        <div class="funnel-slice tier-4" onclick="window.location.href='{{ route('admin.losted-leads') }}'">
+                                            <div class="funnel-shape">
+                                                <span class="fs-text">Losted Leads</span>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <!-- Funnel Data Metrics & Connectors -->
                                 <div class="funnel-metrics-list">
-                                    <!-- Metric 1 -->
-                                    <div class="fm-item tier-1-metric" onclick="window.location.href='{{ route($routePrefix . '.leads.index') }}'">
-                                        <div class="fm-connector"></div>
-                                        <div class="fm-content">
-                                            <div class="fm-label-row">
-                                                <span class="fm-badge-dot" style="background:#3b82f6;"></span>
-                                                <span class="fm-name">Total Leads</span>
-                                                <span class="fm-pct">100%</span>
-                                            </div>
-                                            <div class="fm-val">{{ number_format($leadFunnel['total']) }}</div>
-                                        </div>
-                                    </div>
+                                    @if($routePrefix == 'sale')
+                                        @php
+                                            $fTotal = max($leadFunnel['total'], 1);
+                                            $pMy = round(($leadFunnel['my_leads'] / $fTotal) * 100, 1);
+                                            $pNew = round(($leadFunnel['new'] / $fTotal) * 100, 1);
+                                            $pLost = round(($leadFunnel['lost'] / $fTotal) * 100, 1);
+                                        @endphp
 
-                                    <!-- Metric 2 -->
-                                    <div class="fm-item tier-2-metric" onclick="window.location.href='{{ route($routePrefix . '.leads.index', ['type' => 'followup_total']) }}'">
-                                        <div class="fm-connector"></div>
-                                        <div class="fm-content">
-                                            <div class="fm-label-row">
-                                                <span class="fm-badge-dot" style="background:#06b6d4;"></span>
-                                                <span class="fm-name">Contacted / Followed Up</span>
-                                                <span class="fm-pct">{{ $pContacted }}%</span>
+                                        <!-- Metric 1: Total Leads -->
+                                        <div class="fm-item tier-1-metric" onclick="window.location.href='{{ route('sale.leads.index', ['type' => 'total']) }}'">
+                                            <div class="fm-connector"></div>
+                                            <div class="fm-content">
+                                                <div class="fm-label-row">
+                                                    <span class="fm-badge-dot" style="background:#3b82f6;"></span>
+                                                    <span class="fm-name">Total Leads</span>
+                                                    <span class="fm-pct">100%</span>
+                                                </div>
+                                                <div class="fm-val">{{ number_format($leadFunnel['total']) }}</div>
                                             </div>
-                                            <div class="fm-val">{{ number_format($leadFunnel['contacted']) }}</div>
                                         </div>
-                                    </div>
 
-                                    <!-- Metric 3 -->
-                                    <div class="fm-item tier-3-metric" onclick="window.location.href='{{ route($routePrefix . '.leads.index', ['type' => 'followup_future']) }}'">
-                                        <div class="fm-connector"></div>
-                                        <div class="fm-content">
-                                            <div class="fm-label-row">
-                                                <span class="fm-badge-dot" style="background:#10b981;"></span>
-                                                <span class="fm-name">Interested / In Discussion</span>
-                                                <span class="fm-pct">{{ $pDiscussion }}%</span>
+                                        <!-- Metric 2: My Leads -->
+                                        <div class="fm-item tier-2-metric" onclick="window.location.href='{{ route('sale.leads.index', ['type' => 'my']) }}'">
+                                            <div class="fm-connector"></div>
+                                            <div class="fm-content">
+                                                <div class="fm-label-row">
+                                                    <span class="fm-badge-dot" style="background:#06b6d4;"></span>
+                                                    <span class="fm-name">My Leads</span>
+                                                    <span class="fm-pct">{{ $pMy }}%</span>
+                                                </div>
+                                                <div class="fm-val">{{ number_format($leadFunnel['my_leads']) }}</div>
                                             </div>
-                                            <div class="fm-val">{{ number_format($leadFunnel['discussion']) }}</div>
                                         </div>
-                                    </div>
 
-                                    <!-- Metric 4 -->
-                                    <div class="fm-item tier-4-metric" onclick="window.location.href='{{ route($routePrefix . '.orders.index') }}'">
-                                        <div class="fm-connector"></div>
-                                        <div class="fm-content">
-                                            <div class="fm-label-row">
-                                                <span class="fm-badge-dot" style="background:#f59e0b;"></span>
-                                                <span class="fm-name">Converted to Orders</span>
-                                                <span class="fm-pct">{{ $pConverted }}%</span>
+                                        <!-- Metric 3: New Leads -->
+                                        <div class="fm-item tier-3-metric" onclick="window.location.href='{{ route('sale.leads.index', ['type' => 'new']) }}'">
+                                            <div class="fm-connector"></div>
+                                            <div class="fm-content">
+                                                <div class="fm-label-row">
+                                                    <span class="fm-badge-dot" style="background:#10b981;"></span>
+                                                    <span class="fm-name">New Leads</span>
+                                                    <span class="fm-pct">{{ $pNew }}%</span>
+                                                </div>
+                                                <div class="fm-val">{{ number_format($leadFunnel['new']) }}</div>
                                             </div>
-                                            <div class="fm-val text-amber">{{ number_format($leadFunnel['converted']) }}</div>
                                         </div>
-                                    </div>
+
+                                        <!-- Metric 4: Losted Leads -->
+                                        <div class="fm-item tier-4-metric" onclick="window.location.href='{{ route('sale.losted-leads') }}'">
+                                            <div class="fm-connector"></div>
+                                            <div class="fm-content">
+                                                <div class="fm-label-row">
+                                                    <span class="fm-badge-dot" style="background:#f59e0b;"></span>
+                                                    <span class="fm-name">Losted Leads</span>
+                                                    <span class="fm-pct">{{ $pLost }}%</span>
+                                                </div>
+                                                <div class="fm-val text-amber">{{ number_format($leadFunnel['lost']) }}</div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        @php
+                                            $fTotal = max($leadFunnel['total'], 1);
+                                            $pNew = round(($leadFunnel['new'] / $fTotal) * 100, 1);
+                                            $pConverted = round(($leadFunnel['converted'] / $fTotal) * 100, 1);
+                                            $pLost = round(($leadFunnel['lost'] / $fTotal) * 100, 1);
+                                        @endphp
+
+                                        <!-- Metric 1: Total Leads -->
+                                        <div class="fm-item tier-1-metric" onclick="window.location.href='{{ route('admin.leads.index', ['type' => 'total']) }}'">
+                                            <div class="fm-connector"></div>
+                                            <div class="fm-content">
+                                                <div class="fm-label-row">
+                                                    <span class="fm-badge-dot" style="background:#3b82f6;"></span>
+                                                    <span class="fm-name">Total Leads</span>
+                                                    <span class="fm-pct">100%</span>
+                                                </div>
+                                                <div class="fm-val">{{ number_format($leadFunnel['total']) }}</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Metric 2: New Leads -->
+                                        <div class="fm-item tier-2-metric" onclick="window.location.href='{{ route('admin.leads.index', ['type' => 'new']) }}'">
+                                            <div class="fm-connector"></div>
+                                            <div class="fm-content">
+                                                <div class="fm-label-row">
+                                                    <span class="fm-badge-dot" style="background:#06b6d4;"></span>
+                                                    <span class="fm-name">New Leads</span>
+                                                    <span class="fm-pct">{{ $pNew }}%</span>
+                                                </div>
+                                                <div class="fm-val">{{ number_format($leadFunnel['new']) }}</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Metric 3: Converted Orders -->
+                                        <div class="fm-item tier-3-metric" onclick="window.location.href='{{ route('admin.orders.index') }}'">
+                                            <div class="fm-connector"></div>
+                                            <div class="fm-content">
+                                                <div class="fm-label-row">
+                                                    <span class="fm-badge-dot" style="background:#10b981;"></span>
+                                                    <span class="fm-name">Converted to Orders</span>
+                                                    <span class="fm-pct">{{ $pConverted }}%</span>
+                                                </div>
+                                                <div class="fm-val text-amber">{{ number_format($leadFunnel['converted']) }}</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Metric 4: Losted Leads -->
+                                        <div class="fm-item tier-4-metric" onclick="window.location.href='{{ route('admin.losted-leads') }}'">
+                                            <div class="fm-connector"></div>
+                                            <div class="fm-content">
+                                                <div class="fm-label-row">
+                                                    <span class="fm-badge-dot" style="background:#f59e0b;"></span>
+                                                    <span class="fm-name">Losted Leads</span>
+                                                    <span class="fm-pct">{{ $pLost }}%</span>
+                                                </div>
+                                                <div class="fm-val text-amber">{{ number_format($leadFunnel['lost']) }}</div>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
 
                             <!-- Funnel Summary Chips -->
                             <div class="funnel-footer-chips">
-                                <div class="ff-chip">
-                                    <span class="ff-icon" style="color: #6366f1;"><i class="bi bi-clock-history"></i></span>
-                                    <div class="ff-meta">
-                                        <span class="ff-title">No Follow-up Yet</span>
-                                        <span class="ff-val">{{ number_format($leadFunnel['new']) }}</span>
+                                @if($routePrefix == 'sale')
+                                    <div class="ff-chip" onclick="window.location.href='{{ route('sale.leads.index', ['type' => 'new']) }}'" style="cursor: pointer;">
+                                        <span class="ff-icon" style="color: #6366f1;"><i class="bi bi-plus-circle"></i></span>
+                                        <div class="ff-meta">
+                                            <span class="ff-title">New Leads</span>
+                                            <span class="ff-val">{{ number_format($leadFunnel['new']) }}</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="ff-chip">
-                                    <span class="ff-icon" style="color: #10b981;"><i class="bi bi-check-circle-fill"></i></span>
-                                    <div class="ff-meta">
-                                        <span class="ff-title">Conversion Rate</span>
-                                        <span class="ff-val">{{ $leadFunnel['conversion_rate'] }}%</span>
+                                    <div class="ff-chip" onclick="window.location.href='{{ route('sale.leads.index', ['type' => 'my']) }}'" style="cursor: pointer;">
+                                        <span class="ff-icon" style="color: #06b6d4;"><i class="bi bi-person"></i></span>
+                                        <div class="ff-meta">
+                                            <span class="ff-title">My Leads</span>
+                                            <span class="ff-val">{{ number_format($leadFunnel['my_leads']) }}</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="ff-chip">
-                                    <span class="ff-icon" style="color: #ef4444;"><i class="bi bi-x-circle-fill"></i></span>
-                                    <div class="ff-meta">
-                                        <span class="ff-title">Lost Leads</span>
-                                        <span class="ff-val">{{ number_format($leadFunnel['lost']) }}</span>
+                                    <div class="ff-chip" onclick="window.location.href='{{ route('sale.leads.index', ['type' => 'total']) }}'" style="cursor: pointer;">
+                                        <span class="ff-icon" style="color: #3b82f6;"><i class="bi bi-collection"></i></span>
+                                        <div class="ff-meta">
+                                            <span class="ff-title">Total Leads</span>
+                                            <span class="ff-val">{{ number_format($leadFunnel['total']) }}</span>
+                                        </div>
                                     </div>
-                                </div>
+                                    <div class="ff-chip" onclick="window.location.href='{{ route('sale.losted-leads') }}'" style="cursor: pointer;">
+                                        <span class="ff-icon" style="color: #ef4444;"><i class="bi bi-ban"></i></span>
+                                        <div class="ff-meta">
+                                            <span class="ff-title">Losted Leads</span>
+                                            <span class="ff-val">{{ number_format($leadFunnel['lost']) }}</span>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="ff-chip" onclick="window.location.href='{{ route('admin.leads.index', ['type' => 'new']) }}'" style="cursor: pointer;">
+                                        <span class="ff-icon" style="color: #6366f1;"><i class="bi bi-plus-circle"></i></span>
+                                        <div class="ff-meta">
+                                            <span class="ff-title">New Leads</span>
+                                            <span class="ff-val">{{ number_format($leadFunnel['new']) }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="ff-chip" onclick="window.location.href='{{ route('admin.leads.index', ['type' => 'total']) }}'" style="cursor: pointer;">
+                                        <span class="ff-icon" style="color: #3b82f6;"><i class="bi bi-collection"></i></span>
+                                        <div class="ff-meta">
+                                            <span class="ff-title">Total Leads</span>
+                                            <span class="ff-val">{{ number_format($leadFunnel['total']) }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="ff-chip" onclick="window.location.href='{{ route('admin.losted-leads') }}'" style="cursor: pointer;">
+                                        <span class="ff-icon" style="color: #ef4444;"><i class="bi bi-ban"></i></span>
+                                        <div class="ff-meta">
+                                            <span class="ff-title">Losted Leads</span>
+                                            <span class="ff-val">{{ number_format($leadFunnel['lost']) }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="ff-chip">
+                                        <span class="ff-icon" style="color: #10b981;"><i class="bi bi-check-circle-fill"></i></span>
+                                        <div class="ff-meta">
+                                            <span class="ff-title">Conversion Rate</span>
+                                            <span class="ff-val">{{ $leadFunnel['conversion_rate'] }}%</span>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>

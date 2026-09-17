@@ -188,36 +188,115 @@ class DashboardController extends Controller
         $marketingOrders = (clone $orderQuery)->where('is_marketing', true)->count();
         $availableYears = range(Carbon::now()->year - 2, Carbon::now()->year + 1);
 
-        // 1. LEAD FUNNEL DATA (Inverted Pyramid)
-        $leadFunnelQuery = clone $leadQuery;
-        $funnelTotal = (clone $leadFunnelQuery)->count();
-        $funnelNew = (clone $leadFunnelQuery)->where('is_losted', 0)->doesntHave('followups')->count();
-        $funnelContacted = (clone $leadFunnelQuery)->where('is_losted', 0)->has('followups')->count();
-        $funnelDiscussion = (clone $leadFunnelQuery)->where('is_losted', 0)->whereHas('status', function($q) {
-            $q->whereIn('name', ['Interested', 'Respond', 'Booked']);
-        })->count();
-        
-        $funnelConverted = (clone $leadFunnelQuery)->where(function($q) {
-            $q->whereHas('status', fn($sq) => $sq->where('name', 'converted'))
-              ->orWhereIn('id', Order::whereNotNull('lead_id')->pluck('lead_id'));
-        })->count();
-        
-        $funnelLost = (clone $leadFunnelQuery)->where(function($q) {
-            $q->where('is_losted', 1)
-              ->orWhereHas('status', fn($sq) => $sq->whereIn('name', ['Lost', 'Not Interested', 'Not Responding']));
-        })->count();
+        // 1. LEAD FUNNEL DATA
+        $applyLeadDateFilter = function($query, $dateCol = 'created_at') use ($selectedMonth, $selectedYear) {
+            if ($selectedMonth !== 'all' && $selectedYear !== 'all') {
+                $startDate = Carbon::create((int)$selectedYear, (int)$selectedMonth, 1)->startOfMonth();
+                $endDate = $startDate->copy()->endOfMonth();
+                $query->whereBetween($dateCol, [$startDate, $endDate]);
+            } elseif ($selectedMonth !== 'all') {
+                $query->whereMonth($dateCol, (int)$selectedMonth);
+            } elseif ($selectedYear !== 'all') {
+                $query->whereYear($dateCol, (int)$selectedYear);
+            }
+        };
 
-        $conversionRate = $funnelTotal > 0 ? round(($funnelConverted / $funnelTotal) * 100, 1) : 0;
+        $applyLostDateFilter = function($query) use ($selectedMonth, $selectedYear) {
+            if ($selectedMonth !== 'all' && $selectedYear !== 'all') {
+                $startDate = Carbon::create((int)$selectedYear, (int)$selectedMonth, 1)->startOfMonth();
+                $endDate = $startDate->copy()->endOfMonth();
+                $query->whereBetween(DB::raw('COALESCE(losted_date, updated_at, created_at)'), [$startDate, $endDate]);
+            } elseif ($selectedMonth !== 'all') {
+                $query->whereMonth(DB::raw('COALESCE(losted_date, updated_at, created_at)'), (int)$selectedMonth);
+            } elseif ($selectedYear !== 'all') {
+                $query->whereYear(DB::raw('COALESCE(losted_date, updated_at, created_at)'), (int)$selectedYear);
+            }
+        };
 
-        $leadFunnel = [
-            'total' => $funnelTotal,
-            'new' => $funnelNew,
-            'contacted' => $funnelContacted,
-            'discussion' => $funnelDiscussion,
-            'converted' => $funnelConverted,
-            'lost' => $funnelLost,
-            'conversion_rate' => $conversionRate,
-        ];
+        if ($routePrefix == 'sale') {
+            $totalLeadsAllQuery = Lead::where('is_losted', 0);
+            $applyLeadDateFilter($totalLeadsAllQuery);
+            $funnelTotal = $totalLeadsAllQuery->count();
+
+            $myLeadsQuery = Lead::where('is_losted', 0)
+                ->where(function ($q) {
+                    $q->whereHas('status', function ($sq) {
+                        $sq->where('name', '!=', 'Converted');
+                    })->orWhereNull('status_id');
+                })
+                ->whereHas('assignments', function($sq) use ($saleId) {
+                    $sq->where('assigned_to', $saleId);
+                });
+            $applyLeadDateFilter($myLeadsQuery);
+            $funnelMyLeads = $myLeadsQuery->count();
+
+            $newLeadsQuery = Lead::where('is_losted', 0)
+                ->doesntHave('assignments')
+                ->doesntHave('followups');
+            $applyLeadDateFilter($newLeadsQuery);
+            $funnelNew = $newLeadsQuery->count();
+
+            $lostLeadsQuery = Lead::where('is_losted', 1)
+                ->whereHas('assignments', function($sq) use ($saleId) {
+                    $sq->where('assigned_to', $saleId);
+                });
+            $applyLostDateFilter($lostLeadsQuery);
+            $funnelLost = $lostLeadsQuery->count();
+
+            $convertedQuery = Lead::whereHas('assignments', function($sq) use ($saleId) {
+                    $sq->where('assigned_to', $saleId);
+                })->where(function($q) {
+                    $q->whereHas('status', fn($sq) => $sq->where('name', 'converted'))
+                      ->orWhereIn('id', Order::whereNotNull('lead_id')->pluck('lead_id'));
+                });
+            $applyLeadDateFilter($convertedQuery);
+            $funnelConverted = $convertedQuery->count();
+
+            $totalSaleLeads = $funnelMyLeads + $funnelConverted;
+            $conversionRate = $totalSaleLeads > 0 ? round(($funnelConverted / $totalSaleLeads) * 100, 1) : 0;
+
+            $leadFunnel = [
+                'total' => $funnelTotal,
+                'my_leads' => $funnelMyLeads,
+                'new' => $funnelNew,
+                'lost' => $funnelLost,
+                'converted' => $funnelConverted,
+                'conversion_rate' => $conversionRate,
+            ];
+        } else {
+            $totalLeadsAllQuery = Lead::where('is_losted', 0);
+            $applyLeadDateFilter($totalLeadsAllQuery);
+            $funnelTotal = $totalLeadsAllQuery->count();
+
+            $newLeadsQuery = Lead::where('is_losted', 0)
+                ->doesntHave('assignments')
+                ->doesntHave('followups');
+            $applyLeadDateFilter($newLeadsQuery);
+            $funnelNew = $newLeadsQuery->count();
+
+            $convertedQuery = Lead::where(function($q) {
+                $q->whereHas('status', fn($sq) => $sq->where('name', 'converted'))
+                  ->orWhereIn('id', Order::whereNotNull('lead_id')->pluck('lead_id'));
+            });
+            $applyLeadDateFilter($convertedQuery);
+            $funnelConverted = $convertedQuery->count();
+
+            $lostLeadsQuery = Lead::where('is_losted', 1);
+            $applyLostDateFilter($lostLeadsQuery);
+            $funnelLost = $lostLeadsQuery->count();
+
+            $conversionRate = $funnelTotal > 0 ? round(($funnelConverted / $funnelTotal) * 100, 1) : 0;
+
+            $leadFunnel = [
+                'total' => $funnelTotal,
+                'new' => $funnelNew,
+                'converted' => $funnelConverted,
+                'lost' => $funnelLost,
+                'conversion_rate' => $conversionRate,
+            ];
+        }
+
+        $totalLeads = $funnelTotal;
 
         // 2. FOLLOWUPS BREAKDOWN (Pie/Donut Chart)
         $today = Carbon::today();
