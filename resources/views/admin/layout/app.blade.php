@@ -4170,40 +4170,72 @@
 
             initAudio();
 
-            function playNotificationSound() {
-                let played = false;
+            let isPlayingNotifSound = false;
 
-                // 1. Try Web Audio API Buffer (Instant & reliable)
-                if (audioContext && audioBuffer) {
-                    try {
-                        if (audioContext.state === 'suspended') {
-                            audioContext.resume();
+            function playSingleSound() {
+                return new Promise((resolve) => {
+                    let resolved = false;
+                    const done = () => {
+                        if (!resolved) {
+                            resolved = true;
+                            resolve();
                         }
-                        const source = audioContext.createBufferSource();
-                        source.buffer = audioBuffer;
-                        source.connect(audioContext.destination);
-                        source.start(0);
-                        played = true;
-                    } catch(e) {
-                        console.warn('Web Audio buffer playback error:', e);
-                    }
-                }
+                    };
 
-                // 2. Try HTML5 Audio element
-                if (!played) {
+                    // 1. Try Web Audio API Buffer (Instant & reliable)
+                    if (audioContext && audioBuffer) {
+                        try {
+                            if (audioContext.state === 'suspended') {
+                                audioContext.resume();
+                            }
+                            const source = audioContext.createBufferSource();
+                            source.buffer = audioBuffer;
+                            source.connect(audioContext.destination);
+                            source.onended = done;
+                            source.start(0);
+
+                            const maxDur = ((audioBuffer.duration || 1) * 1000) + 100;
+                            setTimeout(done, maxDur);
+                            return;
+                        } catch(e) {
+                            console.warn('Web Audio buffer playback error:', e);
+                        }
+                    }
+
+                    // 2. Try HTML5 Audio element
                     try {
                         const audio = document.getElementById('notifAudioElement') || new Audio(soundUrl);
                         audio.currentTime = 0;
+                        audio.onended = done;
                         const p = audio.play();
                         if (p !== undefined) {
                             p.catch(err => {
                                 console.warn('HTML5 audio play blocked:', err);
                                 playSynthesizedChime();
+                                setTimeout(done, 650);
                             });
                         }
                     } catch(e) {
                         playSynthesizedChime();
+                        setTimeout(done, 650);
                     }
+                });
+            }
+
+            async function playNotificationSound(repeatCount = 3) {
+                if (isPlayingNotifSound) return;
+                isPlayingNotifSound = true;
+                try {
+                    for (let i = 0; i < repeatCount; i++) {
+                        await playSingleSound();
+                        if (i < repeatCount - 1) {
+                            await new Promise(r => setTimeout(r, 250));
+                        }
+                    }
+                } catch(e) {
+                    console.warn('Notification sound repeat error:', e);
+                } finally {
+                    isPlayingNotifSound = false;
                 }
             }
 
