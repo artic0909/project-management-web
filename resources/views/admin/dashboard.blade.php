@@ -65,15 +65,17 @@
                     <form action="{{ route($routePrefix . '.dashboard') }}" method="GET" class="filter-form" id="filterForm">
                         <div class="filter-group">
                             <select name="month" class="filter-select" onchange="this.form.submit()">
+                                <option value="all" {{ $selectedMonth == 'all' ? 'selected' : '' }}>All Months</option>
                                 @foreach (range(1, 12) as $m)
-                                    <option value="{{ $m }}" {{ $selectedMonth == $m ? 'selected' : '' }}>
+                                    <option value="{{ $m }}" {{ $selectedMonth == (string)$m ? 'selected' : '' }}>
                                         {{ Carbon\Carbon::create(null, $m, 1)->format('F') }}
                                     </option>
                                 @endforeach
                             </select>
                             <select name="year" class="filter-select" onchange="this.form.submit()">
+                                <option value="all" {{ $selectedYear == 'all' ? 'selected' : '' }}>All Years</option>
                                 @foreach ($availableYears as $y)
-                                    <option value="{{ $y }}" {{ $selectedYear == $y ? 'selected' : '' }}>
+                                    <option value="{{ $y }}" {{ $selectedYear == (string)$y ? 'selected' : '' }}>
                                         {{ $y }}
                                     </option>
                                 @endforeach

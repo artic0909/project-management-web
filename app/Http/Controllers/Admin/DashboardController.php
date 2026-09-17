@@ -24,17 +24,36 @@ class DashboardController extends Controller
         $saleId = ($routePrefix == 'sale') ? $user->id : null;
         $saleType = \App\Models\Sale::class;
 
-        $selectedMonth = $request->input('month', Carbon::now()->month);
-        $selectedYear = $request->input('year', Carbon::now()->year);
-
-        $startDate = Carbon::create($selectedYear, $selectedMonth, 1)->startOfMonth();
-        $endDate = $startDate->copy()->endOfMonth();
+        $selectedMonth = $request->input('month', 'all');
+        if (empty($selectedMonth)) {
+            $selectedMonth = 'all';
+        }
+        $selectedYear = $request->input('year', 'all');
+        if (empty($selectedYear)) {
+            $selectedYear = 'all';
+        }
 
         // Base Query Scoping
-        $paymentQuery = Payment::whereBetween('transaction_date', [$startDate, $endDate]);
-        $orderQuery = Order::whereBetween('created_at', [$startDate, $endDate]);
-        $leadQuery = Lead::whereBetween('created_at', [$startDate, $endDate]);
+        $paymentQuery = Payment::query();
+        $orderQuery = Order::query();
+        $leadQuery = Lead::query();
         $projectQuery = Project::query();
+
+        if ($selectedMonth !== 'all' && $selectedYear !== 'all') {
+            $startDate = Carbon::create((int)$selectedYear, (int)$selectedMonth, 1)->startOfMonth();
+            $endDate = $startDate->copy()->endOfMonth();
+            $paymentQuery->whereBetween('transaction_date', [$startDate, $endDate]);
+            $orderQuery->whereBetween('created_at', [$startDate, $endDate]);
+            $leadQuery->whereBetween('created_at', [$startDate, $endDate]);
+        } elseif ($selectedMonth !== 'all') {
+            $paymentQuery->whereMonth('transaction_date', (int)$selectedMonth);
+            $orderQuery->whereMonth('created_at', (int)$selectedMonth);
+            $leadQuery->whereMonth('created_at', (int)$selectedMonth);
+        } elseif ($selectedYear !== 'all') {
+            $paymentQuery->whereYear('transaction_date', (int)$selectedYear);
+            $orderQuery->whereYear('created_at', (int)$selectedYear);
+            $leadQuery->whereYear('created_at', (int)$selectedYear);
+        }
 
         if ($routePrefix == 'sale') {
             $paymentQuery->whereHas('order', function($master) use ($saleId, $saleType) {
@@ -101,8 +120,16 @@ class DashboardController extends Controller
         $monthlyOrderValues = [];
         $monthlyReceivedAmounts = [];
 
+        if ($selectedYear !== 'all' && $selectedMonth !== 'all') {
+            $baseDate = Carbon::create((int)$selectedYear, (int)$selectedMonth, 1)->startOfMonth();
+        } elseif ($selectedYear !== 'all') {
+            $baseDate = Carbon::create((int)$selectedYear, 12, 1)->startOfMonth();
+        } else {
+            $baseDate = Carbon::now()->startOfMonth();
+        }
+
         for ($i = 7; $i >= 0; $i--) {
-            $date = $startDate->copy()->subMonths($i);
+            $date = $baseDate->copy()->subMonths($i);
             $monthName = $date->format('M');
             $yearMonth = $date->format('Y-m');
             $months[] = $monthName;
@@ -244,7 +271,7 @@ class DashboardController extends Controller
         $monthlyMktOrderCounts = [];
 
         for ($i = 7; $i >= 0; $i--) {
-            $date = $startDate->copy()->subMonths($i);
+            $date = $baseDate->copy()->subMonths($i);
             $yearMonth = $date->format('Y-m');
             
             $mo_orderQuery = Order::query()->where(DB::raw("DATE_FORMAT(created_at, '%Y-%m')"), $yearMonth);
