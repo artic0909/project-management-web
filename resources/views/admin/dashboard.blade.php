@@ -374,13 +374,33 @@
                 </div>
                 @endif
 
+                <div class="kpi-card" style="--kpi-accent:#3b82f6">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:rgba(59,130,246,.15);color:#3b82f6"><i
+                                class="bi bi-folder-fill"></i></div>
+
+                    </div>
+                    <div class="kpi-value">{{ number_format($totalProjects) }}</div>
+                    <div class="kpi-label">Total Projects</div>
+                    <div class="kpi-spark">
+                        <div class="spark-bar" style="height:50%;--kpi-accent:#3b82f6"></div>
+                        <div class="spark-bar" style="height:70%;--kpi-accent:#3b82f6"></div>
+                        <div class="spark-bar" style="height:60%;--kpi-accent:#3b82f6"></div>
+                        <div class="spark-bar" style="height:85%;--kpi-accent:#3b82f6"></div>
+                        <div class="spark-bar" style="height:65%;--kpi-accent:#3b82f6"></div>
+                        <div class="spark-bar" style="height:90%;--kpi-accent:#3b82f6"></div>
+                        <div class="spark-bar active" style="height:80%;--kpi-accent:#3b82f6"></div>
+                    </div>
+                </div>
+
+                @if($routePrefix == 'admin')
                 <div class="kpi-card" style="--kpi-accent:#8b5cf6">
                     <div class="kpi-top">
                         <div class="kpi-icon" style="background:rgba(139,92,246,.15);color:#8b5cf6"><i
                                 class="bi bi-kanban-fill"></i></div>
 
                     </div>
-                    <div class="kpi-value">{{ number_format($routePrefix == 'developer' ? $totalRunningProjects : $activeProjects) }}</div>
+                    <div class="kpi-value">{{ number_format($activeProjects) }}</div>
                     <div class="kpi-label">Active Projects</div>
                     <div class="kpi-spark">
                         <div class="spark-bar" style="height:80%;--kpi-accent:#8b5cf6"></div>
@@ -399,7 +419,7 @@
                                 class="bi bi-check-circle-fill"></i></div>
 
                     </div>
-                    <div class="kpi-value">{{ number_format($routePrefix == 'developer' ? $totalCompletedProjects : $completedProjects) }}</div>
+                    <div class="kpi-value">{{ number_format($completedProjects) }}</div>
                     <div class="kpi-label">Complete Projects</div>
                     <div class="kpi-spark">
                         <div class="spark-bar" style="height:80%;--kpi-accent:#10b981"></div>
@@ -411,6 +431,7 @@
                         <div class="spark-bar active" style="height:75%;--kpi-accent:#10b981"></div>
                     </div>
                 </div>
+                @endif
 
                 @if($routePrefix == 'admin')
                 <div class="kpi-card" style="--kpi-accent:#ef4444">
