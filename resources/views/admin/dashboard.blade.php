@@ -555,28 +555,28 @@
                                     <!-- Tier 1: Total / New Leads -->
                                     <div class="funnel-slice tier-1" onclick="window.location.href='{{ route($routePrefix . '.leads.index') }}'">
                                         <div class="funnel-shape">
-                                            <span class="fs-text">New Leads / Inquiries</span>
+                                            <span class="fs-text">Total Leads Received</span>
                                         </div>
                                     </div>
 
                                     <!-- Tier 2: Contacted / In Touch -->
                                     <div class="funnel-slice tier-2" onclick="window.location.href='{{ route($routePrefix . '.leads.index', ['type' => 'followup_total']) }}'">
                                         <div class="funnel-shape">
-                                            <span class="fs-text">Contacted & Qualified</span>
+                                            <span class="fs-text">Followed Up</span>
                                         </div>
                                     </div>
 
                                     <!-- Tier 3: In Discussion / Proposals -->
                                     <div class="funnel-slice tier-3" onclick="window.location.href='{{ route($routePrefix . '.leads.index', ['type' => 'followup_future']) }}'">
                                         <div class="funnel-shape">
-                                            <span class="fs-text">Proposals & Discussion</span>
+                                            <span class="fs-text">Interested</span>
                                         </div>
                                     </div>
 
                                     <!-- Tier 4: Won / Converted Orders -->
                                     <div class="funnel-slice tier-4" onclick="window.location.href='{{ route($routePrefix . '.orders.index') }}'">
                                         <div class="funnel-shape">
-                                            <span class="fs-text"><i class="bi bi-trophy-fill"></i> Won / Converted</span>
+                                            <span class="fs-text">Converted Orders</span>
                                         </div>
                                     </div>
                                 </div>
@@ -602,7 +602,7 @@
                                         <div class="fm-content">
                                             <div class="fm-label-row">
                                                 <span class="fm-badge-dot" style="background:#06b6d4;"></span>
-                                                <span class="fm-name">Contacted</span>
+                                                <span class="fm-name">Contacted / Followed Up</span>
                                                 <span class="fm-pct">{{ $pContacted }}%</span>
                                             </div>
                                             <div class="fm-val">{{ number_format($leadFunnel['contacted']) }}</div>
@@ -615,7 +615,7 @@
                                         <div class="fm-content">
                                             <div class="fm-label-row">
                                                 <span class="fm-badge-dot" style="background:#10b981;"></span>
-                                                <span class="fm-name">Proposal / Active</span>
+                                                <span class="fm-name">Interested / In Discussion</span>
                                                 <span class="fm-pct">{{ $pDiscussion }}%</span>
                                             </div>
                                             <div class="fm-val">{{ number_format($leadFunnel['discussion']) }}</div>
@@ -628,7 +628,7 @@
                                         <div class="fm-content">
                                             <div class="fm-label-row">
                                                 <span class="fm-badge-dot" style="background:#f59e0b;"></span>
-                                                <span class="fm-name">Won Deals</span>
+                                                <span class="fm-name">Converted to Orders</span>
                                                 <span class="fm-pct">{{ $pConverted }}%</span>
                                             </div>
                                             <div class="fm-val text-amber">{{ number_format($leadFunnel['converted']) }}</div>
@@ -640,23 +640,23 @@
                             <!-- Funnel Summary Chips -->
                             <div class="funnel-footer-chips">
                                 <div class="ff-chip">
-                                    <span class="ff-icon" style="color: #6366f1;"><i class="bi bi-star-fill"></i></span>
+                                    <span class="ff-icon" style="color: #6366f1;"><i class="bi bi-clock-history"></i></span>
                                     <div class="ff-meta">
-                                        <span class="ff-title">Fresh Unassigned</span>
+                                        <span class="ff-title">No Follow-up Yet</span>
                                         <span class="ff-val">{{ number_format($leadFunnel['new']) }}</span>
                                     </div>
                                 </div>
                                 <div class="ff-chip">
                                     <span class="ff-icon" style="color: #10b981;"><i class="bi bi-check-circle-fill"></i></span>
                                     <div class="ff-meta">
-                                        <span class="ff-title">Win Rate</span>
+                                        <span class="ff-title">Conversion Rate</span>
                                         <span class="ff-val">{{ $leadFunnel['conversion_rate'] }}%</span>
                                     </div>
                                 </div>
                                 <div class="ff-chip">
                                     <span class="ff-icon" style="color: #ef4444;"><i class="bi bi-x-circle-fill"></i></span>
                                     <div class="ff-meta">
-                                        <span class="ff-title">Lost / Drop-off</span>
+                                        <span class="ff-title">Lost Leads</span>
                                         <span class="ff-val">{{ number_format($leadFunnel['lost']) }}</span>
                                     </div>
                                 </div>
