@@ -1403,9 +1403,9 @@
         .channel-modes-row {
             display: flex;
             align-items: center;
-            justify-content: space-around;
+            justify-content: space-between;
             background: var(--b1);
-            padding: 10px 14px;
+            padding: 10px 20px;
             border-radius: 10px;
             margin-top: 14px;
             border: 1px dashed var(--b3);
