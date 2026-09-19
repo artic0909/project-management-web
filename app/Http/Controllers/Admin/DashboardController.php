@@ -330,9 +330,22 @@ class DashboardController extends Controller
 
         $totalFollowups = $todayFollowups + $pendingFollowups + $futureFollowups;
 
-        $callingFollowups = Followup::where('followable_type', Lead::class)->where('followup_type', 'Calling')->count();
-        $msgFollowups = Followup::where('followable_type', Lead::class)->where('followup_type', 'Message')->count();
-        $bothFollowups = Followup::where('followable_type', Lead::class)->where('followup_type', 'Both')->count();
+        // Channel / Communication Mode Breakdown (Total all-time followups on leads, scoped by Admin or Sales POV)
+        $channelFollowupQuery = Followup::where('followable_type', Lead::class);
+        if ($routePrefix == 'sale') {
+            $scopedLeadIds = Lead::where(function($master) use ($saleId, $saleType) {
+                $master->where('created_by', $saleId)->where('created_by_type', $saleType)
+                       ->orWhereHas('assignments', function($sq) use ($saleId) {
+                           $sq->where('assigned_to', $saleId);
+                       });
+            })->select('id');
+
+            $channelFollowupQuery->whereIn('followable_id', $scopedLeadIds);
+        }
+
+        $callingFollowups = (clone $channelFollowupQuery)->where('followup_type', 'Calling')->count();
+        $msgFollowups = (clone $channelFollowupQuery)->where('followup_type', 'Message')->count();
+        $bothFollowups = (clone $channelFollowupQuery)->where('followup_type', 'Both')->count();
 
         $followupStats = [
             'today' => $todayFollowups,
