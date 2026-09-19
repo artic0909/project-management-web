@@ -973,7 +973,7 @@
                                             }
                                         @endphp
                                         @if(!empty($wpPhone))
-                                        <a href="https://web.whatsapp.com/send?phone={{ $wpPhone }}" target="_blank" rel="noopener noreferrer" class="ra-btn whatsapp" title="WhatsApp Lead">
+                                        <a href="https://wa.me/{{ $wpPhone }}" target="_blank" rel="noopener noreferrer" class="ra-btn whatsapp" title="WhatsApp Lead">
                                             <i class="bi bi-whatsapp"></i>
                                         </a>
                                         @else
