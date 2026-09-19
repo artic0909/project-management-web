@@ -213,6 +213,19 @@ class DashboardController extends Controller
             }
         };
 
+        $applyFollowupDateFilter = function($query, $dateCol = 'followup_date') use ($selectedMonth, $selectedYear) {
+            $expr = DB::raw("COALESCE($dateCol, created_at)");
+            if ($selectedMonth !== 'all' && $selectedYear !== 'all') {
+                $startDate = Carbon::create((int)$selectedYear, (int)$selectedMonth, 1)->startOfMonth();
+                $endDate = $startDate->copy()->endOfMonth();
+                $query->whereBetween($expr, [$startDate, $endDate]);
+            } elseif ($selectedMonth !== 'all') {
+                $query->whereMonth($expr, (int)$selectedMonth);
+            } elseif ($selectedYear !== 'all') {
+                $query->whereYear($expr, (int)$selectedYear);
+            }
+        };
+
         if ($routePrefix == 'sale') {
             $totalLeadsAllQuery = Lead::where('is_losted', 0);
             $applyLeadDateFilter($totalLeadsAllQuery);
@@ -301,6 +314,7 @@ class DashboardController extends Controller
         // 2. FOLLOWUPS BREAKDOWN (Pie/Donut Chart)
         $today = Carbon::today();
         $leadFollowupQuery = Lead::where('is_losted', 0);
+        $applyLeadDateFilter($leadFollowupQuery);
         if ($routePrefix == 'sale') {
             $leadFollowupQuery->where(function($master) use ($saleId, $saleType) {
                 $master->where('created_by', $saleId)->where('created_by_type', $saleType)
@@ -330,8 +344,10 @@ class DashboardController extends Controller
 
         $totalFollowups = $todayFollowups + $pendingFollowups + $futureFollowups;
 
-        // Channel / Communication Mode Breakdown (Total all-time followups on leads, scoped by Admin or Sales POV)
+        // Channel / Communication Mode Breakdown (Filtered by selected Month/Year & Admin/Sales POV)
         $channelFollowupQuery = Followup::where('followable_type', Lead::class);
+        $applyFollowupDateFilter($channelFollowupQuery);
+
         if ($routePrefix == 'sale') {
             $scopedLeadIds = Lead::where(function($master) use ($saleId, $saleType) {
                 $master->where('created_by', $saleId)->where('created_by_type', $saleType)
