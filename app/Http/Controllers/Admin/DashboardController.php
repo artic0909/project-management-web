@@ -359,9 +359,24 @@ class DashboardController extends Controller
             $channelFollowupQuery->whereIn('followable_id', $scopedLeadIds);
         }
 
-        $callingFollowups = (clone $channelFollowupQuery)->where('followup_type', 'Calling')->count();
-        $msgFollowups = (clone $channelFollowupQuery)->where('followup_type', 'Message')->count();
-        $bothFollowups = (clone $channelFollowupQuery)->where('followup_type', 'Both')->count();
+        $followupCounts = (clone $channelFollowupQuery)
+            ->select('followup_type', DB::raw('count(*) as count'))
+            ->groupBy('followup_type')
+            ->pluck('count', 'followup_type');
+
+        $callingFollowups = 0;
+        $msgFollowups = 0;
+        foreach ($followupCounts as $typeKey => $count) {
+            $norm = strtolower(trim($typeKey));
+            if ($norm === 'calling') {
+                $callingFollowups += $count;
+            } elseif ($norm === 'message') {
+                $msgFollowups += $count;
+            } elseif ($norm === 'both') {
+                $callingFollowups += $count;
+                $msgFollowups += $count;
+            }
+        }
 
         $followupStats = [
             'today' => $todayFollowups,
@@ -370,7 +385,6 @@ class DashboardController extends Controller
             'total' => $totalFollowups,
             'calling' => $callingFollowups,
             'message' => $msgFollowups,
-            'both' => $bothFollowups,
         ];
 
         // 3. MONTHLY ORDERS DATA (Vertical Bar Chart)

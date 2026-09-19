@@ -856,10 +856,6 @@
                                     <i class="bi bi-chat-dots-fill" style="color:#10b981;"></i>
                                     <span>WhatsApp/Msg: <strong>{{ number_format($followupStats['message']) }}</strong></span>
                                 </div>
-                                <div class="cm-item">
-                                    <i class="bi bi-intersect" style="color:#8b5cf6;"></i>
-                                    <span>Both: <strong>{{ number_format($followupStats['both']) }}</strong></span>
-                                </div>
                             </div>
                         </div>
                     </div>
