@@ -344,20 +344,9 @@ class DashboardController extends Controller
 
         $totalFollowups = $todayFollowups + $pendingFollowups + $futureFollowups;
 
-        // Channel / Communication Mode Breakdown (Filtered by selected Month/Year & Admin/Sales POV)
-        $channelFollowupQuery = Followup::where('followable_type', Lead::class);
-        $applyFollowupDateFilter($channelFollowupQuery);
-
-        if ($routePrefix == 'sale') {
-            $scopedLeadIds = Lead::where(function($master) use ($saleId, $saleType) {
-                $master->where('created_by', $saleId)->where('created_by_type', $saleType)
-                       ->orWhereHas('assignments', function($sq) use ($saleId) {
-                           $sq->where('assigned_to', $saleId);
-                       });
-            })->select('id');
-
-            $channelFollowupQuery->whereIn('followable_id', $scopedLeadIds);
-        }
+        // Channel / Communication Mode Breakdown (Filtered by selected Month/Year & Admin/Sales POV for active leads)
+        $channelFollowupQuery = Followup::where('followable_type', Lead::class)
+            ->whereIn('followable_id', (clone $leadFollowupQuery)->select('id'));
 
         $followupCounts = (clone $channelFollowupQuery)
             ->select('followup_type', DB::raw('count(*) as count'))
